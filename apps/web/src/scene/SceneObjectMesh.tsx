@@ -4,7 +4,7 @@ import type { Group } from "three";
 import type { SceneObject } from "@house/contracts";
 import { useSceneStore } from "../state/sceneStore";
 import { useInteractionStore } from "../state/interactionStore";
-import { ObjectVisual } from "./objectVisuals";
+import { AssetVisual } from "./AssetVisual";
 import { SelectionOutline } from "./SelectionOutline";
 import { ObjectContextToolbar } from "./ObjectContextToolbar";
 
@@ -77,7 +77,7 @@ export function SceneObjectMesh({ object }: SceneObjectMeshProps) {
           document.body.style.cursor = "auto";
         }}
       >
-        <ObjectVisual category={object.category} dimensionsM={object.dimensionsM} />
+        <AssetVisual object={object} />
         {(selected || hovered) && (
           <SelectionOutline
             dimensionsM={object.dimensionsM}

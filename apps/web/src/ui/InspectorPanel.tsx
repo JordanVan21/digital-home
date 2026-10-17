@@ -1,6 +1,7 @@
 import { Trash2 } from "lucide-react";
 import { useSceneStore } from "../state/sceneStore";
 import { yawDegreesFromQuaternion } from "../lib/rotation";
+import { resolveAsset } from "../fixtures/assetCatalog";
 
 function formatCategory(category: string): string {
   return category.replace(/_/g, " ").replace(/\b\w/g, (c) => c.toUpperCase());
@@ -11,6 +12,7 @@ export function InspectorPanel() {
   const scene = useSceneStore((s) => s.scene);
   const selected = useSceneStore((s) => s.getSelectedObject());
   const deleteObject = useSceneStore((s) => s.deleteObject);
+  const asset = selected ? resolveAsset(selected.assetId) : undefined;
 
   if (!selected) {
     const [w, , d] = shell.floor.polygonXZ.reduce(
@@ -63,6 +65,10 @@ export function InspectorPanel() {
       <div className="inspector-row">
         <span>Source</span>
         <span className="value">{selected.source.replace(/_/g, " ")}</span>
+      </div>
+      <div className="inspector-row">
+        <span>Model</span>
+        <span className="value">{asset ? <a href={asset.sourceUrl} target="_blank" rel="noreferrer">Poly Haven · CC0</a> : "Approximate proxy"}</span>
       </div>
       <div className="inspector-row">
         <span>Position</span>

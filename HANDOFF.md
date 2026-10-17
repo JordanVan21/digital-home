@@ -1,7 +1,20 @@
 # Handoff: 3D Sandbox — session notes
 
 **Branch:** `feature/3d-sandbox` (off `main`, PR open against `JordanVan21/digital-home`)
-**As of:** 2026-10-17, commits `ec9dcb1` → `c2fc986` (4 commits, working tree clean, pushed)
+**As of:** 2026-10-17, GLB catalog checkpoint after `f205d99` (see `git log` for current commit).
+
+## Latest checkpoint: step 3 GLB pipeline
+
+- User approved **FurniMesh or Poly Haven** as sources. Six Poly Haven CC0 models are committed: sofa, armchair, round coffee table, shelving, credenza/cabinet, and potted plant. These are real artist-authored meshes/textures, not procedural furniture. Poly Haven explicitly permits redistribution: https://polyhaven.com/license.
+- `apps/web/src/fixtures/assetCatalog.json` contains schema-validated AssetSpecs with native normalized dimensions, source links, license review status, triangle/texture totals, SHA-256 hashes, and immutable content-derived IDs/URLs. `assetCatalog.ts` resolves only verified entries. Local catalog stands in for the future asset service.
+- `AssetVisual.tsx` adds per-object `useGLTF`, skeleton-safe hierarchy cloning, shared cached geometry/textures, shadow flags, uniform fitting, local Suspense loading proxies, and error-boundary proxies. Missing/unresolved/unapproved IDs stay on the existing `objectVisuals.tsx` path. Approximation/loading/error states have visible labels. Per-object keys and interaction wrapper are preserved.
+- Source GLBs are normalized to floor contact and centered XZ; shelving source axes corrected. The fixture uniformly fits them into prior scan envelopes and updates collision/selection dimensions to match. Model names now reflect the actual assets (the sofa is a vintage brown sofa rather than the old fictitious cream sectional).
+- `scripts/import-polyhaven.py` downloads originals, checks MD5s, and packages buffers/textures into GLBs; `scripts/normalize-catalog.mjs` normalizes roots and computes metadata. Instructions/license notes: `apps/web/public/models/polyhaven/README.md`. About 30 MB total, 2K textures. Performance work has **not** started.
+- **Still open:** rug and floor lamp retain labeled proxies. No suitable Poly Haven models found for these categories. FurniMesh exposes public GLB downloads and advertises commercial use, but its linked terms do not explicitly establish raw-file redistribution in this public repo. Do not silently treat commercial-use language as a redistribution grant. No FurniMesh binaries included yet. Step 3 still needs the user's visual review and resolution of these two categories.
+- Verified: root `pnpm typecheck`; `pnpm --filter @house/web build` (passes, existing large JS chunk warning); live Chromium at `http://127.0.0.1:5173`: six GLB 200s and textured/shadowed models, pointer selection, coordinate move/rotate, invalid-position rollback, undo/redo, lock/unlock, duplicate/delete. Unchanged model root UUIDs remained stable and duplication fetched **zero** additional GLBs. Injected corrupt GLB response produced a visible proxy warning while the canvas and other models remained alive. Browser checks used Playwright from npm cache, not a committed test dependency.
+- Browser-check gotcha: dynamic imports of Zustand stores can create a second module instance after Vite HMR timestamp changes. Restart Vite before browser diagnostics that import stores; inspect actual UI as well. Selection itself was working.
+
+The remaining sections describe the prior implementation context; the checkpoint above supersedes their statements that no GLB path exists.
 
 This file is implementation-specific context from building the 3D sandbox feature — decisions, bugs, and plan that aren't in `agent_docs/`. Read `agent_docs/` first for product/architecture ground truth; this is the "what actually happened and why" layer on top of it.
 

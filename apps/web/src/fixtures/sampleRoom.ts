@@ -1,4 +1,5 @@
 import type { RoomShell, SceneObject, SceneSpec } from "@house/contracts";
+import { fixtureAsset } from "./assetCatalog";
 
 /**
  * Standalone demo fixture standing in for a RoomPlan scan import, until the
@@ -60,11 +61,19 @@ export const sampleRoomShell: RoomShell = {
 };
 
 function obj(partial: Omit<SceneObject, "assetId" | "source" | "ownership">): SceneObject {
+  const asset = fixtureAsset(partial.category);
+  const fit = asset ? Math.min(...partial.dimensionsM.map((n, i) => n / asset.dimensionsM[i])) : 1;
   return {
-    assetId: null,
+    assetId: asset?.id ?? null,
     source: "roomplan_approximation",
     ownership: "existing",
     ...partial,
+    // Fit the existing scan envelope uniformly, preserving artist proportions.
+    // Keep collision/selection dimensions equal to the actual rendered model.
+    ...(asset ? {
+      dimensionsM: asset.dimensionsM.map((n) => n * fit) as SceneObject["dimensionsM"],
+      displayName: asset.title.replace(/ \d+$/, ""),
+    } : {}),
   };
 }
 
