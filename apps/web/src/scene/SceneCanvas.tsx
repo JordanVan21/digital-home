@@ -169,9 +169,9 @@ export const SceneCanvas = memo(function SceneCanvas() {
   useEffect(() => {
     const update = () => {
       const { hoveredId, dragging } = editor.interaction.getState();
-      const locked = editor.scene
-        .getState()
-        .scene.objects.find((o) => o.id === hoveredId)?.locked;
+      const locked = editor
+        .working()
+        .objects.find((o) => o.id === hoveredId)?.locked;
       if (wrapper.current)
         wrapper.current.className = `canvas-wrap ${dragging ? "dragging" : locked ? "locked" : hoveredId ? "hovering" : ""}`;
     };

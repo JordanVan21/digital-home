@@ -552,12 +552,24 @@ kbd {
   margin-top: 8px;
   font-size: 12px;
 }
-.rotation-readout > span {
+.rotation-readout > label {
   flex: 1;
   color: var(--ink-soft);
 }
-.rotation-readout output {
-  margin-right: 4px;
+.rotation-input {
+  width: 58px;
+  height: 26px;
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.7);
+  background: rgba(255, 255, 255, 0.6);
+  font: inherit;
+  text-align: right;
+  padding: 0 6px;
+  color: var(--ink);
+}
+.rotation-readout .unit {
+  margin: 0 4px 0 -2px;
+  color: var(--muted);
 }
 .step-button {
   width: 26px;
@@ -648,10 +660,173 @@ kbd {
   color: var(--muted);
 }
 
+/* ---------- Suggestions ---------- */
+.suggestions {
+  position: absolute;
+  left: 50%;
+  bottom: 24px;
+  transform: translateX(-50%);
+  width: min(620px, calc(100% - 420px));
+  min-width: 420px;
+  border-radius: 28px;
+  padding: 7px;
+  z-index: 6;
+  background: var(--glass-fill-strong);
+  animation: appear 0.18s ease-out;
+}
+.suggestions-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding-left: 12px;
+}
+.pending-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--accent);
+  box-shadow: 0 0 0 4px color-mix(in srgb, var(--accent) 22%, transparent);
+  flex-shrink: 0;
+}
+.suggestions-summary {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  height: 44px;
+  padding: 0 8px;
+  border-radius: 999px;
+  text-align: left;
+  font-size: 13px;
+}
+.suggestions-summary strong {
+  font-weight: 600;
+}
+.suggestions-summary .flip {
+  transform: rotate(180deg);
+}
+.conflict-count {
+  color: #c0442f;
+}
+.discard-button {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  height: 44px;
+  padding: 0 16px;
+  border-radius: 999px;
+  background: var(--glass-inset);
+  border: 1px solid rgba(255, 255, 255, 0.6);
+}
+.discard-button:hover:not(:disabled) {
+  background: white;
+}
+.accept-button {
+  padding: 0 20px 0 16px;
+}
+.change-list {
+  list-style: none;
+  margin: 0 0 6px;
+  padding: 6px;
+  max-height: 260px;
+  overflow: auto;
+  scrollbar-width: thin;
+  border-bottom: 1px solid var(--line);
+}
+.change-list li {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  border-radius: 12px;
+}
+.change-list li:hover {
+  background: rgba(255, 255, 255, 0.55);
+}
+.change-row {
+  flex: 1;
+  display: grid;
+  grid-template-columns: 76px 1fr auto;
+  align-items: center;
+  column-gap: 10px;
+  padding: 8px 10px;
+  text-align: left;
+  border-radius: 12px;
+  font-size: 12px;
+}
+.change-row:disabled {
+  opacity: 1;
+  cursor: default;
+}
+.kind {
+  font-size: 11px;
+  font-weight: 600;
+  padding: 2px 8px;
+  border-radius: 999px;
+  justify-self: start;
+  background: rgba(20, 22, 26, 0.06);
+}
+.kind-added {
+  background: #e3f4e8;
+  color: #2f7a46;
+}
+.kind-removed {
+  background: #fbe7e2;
+  color: #b2442f;
+}
+.kind-moved,
+.kind-rotated,
+.kind-replaced {
+  background: color-mix(in srgb, var(--select) 16%, white);
+  color: #5048b8;
+}
+.change-amount {
+  color: var(--muted);
+  font-variant-numeric: tabular-nums;
+}
+.change-conflict {
+  grid-column: 2 / -1;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  color: #c0442f;
+  font-size: 11px;
+}
+.save-status.pending {
+  color: var(--ink);
+  font-weight: 500;
+}
+.save-status.pending .pending-dot {
+  width: 6px;
+  height: 6px;
+  box-shadow: none;
+  margin-right: 3px;
+}
+.new-badge,
+.angle-label {
+  display: block;
+  white-space: nowrap;
+  padding: 3px 9px;
+  border-radius: 999px;
+  font-family: "DM Sans", sans-serif;
+  font-size: 10px;
+  font-weight: 600;
+}
+.new-badge {
+  background: var(--accent);
+  color: var(--accent-ink);
+}
+.angle-label {
+  background: #ffffffee;
+  color: #5048b8;
+  font-size: 12px;
+  box-shadow: 0 2px 10px rgba(16, 18, 24, 0.12);
+  font-variant-numeric: tabular-nums;
+}
+
 /* ---------- Toast & errors ---------- */
 .toast {
   position: absolute;
-  bottom: 28px;
+  top: 100px;
   left: 50%;
   transform: translateX(-50%);
   padding: 10px 10px 10px 18px;
@@ -889,6 +1064,11 @@ kbd {
 
 /* ---------- Responsive ---------- */
 @media (max-width: 1100px) {
+  .suggestions {
+    bottom: 96px;
+    width: calc(100% - 48px);
+    min-width: 0;
+  }
   .search-pill kbd,
   .room-switcher span,
   .save-status {

@@ -3,15 +3,14 @@ import { useStore } from "zustand";
 import { Search, X, ArrowUpRight } from "lucide-react";
 import { catalog } from "@house/contracts";
 import { editor } from "../state/editor";
+import { useWorkingObject } from "../state/useWorking";
 import { Button } from "./Button";
 export function AssetBrowser() {
   const [query, setQuery] = useState(""),
     [category, setCategory] = useState("all");
   const replacing = useStore(editor.interaction, (s) => s.replacing);
   const id = useStore(editor.interaction, (s) => s.selectedId);
-  const object = useStore(editor.scene, (s) =>
-    s.scene.objects.find((o) => o.id === id),
-  );
+  const object = useWorkingObject(id);
   const closeRef = useRef<HTMLButtonElement>(null);
   useEffect(() => {
     const previous = document.activeElement as HTMLElement | null;

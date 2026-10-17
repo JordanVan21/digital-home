@@ -22,6 +22,8 @@ function SaveStatus() {
   const status = useStore(editor.save, (s) => s.status);
   const error = useStore(editor.save, (s) => s.error);
   const ready = useStore(editor.scene, (s) => s.ready);
+  const pending = useStore(editor.draft, (s) => s.scene !== null);
+  useStore(editor.draft, (s) => s.scene);
   if (status === "error")
     return (
       <button
@@ -33,6 +35,15 @@ function SaveStatus() {
         Save failed — Retry
       </button>
     );
+  if (pending) {
+    const n = editor.changes().length;
+    return (
+      <span className="save-status pending" role="status">
+        <span className="pending-dot" /> {n} unsaved suggestion
+        {n === 1 ? "" : "s"}
+      </span>
+    );
+  }
   return (
     <span className="save-status" role="status">
       {status === "saving" ? (
@@ -79,6 +90,14 @@ function RoomMenu() {
 
 export function TopBar() {
   const history = useStore(editor.history, (s) => s.history);
+  // Undo/redo step through the draft first, then accepted history (see editor.travel).
+  const draftActive = useStore(editor.draft, (s) => s.scene !== null);
+  const draftUndo = useStore(editor.draft, (s) => s.undo.length);
+  const draftRedo = useStore(editor.draft, (s) => s.redo.length);
+  const canUndo =
+    draftActive || draftUndo ? draftUndo > 0 : history.undo.length > 0;
+  const canRedo =
+    draftActive || draftRedo ? draftRedo > 0 : history.redo.length > 0;
   const dragging = useStore(editor.interaction, (s) => s.dragging);
   const ready = useStore(editor.scene, (s) => s.ready);
   const search = useRef<HTMLInputElement>(null);
@@ -122,7 +141,7 @@ export function TopBar() {
         <Button
           label="Undo (⌘/Ctrl+Z)"
           className="round glass-button"
-          disabled={locked || !history.undo.length}
+          disabled={locked || !canUndo}
           onClick={() => editor.travel("undo")}
         >
           <Undo2 size={17} />
@@ -130,7 +149,7 @@ export function TopBar() {
         <Button
           label="Redo (⇧⌘/Ctrl+Z)"
           className="round glass-button"
-          disabled={locked || !history.redo.length}
+          disabled={locked || !canRedo}
           onClick={() => editor.travel("redo")}
         >
           <Redo2 size={17} />

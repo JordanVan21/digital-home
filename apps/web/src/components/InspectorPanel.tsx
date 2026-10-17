@@ -11,13 +11,12 @@ import {
 import { assetById } from "@house/contracts";
 import { yawOf } from "@house/scene-engine";
 import { editor } from "../state/editor";
+import { useWorkingObject } from "../state/useWorking";
 import { Button } from "./Button";
 export function InspectorPanel() {
   const id = useStore(editor.interaction, (s) => s.selectedId),
     open = useStore(editor.interaction, (s) => s.inspector);
-  const object = useStore(editor.scene, (s) =>
-    s.scene.objects.find((o) => o.id === id),
-  );
+  const object = useWorkingObject(id);
   const dragging = useStore(editor.interaction, (s) => s.dragging);
   const asset = object?.assetId ? assetById[object.assetId] : undefined;
   if (!open || !object) return null;
@@ -84,8 +83,30 @@ export function InspectorPanel() {
             ))}
           </div>
           <div className="rotation-readout">
-            <span>Rotation</span>
-            <output>{yaw.toFixed(0)}°</output>
+            <label htmlFor="rotation-input">Rotation</label>
+            {/* Keyed on the angle so it resyncs after swivels, undo and steps. */}
+            <input
+              id="rotation-input"
+              key={`${object.id}-${Math.round(yaw)}`}
+              className="rotation-input"
+              type="number"
+              step={1}
+              defaultValue={Math.round(yaw)}
+              disabled={object.locked || dragging}
+              aria-label="Rotation in degrees"
+              onKeyDown={(e) => {
+                if (e.key === "Enter") e.currentTarget.blur();
+              }}
+              onBlur={(e) => {
+                const value = Number(e.currentTarget.value);
+                if (
+                  Number.isFinite(value) &&
+                  Math.round(value) !== Math.round(yaw)
+                )
+                  editor.setYaw((value * Math.PI) / 180);
+              }}
+            />
+            <span className="unit">°</span>
             <Button
               label="Rotate counterclockwise 15°"
               disabled={object.locked || dragging}

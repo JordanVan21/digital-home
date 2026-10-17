@@ -5,6 +5,7 @@ import { editor } from "./state/editor";
 import { SceneCanvas } from "./scene/SceneCanvas";
 import { TopBar } from "./components/TopBar";
 import { SideNav } from "./components/SideNav";
+import { SuggestionsBar } from "./components/SuggestionsBar";
 import { MeasurementsToggle, ViewControls } from "./components/ViewControls";
 import { useLighting } from "./theme";
 import { InspectorPanel } from "./components/InspectorPanel";
@@ -18,6 +19,9 @@ function Keyboard() {
         return;
       const state = editor.interaction.getState();
       if (e.key === "Escape") {
+        // Esc deselects or closes first; with nothing to close it discards suggestions.
+        if (!state.selectedId && !state.browser && !state.dragging)
+          editor.discard();
         editor.interaction.setState({
           selectedId: null,
           browser: false,
@@ -28,6 +32,11 @@ function Keyboard() {
       }
       if (state.dragging || !editor.scene.getState().ready || state.browser)
         return;
+      if (e.key === "Enter" && editor.hasDraft()) {
+        e.preventDefault();
+        editor.accept();
+        return;
+      }
       const key = e.key.toLowerCase();
       if ((e.metaKey || e.ctrlKey) && key === "z") {
         e.preventDefault();
@@ -52,6 +61,7 @@ function Keyboard() {
       if (document.visibilityState === "hidden") void editor.flush();
     };
     const leave = (e: BeforeUnloadEvent) => {
+      if (editor.hasDraft()) e.preventDefault();
       if (editor.pending()) {
         void editor.flush();
         e.preventDefault();
@@ -118,6 +128,7 @@ export default function App() {
       <ViewControls />
       <InspectorPanel />
       <MeasurementsToggle />
+      <SuggestionsBar />
       {toast && (
         <div className="toast glass" role="status">
           <span>{toast}</span>

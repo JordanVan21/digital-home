@@ -27,11 +27,18 @@ test("renders the room and edits, undoes and restores a saved arrangement", asyn
   await page
     .getByRole("button", { name: "Rotate clockwise 15°", exact: true })
     .click();
-  await expect(page.locator(".rotation-readout output")).toHaveText("15°");
+  const rotation = page.getByLabel("Rotation in degrees");
+  await expect(rotation).toHaveValue("15");
+  // Edits are suggestions: the room is unsaved until accepted.
+  await expect(
+    page.getByRole("status").filter({ hasText: "1 unsaved suggestion" }),
+  ).toBeVisible();
   await page.keyboard.press("ControlOrMeta+z");
-  await expect(page.locator(".rotation-readout output")).toHaveText("0°");
+  await expect(rotation).toHaveValue("0");
   await page.keyboard.press("ControlOrMeta+Shift+z");
-  await expect(page.locator(".rotation-readout output")).toHaveText("15°");
+  await expect(rotation).toHaveValue("15");
+  await page.getByRole("button", { name: /^Accept suggestions/ }).click();
+  await expect(page.getByRole("status").filter({ hasText: "Applied" })).toBeVisible();
   await expect(
     page.getByRole("status").filter({ hasText: "Saved" }),
   ).toBeVisible();
@@ -53,6 +60,20 @@ test("renders the room and edits, undoes and restores a saved arrangement", asyn
   await page.getByRole("button", { name: "Open furniture library" }).click();
   await page.getByRole("button", { name: "Close furniture library" }).click();
   await page.screenshot({ path: "test-results/room-saved.png" });
+  // Drag the sofa onto the coffee table: allowed as a conflicted suggestion,
+  // then resolved to the nearest valid spot on accept.
+  await page.mouse.move(700, 470);
+  await page.mouse.down();
+  await page.mouse.move(670, 500, { steps: 8 });
+  await page.mouse.move(640, 530, { steps: 8 });
+  await page.mouse.up();
+  await expect(page.locator(".conflict-count")).toHaveText(/1 conflict/);
+  await page.screenshot({ path: "test-results/room-conflict.png" });
+  await page.keyboard.press("Escape");
+  await page.keyboard.press("Enter");
+  await expect(page.getByRole("status").filter({ hasText: "to fit" })).toBeVisible();
+  await page.waitForTimeout(600);
+  await page.screenshot({ path: "test-results/room-resolved.png" });
   // Lighting presets restyle the room and the UI accent together.
   await page
     .getByRole("button", { name: /^Lighting: Golden hour/ })
