@@ -52,10 +52,17 @@ function occupiesFloor(o: SceneObject): boolean {
     !occupancyRules.nonFloorSupports.some((s) => s === o.placement?.support)
   );
 }
+/**
+ * Draft edits pass `allowConflicts` to skip only the checks a later resolve can
+ * fix by moving the piece (bounds, wall band, doorway, overlaps). Locks, identity,
+ * asset and transform rules always apply.
+ */
+export type ValidationOptions = { allowConflicts?: boolean };
 export function validateObject(
   scene: SceneSpec,
   o: SceneObject,
   ctx: SceneContext,
+  options: ValidationOptions = {},
 ): Validation {
   if (!SceneObjectSchema.safeParse(o).success)
     return fail(
@@ -90,6 +97,7 @@ export function validateObject(
       Math.abs(o.transform.position[1] - ctx.room.floor.elevationY) > 1e-5)
   )
     return fail("INVALID_TRANSFORM", "Furniture must rest on the floor.");
+  if (options.allowConflicts) return { ok: true };
   const rect = footprint(o);
   if (!insidePolygon(rect, ctx.room.floor.polygonXZ))
     return fail("OUT_OF_BOUNDS", "Keep the whole object inside the room.");
@@ -122,6 +130,7 @@ export function validateOp(
   scene: SceneSpec,
   op: SceneOp,
   ctx: SceneContext,
+  options: ValidationOptions = {},
 ): Validation {
   if (
     scene.shellId !== ctx.room.id ||
@@ -136,7 +145,7 @@ export function validateOp(
   if (op.type === "add") {
     if (scene.objects.some((o) => o.id === op.object.id))
       return fail("DUPLICATE_ID", "This object is already in the room.");
-    return validateObject(scene, op.object, ctx);
+    return validateObject(scene, op.object, ctx, options);
   }
   const id = op.type === "replacePhysicalItem" ? op.oldObjectId : op.objectId;
   const obj = scene.objects.find((o) => o.id === id);
@@ -162,6 +171,7 @@ export function validateOp(
       { ...scene, objects: scene.objects.filter((o) => o.id !== id) },
       { ...op.newObject, replacesObjectId: id },
       ctx,
+      options,
     );
   }
   return validateObject(
@@ -170,6 +180,7 @@ export function validateOp(
       ? { ...obj, transform: op.transform }
       : { ...obj, assetId: op.assetId, dimensionsM: op.dimensionsM },
     ctx,
+    options,
   );
 }
 export type ApplyResult =
@@ -179,8 +190,9 @@ export function applyOp(
   scene: SceneSpec,
   op: SceneOp,
   ctx: SceneContext,
+  options: ValidationOptions = {},
 ): ApplyResult {
-  const valid = validateOp(scene, op, ctx);
+  const valid = validateOp(scene, op, ctx, options);
   if (!valid.ok) return valid;
   let objects: SceneObject[];
   if (op.type === "add")
