@@ -34,12 +34,14 @@ pnpm test:browser
 
 - Drag empty space to orbit; right/middle drag to pan; scroll to zoom. **Reset view** restores the elevated three-quarter camera. Pan targets are bounded so you cannot move the camera beneath the floor or lose the room. Near walls automatically become a low cutaway as the camera orbits.
 - Click a piece to select it. Drag it directly across the floor; hold **Shift** for 10 cm grid snapping. A blue-violet box and corner dots mark selection. Invalid placements turn red, then ease back on release with a reason.
-- **R / Shift+R** rotate ±15°. The inspector also has rotation buttons. **V** selects, **G** moves, **L** toggles the lock, and **Delete / Backspace** removes a piece.
+- Selecting a piece shows a floating toolbar above it (move, rotate, duplicate, delete, lock, details) and a details card on the right. **R / Shift+R** rotate ±15°; the details card also has rotation buttons. **V** selects, **G** moves, **L** toggles the lock, and **Delete / Backspace** removes a piece.
 - **Cmd/Ctrl+Z** undoes; **Shift+Cmd/Ctrl+Z** redoes. **Esc** cancels the current gesture, closes the picker, or deselects. Editing shortcuts ignore text fields.
-- **Add furniture** opens a searchable catalog with category filters, dimensions, and estimated prices. New furniture is placed at the closest validated free location to the room center.
+- **Add furniture** (top bar) or **Objects** (left) opens a searchable catalog with category filters, dimensions, and estimated prices. New furniture is placed at the closest free location to the room center that leaves room to rotate it in place, falling back to a tight fit in crowded rooms.
 - **Replace model** filters to the selected category and preserves the piece's physical identity, position, and rotation. It changes its visual representation, rather than creating a renovation purchase.
 - Locked pieces show a badge. Moving, rotating, replacing, and deleting them is disabled; attempted drags explain how to unlock them.
-- The top bar shows **Saved**, **Saving…**, or **Save failed — Retry**. The room menu contains **Reset room to fixture** and **Reload saved room**. Reset is explicitly persisted and clears local history.
+- The top bar shows **Saved**, **Saving…**, or **Save failed — Retry**, plus undo/redo. The **⋯** room menu contains **Reset room to fixture** and **Reload saved room**. Reset is explicitly persisted and clears local history.
+- The round buttons on the right cycle the **lighting preset** (golden hour, daylight, overcast) and fit the room in view.
+- Visual only for now: top-bar search (⌘K focuses it) and room switcher, the **Search** pill, **Duplicate**, **2D** plan view, and the **Measurements** toggle.
 
 ## Architecture
 
@@ -91,14 +93,15 @@ Run these commands at the repository root. Raw downloads default to `/tmp/house-
 9. Kept reducers deterministic: the pure engine increments revision without reading a clock. The web adapter/repository applies real ISO timestamps.
 10. Used locally packaged fonts, a deterministic procedural oak texture, ACES/sRGB output, a generated environment, one shadow-casting sun, contact shadows, and one small non-shadow-casting lamp light. No post-processing bloom/SSAO pass was added. DPR is capped at 1.7.
 11. Inspected the downloaded models in a software contact sheet when browser launch was denied. Fixed the tree's source alpha material to `MASK` with double-sided leaves, reviewed +Z-facing orientation, and oriented the desk chair toward the desk. Software previews are asset checks, not browser screenshots or a performance measurement.
-12. Near-center additions use a deterministic ring search; failures explain that space must be made. Replacement uses `replaceAsset` for visual correction and preserves the existing object's name/category/identity.
-13. Git staging/commits were attempted on the existing `feature/3d-sandbox-codex` branch, but the managed filesystem rejected creation of the worktree's `index.lock` with `Operation not permitted`. No pushes or branch changes were made.
+12. Near-center additions use a deterministic ring search, first requiring the piece's full rotation circle to be clear so it can rotate in place, then its real footprint; failures explain that space must be made. Replacement uses `replaceAsset` for visual correction and preserves the existing object's name/category/identity.
+13. The UI follows `assets/ui-reference.png`: neutral frosted-glass pills over the room. The chrome adds no warmth of its own; the only hue is `--accent`, which comes from the active lighting preset (`src/theme.ts`) along with the 3D lights. A warm room gets an amber accent, a minimal room a graphite one. Lighting overrides are view state and are not saved with the room.
+14. drei `<Html>` labels mount into a fixed portal (`labelLayer`) and never inside Suspense fallbacks; otherwise their React roots are unmounted mid-render (React 19 warnings and a `removeChild` error on load).
 
 ## Verification and known gaps
 
 - The required build, test, typecheck, and lint commands pass. The test suite covers fixture parsing, shipped-file/license coverage, the fixture triangle budget, all operations, locks, rotated/concave bounds, SAT touching/overlap, occupancy exemptions, door clearance, inverse/history behavior, drag commit/rejection/cancel (including GPU-free tests of the actual canvas handler, live red feedback, spring-back, and no model rerenders during pointer movement), autosave debounce/serialization/retry, stale/concurrent saves, reset/recovery, and accessible locked controls.
 - `assets:verify` independently decodes every GLB and verifies its SHA-256, catalog bounds, bottom-centered origin, triangle counts, and texture sizes. The final fixture stays below 500,000 furniture triangles. This excludes extra draws for shadows and the small procedural shell.
-- **Browser/visual/FPS verification remains blocked in this environment.** Both installed Chrome and Chromium headless shell failed before opening a page. Chromium reported `bootstrap_check_in … MachPortRendezvousServer: Permission denied (1100)`. The Playwright test is included but has not passed here. A measured laptop 60 FPS result and final R3F visual review must be checked in a normal browser with `pnpm dev` and `?debug`; the code and triangle budget support that target but do not prove it.
-- **Commits remain blocked** by the worktree metadata write restriction described above. Implementation files are available in the requested working tree, uncommitted.
+- The Playwright smoke test (`pnpm test:browser`) passes in headless Chrome. Set `HOUSE_BROWSER_EXECUTABLE` to a local Chrome, or run `pnpm exec playwright install`. It uses software WebGL, so it checks behaviour and console errors, not frame rate.
+- **60 FPS is not yet measured.** Check it on the demo laptop with `pnpm dev` and `?debug`; the code and triangle budget support the target but do not prove it.
 - Collision is intentionally a floor-footprint editor policy, not mesh physics. Object support placement and material changes are engine-supported but have no dedicated UI. Scene/asset content is local; history is session-local. On browsers without Web Locks, cross-tab CAS remains best-effort, though stale sequential writes are rejected.
 - Desktop is the target. Panels adapt to smaller windows, but touch-first editing and mobile layouts are not the product scope. Asset fidelity reflects FurniMesh's source models; the scanned-object proxy is deliberately approximate.

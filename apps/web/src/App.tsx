@@ -1,10 +1,12 @@
 import { Component, useEffect, type ReactNode } from "react";
 import { useStore } from "zustand";
-import { ArrowUpRight, Plus, X, MousePointer2, Sun } from "lucide-react";
+import { X } from "lucide-react";
 import { editor } from "./state/editor";
 import { SceneCanvas } from "./scene/SceneCanvas";
 import { TopBar } from "./components/TopBar";
-import { FloatingToolbar } from "./components/FloatingToolbar";
+import { SideNav } from "./components/SideNav";
+import { MeasurementsToggle, ViewControls } from "./components/ViewControls";
+import { useLighting } from "./theme";
 import { InspectorPanel } from "./components/InspectorPanel";
 import { AssetBrowser } from "./components/AssetBrowser";
 import { Button } from "./components/Button";
@@ -65,6 +67,17 @@ function Keyboard() {
   }, []);
   return null;
 }
+/** Publishes the active lighting preset's colours as CSS variables for the chrome. */
+function ThemeSync() {
+  const light = useLighting();
+  useEffect(() => {
+    const root = document.documentElement.style;
+    root.setProperty("--accent", light.accent);
+    root.setProperty("--accent-ink", light.accentInk);
+    root.setProperty("--backdrop", light.backdrop);
+  }, [light]);
+  return null;
+}
 class CanvasBoundary extends Component<
   { children: ReactNode },
   { failed: boolean }
@@ -88,8 +101,6 @@ class CanvasBoundary extends Component<
 export default function App() {
   const browser = useStore(editor.interaction, (s) => s.browser),
     toast = useStore(editor.interaction, (s) => s.toast);
-  const tool = useStore(editor.interaction, (s) => s.tool),
-    selected = useStore(editor.interaction, (s) => s.selectedId);
   const ready = useStore(editor.scene, (s) => s.ready),
     error = useStore(editor.save, (s) => s.error);
   useEffect(() => {
@@ -98,53 +109,15 @@ export default function App() {
   return (
     <main className="app-shell">
       <Keyboard />
+      <ThemeSync />
       <CanvasBoundary>
         <SceneCanvas />
       </CanvasBoundary>
       <TopBar />
-      <FloatingToolbar />
+      <SideNav />
+      <ViewControls />
       <InspectorPanel />
-      <div className="workspace-caption">
-        <span className="eyebrow">A LITTLE ROOM FOR POSSIBILITY</span>
-        <h1>
-          Your space.
-          <br />
-          <em>Your way.</em>
-        </h1>
-        <p>
-          Living room <span>·</span> 5.2 × 4.4 m
-        </p>
-      </div>
-      <div className="lighting-label">
-        <Sun size={14} />
-        <span>Golden hour</span>
-        <span className="label-dot" />
-      </div>
-      <footer className="bottom-bar">
-        <div className="canvas-hints">
-          <MousePointer2 size={14} />
-          <span>
-            {selected
-              ? tool === "rotate"
-                ? "R to rotate · Shift+R to reverse"
-                : "Drag to move · Shift to snap"
-              : "Drag to orbit · Right drag to pan"}
-          </span>
-          <span className="hint-separator" />
-          <span>Scroll to zoom</span>
-        </div>
-        <Button
-          label="Open furniture library"
-          className="add-furniture glass"
-          onClick={() =>
-            editor.interaction.setState({ browser: true, replacing: false })
-          }
-        >
-          <Plus size={17} />
-          Add furniture
-          <ArrowUpRight size={14} />
-        </Button>
-      </footer>
+      <MeasurementsToggle />
       {toast && (
         <div className="toast glass" role="status">
           <span>{toast}</span>

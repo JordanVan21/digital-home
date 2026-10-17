@@ -13,6 +13,7 @@ import { useStore } from "zustand";
 import { editor } from "../state/editor";
 import { Furniture } from "./Furniture";
 import { Room } from "./Room";
+import { useLighting } from "../theme";
 function Camera() {
   const controls = useRef<ComponentRef<typeof OrbitControls>>(null);
   const { camera } = useThree();
@@ -67,16 +68,23 @@ function Objects() {
   );
 }
 function Stage() {
+  const light = useLighting();
   return (
     <>
-      <color attach="background" args={["#e9e6df"]} />
-      <fog attach="fog" args={["#e9e6df", 18, 45]} />
-      <ambientLight intensity={0.45} />
-      <hemisphereLight args={["#fff1da", "#c3b7a0", 1.3]} />
+      <color attach="background" args={[light.backdrop]} />
+      <fog attach="fog" args={[light.backdrop, 18, 45]} />
+      <ambientLight intensity={light.ambient} />
+      <hemisphereLight
+        args={[
+          light.hemisphere.sky,
+          light.hemisphere.ground,
+          light.hemisphere.intensity,
+        ]}
+      />
       <directionalLight
-        position={[-3.5, 7, 2]}
-        intensity={3.5}
-        color="#ffe3b5"
+        position={light.sun.position}
+        intensity={light.sun.intensity}
+        color={light.sun.color}
         castShadow
         shadow-mapSize={[2048, 2048]}
         shadow-camera-left={-6}
@@ -90,17 +98,18 @@ function Stage() {
         shadow-radius={3}
       />
       <Suspense fallback={null}>
-        <Environment resolution={128} frames={1}>
+        {/* Keyed so the one-frame environment bake re-runs per preset. */}
+        <Environment key={light.id} resolution={128} frames={1}>
           <Lightformer
-            intensity={2.5}
-            color="#fff2dc"
+            intensity={light.fill.keyIntensity}
+            color={light.fill.key}
             position={[-5, 5, 0]}
             rotation={[0, Math.PI / 2, 0]}
             scale={[8, 5, 1]}
           />
           <Lightformer
-            intensity={1.3}
-            color="#eef0ff"
+            intensity={light.fill.rimIntensity}
+            color={light.fill.rim}
             position={[4, 6, 2]}
             rotation={[Math.PI / 2, 0, 0]}
             scale={[6, 6, 1]}
@@ -116,7 +125,7 @@ function Stage() {
         blur={2.8}
         far={4}
         resolution={512}
-        color="#77634f"
+        color={light.shadow}
         frames={Infinity}
       />
       <mesh
@@ -125,7 +134,7 @@ function Stage() {
         receiveShadow
       >
         <planeGeometry args={[200, 200]} />
-        <meshStandardMaterial color="#e9e6df" roughness={1} />
+        <meshStandardMaterial color={light.backdrop} roughness={1} />
       </mesh>
       <Camera />
       {new URLSearchParams(window.location.search).has("debug") && <Stats />}

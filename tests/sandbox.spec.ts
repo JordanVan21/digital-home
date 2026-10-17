@@ -10,7 +10,7 @@ test("renders the room and edits, undoes and restores a saved arrangement", asyn
   });
   await page.goto("/");
   await expect(
-    page.getByRole("button", { name: "Browse furniture" }),
+    page.getByRole("button", { name: "Open furniture library" }),
   ).toBeVisible();
   await expect(page.locator("canvas")).toBeVisible();
   await page.waitForFunction(
@@ -53,5 +53,14 @@ test("renders the room and edits, undoes and restores a saved arrangement", asyn
   await page.getByRole("button", { name: "Open furniture library" }).click();
   await page.getByRole("button", { name: "Close furniture library" }).click();
   await page.screenshot({ path: "test-results/room-saved.png" });
+  // Lighting presets restyle the room and the UI accent together.
+  await page
+    .getByRole("button", { name: /^Lighting: Golden hour/ })
+    .click();
+  await expect(
+    page.getByRole("button", { name: /^Lighting: Daylight/ }),
+  ).toBeVisible();
+  await page.waitForTimeout(500);
+  await page.screenshot({ path: "test-results/room-daylight.png" });
   expect(errors).toEqual([]);
 });

@@ -17,6 +17,8 @@ import { DragSession, editor } from "../state/editor";
 import { Model } from "./Model";
 import { Selection } from "./Selection";
 import { labelLayer } from "./labelLayer";
+import { useLighting } from "../theme";
+import { ObjectToolbar } from "../components/ObjectToolbar";
 const floorPlane = new Plane(new Vector3(0, 1, 0), 0);
 export const Furniture = memo(function Furniture({
   object,
@@ -27,6 +29,7 @@ export const Furniture = memo(function Furniture({
     editor.interaction,
     (s) => s.selectedId === object.id,
   );
+  const { lamps } = useLighting();
   const hovered = useStore(
     editor.interaction,
     (s) => s.hoveredId === object.id,
@@ -188,10 +191,10 @@ export const Furniture = memo(function Furniture({
         <meshBasicMaterial visible={false} />
       </mesh>
       <Model object={object} />
-      {object.category === "lamp" && (
+      {object.category === "lamp" && lamps > 0 && (
         <pointLight
           position={[0, dimensions[1] * 0.86, 0]}
-          intensity={0.6}
+          intensity={0.6 * lamps}
           distance={2.5}
           decay={2}
           color="#ffcd80"
@@ -203,9 +206,10 @@ export const Furniture = memo(function Furniture({
         selected={selected}
         hovered={hovered}
       />
-      {object.locked && (
+      {object.locked && !selected && (
         <Html
           portal={labelLayer}
+          zIndexRange={[2, 0]}
           position={[0, labelY, 0]}
           center
           style={{ pointerEvents: "none" }}
@@ -219,14 +223,14 @@ export const Furniture = memo(function Furniture({
           </span>
         </Html>
       )}
-      {selected && !object.locked && (
+      {selected && (
         <Html
           portal={labelLayer}
-          position={[0, labelY, 0]}
+          position={[0, labelY + 0.12, 0]}
           center
-          style={{ pointerEvents: "none" }}
+          zIndexRange={[5, 0]}
         >
-          <span className="object-label">{object.displayName}</span>
+          <ObjectToolbar object={object} />
         </Html>
       )}
     </group>

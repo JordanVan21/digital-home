@@ -27,6 +27,7 @@ export function Proxy({
       {!loading && (
         <Html
           portal={labelLayer}
+          zIndexRange={[2, 0]}
           position={[0, h + 0.09, 0]}
           center
           style={{ pointerEvents: "none" }}

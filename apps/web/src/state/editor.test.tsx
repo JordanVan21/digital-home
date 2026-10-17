@@ -14,7 +14,7 @@ import {
   type SceneRepository,
   type SaveState,
 } from "./repository";
-import { FloatingToolbar } from "../components/FloatingToolbar";
+import { ObjectToolbar } from "../components/ObjectToolbar";
 import { InspectorPanel } from "../components/InspectorPanel";
 const smallId = fixtureId(111);
 const position = (x: number, z = 1.75) => ({
@@ -216,12 +216,19 @@ describe("accessible editor controls", () => {
       inspector: true,
       dragging: false,
     });
+    const desk = editor.scene
+      .getState()
+      .scene.objects.find((o) => o.id === fixtureId(109))!;
     render(
       <>
-        <FloatingToolbar />
+        <ObjectToolbar object={desk} />
         <InspectorPanel />
       </>,
     );
+    for (const name of ["Move (G)", "Rotate 15° (R)", "Delete (Backspace)"])
+      expect(
+        (screen.getByRole("button", { name }) as HTMLButtonElement).disabled,
+      ).toBe(true);
     expect(
       (
         screen.getByRole("button", {

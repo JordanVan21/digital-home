@@ -37,6 +37,11 @@ export type Interaction = {
   inspector: boolean;
   resetView: number;
   toast: string | null;
+  /** View-only lighting preset override; null uses the room's own preset. */
+  lighting: string | null;
+  /** Visual-only view toggles; nothing renders differently yet. */
+  planView: boolean;
+  measurements: boolean;
 };
 export const sceneContext: SceneContext = {
   room: roomShell,
@@ -58,6 +63,9 @@ export function createEditor(repository?: SceneRepository) {
     inspector: true,
     resetView: 0,
     toast: null,
+    lighting: null,
+    planView: false,
+    measurements: false,
   }));
   const history = createStore<{ history: History }>(() => ({
     history: createHistory(),
