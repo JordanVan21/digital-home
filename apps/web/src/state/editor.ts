@@ -13,11 +13,16 @@ import {
 import {
   applyOp,
   createHistory,
+  diffScenes,
   record,
+  recordCheckpoint,
+  resolveDraft,
   traverseHistory,
+  validateObject,
   validateOp,
   yawOf,
   type History,
+  type ResolutionEntry,
   type SceneContext,
 } from "@house/scene-engine";
 import {
@@ -43,6 +48,75 @@ export type Interaction = {
   planView: boolean;
   measurements: boolean;
 };
+/**
+ * Pending suggestions. `scene` is null when there are none. Undo/redo hold the
+ * previous draft (null meaning "no draft") for each suggestion step.
+ */
+export type Draft = {
+  scene: SceneSpec | null;
+  undo: (SceneSpec | null)[];
+  redo: (SceneSpec | null)[];
+  /** Conflict message per changed or added piece, from full validation. */
+  conflicts: Record<string, string>;
+  /** Pieces the last accept moved to fit, for a brief highlight. */
+  resolved: string[];
+};
+export type ChangeKind = "moved" | "rotated" | "replaced" | "added" | "removed";
+export type Change = {
+  id: string;
+  kind: ChangeKind;
+  name: string;
+  distanceM?: number;
+  degrees?: number;
+  conflict?: string;
+};
+const emptyDraft = (): Draft => ({
+  scene: null,
+  undo: [],
+  redo: [],
+  conflicts: {},
+  resolved: [],
+});
+function conflictsOf(accepted: SceneSpec, draft: SceneSpec | null) {
+  const conflicts: Record<string, string> = {};
+  if (!draft) return conflicts;
+  const diff = diffScenes(accepted, draft);
+  for (const id of [...diff.changed, ...diff.added]) {
+    const o = draft.objects.find((o) => o.id === id)!;
+    const r = validateObject(draft, o, sceneContext);
+    if (!r.ok) conflicts[id] = r.error.message;
+  }
+  return conflicts;
+}
+const degreesBetween = (a: SceneObject, b: SceneObject) => {
+  const d =
+    ((yawOf(b.transform.rotation) - yawOf(a.transform.rotation)) * 180) /
+    Math.PI;
+  return ((((d + 180) % 360) + 360) % 360) - 180;
+};
+function summarize(
+  report: ResolutionEntry[],
+  accepted: SceneSpec,
+  proposed: SceneSpec,
+): string {
+  const name = (id: string) =>
+    (proposed.objects.find((o) => o.id === id) ??
+      accepted.objects.find((o) => o.id === id))!.displayName;
+  const parts = [
+    `Applied ${report.length} change${report.length === 1 ? "" : "s"}`,
+  ];
+  for (const r of report) {
+    if (r.outcome === "moved")
+      parts.push(
+        `${name(r.objectId)} moved ${Math.round(r.distanceM! * 100)} cm to fit`,
+      );
+    if (r.outcome === "reverted")
+      parts.push(`${name(r.objectId)} kept in place (no room)`);
+    if (r.outcome === "dropped")
+      parts.push(`${name(r.objectId)} not added (no room)`);
+  }
+  return parts.join(" · ");
+}
 export const sceneContext: SceneContext = {
   room: roomShell,
   assets: assetById,
@@ -71,6 +145,40 @@ export function createEditor(repository?: SceneRepository) {
     history: createHistory(),
   }));
   const save = createStore<SaveState>(() => ({ status: "saved", error: null }));
+  const draft = createStore<Draft>(emptyDraft);
+  /** The scene the user sees and edits: the draft if any, else the accepted room. */
+  const working = () => draft.getState().scene ?? scene.getState().scene;
+  const setDraft = (
+    next: SceneSpec | null,
+    stacks: Pick<Draft, "undo" | "redo">,
+  ) => {
+    const accepted = scene.getState().scene;
+    // A draft with no remaining differences is no draft at all.
+    const d = next && diffScenes(accepted, next);
+    const empty =
+      !d || (!d.changed.length && !d.added.length && !d.removed.length);
+    const value = empty ? null : next;
+    draft.setState({
+      scene: value,
+      ...stacks,
+      conflicts: conflictsOf(accepted, value),
+    });
+  };
+  /** Copies accepted lock state onto a draft snapshot; locks are never suggestions. */
+  const withAcceptedLocks = (s: SceneSpec | null) => {
+    if (!s) return s;
+    const locks = new Map(
+      scene.getState().scene.objects.map((o) => [o.id, o.locked]),
+    );
+    return {
+      ...s,
+      objects: s.objects.map((o) =>
+        locks.has(o.id) && locks.get(o.id) !== o.locked
+          ? { ...o, locked: locks.get(o.id)! }
+          : o,
+      ),
+    };
+  };
   let autosave: Autosave | undefined;
   let toastTimer: ReturnType<typeof setTimeout> | undefined;
   const notify = (message: string) => {
@@ -94,10 +202,109 @@ export function createEditor(repository?: SceneRepository) {
     autosave?.schedule();
     return true;
   };
+  /** Applies an edit to the draft. Conflicts are allowed; hard errors are not. */
+  const suggest = (op: SceneOp): boolean => {
+    if (!scene.getState().ready) return false;
+    const previous = draft.getState().scene;
+    const result = applyOp(working(), op, sceneContext, {
+      allowConflicts: true,
+    });
+    if (!result.ok) {
+      notify(result.error.message);
+      return false;
+    }
+    setDraft(result.scene, {
+      undo: [...draft.getState().undo, previous].slice(-80),
+      redo: [],
+    });
+    return true;
+  };
+  const accept = (): boolean => {
+    const proposed = draft.getState().scene;
+    if (!proposed || interaction.getState().dragging) return false;
+    const before = scene.getState().scene;
+    const result = resolveDraft(before, proposed, sceneContext);
+    if (!result.ok) {
+      const stuck = result.unresolved[0];
+      select(stuck.objectId);
+      notify(stuck.message);
+      return false;
+    }
+    const after = { ...result.scene, updatedAt: new Date().toISOString() };
+    scene.setState({ scene: after });
+    history.setState({
+      history: recordCheckpoint(history.getState().history, before, after),
+    });
+    const moved = result.report.filter((r) => r.outcome === "moved");
+    draft.setState({ ...emptyDraft(), resolved: moved.map((r) => r.objectId) });
+    if (!after.objects.some((o) => o.id === interaction.getState().selectedId))
+      select(null);
+    autosave?.schedule();
+    notify(summarize(result.report, before, proposed));
+    return true;
+  };
+  const discard = () => {
+    draft.setState(emptyDraft());
+    if (
+      !working().objects.some((o) => o.id === interaction.getState().selectedId)
+    )
+      select(null);
+  };
+  /** Reverts one piece to its accepted state (or removes it if added), as a draft step. */
+  const revertPiece = (id: string) => {
+    const current = draft.getState().scene;
+    if (!current) return;
+    const original = scene.getState().scene.objects.find((o) => o.id === id);
+    const objects = original
+      ? current.objects.some((o) => o.id === id)
+        ? current.objects.map((o) => (o.id === id ? original : o))
+        : [...current.objects, original]
+      : current.objects.filter((o) => o.id !== id);
+    setDraft(
+      { ...current, objects, revision: current.revision + 1 },
+      { undo: [...draft.getState().undo, current], redo: [] },
+    );
+  };
+  const changes = (): Change[] => {
+    const proposed = draft.getState().scene;
+    if (!proposed) return [];
+    const accepted = scene.getState().scene;
+    const before = new Map(accepted.objects.map((o) => [o.id, o]));
+    const { conflicts } = draft.getState();
+    const d = diffScenes(accepted, proposed);
+    const rows: Change[] = [];
+    for (const o of proposed.objects) {
+      const prev = before.get(o.id);
+      if (!prev) {
+        rows.push({ id: o.id, kind: "added", name: o.displayName });
+      } else if (d.changed.includes(o.id)) {
+        const [x0, , z0] = prev.transform.position;
+        const [x1, , z1] = o.transform.position;
+        const distanceM = Math.hypot(x1 - x0, z1 - z0);
+        const degrees = degreesBetween(prev, o);
+        const kind: ChangeKind =
+          prev.assetId !== o.assetId
+            ? "replaced"
+            : distanceM > 0.005
+              ? "moved"
+              : "rotated";
+        rows.push({
+          id: o.id,
+          kind,
+          name: o.displayName,
+          distanceM: distanceM > 0.005 ? distanceM : undefined,
+          degrees: Math.abs(degrees) > 0.5 ? degrees : undefined,
+        });
+      } else continue;
+      const conflict = conflicts[o.id];
+      if (conflict) rows[rows.length - 1].conflict = conflict;
+    }
+    for (const id of d.removed)
+      rows.push({ id, kind: "removed", name: before.get(id)!.displayName });
+    return rows;
+  };
   const selected = () =>
-    scene
-      .getState()
-      .scene.objects.find((o) => o.id === interaction.getState().selectedId);
+    working().objects.find((o) => o.id === interaction.getState().selectedId);
   const select = (id: string | null) =>
     interaction.setState({ selectedId: id });
   const rotate = (direction = 1) => {
@@ -108,7 +315,13 @@ export function createEditor(repository?: SceneRepository) {
         direction) *
         Math.PI) /
       12;
-    commit({
+    setYaw(yaw);
+  };
+  /** Free swivel: sets the selected piece's yaw (radians) as a suggestion. */
+  const setYaw = (yaw: number) => {
+    const obj = selected();
+    if (!obj) return false;
+    return suggest({
       type: "move",
       objectId: obj.id,
       transform: {
@@ -119,14 +332,39 @@ export function createEditor(repository?: SceneRepository) {
   };
   const remove = () => {
     const o = selected();
-    if (o && commit({ type: "delete", objectId: o.id })) select(null);
+    if (o && suggest({ type: "delete", objectId: o.id })) select(null);
   };
+  /** Locks are protection, not design changes: applied to the accepted room and draft at once. */
   const toggleLock = () => {
     const o = selected();
-    if (o) commit({ type: "setLock", objectId: o.id, locked: !o.locked });
+    if (!o) return;
+    const op: SceneOp = { type: "setLock", objectId: o.id, locked: !o.locked };
+    const inAccepted = scene
+      .getState()
+      .scene.objects.some((a) => a.id === o.id);
+    if (inAccepted && !commit(op)) return;
+    const current = draft.getState().scene;
+    if (current) {
+      const r = applyOp(current, op, sceneContext, { allowConflicts: true });
+      if (r.ok) draft.setState({ scene: r.scene });
+    }
   };
   const travel = (direction: "undo" | "redo") => {
     if (interaction.getState().dragging) return;
+    const d = draft.getState();
+    if (d.scene || d[direction].length) {
+      if (!d[direction].length) return;
+      const target = withAcceptedLocks(d[direction].at(-1)!);
+      const current = d.scene;
+      setDraft(
+        target,
+        direction === "undo"
+          ? { undo: d.undo.slice(0, -1), redo: [...d.redo, current] }
+          : { undo: [...d.undo, current], redo: d.redo.slice(0, -1) },
+      );
+      if (!selected()) select(null);
+      return;
+    }
     const result = traverseHistory(
       scene.getState().scene,
       history.getState().history,
@@ -149,7 +387,7 @@ export function createEditor(repository?: SceneRepository) {
     const old = selected();
     if (interaction.getState().replacing && old) {
       if (
-        commit({
+        suggest({
           type: "replaceAsset",
           objectId: old.id,
           assetId: a.id,
@@ -192,12 +430,12 @@ export function createEditor(repository?: SceneRepository) {
           ];
           if (
             validateOp(
-              scene.getState().scene,
+              working(),
               { type: "add", object: { ...candidate, dimensionsM } },
               sceneContext,
             ).ok
           ) {
-            if (commit({ type: "add", object: candidate })) {
+            if (suggest({ type: "add", object: candidate })) {
               select(candidate.id);
               interaction.setState({ browser: false, replacing: false });
               notify(`${a.title} added.`);
@@ -230,6 +468,7 @@ export function createEditor(repository?: SceneRepository) {
           restored.revision,
         );
         history.setState({ history: createHistory() });
+        draft.setState(emptyDraft());
         save.setState({ status: "saved", error: null });
         notify("Room reset to the original arrangement.");
       } catch (error) {
@@ -257,6 +496,7 @@ export function createEditor(repository?: SceneRepository) {
       ready: true,
     });
     history.setState({ history: createHistory() });
+    draft.setState(emptyDraft());
     select(null);
     autosave?.schedule();
     notify("Room reset to the original arrangement.");
@@ -267,6 +507,7 @@ export function createEditor(repository?: SceneRepository) {
       const loaded = await repository.load(createFixtureScene().roomId);
       scene.setState({ scene: loaded, ready: true });
       history.setState({ history: createHistory() });
+      draft.setState(emptyDraft());
       interaction.setState({ selectedId: null, dragging: false });
       save.setState({ status: "saved", error: null });
       autosave?.dispose();
@@ -289,11 +530,20 @@ export function createEditor(repository?: SceneRepository) {
     interaction,
     history,
     save,
+    draft,
+    working,
     notify,
     commit,
+    suggest,
+    accept,
+    discard,
+    revertPiece,
+    changes,
+    hasDraft: () => draft.getState().scene !== null,
     selected,
     select,
     rotate,
+    setYaw,
     remove,
     toggleLock,
     travel,
@@ -317,9 +567,7 @@ export class DragSession {
   private candidate: Transform | null = null;
   constructor(private editor: Editor) {}
   begin(id: string): boolean {
-    const o = this.editor.scene
-      .getState()
-      .scene.objects.find((o) => o.id === id);
+    const o = this.editor.working().objects.find((o) => o.id === id);
     if (!o) return false;
     this.editor.select(id);
     if (o.locked) {
@@ -334,8 +582,9 @@ export class DragSession {
   preview(transform: Transform) {
     if (!this.id) return { ok: true as const };
     this.candidate = transform;
+    // Full validation for live feedback only; release never rejects conflicts.
     return validateOp(
-      this.editor.scene.getState().scene,
+      this.editor.working(),
       { type: "move", objectId: this.id, transform },
       sceneContext,
     );
@@ -345,11 +594,11 @@ export class DragSession {
       transform = this.candidate;
     this.cancel();
     if (!id || !transform) return false;
-    const original = this.editor.scene
-      .getState()
-      .scene.objects.find((o) => o.id === id)?.transform;
+    const original = this.editor
+      .working()
+      .objects.find((o) => o.id === id)?.transform;
     if (JSON.stringify(original) === JSON.stringify(transform)) return true;
-    return this.editor.commit({ type: "move", objectId: id, transform });
+    return this.editor.suggest({ type: "move", objectId: id, transform });
   }
   cancel() {
     this.id = null;

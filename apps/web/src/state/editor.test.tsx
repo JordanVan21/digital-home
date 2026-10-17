@@ -50,42 +50,46 @@ describe("adding furniture", () => {
       expect(e.selected()?.transform.rotation[1]).toBeCloseTo(
         Math.sin(Math.PI / 24),
       );
+      expect(e.draft.getState().conflicts[added!.id]).toBeUndefined();
     }
     e.dispose();
   });
 });
 describe("gesture integration", () => {
-  it("keeps previews out of scene state and records one entry on release", () => {
+  it("keeps previews out of state and records one draft step on release", () => {
     const e = createEditor(),
       session = new DragSession(e),
       before = e.scene.getState().scene;
     expect(session.begin(smallId)).toBe(true);
     for (let i = 0; i < 100; i++)
       expect(session.preview(position(0.2 + i * 0.001)).ok).toBe(true);
+    expect(e.draft.getState().scene).toBeNull();
+    expect(session.release()).toBe(true);
     expect(e.scene.getState().scene).toBe(before);
     expect(e.history.getState().history.undo).toHaveLength(0);
-    expect(session.release()).toBe(true);
-    expect(e.history.getState().history.undo).toHaveLength(1);
-    expect(e.scene.getState().scene.revision).toBe(1);
+    expect(e.draft.getState().undo).toHaveLength(1);
     expect(
-      e.scene.getState().scene.objects.at(-1)?.transform.position[0],
+      e.working().objects.find((o) => o.id === smallId)?.transform.position[0],
     ).toBeCloseTo(0.299);
     e.travel("undo");
-    expect(e.scene.getState().scene.objects).toEqual(before.objects);
+    expect(e.draft.getState().scene).toBeNull();
+    expect(e.working()).toBe(before);
     e.travel("redo");
-    expect(e.history.getState().history.undo).toHaveLength(1);
+    expect(e.draft.getState().scene).not.toBeNull();
     e.dispose();
   });
-  it("rejects invalid drops, leaves the original transform and shows a reason", () => {
+  it("lets invalid drops land as conflicted suggestions", () => {
     const e = createEditor(),
       session = new DragSession(e),
       before = e.scene.getState().scene;
     session.begin(smallId);
     expect(session.preview(position(20)).ok).toBe(false);
-    expect(session.release()).toBe(false);
+    expect(session.release()).toBe(true);
     expect(e.scene.getState().scene).toBe(before);
-    expect(e.history.getState().history.undo).toHaveLength(0);
-    expect(e.interaction.getState().toast).toContain("inside");
+    expect(
+      e.working().objects.find((o) => o.id === smallId)?.transform.position[0],
+    ).toBe(20);
+    expect(e.draft.getState().conflicts[smallId]).toContain("inside");
     expect(e.interaction.getState().dragging).toBe(false);
     e.dispose();
   });
@@ -99,16 +103,17 @@ describe("gesture integration", () => {
     session.preview(position(0.4));
     session.cancel();
     session.release();
-    expect(e.scene.getState().scene.revision).toBe(0);
+    expect(e.draft.getState().scene).toBeNull();
     e.dispose();
   });
-  it("finds a valid add location and preserves transforms on visual replacement", () => {
+  it("suggests adds and visual replacements without touching the accepted room", () => {
     const e = createEditor(),
       asset = Object.values(assetById).find(
         (a) => a.category === "side-table",
       )!;
     e.chooseAsset(asset);
-    expect(e.scene.getState().scene.objects).toHaveLength(13);
+    expect(e.working().objects).toHaveLength(13);
+    expect(e.scene.getState().scene.objects).toHaveLength(12);
     e.select(smallId);
     const original = e.selected()!.transform;
     e.interaction.setState({ replacing: true, browser: true });

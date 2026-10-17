@@ -3,11 +3,13 @@ import {
   applyOp,
   invertOp,
   type ApplyResult,
+  type Checkpoint,
   type Inverse,
   type SceneContext,
 } from "./operations";
 export interface HistoryEntry {
-  op: SceneOp;
+  /** A checkpoint op records a batch (an accepted draft) restored by snapshot. */
+  op: SceneOp | Checkpoint;
   inverse: Inverse;
   before: SceneSpec;
   after: SceneSpec;
@@ -34,6 +36,24 @@ export function record(
       ...history.undo,
       { op: structuredClone(op), inverse: invertOp(before, op), before, after },
     ].slice(-history.limit),
+    redo: [],
+  };
+}
+/** Records a multi-change batch, such as an accepted draft, as one undo step. */
+export function recordCheckpoint(
+  history: History,
+  before: SceneSpec,
+  after: SceneSpec,
+): History {
+  const entry: HistoryEntry = {
+    op: { type: "checkpoint", scene: structuredClone(after) },
+    inverse: { type: "checkpoint", scene: structuredClone(before) },
+    before,
+    after,
+  };
+  return {
+    ...history,
+    undo: [...history.undo, entry].slice(-history.limit),
     redo: [],
   };
 }

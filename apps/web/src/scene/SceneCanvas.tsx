@@ -1,4 +1,13 @@
-import { Suspense, memo, useEffect, useRef, type ComponentRef } from "react";
+import {
+  Suspense,
+  memo,
+  useEffect,
+  useMemo,
+  useRef,
+  type ComponentRef,
+} from "react";
+import { diffScenes } from "@house/scene-engine";
+import { BeforeOutline } from "./BeforeOutline";
 import { labelLayer } from "./labelLayer";
 import { Canvas, useThree } from "@react-three/fiber";
 import {
@@ -58,11 +67,25 @@ function Camera() {
   );
 }
 function Objects() {
-  const objects = useStore(editor.scene, (s) => s.scene.objects);
+  const accepted = useStore(editor.scene, (s) => s.scene);
+  const draft = useStore(editor.draft, (s) => s.scene);
+  const working = draft ?? accepted;
+  const { before, added } = useMemo(() => {
+    if (!draft) return { before: [], added: new Set<string>() };
+    const diff = diffScenes(accepted, draft);
+    const changed = new Set([...diff.changed, ...diff.removed]);
+    return {
+      before: accepted.objects.filter((o) => changed.has(o.id)),
+      added: new Set(diff.added),
+    };
+  }, [accepted, draft]);
   return (
     <>
-      {objects.map((o) => (
-        <Furniture key={o.id} object={o} />
+      {working.objects.map((o) => (
+        <Furniture key={o.id} object={o} isNew={added.has(o.id)} />
+      ))}
+      {before.map((o) => (
+        <BeforeOutline key={`before-${o.id}`} object={o} />
       ))}
     </>
   );

@@ -11,6 +11,7 @@ import {
 import { applyOp, validateObject, type SceneContext } from "./operations";
 import { doorClearances, yawOf } from "./geometry";
 import { diffScenes, resolveDraft } from "./resolve";
+import { createHistory, recordCheckpoint, traverseHistory } from "./history";
 
 const ctx: SceneContext = {
   room: roomShell,
@@ -206,5 +207,21 @@ describe("resolveDraft", () => {
     expect(r.ok).toBe(false);
     if (r.ok) return;
     expect(r.unresolved.map((u) => u.objectId)).toEqual([fixtureId(2)]);
+  });
+});
+
+describe("recordCheckpoint", () => {
+  it("undoes and redoes a whole accepted batch as one entry", () => {
+    const before = sceneOf(box(1, 0, 0), box(2, 1.5, 0));
+    const after = { ...sceneOf(box(1, 0, -1), box(4, -1.5, 0)), revision: 1 };
+    let history = recordCheckpoint(createHistory(), before, after);
+    expect(history.undo).toHaveLength(1);
+    const undone = traverseHistory(after, history, "undo", ctx);
+    if (!undone.ok) throw new Error("undo failed");
+    expect(undone.scene.objects).toEqual(before.objects);
+    history = undone.history!;
+    const redone = traverseHistory(undone.scene, history, "redo", ctx);
+    if (!redone.ok) throw new Error("redo failed");
+    expect(redone.scene.objects).toEqual(after.objects);
   });
 });

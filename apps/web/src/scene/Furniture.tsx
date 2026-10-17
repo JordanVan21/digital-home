@@ -1,4 +1,4 @@
-import { memo, useEffect, useRef } from "react";
+import { memo, useEffect, useRef, useState } from "react";
 import { useFrame, type ThreeEvent } from "@react-three/fiber";
 import { Html } from "@react-three/drei";
 import { LockKeyhole } from "lucide-react";
@@ -10,35 +10,59 @@ import {
   Mesh,
   MeshBasicMaterial,
   Plane,
+  Quaternion,
   Vector3,
 } from "three";
-import type { SceneObject } from "@house/contracts";
-import { DragSession, editor } from "../state/editor";
+import type { SceneObject, Transform } from "@house/contracts";
+import { validateOp, yawOf } from "@house/scene-engine";
+import { DragSession, editor, sceneContext } from "../state/editor";
 import { Model } from "./Model";
 import { Selection } from "./Selection";
+import { SwivelRing } from "./SwivelRing";
 import { labelLayer } from "./labelLayer";
 import { useLighting } from "../theme";
 import { ObjectToolbar } from "../components/ObjectToolbar";
+
 const floorPlane = new Plane(new Vector3(0, 1, 0), 0);
+const SNAP = Math.PI / 12;
+const INVALID = "#e36856";
+const target = new Vector3();
+const targetQuat = new Quaternion();
+const yawQuaternion = (yaw: number): Transform["rotation"] => [
+  0,
+  Math.sin(yaw / 2),
+  0,
+  Math.cos(yaw / 2),
+];
+
 export const Furniture = memo(function Furniture({
   object,
+  isNew = false,
 }: {
   object: SceneObject;
+  isNew?: boolean;
 }) {
   const selected = useStore(
     editor.interaction,
     (s) => s.selectedId === object.id,
   );
-  const { lamps } = useLighting();
   const hovered = useStore(
     editor.interaction,
     (s) => s.hoveredId === object.id,
   );
+  const conflict = useStore(editor.draft, (s) => !!s.conflicts[object.id]);
+  const resolved = useStore(editor.draft, (s) =>
+    s.resolved.includes(object.id),
+  );
+  const { lamps } = useLighting();
+  const [swiveling, setSwiveling] = useState(false);
+  const [pulse, setPulse] = useState(false);
   const group = useRef<Group>(null),
-    outline = useRef<Group>(null);
+    outline = useRef<Group>(null),
+    angleLabel = useRef<HTMLSpanElement>(null);
   const drag = useRef({
     session: new DragSession(editor),
-    active: false,
+    mode: null as "move" | "swivel" | null,
     offset: new Vector3(),
     point: new Vector3(),
     lastValidation: 0,
@@ -46,45 +70,69 @@ export const Furniture = memo(function Furniture({
     startX: 0,
     startY: 0,
     moved: false,
+    startYaw: 0,
+    startAngle: 0,
     transform: structuredClone(object.transform),
   });
-  const returning = useRef(false);
+  // Mount at the given transform; afterwards the frame loop eases toward the live scene.
+  const initial = useRef(object.transform);
   const latest = useRef(object);
   latest.current = object;
+
   useEffect(() => {
-    const cancel = () => {
-      if (drag.current.active) {
-        drag.current.session.cancel();
-        drag.current.active = false;
-        returning.current = true;
-      }
-    };
-    window.addEventListener("blur", cancel);
+    if (!resolved) return;
+    setPulse(true);
+    const t = setTimeout(() => setPulse(false), 1600);
+    return () => clearTimeout(t);
+  }, [resolved]);
+
+  const endGesture = () => {
+    const state = drag.current;
+    if (state.mode === "move") state.session.cancel();
+    if (state.mode === "swivel") {
+      editor.interaction.setState({ dragging: false });
+      setSwiveling(false);
+    }
+    state.mode = null;
+  };
+  useEffect(() => {
+    window.addEventListener("blur", endGesture);
     return () => {
-      window.removeEventListener("blur", cancel);
-      if (drag.current.active) drag.current.session.cancel();
+      window.removeEventListener("blur", endGesture);
+      endGesture();
     };
   }, []);
+
   useFrame((_, delta) => {
     const state = drag.current;
-    if (state.active && !editor.interaction.getState().dragging) {
-      state.active = false;
-      state.session.cancel();
-      returning.current = true;
+    if (state.mode && !editor.interaction.getState().dragging) endGesture();
+    const g = group.current;
+    if (g && !state.mode) {
+      // Ease toward the piece's transform in the working scene (draft or accepted),
+      // so discard, undo and resolver moves glide instead of jumping.
+      const live =
+        editor.working().objects.find((o) => o.id === object.id) ??
+        latest.current;
+      target.fromArray(live.transform.position);
+      targetQuat.fromArray(live.transform.rotation);
+      const k = 1 - Math.exp(-delta * 20);
+      if (g.position.distanceToSquared(target) > 1e-8)
+        g.position.lerp(target, k);
+      else g.position.copy(target);
+      if (g.quaternion.angleTo(targetQuat) > 1e-4)
+        g.quaternion.slerp(targetQuat, k);
+      else g.quaternion.copy(targetQuat);
     }
-    if (returning.current && group.current) {
-      const target = new Vector3(...latest.current.transform.position);
-      group.current.position.lerp(target, 1 - Math.exp(-delta * 20));
-      if (group.current.position.distanceToSquared(target) < 0.000001) {
-        group.current.position.copy(target);
-        returning.current = false;
-      }
-    }
-    if (outline.current && (selected || hovered || state.active))
+    const invalid = state.mode ? !state.valid : conflict;
+    if (
+      outline.current &&
+      (selected || hovered || state.mode || conflict || pulse)
+    )
       outline.current.traverse((o) => {
-        const color =
-          state.active && !state.valid
-            ? "#e36856"
+        const color = invalid
+          ? INVALID
+          : pulse
+            ? "#6fcf97"
             : selected
               ? "#9187ff"
               : "#ffffff";
@@ -92,10 +140,25 @@ export const Furniture = memo(function Furniture({
           (o.material as LineBasicMaterial).color.set(color);
         if (o instanceof Mesh)
           (o.material as MeshBasicMaterial).color.set(
-            state.active && !state.valid ? "#ff9988" : "#c7c1ff",
+            invalid ? "#ff9988" : "#c7c1ff",
           );
       });
   });
+
+  const liveCheck = (transform: Transform) => {
+    const state = drag.current;
+    const now = performance.now();
+    if (now - state.lastValidation > 45) {
+      state.valid = validateOp(
+        editor.working(),
+        { type: "move", objectId: object.id, transform },
+        sceneContext,
+      ).ok;
+      state.lastValidation = now;
+    }
+  };
+
+  // ----- Move: drag across the floor -----
   const down = (e: ThreeEvent<PointerEvent>) => {
     if (e.button !== 0 || !editor.scene.getState().ready) return;
     e.stopPropagation();
@@ -106,23 +169,21 @@ export const Furniture = memo(function Furniture({
     }
     const state = drag.current;
     if (!state.session.begin(object.id)) return;
-    returning.current = false;
-    state.active = true;
-    state.valid = true;
+    state.mode = "move";
+    state.valid = !conflict;
     state.moved = false;
     state.startX = e.clientX;
     state.startY = e.clientY;
-    state.transform = structuredClone(object.transform);
-    floorPlane.constant = -object.transform.position[1];
+    const current = latest.current.transform;
+    state.transform = structuredClone(current);
+    floorPlane.constant = -current.position[1];
     if (e.ray.intersectPlane(floorPlane, state.point))
-      state.offset
-        .copy(state.point)
-        .sub(new Vector3(...object.transform.position));
+      state.offset.copy(state.point).sub(new Vector3(...current.position));
     (e.target as Element).setPointerCapture(e.pointerId);
   };
   const move = (e: ThreeEvent<PointerEvent>) => {
     const state = drag.current;
-    if (!state.active) return;
+    if (state.mode !== "move") return;
     e.stopPropagation();
     if (
       Math.hypot(e.clientX - state.startX, e.clientY - state.startY) < 3 &&
@@ -135,47 +196,88 @@ export const Furniture = memo(function Furniture({
     const snap = e.shiftKey ? 0.1 : 0;
     const x = snap ? Math.round(state.point.x / snap) * snap : state.point.x,
       z = snap ? Math.round(state.point.z / snap) * snap : state.point.z;
-    state.transform = {
-      ...object.transform,
-      position: [x, object.transform.position[1], z],
-    };
-    group.current?.position.set(x, object.transform.position[1], z);
-    const now = performance.now();
-    if (now - state.lastValidation > 45) {
-      state.valid = state.session.preview(state.transform).ok;
-      state.lastValidation = now;
-    }
+    const current = latest.current.transform;
+    state.transform = { ...current, position: [x, current.position[1], z] };
+    group.current?.position.set(x, current.position[1], z);
+    liveCheck(state.transform);
   };
   const up = (e: ThreeEvent<PointerEvent>) => {
     const state = drag.current;
-    if (!state.active) return;
+    if (state.mode !== "move") return;
     e.stopPropagation();
-    state.active = false;
+    state.mode = null;
     state.session.preview(state.transform);
-    const valid = state.session.release();
-    returning.current = !valid;
+    state.session.release();
     if ((e.target as Element).hasPointerCapture?.(e.pointerId))
       (e.target as Element).releasePointerCapture(e.pointerId);
   };
-  const cancel = () => {
-    if (drag.current.active) {
-      drag.current.active = false;
-      drag.current.session.cancel();
-      returning.current = true;
-    }
+
+  // ----- Swivel: drag the ring to rotate freely; Shift snaps to 15° -----
+  const pointerAngle = (e: ThreeEvent<PointerEvent>) => {
+    const [cx, y, cz] = latest.current.transform.position;
+    floorPlane.constant = -y;
+    if (!e.ray.intersectPlane(floorPlane, drag.current.point)) return null;
+    return Math.atan2(drag.current.point.x - cx, drag.current.point.z - cz);
   };
+  const ringDown = (e: ThreeEvent<PointerEvent>) => {
+    if (e.button !== 0 || latest.current.locked) return;
+    e.stopPropagation();
+    const angle = pointerAngle(e);
+    if (angle === null) return;
+    const state = drag.current;
+    state.mode = "swivel";
+    state.valid = !conflict;
+    state.startYaw = yawOf(latest.current.transform.rotation);
+    state.startAngle = angle;
+    state.transform = structuredClone(latest.current.transform);
+    editor.interaction.setState({ dragging: true });
+    setSwiveling(true);
+    (e.target as Element).setPointerCapture(e.pointerId);
+  };
+  const ringMove = (e: ThreeEvent<PointerEvent>) => {
+    const state = drag.current;
+    if (state.mode !== "swivel") return;
+    e.stopPropagation();
+    const angle = pointerAngle(e);
+    if (angle === null) return;
+    let yaw = state.startYaw + (angle - state.startAngle);
+    if (e.shiftKey) yaw = Math.round(yaw / SNAP) * SNAP;
+    const rotation = yawQuaternion(yaw);
+    group.current?.quaternion.fromArray(rotation);
+    state.transform = { ...latest.current.transform, rotation };
+    const degrees = ((((yaw * 180) / Math.PI) % 360) + 360) % 360;
+    if (angleLabel.current)
+      angleLabel.current.textContent = `${Math.round(degrees)}°`;
+    liveCheck(state.transform);
+  };
+  const ringUp = (e: ThreeEvent<PointerEvent>) => {
+    const state = drag.current;
+    if (state.mode !== "swivel") return;
+    e.stopPropagation();
+    endGesture();
+    const before = latest.current.transform.rotation;
+    if (JSON.stringify(before) !== JSON.stringify(state.transform.rotation))
+      editor.suggest({
+        type: "move",
+        objectId: object.id,
+        transform: state.transform,
+      });
+    if ((e.target as Element).hasPointerCapture?.(e.pointerId))
+      (e.target as Element).releasePointerCapture(e.pointerId);
+  };
+
   const dimensions = object.dimensionsM;
   const labelY = dimensions[1] + 0.2;
   return (
     <group
       ref={group}
-      position={object.transform.position}
-      quaternion={object.transform.rotation}
+      position={initial.current.position}
+      quaternion={initial.current.rotation}
       scale={object.transform.scale}
       onPointerDown={down}
       onPointerMove={move}
       onPointerUp={up}
-      onPointerCancel={cancel}
+      onPointerCancel={() => endGesture()}
       onPointerOver={(e) => {
         e.stopPropagation();
         if (!editor.interaction.getState().dragging)
@@ -204,8 +306,18 @@ export const Furniture = memo(function Furniture({
         ref={outline}
         dimensions={dimensions}
         selected={selected}
-        hovered={hovered}
+        hovered={hovered || conflict || pulse}
       />
+      {selected && !object.locked && (
+        <SwivelRing
+          ref={angleLabel}
+          dimensions={dimensions}
+          active={swiveling}
+          onDown={ringDown}
+          onMove={ringMove}
+          onUp={ringUp}
+        />
+      )}
       {object.locked && !selected && (
         <Html
           portal={labelLayer}
@@ -221,6 +333,17 @@ export const Furniture = memo(function Furniture({
             <LockKeyhole size={10} />
             <span>Locked</span>
           </span>
+        </Html>
+      )}
+      {isNew && !selected && (
+        <Html
+          portal={labelLayer}
+          zIndexRange={[2, 0]}
+          position={[0, labelY, 0]}
+          center
+          style={{ pointerEvents: "none" }}
+        >
+          <span className="new-badge">New</span>
         </Html>
       )}
       {selected && (

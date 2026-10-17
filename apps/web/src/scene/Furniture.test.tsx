@@ -36,6 +36,7 @@ const pointer = (x: number, z: number, clientX = 100) => ({
 beforeEach(() => {
   editor.scene.setState({ scene: createFixtureScene(), ready: true });
   editor.history.setState({ history: createHistory() });
+  editor.discard();
   editor.interaction.setState({
     selectedId: null,
     hoveredId: null,
@@ -74,12 +75,14 @@ describe("actual canvas gesture adapter (without GPU)", () => {
     expect(editor.history.getState().history.undo).toHaveLength(0);
     await renderer.fireEvent(node, "pointerUp", pointer(0.35, 1.75, 220));
     expect(
-      editor.scene.getState().scene.objects.at(-1)?.transform.position[0],
+      editor.working().objects.find((o) => o.id === fixtureId(111))?.transform
+        .position[0],
     ).toBeCloseTo(0.35);
-    expect(editor.history.getState().history.undo).toHaveLength(1);
+    expect(editor.scene.getState().scene.revision).toBe(0);
+    expect(editor.draft.getState().undo).toHaveLength(1);
     expect(editor.interaction.getState().dragging).toBe(false);
   });
-  it("invalid drops animate back to the committed transform and do not enter history", async () => {
+  it("invalid drops stay where they land as red, conflicted suggestions", async () => {
     const object = editor.scene
       .getState()
       .scene.objects.find((o) => o.id === fixtureId(111))!;
@@ -99,10 +102,17 @@ describe("actual canvas gesture adapter (without GPU)", () => {
     );
     await renderer.fireEvent(node, "pointerUp", pointer(8, 1.75, 400));
     await renderer.advanceFrames(50, 0.016);
-    expect((node.instance as Group).position.x).toBeCloseTo(0.2, 3);
+    expect((node.instance as Group).position.x).toBeCloseTo(8, 3);
     expect(editor.scene.getState().scene.revision).toBe(0);
-    expect(editor.history.getState().history.undo).toHaveLength(0);
-    expect(editor.interaction.getState().toast).toContain("inside");
+    expect(editor.draft.getState().conflicts[fixtureId(111)]).toContain(
+      "inside",
+    );
+    expect((edges.material as LineBasicMaterial).color.getHexString()).toBe(
+      "e36856",
+    );
+    editor.discard();
+    await renderer.advanceFrames(80, 0.016);
+    expect((node.instance as Group).position.x).toBeCloseTo(0.2, 3);
   });
   it("locked pieces reject pointer manipulation", async () => {
     const object = editor.scene.getState().scene.objects.find((o) => o.locked)!;
