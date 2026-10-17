@@ -23,7 +23,7 @@ export function InspectorPanel() {
       [0, 0, 0] as [number, number, number]
     );
     return (
-      <div className="inspector-panel">
+      <div className="inspector-panel glass">
         <h3>Room</h3>
         <div className="inspector-row">
           <span>Footprint</span>
@@ -55,7 +55,7 @@ export function InspectorPanel() {
   }
 
   return (
-    <div className="inspector-panel">
+    <div className="inspector-panel glass">
       <h3>{selected.displayName}</h3>
       <div className="inspector-row">
         <span>Category</span>

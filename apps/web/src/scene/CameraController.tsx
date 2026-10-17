@@ -14,6 +14,7 @@ export function CameraController({ target, initialPosition }: CameraControllerPr
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const controlsRef = useRef<any>(null);
   const resetViewToken = useInteractionStore((s) => s.resetViewToken);
+  const topDownToken = useInteractionStore((s) => s.topDownToken);
   const isDragging = useInteractionStore((s) => s.isDragging);
   const { camera } = useThree();
 
@@ -23,6 +24,15 @@ export function CameraController({ target, initialPosition }: CameraControllerPr
     controlsRef.current?.update();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [resetViewToken]);
+
+  useEffect(() => {
+    if (topDownToken === 0) return;
+    // Near-vertical, not exactly 90°, so OrbitControls keeps a stable up vector.
+    camera.position.set(target[0] + 0.05, target[1] + 11, target[2] + 0.4);
+    controlsRef.current?.target.set(...target);
+    controlsRef.current?.update();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [topDownToken]);
 
   return (
     <OrbitControls

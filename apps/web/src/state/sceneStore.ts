@@ -25,6 +25,11 @@ interface SceneState {
   moveObject: (objectId: string, transform: SceneObject["transform"]) => boolean;
   deleteObject: (objectId: string) => boolean;
   setLock: (objectId: string, locked: boolean) => boolean;
+  duplicateObject: (objectId: string) => boolean;
+
+  /** Not a SceneOp (CONTRACTS.md's op union has no scene-level settings op) —
+   * a direct room-setting edit, not an undoable object operation. */
+  setLightingPreset: (preset: string) => void;
 
   undo: () => void;
   redo: () => void;
@@ -88,6 +93,32 @@ export const useSceneStore = create<SceneState>((set, get) => ({
   },
 
   setLock: (objectId, locked) => get().commitOp({ type: "setLock", objectId, locked }),
+
+  duplicateObject: (objectId) => {
+    const source = get().scene.objects.find((o) => o.id === objectId);
+    if (!source) return false;
+    const clone: SceneObject = {
+      ...source,
+      id: crypto.randomUUID(),
+      locked: false,
+      transform: {
+        ...source.transform,
+        position: [
+          source.transform.position[0] + 0.3,
+          source.transform.position[1],
+          source.transform.position[2] + 0.3,
+        ],
+      },
+    };
+    const didAdd = get().commitOp({ type: "add", object: clone });
+    if (didAdd) set({ selectedId: clone.id });
+    return didAdd;
+  },
+
+  setLightingPreset: (preset) => {
+    set((state) => ({ scene: { ...state.scene, lightingPreset: preset } }));
+    scheduleAutosave(set, get);
+  },
 
   undo: () => {
     const { undoStack, scene, shell } = get();

@@ -1,7 +1,8 @@
 import { useEffect } from "react";
 import { SceneCanvas } from "./scene/SceneCanvas";
 import { TopBar } from "./ui/TopBar";
-import { FloatingToolbar } from "./ui/FloatingToolbar";
+import { SideNav } from "./ui/SideNav";
+import { RightRail } from "./ui/RightRail";
 import { InspectorPanel } from "./ui/InspectorPanel";
 import { useSceneStore } from "./state/sceneStore";
 import { useInteractionStore } from "./state/interactionStore";
@@ -20,6 +21,7 @@ export default function App() {
   const undo = useSceneStore((s) => s.undo);
   const redo = useSceneStore((s) => s.redo);
   const getSelectedObject = useSceneStore((s) => s.getSelectedObject);
+  const duplicateObject = useSceneStore((s) => s.duplicateObject);
   const setTool = useInteractionStore((s) => s.setTool);
   const lastError = useSceneStore((s) => s.lastError);
 
@@ -32,6 +34,11 @@ export default function App() {
         e.preventDefault();
         if (e.shiftKey) redo();
         else undo();
+        return;
+      }
+      if (meta && e.key.toLowerCase() === "d") {
+        e.preventDefault();
+        if (selectedId) duplicateObject(selectedId);
         return;
       }
       switch (e.key) {
@@ -64,16 +71,34 @@ export default function App() {
     }
     window.addEventListener("keydown", onKeyDown);
     return () => window.removeEventListener("keydown", onKeyDown);
-  }, [selectedId, select, deleteObject, setLock, undo, redo, setTool, getSelectedObject]);
+  }, [
+    selectedId,
+    select,
+    deleteObject,
+    setLock,
+    undo,
+    redo,
+    setTool,
+    getSelectedObject,
+    duplicateObject,
+  ]);
 
   return (
     <div className="app-shell">
+      <div className="backdrop">
+        <span />
+        <span />
+        <span />
+      </div>
       <div className="canvas-layer">
         <SceneCanvas />
       </div>
       <TopBar />
-      <FloatingToolbar />
-      <InspectorPanel />
+      <SideNav />
+      <div className="right-stack">
+        <RightRail />
+        <InspectorPanel />
+      </div>
       {lastError && <div className="error-toast">{lastError}</div>}
     </div>
   );

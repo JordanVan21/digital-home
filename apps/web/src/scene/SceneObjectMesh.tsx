@@ -6,6 +6,7 @@ import { useSceneStore } from "../state/sceneStore";
 import { useInteractionStore } from "../state/interactionStore";
 import { ObjectVisual } from "./objectVisuals";
 import { SelectionOutline } from "./SelectionOutline";
+import { ObjectContextToolbar } from "./ObjectContextToolbar";
 
 interface SceneObjectMeshProps {
   object: SceneObject;
@@ -74,7 +75,7 @@ export function SceneObjectMesh({ object }: SceneObjectMeshProps) {
             color={selected ? "#5aa9ff" : "#9aa0a8"}
           />
         )}
-        {object.locked && (
+        {object.locked && !selected && (
           <Html position={[0, object.dimensionsM[1] + 0.12, 0]} center distanceFactor={8}>
             <div className="lock-badge" title="Locked">
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
@@ -84,6 +85,7 @@ export function SceneObjectMesh({ object }: SceneObjectMeshProps) {
             </div>
           </Html>
         )}
+        {selected && <ObjectContextToolbar object={object} />}
       </group>
     </>
   );

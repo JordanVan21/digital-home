@@ -1,18 +1,20 @@
 import { useMemo, useRef } from "react";
 import { useFrame } from "@react-three/fiber";
+import { Html } from "@react-three/drei";
 import * as THREE from "three";
 import type { RoomShell } from "@house/contracts";
 import { buildWallSegments } from "./wallGeometry";
 
 interface RoomShellMeshProps {
   shell: RoomShell;
+  showMeasurements?: boolean;
 }
 
 const SHOWN_OPACITY = 1;
 const FADED_OPACITY = 0.06;
 const FADE_SPEED = 0.15;
 
-export function RoomShellMesh({ shell }: RoomShellMeshProps) {
+export function RoomShellMesh({ shell, showMeasurements }: RoomShellMeshProps) {
   const floorShape = useMemo(() => {
     const shape = new THREE.Shape();
     shell.floor.polygonXZ.forEach(([x, z], i) => {
@@ -55,6 +57,21 @@ export function RoomShellMesh({ shell }: RoomShellMeshProps) {
     });
   }, [shell.walls, shell.floor.polygonXZ]);
 
+  const bounds = useMemo(() => {
+    const xs = shell.floor.polygonXZ.map(([x]) => x);
+    const zs = shell.floor.polygonXZ.map(([, z]) => z);
+    const minX = Math.min(...xs);
+    const maxX = Math.max(...xs);
+    const minZ = Math.min(...zs);
+    const maxZ = Math.max(...zs);
+    return {
+      width: maxX - minX,
+      depth: maxZ - minZ,
+      widthLabelPos: [(minX + maxX) / 2, 0.04, minZ - 0.35] as [number, number, number],
+      depthLabelPos: [minX - 0.35, 0.04, (minZ + maxZ) / 2] as [number, number, number],
+    };
+  }, [shell.floor.polygonXZ]);
+
   const materialRefs = useRef<Map<string, THREE.MeshStandardMaterial[]>>(new Map());
   const registerMaterial = (wallId: string) => (mat: THREE.MeshStandardMaterial | null) => {
     if (!mat) return;
@@ -96,6 +113,17 @@ export function RoomShellMesh({ shell }: RoomShellMeshProps) {
           />
         </mesh>
       ))}
+
+      {showMeasurements && (
+        <>
+          <Html position={bounds.widthLabelPos} center distanceFactor={8}>
+            <div className="measurement-label">{bounds.width.toFixed(2)} m</div>
+          </Html>
+          <Html position={bounds.depthLabelPos} center distanceFactor={8}>
+            <div className="measurement-label">{bounds.depth.toFixed(2)} m</div>
+          </Html>
+        </>
+      )}
     </group>
   );
 }
