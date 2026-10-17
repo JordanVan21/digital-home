@@ -127,10 +127,13 @@ export const useSceneStore = create<SceneState>((set, get) => ({
       locked: false,
       transform: {
         ...source.transform,
+        // Offset by the object's own width, not a flat nudge — a flat
+        // offset would land the duplicate overlapping the original now
+        // that object-object overlap is validated (see scene-engine).
         position: [
-          source.transform.position[0] + 0.3,
+          source.transform.position[0] + source.dimensionsM[0] + 0.15,
           source.transform.position[1],
-          source.transform.position[2] + 0.3,
+          source.transform.position[2],
         ],
       },
     };

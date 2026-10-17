@@ -29,11 +29,20 @@ export function SceneObjectMesh({ object }: SceneObjectMeshProps) {
   const commitTransform = () => {
     const g = groupRef.current;
     if (!g) return;
-    moveObject(object.id, {
+    const accepted = moveObject(object.id, {
       position: [g.position.x, g.position.y, g.position.z],
       rotation: [g.quaternion.x, g.quaternion.y, g.quaternion.z, g.quaternion.w],
       scale: [1, 1, 1],
     });
+    if (!accepted) {
+      // TransformControls already mutated the Three object imperatively
+      // during the drag; since the store didn't change, the `position`/
+      // `quaternion` props below won't re-apply on their own. Snap back
+      // explicitly so a rejected drop doesn't leave the mesh floating in
+      // an invalid spot (FEATURE_DESIGN.md: "invalid drop should snap back").
+      g.position.set(...object.transform.position);
+      g.quaternion.set(...object.transform.rotation);
+    }
     setDragging(false);
   };
 

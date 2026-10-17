@@ -1,5 +1,13 @@
 import type { RoomShell, SceneObject, SceneOp, SceneSpec } from "@house/contracts";
-import { isFiniteQuat, isFiniteVec3, pointInPolygonXZ } from "./geometry";
+import { isFiniteQuat, isFiniteVec3 } from "./geometry";
+import {
+  checkDoorwayKeepOut,
+  checkFloorContainment,
+  checkObjectOverlap,
+  checkWallClearance,
+  footprintOBB,
+  isFloorSupported,
+} from "./collision";
 import { applyOp } from "./reduce";
 
 export type ValidationResult = { valid: boolean; errors: string[] };
@@ -26,11 +34,34 @@ function isWellFormedTransform(object: Pick<SceneObject, "transform" | "dimensio
   );
 }
 
-/** Ground-contact objects must sit inside the room's floor polygon. See CONTRACTS.md §4. */
-function isWithinFloorBounds(shell: RoomShell, object: SceneObject): boolean {
-  if (object.placement && object.placement.support !== "floor") return true;
-  const [x, , z] = object.transform.position;
-  return pointInPolygonXZ([x, z], shell.floor.polygonXZ);
+/**
+ * Full placement check for a floor-supported object's candidate footprint:
+ * inside the floor polygon, clear of wall thickness, clear of doorway
+ * swing zones, and not overlapping another floor object (modulo the
+ * semantic exemptions in collision.ts). Non-floor placements (wall/object
+ * mounted) are exempt entirely. See CONTRACTS.md §4.
+ */
+function checkPlacement(
+  shell: RoomShell,
+  candidate: Pick<SceneObject, "transform" | "dimensionsM" | "category" | "placement">,
+  othersExcludingSelf: SceneObject[]
+): string | null {
+  if (!isFloorSupported(candidate)) return null;
+
+  const obb = footprintOBB(candidate.transform.position, candidate.transform.rotation, candidate.dimensionsM);
+
+  if (!checkFloorContainment(shell, obb)) return "object placed outside room floor";
+
+  const blockedByWall = checkWallClearance(shell, obb);
+  if (blockedByWall) return "object overlaps wall thickness";
+
+  const blockedByDoorway = checkDoorwayKeepOut(shell, obb);
+  if (blockedByDoorway) return "object blocks a doorway";
+
+  const blockedBy = checkObjectOverlap({ obb, category: candidate.category }, othersExcludingSelf);
+  if (blockedBy) return `object overlaps ${blockedBy.displayName}`;
+
+  return null;
 }
 
 export interface ValidateOpOptions {
@@ -56,7 +87,8 @@ export function validateOp(
       if (op.object.assetId && options.isKnownAssetId && !options.isKnownAssetId(op.object.assetId)) {
         return fail(`unknown asset id ${op.object.assetId}`);
       }
-      if (!isWithinFloorBounds(shell, op.object)) return fail("object placed outside room floor");
+      const placementError = checkPlacement(shell, op.object, scene.objects);
+      if (placementError) return fail(placementError);
       return ok();
     }
     case "delete": {
@@ -72,9 +104,9 @@ export function validateOp(
       if (!isWellFormedTransform({ transform: op.transform, dimensionsM: target.dimensionsM })) {
         return fail("invalid transform");
       }
-      if (!isWithinFloorBounds(shell, { ...target, transform: op.transform })) {
-        return fail("move places object outside room floor");
-      }
+      const others = scene.objects.filter((o) => o.id !== op.objectId);
+      const placementError = checkPlacement(shell, { ...target, transform: op.transform }, others);
+      if (placementError) return fail(placementError);
       return ok();
     }
     case "replaceAsset": {
@@ -87,6 +119,15 @@ export function validateOp(
       if (!isFiniteVec3(op.dimensionsM) || !op.dimensionsM.every((d) => d > 0)) {
         return fail("invalid dimensions");
       }
+      // A visual-model swap can change footprint size; re-check placement
+      // against the new dimensions with the object's own transform.
+      const others = scene.objects.filter((o) => o.id !== op.objectId);
+      const placementError = checkPlacement(
+        shell,
+        { ...target, dimensionsM: op.dimensionsM },
+        others
+      );
+      if (placementError) return fail(placementError);
       return ok();
     }
     case "replacePhysicalItem": {
@@ -95,7 +136,9 @@ export function validateOp(
       if (target.locked) return fail(`object ${op.oldObjectId} is locked`);
       if (findObject(scene, op.newObject.id)) return fail(`duplicate object id ${op.newObject.id}`);
       if (!isWellFormedTransform(op.newObject)) return fail("invalid transform or dimensions");
-      if (!isWithinFloorBounds(shell, op.newObject)) return fail("object placed outside room floor");
+      const others = scene.objects.filter((o) => o.id !== op.oldObjectId);
+      const placementError = checkPlacement(shell, op.newObject, others);
+      if (placementError) return fail(placementError);
       return ok();
     }
     case "changeMaterial": {
