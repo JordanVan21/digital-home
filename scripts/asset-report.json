@@ -1,0 +1,146 @@
+[
+  {
+    "file": "sofa.glb",
+    "beforeTriangles": 295526,
+    "triangles": 27000,
+    "dimensionsM": [
+      2.16,
+      0.83985,
+      0.9199
+    ],
+    "bytes": 315092,
+    "textureBytes": 50210
+  },
+  {
+    "file": "armchair.glb",
+    "beforeTriangles": 290801,
+    "triangles": 78412,
+    "dimensionsM": [
+      0.85,
+      0.78003,
+      0.84004
+    ],
+    "bytes": 1319368,
+    "textureBytes": 219440
+  },
+  {
+    "file": "coffee-table.glb",
+    "beforeTriangles": 283538,
+    "triangles": 27000,
+    "dimensionsM": [
+      1.02,
+      0.35004,
+      0.60001
+    ],
+    "bytes": 577812,
+    "textureBytes": 283066
+  },
+  {
+    "file": "rug.glb",
+    "beforeTriangles": 298432,
+    "triangles": 27000,
+    "dimensionsM": [
+      2.75,
+      0.02498,
+      2.24991
+    ],
+    "bytes": 511572,
+    "textureBytes": 264932
+  },
+  {
+    "file": "floor-lamp.glb",
+    "beforeTriangles": 295125,
+    "triangles": 27000,
+    "dimensionsM": [
+      0.46009,
+      1.65,
+      0.46008
+    ],
+    "bytes": 572500,
+    "textureBytes": 291708
+  },
+  {
+    "file": "sideboard.glb",
+    "beforeTriangles": 292325,
+    "triangles": 27000,
+    "dimensionsM": [
+      1.65,
+      0.78002,
+      0.4199
+    ],
+    "bytes": 508884,
+    "textureBytes": 224342
+  },
+  {
+    "file": "bookshelf.glb",
+    "beforeTriangles": 282588,
+    "triangles": 27000,
+    "dimensionsM": [
+      0.76001,
+      1.8,
+      0.31989
+    ],
+    "bytes": 474624,
+    "textureBytes": 153850
+  },
+  {
+    "file": "olive-tree.glb",
+    "beforeTriangles": 296763,
+    "triangles": 26999,
+    "dimensionsM": [
+      0.62,
+      1.5,
+      0.62
+    ],
+    "bytes": 879080,
+    "textureBytes": 520718
+  },
+  {
+    "file": "desk.glb",
+    "beforeTriangles": 289019,
+    "triangles": 27000,
+    "dimensionsM": [
+      1.12,
+      0.76008,
+      0.52006
+    ],
+    "bytes": 350448,
+    "textureBytes": 120118
+  },
+  {
+    "file": "desk-chair.glb",
+    "beforeTriangles": 293655,
+    "triangles": 122742,
+    "dimensionsM": [
+      0.55004,
+      0.82,
+      0.55997
+    ],
+    "bytes": 1793404,
+    "textureBytes": 178676
+  },
+  {
+    "file": "side-table.glb",
+    "beforeTriangles": 280470,
+    "triangles": 27000,
+    "dimensionsM": [
+      0.44,
+      0.47998,
+      0.44
+    ],
+    "bytes": 605464,
+    "textureBytes": 282410
+  },
+  {
+    "file": "sofa-sculpted.glb",
+    "beforeTriangles": 279891,
+    "triangles": 26999,
+    "dimensionsM": [
+      2.05,
+      0.81999,
+      0.9001
+    ],
+    "bytes": 544996,
+    "textureBytes": 219264
+  }
+]
