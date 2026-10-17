@@ -1,0 +1,37 @@
+{
+  "name": "house-sandbox",
+  "private": true,
+  "packageManager": "pnpm@10.32.1",
+  "scripts": {
+    "dev": "pnpm --filter @house/web dev",
+    "build": "pnpm typecheck && pnpm --filter @house/web build",
+    "test": "vitest run",
+    "typecheck": "tsc --noEmit -p tsconfig.json",
+    "lint": "eslint .",
+    "assets:normalize": "node scripts/normalize-assets.mjs",
+    "test:browser": "playwright test",
+    "assets:verify": "node scripts/verify-assets.mjs",
+    "format": "prettier --write \"apps/web/src/**/*.{ts,tsx,css}\" \"packages/*/src/**/*.ts\" \"scripts/*.mjs\" \"*.{json,js,ts,yaml}\" \"apps/web/*.{json,ts,html,md}\"",
+    "assets:preview": "node scripts/preview-assets.mjs"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.39.0",
+    "@gltf-transform/core": "^4.2.1",
+    "@gltf-transform/extensions": "^4.2.1",
+    "@gltf-transform/functions": "^4.2.1",
+    "@playwright/test": "^1.56.0",
+    "@testing-library/jest-dom": "6.9.1",
+    "@testing-library/react": "^16.3.0",
+    "@types/node": "^24.10.0",
+    "draco3dgltf": "^1.5.7",
+    "eslint": "^9.39.0",
+    "jsdom": "^26.1.0",
+    "meshoptimizer": "^0.24.0",
+    "prettier": "3.6.2",
+    "sharp": "^0.35.5",
+    "typescript": "~5.9.3",
+    "typescript-eslint": "^8.46.0",
+    "vitest": "^3.2.4"
+  },
+  "type": "module"
+}
