@@ -1,0 +1,482 @@
+[
+  {
+    "schemaVersion": 1,
+    "id": "00000000-0000-4000-8000-000000001000",
+    "category": "sofa",
+    "title": "Linen sofa",
+    "tags": [
+      "warm",
+      "minimal",
+      "sofa"
+    ],
+    "styles": [
+      "warm minimal",
+      "scandinavian"
+    ],
+    "colors": [
+      "natural"
+    ],
+    "materials": [
+      "wood and fabric"
+    ],
+    "dimensionsM": [
+      2.16,
+      0.83985,
+      0.9199
+    ],
+    "glbStorageKey": "/models/sofa.glb",
+    "thumbnailStorageKey": "/thumbnails/sofa.webp",
+    "source": "furnimesh",
+    "sourceUrl": "https://furnimesh.com/library/sofas/sofa/a-contemporary-sofa-featuring-an-ecrucolored-slipcover-netj96/",
+    "licenseStatus": "verified",
+    "attribution": "FurniMesh / UAB FURNISYSTEMS",
+    "estimatedPrice": {
+      "currency": "USD",
+      "minor": 129900
+    },
+    "triangleCount": 27000,
+    "textureBytes": 50210,
+    "contentHash": "06e7f273144eb55fe176674ef218d682ab3d99a75efddd717e2710e26067020f",
+    "searchableDescription": "Linen sofa in a warm minimal living room"
+  },
+  {
+    "schemaVersion": 1,
+    "id": "00000000-0000-4000-8000-000000001001",
+    "category": "armchair",
+    "title": "Bouclé lounge chair",
+    "tags": [
+      "warm",
+      "minimal",
+      "armchair"
+    ],
+    "styles": [
+      "warm minimal",
+      "scandinavian"
+    ],
+    "colors": [
+      "natural"
+    ],
+    "materials": [
+      "wood and fabric"
+    ],
+    "dimensionsM": [
+      0.85,
+      0.78003,
+      0.84004
+    ],
+    "glbStorageKey": "/models/armchair.glb",
+    "thumbnailStorageKey": "/thumbnails/armchair.webp",
+    "source": "furnimesh",
+    "sourceUrl": "https://furnimesh.com/library/seating/office-chair/a-contemporary-swivel-armchair-upholstered-in-a-tso2z4/",
+    "licenseStatus": "verified",
+    "attribution": "FurniMesh / UAB FURNISYSTEMS",
+    "estimatedPrice": {
+      "currency": "USD",
+      "minor": 44900
+    },
+    "triangleCount": 78412,
+    "textureBytes": 219440,
+    "contentHash": "b42aaae02a968dc0b9efb94e1b441688e8f0a459d04cee831fd51247e9b5c464",
+    "searchableDescription": "Bouclé lounge chair in a warm minimal living room"
+  },
+  {
+    "schemaVersion": 1,
+    "id": "00000000-0000-4000-8000-000000001002",
+    "category": "coffee-table",
+    "title": "Sculptural walnut coffee table",
+    "tags": [
+      "warm",
+      "minimal",
+      "coffee-table"
+    ],
+    "styles": [
+      "warm minimal",
+      "scandinavian"
+    ],
+    "colors": [
+      "natural"
+    ],
+    "materials": [
+      "wood and fabric"
+    ],
+    "dimensionsM": [
+      1.02,
+      0.35004,
+      0.60001
+    ],
+    "glbStorageKey": "/models/coffee-table.glb",
+    "thumbnailStorageKey": "/thumbnails/coffee-table.webp",
+    "source": "furnimesh",
+    "sourceUrl": "https://furnimesh.com/library/tables/coffee-table/a-sculptural-multitiered-coffee-table-crafted-from-ojvaek/",
+    "licenseStatus": "verified",
+    "attribution": "FurniMesh / UAB FURNISYSTEMS",
+    "estimatedPrice": {
+      "currency": "USD",
+      "minor": 32900
+    },
+    "triangleCount": 27000,
+    "textureBytes": 283066,
+    "contentHash": "acc0099e440009f7bd94cc5802ea4d40fb3500ddb58dc08c2d40f8fc5c35657c",
+    "searchableDescription": "Sculptural walnut coffee table in a warm minimal living room"
+  },
+  {
+    "schemaVersion": 1,
+    "id": "00000000-0000-4000-8000-000000001003",
+    "category": "rug",
+    "title": "Natural woven rug",
+    "tags": [
+      "warm",
+      "minimal",
+      "rug"
+    ],
+    "styles": [
+      "warm minimal",
+      "scandinavian"
+    ],
+    "colors": [
+      "natural"
+    ],
+    "materials": [
+      "wood and fabric"
+    ],
+    "dimensionsM": [
+      2.75,
+      0.02498,
+      2.24991
+    ],
+    "glbStorageKey": "/models/rug.glb",
+    "thumbnailStorageKey": "/thumbnails/rug.webp",
+    "source": "furnimesh",
+    "sourceUrl": "https://furnimesh.com/library/decor/rug/a-rectangular-rug-made-of-woven-fibers-4adwnz/",
+    "licenseStatus": "verified",
+    "attribution": "FurniMesh / UAB FURNISYSTEMS",
+    "estimatedPrice": {
+      "currency": "USD",
+      "minor": 18900
+    },
+    "triangleCount": 27000,
+    "textureBytes": 264932,
+    "contentHash": "09a165fa84af8fe3ad1f41f4f77feb283aeaa4162e80ade1a0cbd6a82c1d2933",
+    "searchableDescription": "Natural woven rug in a warm minimal living room"
+  },
+  {
+    "schemaVersion": 1,
+    "id": "00000000-0000-4000-8000-000000001004",
+    "category": "lamp",
+    "title": "Linen shade floor lamp",
+    "tags": [
+      "warm",
+      "minimal",
+      "lamp"
+    ],
+    "styles": [
+      "warm minimal",
+      "scandinavian"
+    ],
+    "colors": [
+      "natural"
+    ],
+    "materials": [
+      "wood and fabric"
+    ],
+    "dimensionsM": [
+      0.46009,
+      1.65,
+      0.46008
+    ],
+    "glbStorageKey": "/models/floor-lamp.glb",
+    "thumbnailStorageKey": "/thumbnails/floor-lamp.webp",
+    "source": "furnimesh",
+    "sourceUrl": "https://furnimesh.com/library/lighting/floor-lamp/a-modern-floor-lamp-featuring-a-cylindrical-4vxr90/",
+    "licenseStatus": "verified",
+    "attribution": "FurniMesh / UAB FURNISYSTEMS",
+    "estimatedPrice": {
+      "currency": "USD",
+      "minor": 17900
+    },
+    "triangleCount": 27000,
+    "textureBytes": 291708,
+    "contentHash": "46739dac0a05a09ee1ae2162948703ec37b3a9c9f2d33c712b3e150733fec6da",
+    "searchableDescription": "Linen shade floor lamp in a warm minimal living room"
+  },
+  {
+    "schemaVersion": 1,
+    "id": "00000000-0000-4000-8000-000000001005",
+    "category": "sideboard",
+    "title": "Oak sideboard",
+    "tags": [
+      "warm",
+      "minimal",
+      "sideboard"
+    ],
+    "styles": [
+      "warm minimal",
+      "scandinavian"
+    ],
+    "colors": [
+      "natural"
+    ],
+    "materials": [
+      "wood and fabric"
+    ],
+    "dimensionsM": [
+      1.65,
+      0.78002,
+      0.4199
+    ],
+    "glbStorageKey": "/models/sideboard.glb",
+    "thumbnailStorageKey": "/thumbnails/sideboard.webp",
+    "source": "furnimesh",
+    "sourceUrl": "https://furnimesh.com/library/storage/sideboard/a-rustic-light-oak-sideboard-featuring-four-tgts4z/",
+    "licenseStatus": "verified",
+    "attribution": "FurniMesh / UAB FURNISYSTEMS",
+    "estimatedPrice": {
+      "currency": "USD",
+      "minor": 69900
+    },
+    "triangleCount": 27000,
+    "textureBytes": 224342,
+    "contentHash": "a7b7e15339763d892cff6574a68c56eb23830502be445555fef4050195e9b9f6",
+    "searchableDescription": "Oak sideboard in a warm minimal living room"
+  },
+  {
+    "schemaVersion": 1,
+    "id": "00000000-0000-4000-8000-000000001006",
+    "category": "bookshelf",
+    "title": "Open walnut bookshelf",
+    "tags": [
+      "warm",
+      "minimal",
+      "bookshelf"
+    ],
+    "styles": [
+      "warm minimal",
+      "scandinavian"
+    ],
+    "colors": [
+      "natural"
+    ],
+    "materials": [
+      "wood and fabric"
+    ],
+    "dimensionsM": [
+      0.76001,
+      1.8,
+      0.31989
+    ],
+    "glbStorageKey": "/models/bookshelf.glb",
+    "thumbnailStorageKey": "/thumbnails/bookshelf.webp",
+    "source": "furnimesh",
+    "sourceUrl": "https://furnimesh.com/library/storage/bookshelf/a-tall-fivetier-open-wooden-bookshelf-in-rfhc3x/",
+    "licenseStatus": "verified",
+    "attribution": "FurniMesh / UAB FURNISYSTEMS",
+    "estimatedPrice": {
+      "currency": "USD",
+      "minor": 34900
+    },
+    "triangleCount": 27000,
+    "textureBytes": 153850,
+    "contentHash": "f71f4e315f41d81492233e716fcade2533980190f1914b41a5feefa61b1975f8",
+    "searchableDescription": "Open walnut bookshelf in a warm minimal living room"
+  },
+  {
+    "schemaVersion": 1,
+    "id": "00000000-0000-4000-8000-000000001007",
+    "category": "plant",
+    "title": "Olive tree",
+    "tags": [
+      "warm",
+      "minimal",
+      "plant"
+    ],
+    "styles": [
+      "warm minimal",
+      "scandinavian"
+    ],
+    "colors": [
+      "natural"
+    ],
+    "materials": [
+      "foliage"
+    ],
+    "dimensionsM": [
+      0.62,
+      1.5,
+      0.62
+    ],
+    "glbStorageKey": "/models/olive-tree.glb",
+    "thumbnailStorageKey": "/thumbnails/olive-tree.webp",
+    "source": "furnimesh",
+    "sourceUrl": "https://furnimesh.com/library/decor/plant/a-slender-olive-tree-with-sparse-delicate-4ya4h8/",
+    "licenseStatus": "verified",
+    "attribution": "FurniMesh / UAB FURNISYSTEMS",
+    "estimatedPrice": {
+      "currency": "USD",
+      "minor": 8900
+    },
+    "triangleCount": 26999,
+    "textureBytes": 520718,
+    "contentHash": "46a7f30c2d0f72e71583975ab689ac17edfb4744a2f444e0d34896d9fe3d0975",
+    "searchableDescription": "Olive tree in a warm minimal living room"
+  },
+  {
+    "schemaVersion": 1,
+    "id": "00000000-0000-4000-8000-000000001008",
+    "category": "desk",
+    "title": "Light oak writing desk",
+    "tags": [
+      "warm",
+      "minimal",
+      "desk"
+    ],
+    "styles": [
+      "warm minimal",
+      "scandinavian"
+    ],
+    "colors": [
+      "natural"
+    ],
+    "materials": [
+      "wood and fabric"
+    ],
+    "dimensionsM": [
+      1.12,
+      0.76008,
+      0.52006
+    ],
+    "glbStorageKey": "/models/desk.glb",
+    "thumbnailStorageKey": "/thumbnails/desk.webp",
+    "source": "furnimesh",
+    "sourceUrl": "https://furnimesh.com/library/tables/desk/a-modern-lighttoned-wood-desk-featuring-a-adkgdu/",
+    "licenseStatus": "verified",
+    "attribution": "FurniMesh / UAB FURNISYSTEMS",
+    "estimatedPrice": {
+      "currency": "USD",
+      "minor": 39900
+    },
+    "triangleCount": 27000,
+    "textureBytes": 120118,
+    "contentHash": "1efbb1b6fb3309aefb5bb620c7708e7108ec4f39493057eba92952bb39a68d27",
+    "searchableDescription": "Light oak writing desk in a warm minimal living room"
+  },
+  {
+    "schemaVersion": 1,
+    "id": "00000000-0000-4000-8000-000000001009",
+    "category": "chair",
+    "title": "Cream desk chair",
+    "tags": [
+      "warm",
+      "minimal",
+      "chair"
+    ],
+    "styles": [
+      "warm minimal",
+      "scandinavian"
+    ],
+    "colors": [
+      "natural"
+    ],
+    "materials": [
+      "wood and fabric"
+    ],
+    "dimensionsM": [
+      0.55004,
+      0.82,
+      0.55997
+    ],
+    "glbStorageKey": "/models/desk-chair.glb",
+    "thumbnailStorageKey": "/thumbnails/desk-chair.webp",
+    "source": "furnimesh",
+    "sourceUrl": "https://furnimesh.com/library/seating/office-chair/an-upholstered-swivel-office-chair-featuring-a-965gfl/",
+    "licenseStatus": "verified",
+    "attribution": "FurniMesh / UAB FURNISYSTEMS",
+    "estimatedPrice": {
+      "currency": "USD",
+      "minor": 19900
+    },
+    "triangleCount": 122742,
+    "textureBytes": 178676,
+    "contentHash": "954b9171563d934715924707c32ec9511b8b3d4bbf7cff9b8aeaed1fdff454d4",
+    "searchableDescription": "Cream desk chair in a warm minimal living room"
+  },
+  {
+    "schemaVersion": 1,
+    "id": "00000000-0000-4000-8000-000000001010",
+    "category": "side-table",
+    "title": "Round brass side table",
+    "tags": [
+      "warm",
+      "minimal",
+      "side-table"
+    ],
+    "styles": [
+      "warm minimal",
+      "scandinavian"
+    ],
+    "colors": [
+      "natural"
+    ],
+    "materials": [
+      "wood and fabric"
+    ],
+    "dimensionsM": [
+      0.44,
+      0.47998,
+      0.44
+    ],
+    "glbStorageKey": "/models/side-table.glb",
+    "thumbnailStorageKey": "/thumbnails/side-table.webp",
+    "source": "furnimesh",
+    "sourceUrl": "https://furnimesh.com/library/tables/side-table/a-round-twotier-side-table-featuring-a-job9xg/",
+    "licenseStatus": "verified",
+    "attribution": "FurniMesh / UAB FURNISYSTEMS",
+    "estimatedPrice": {
+      "currency": "USD",
+      "minor": 12900
+    },
+    "triangleCount": 27000,
+    "textureBytes": 282410,
+    "contentHash": "4b8a9c97ea00aa2c94d1e6664918e42a58f1f83034e7953a03aafbbffaa31b80",
+    "searchableDescription": "Round brass side table in a warm minimal living room"
+  },
+  {
+    "schemaVersion": 1,
+    "id": "00000000-0000-4000-8000-000000001011",
+    "category": "sofa",
+    "title": "Sculpted two-seat sofa",
+    "tags": [
+      "warm",
+      "minimal",
+      "sofa"
+    ],
+    "styles": [
+      "warm minimal",
+      "scandinavian"
+    ],
+    "colors": [
+      "natural"
+    ],
+    "materials": [
+      "wood and fabric"
+    ],
+    "dimensionsM": [
+      2.05,
+      0.81999,
+      0.9001
+    ],
+    "glbStorageKey": "/models/sofa-sculpted.glb",
+    "thumbnailStorageKey": "/thumbnails/sofa-sculpted.webp",
+    "source": "furnimesh",
+    "sourceUrl": "https://furnimesh.com/library/sofas/sofa/a-contemporary-twoseater-sofa-upholstered-in-light-yl03d4/",
+    "licenseStatus": "verified",
+    "attribution": "FurniMesh / UAB FURNISYSTEMS",
+    "estimatedPrice": {
+      "currency": "USD",
+      "minor": 119900
+    },
+    "triangleCount": 26999,
+    "textureBytes": 219264,
+    "contentHash": "8680e590befd18650ebfd9c274ac3715ffa8cece95d4879f1a21d1aaf8a355e1",
+    "searchableDescription": "Sculpted two-seat sofa in a warm minimal living room"
+  }
+]
