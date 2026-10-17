@@ -1,0 +1,14 @@
+{
+  "name": "house",
+  "private": true,
+  "version": "0.0.0",
+  "scripts": {
+    "dev:web": "pnpm --filter @house/web dev",
+    "build": "pnpm -r --if-present build",
+    "typecheck": "pnpm -r --if-present typecheck"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "packageManager": "pnpm@12.14.0"
+}
