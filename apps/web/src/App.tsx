@@ -4,6 +4,7 @@ import { TopBar } from "./ui/TopBar";
 import { SideNav } from "./ui/SideNav";
 import { RightRail } from "./ui/RightRail";
 import { InspectorPanel } from "./ui/InspectorPanel";
+import { EditLogPanel } from "./ui/EditLogPanel";
 import { useSceneStore } from "./state/sceneStore";
 import { useInteractionStore } from "./state/interactionStore";
 import "./styles/ui.css";
@@ -95,6 +96,7 @@ export default function App() {
       </div>
       <TopBar />
       <SideNav />
+      <EditLogPanel />
       <div className="right-stack">
         <RightRail />
         <InspectorPanel />

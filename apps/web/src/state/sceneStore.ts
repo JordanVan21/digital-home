@@ -2,10 +2,12 @@ import { create } from "zustand";
 import type { RoomShell, SceneObject, SceneOp, SceneSpec } from "@house/contracts";
 import { applyOp, invertOp, validateOp } from "@house/scene-engine";
 import { sampleObjects, sampleRoomShell, sampleScene } from "../fixtures/sampleRoom";
+import { makeLogEntry, type OpLogEntry, type OpSource } from "./opLog";
 
 export type SaveStatus = "saved" | "saving" | "offline";
 
 const UNDO_STACK_LIMIT = 50;
+const OP_LOG_LIMIT = 200;
 const AUTOSAVE_DEBOUNCE_MS = 500;
 
 interface SceneState {
@@ -16,6 +18,7 @@ interface SceneState {
   redoStack: SceneOp[];
   saveStatus: SaveStatus;
   lastError: string | null;
+  opLog: OpLogEntry[];
 
   select: (objectId: string | null) => void;
   getSelectedObject: () => SceneObject | undefined;
@@ -36,6 +39,25 @@ interface SceneState {
 }
 
 let autosaveTimer: ReturnType<typeof setTimeout> | null = null;
+
+/**
+ * Every committed op is logged here, regardless of caller (gizmo drag,
+ * coordinates popup, undo/redo). This is the client-side stand-in for the
+ * optional `scene_operations` durable log in SYSTEM_ARCHITECTURE.md §6.1 —
+ * the same op shape an agent planner will eventually write.
+ */
+function appendLog(
+  set: (partial: Partial<SceneState>) => void,
+  get: () => SceneState,
+  sceneBefore: SceneSpec,
+  op: SceneOp,
+  source: OpSource
+) {
+  const entry = makeLogEntry(sceneBefore, op, source);
+  // eslint-disable-next-line no-console
+  console.log(`[scene-op:${source}]`, entry.summary, entry.op);
+  set({ opLog: [entry, ...get().opLog].slice(0, OP_LOG_LIMIT) });
+}
 
 function scheduleAutosave(set: (partial: Partial<SceneState>) => void, get: () => SceneState) {
   set({ saveStatus: "saving" });
@@ -58,6 +80,7 @@ export const useSceneStore = create<SceneState>((set, get) => ({
   redoStack: [],
   saveStatus: "saved",
   lastError: null,
+  opLog: [],
 
   select: (objectId) => set({ selectedId: objectId }),
 
@@ -80,6 +103,7 @@ export const useSceneStore = create<SceneState>((set, get) => ({
       redoStack: [],
       lastError: null,
     }));
+    appendLog(set, get, scene, op, "user");
     scheduleAutosave(set, get);
     return true;
   },
@@ -132,6 +156,7 @@ export const useSceneStore = create<SceneState>((set, get) => ({
       undoStack: state.undoStack.slice(0, -1),
       redoStack: redoInverse ? [...state.redoStack, redoInverse] : state.redoStack,
     }));
+    appendLog(set, get, scene, op, "undo");
     scheduleAutosave(set, get);
   },
 
@@ -147,6 +172,7 @@ export const useSceneStore = create<SceneState>((set, get) => ({
       redoStack: state.redoStack.slice(0, -1),
       undoStack: undoInverse ? [...state.undoStack, undoInverse] : state.undoStack,
     }));
+    appendLog(set, get, scene, op, "redo");
     scheduleAutosave(set, get);
   },
 }));

@@ -1,11 +1,6 @@
 import { Trash2 } from "lucide-react";
 import { useSceneStore } from "../state/sceneStore";
-
-function yawDegrees(q: readonly [number, number, number, number]): number {
-  const [x, y, z, w] = q;
-  const yaw = Math.atan2(2 * (w * y + x * z), 1 - 2 * (y * y + z * z));
-  return Math.round((yaw * 180) / Math.PI);
-}
+import { yawDegreesFromQuaternion } from "../lib/rotation";
 
 function formatCategory(category: string): string {
   return category.replace(/_/g, " ").replace(/\b\w/g, (c) => c.toUpperCase());
@@ -77,7 +72,7 @@ export function InspectorPanel() {
       </div>
       <div className="inspector-row">
         <span>Yaw</span>
-        <span className="value">{yawDegrees(selected.transform.rotation)}°</span>
+        <span className="value">{Math.round(yawDegreesFromQuaternion(selected.transform.rotation))}°</span>
       </div>
       <div className="inspector-row">
         <span>Dimensions</span>
