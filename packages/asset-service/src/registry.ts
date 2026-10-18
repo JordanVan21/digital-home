@@ -4,7 +4,7 @@ import { AssetSpec, type AssetRequest } from "@house/contracts";
 import { GlbError, inspectGlb, normalizeGlb } from "./glb";
 import { DEFAULT_GLB_POLICY, validateGlb, type GlbPolicy } from "./validate";
 
-export type RegisterInput = { glb: Uint8Array; request: AssetRequest; title: string };
+export type RegisterInput = { glb: Uint8Array; request: AssetRequest; title: string; derivedFromAssetId?: string };
 export type RegisterResult =
   | { ok: true; asset: AssetSpec; created: boolean; warnings: string[] }
   | { ok: false; errors: string[]; warnings: string[] };
@@ -68,7 +68,7 @@ export class FileAssetRegistry implements AssetRegistry {
     return run;
   }
 
-  private async register({ glb, request, title }: RegisterInput): Promise<RegisterResult> {
+  private async register({ glb, request, title, derivedFromAssetId }: RegisterInput): Promise<RegisterResult> {
     let normalized: Uint8Array;
     try {
       normalized = normalizeGlb(glb, request.targetDimensionsM);
@@ -95,7 +95,8 @@ export class FileAssetRegistry implements AssetRegistry {
       id,
       category: normCategory(request.category),
       title,
-      tags: ["generated"],
+      tags: [derivedFromAssetId ? "modified" : "generated"],
+      ...(derivedFromAssetId ? { derivedFromAssetId } : {}),
       styles: request.styles,
       colors: request.colors,
       materials: request.materials,
@@ -112,6 +113,26 @@ export class FileAssetRegistry implements AssetRegistry {
     const catalog = await this.list();
     await atomicWrite(this.catalogPath, new TextEncoder().encode(JSON.stringify([...catalog, asset], null, 2)));
     return { ok: true, asset, created: true, warnings: validation.warnings };
+  }
+}
+
+/** Reads published GLBs by storage key (stand-in for a storage bucket download). */
+export interface GlbStore {
+  readGlb(storageKey: string): Promise<Uint8Array>;
+}
+
+export class FileGlbStore implements GlbStore {
+  private readonly roots: string[];
+  /** Roots are tried in order, so bundled assets and generated ones can live in different directories. */
+  constructor(roots: string | string[]) { this.roots = Array.isArray(roots) ? roots : [roots]; }
+  async readGlb(storageKey: string): Promise<Uint8Array> {
+    // Storage keys are server-managed, but never trust one to stay inside a root.
+    if (!/^[\w./-]+\.glb$/.test(storageKey) || storageKey.includes("..") || storageKey.startsWith("/")) throw new Error("Invalid storage key.");
+    for (const root of this.roots) {
+      try { return new Uint8Array(await readFile(join(root, storageKey))); }
+      catch (error) { if ((error as NodeJS.ErrnoException).code !== "ENOENT") throw error; }
+    }
+    throw new Error(`GLB not found: ${storageKey}`);
   }
 }
 

@@ -22,18 +22,20 @@ export function fittedDimensions(asset: Pick<AssetSpec, "dimensionsM">, target: 
 }
 
 /**
- * `replaceAsset` ops (same object id, new visual) for outcomes that found an
- * asset. Objects keep their UUID because only the visual changes. Outcomes
- * without an asset are skipped: those objects stay as placeholders.
+ * `replaceAsset` ops (same object id, new visual). Objects keep their UUID because
+ * only the visual changes. Outcomes without an asset, and locked objects, are
+ * skipped. These ops still go through the scene engine's validator before being applied.
  */
 export function toReplaceAssetOps(
-  objects: Pick<SceneObject, "id" | "dimensionsM">[],
+  objects: Pick<SceneObject, "id" | "dimensionsM" | "locked">[],
   outcomes: Pick<RenderOutcome, "asset">[]
 ): SceneOp[] {
   const ops: SceneOp[] = [];
   objects.forEach((object, i) => {
-    const asset = outcomes[i]?.asset;
-    if (asset) ops.push({ type: "replaceAsset", objectId: object.id, assetId: asset.id, dimensionsM: fittedDimensions(asset, object.dimensionsM) });
+    const outcome = outcomes[i];
+    // CONTRACTS.md §4: locked objects cannot be replaced or recolored.
+    if (!outcome?.asset || object.locked) return;
+    ops.push({ type: "replaceAsset", objectId: object.id, assetId: outcome.asset.id, dimensionsM: fittedDimensions(outcome.asset, object.dimensionsM) });
   });
   return ops;
 }

@@ -22,6 +22,8 @@ export const AssetSpec = z.object({
   triangleCount: z.number().int().nonnegative().optional(),
   textureBytes: z.number().int().nonnegative().optional(),
   contentHash: z.string(),
+  /** Set when this asset was produced by modifying another library asset. */
+  derivedFromAssetId: UUID.optional(),
   searchableDescription: z.string(),
   embeddingVersion: z.string().optional(),
 });

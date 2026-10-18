@@ -1,5 +1,5 @@
-import type { ResponseOutputItem } from "openai/resources/responses/responses";
-import { buildBoxGlb } from "@house/asset-service";
+import type { ResponseOutputItem, Tool } from "openai/resources/responses/responses";
+import { buildBoxGlb, inspectGlb } from "@house/asset-service";
 import { BlenderError, MEASURE_SCRIPT, type BlenderPort, type PythonResult } from "./blender";
 import type { AgentModel, ModelReply } from "./model";
 
@@ -12,10 +12,12 @@ let callCounter = 0;
 export function scriptedModel(
   script: Turn[] | ((turnIndex: number, input: unknown[]) => Turn),
   opts: { supportsImages?: boolean } = {}
-): AgentModel & { requests: number; inputs: unknown[][] } {
+): AgentModel & { requests: number; inputs: unknown[][]; toolNames: string[][]; instructions: string[] } {
   const model = {
-    provider: "scripted", model: "scripted", supportsImages: opts.supportsImages ?? false, requests: 0, inputs: [] as unknown[][],
-    async respond(input: unknown[]): Promise<ModelReply> {
+    provider: "scripted", model: "scripted", supportsImages: opts.supportsImages ?? false, requests: 0, inputs: [] as unknown[][], toolNames: [] as string[][], instructions: [] as string[],
+    async respond(input: unknown[], instructions?: string, tools?: Tool[]): Promise<ModelReply> {
+      model.instructions.push(instructions ?? "");
+      model.toolNames.push((tools ?? []).map((t) => (t as { name?: string }).name ?? ""));
       const index = model.requests++;
       model.inputs.push([...input]);
       const turn = typeof script === "function" ? script(index, input) : script[index] ?? "done";
@@ -38,8 +40,9 @@ export function lastToolOutput(input: unknown[]): any {
 }
 
 /**
- * Fake of the BlenderPort *protocol*, not of Blender: it understands a toy
- * `BOX w h d` line instead of bpy and exports a matching GLB. It exercises the
+ * Fake of the BlenderPort *protocol*, not of Blender: it understands toy
+ * `BOX w h d` and `SCALE x y z` lines instead of bpy, imports real GLBs by
+ * measuring them, and exports a matching box GLB. It exercises the
  * agent loop, guard, gate and registry end to end; it says nothing about
  * whether real Blender accepts model-written Python.
  */
@@ -61,10 +64,11 @@ export class FakeBlender implements BlenderPort {
       return { ok: true, output: JSON.stringify({ mesh_objects: 1, triangles: 12, gltf_dims_width_height_depth: [w, h, d] }) };
     }
     this.executed.push(code);
-    const m = /BOX\s+([\d.]+)\s+([\d.]+)\s+([\d.]+)/.exec(code);
-    if (!m) return { ok: false, output: "NameError: toy interpreter only understands 'BOX w h d'" };
-    this.size = [Number(m[1]), Number(m[2]), Number(m[3])];
-    return { ok: true, output: "built" };
+    const box = /BOX\s+([\d.]+)\s+([\d.]+)\s+([\d.]+)/.exec(code);
+    if (box) { this.size = [Number(box[1]), Number(box[2]), Number(box[3])]; return { ok: true, output: "built" }; }
+    const scale = /SCALE\s+([\d.]+)\s+([\d.]+)\s+([\d.]+)/.exec(code);
+    if (scale && this.size) { this.size = this.size.map((n, i) => n * Number(scale[i + 1])) as [number, number, number]; return { ok: true, output: "scaled" }; }
+    return { ok: false, output: "NameError: toy interpreter only understands 'BOX w h d' and 'SCALE x y z'" };
   }
   async screenshot() { return null; }
   async exportGlb(): Promise<Uint8Array> {
@@ -74,6 +78,12 @@ export class FakeBlender implements BlenderPort {
     this.active--;
     if (!this.size) throw new BlenderError("No mesh objects to export");
     return buildBoxGlb({ size: this.size, center: [0.3, this.size[1] / 2, -0.2] });
+  }
+  imported: Uint8Array[] = [];
+  async importGlb(glb: Uint8Array) {
+    this.check();
+    this.imported.push(glb);
+    this.size = inspectGlb(glb).size; // glTF dims: width, height, depth
   }
   async reset() { this.check(); this.resets++; this.size = null; }
 }

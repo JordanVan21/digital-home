@@ -16,6 +16,7 @@ export type Gltf = {
   accessors?: { count: number; min?: number[]; max?: number[] }[];
   bufferViews?: { byteLength: number }[];
   images?: { uri?: string; bufferView?: number }[];
+  materials?: { name?: string }[];
   buffers?: { uri?: string; byteLength: number }[];
   [key: string]: unknown;
 };
@@ -122,6 +123,8 @@ export type GlbInspection = {
   requiredExtensions: string[];
   fileBytes: number;
   contentHash: string;
+  /** Material names, so material overrides can target them. */
+  materialNames: string[];
 };
 
 export function inspectGlb(bytes: Uint8Array): GlbInspection {
@@ -187,6 +190,7 @@ export function inspectGlb(bytes: Uint8Array): GlbInspection {
     nonTriangleGeometry: nonTriangle,
     requiredExtensions: json.extensionsRequired ?? [],
     fileBytes: bytes.byteLength,
+    materialNames: (json.materials ?? []).map((m, i) => m.name ?? `material_${i}`),
     contentHash: createHash("sha256").update(bytes).digest("hex"),
   };
 }

@@ -1,5 +1,5 @@
 import { randomUUID } from "node:crypto";
-import { readFile, unlink } from "node:fs/promises";
+import { readFile, unlink, writeFile } from "node:fs/promises";
 import net from "node:net";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
@@ -21,6 +21,8 @@ export interface BlenderPort {
   screenshot(signal?: AbortSignal): Promise<Uint8Array | null>;
   /** Self-contained GLB of all mesh objects, Y-up, modifiers applied. */
   exportGlb(signal?: AbortSignal): Promise<Uint8Array>;
+  /** Loads a GLB into the scene (Blender converts glTF Y-up to its Z-up) so it can be modified. */
+  importGlb(glb: Uint8Array, signal?: AbortSignal): Promise<void>;
   /** Empties the scene and sets metric units so jobs cannot leak into each other. */
   reset(signal?: AbortSignal): Promise<void>;
 }
@@ -89,6 +91,12 @@ bpy.context.view_layer.objects.active = first
 bpy.ops.export_scene.gltf(filepath=${JSON.stringify(path)}, export_format='GLB', use_selection=True,
     export_yup=True, export_apply=True, export_cameras=False, export_lights=False)
 print("export-ok")
+`;
+
+export const importScript = (path: string) => `
+import bpy
+bpy.ops.import_scene.gltf(filepath=${JSON.stringify(path)})
+print("import-ok")
 `;
 
 // --- Blender MCP socket client --------------------------------------------------
@@ -170,6 +178,17 @@ export class BlenderMcpClient implements BlenderPort {
     }
   }
 
+  async importGlb(glb: Uint8Array, signal?: AbortSignal): Promise<void> {
+    const path = join(this.tempDir, `house-import-${randomUUID()}.glb`);
+    try {
+      await writeFile(path, glb);
+      const result = await this.runPython(importScript(path), signal);
+      if (!result.ok) throw new BlenderError(`GLB import failed: ${result.output}`);
+    } finally {
+      await unlink(path).catch(() => undefined);
+    }
+  }
+
   async reset(signal?: AbortSignal): Promise<void> {
     const result = await this.runPython(RESET_SCRIPT, signal);
     if (!result.ok) throw new BlenderError(`Could not reset the Blender scene: ${result.output}`);
@@ -196,8 +215,15 @@ export class BlenderPool {
     if (next) next(port); else this.idle.push(port);
   }
 
-  async use<T>(fn: (port: BlenderPort) => Promise<T>): Promise<T> {
+  /** Exclusive hold on one Blender until `release()`; use when a job needs it across several steps. */
+  async lease(): Promise<{ port: BlenderPort; release: () => void }> {
     const port = await this.acquire();
-    try { return await fn(port); } finally { this.release(port); }
+    let released = false;
+    return { port, release: () => { if (!released) { released = true; this.release(port); } } };
+  }
+
+  async use<T>(fn: (port: BlenderPort) => Promise<T>): Promise<T> {
+    const { port, release } = await this.lease();
+    try { return await fn(port); } finally { release(); }
   }
 }
