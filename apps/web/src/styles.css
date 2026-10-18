@@ -1395,3 +1395,29 @@ kbd {
     padding: 9px 10px;
   }
 }
+
+/* Cloud account (sign in with the iPhone app's account to open scans) */
+.cloud-signin {
+  display: grid;
+  gap: 8px;
+  padding: 10px;
+  min-width: 240px;
+}
+.cloud-signin p,
+.cloud-account-email {
+  margin: 0;
+  padding: 4px 10px;
+  font-size: 12px;
+  opacity: 0.75;
+}
+.cloud-signin input {
+  font: inherit;
+  padding: 8px 10px;
+  border-radius: 10px;
+  border: 1px solid rgba(127, 127, 127, 0.35);
+  background: rgba(255, 255, 255, 0.6);
+  color: inherit;
+}
+.cloud-error {
+  color: #c0392b;
+}

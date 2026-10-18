@@ -17,6 +17,7 @@ import { InspectorPanel } from "./components/InspectorPanel";
 import { AssetBrowser } from "./components/AssetBrowser";
 import { Button } from "./components/Button";
 import { readLastRoom, rememberRoom } from "./state/lastRoom";
+import { cloudRoomIds, watchCloudRoom } from "./state/cloud";
 function Keyboard() {
   useEffect(() => {
     const cleanupHeightModifier = installHeightModifier(editor);
@@ -85,6 +86,7 @@ export default function App() {
     void editor.load(readLastRoom());
     return editor.room.subscribe((s) => rememberRoom(s.room.roomId));
   }, []);
+  useLiveCloudRoom();
   return (
     <main className="app-shell">
       <Keyboard />
@@ -124,4 +126,37 @@ export default function App() {
       {browser && <AssetBrowser />}
     </main>
   );
+}
+
+/**
+ * When the render agent swaps a better model into the open scanned room, reload
+ * it, but only while the viewer is idle (no drag, suggestions or unsaved edits),
+ * so nothing they are doing is lost.
+ */
+function useLiveCloudRoom() {
+  const roomId = useStore(editor.room, (s) => s.room.roomId);
+  useEffect(() => {
+    if (!cloudRoomIds.has(roomId)) return;
+    let waiting = false;
+    const reloadWhenIdle = (revision: number) => {
+      const current = editor.scene.getState().scene?.revision ?? -1;
+      if (revision <= current) return;
+      const busy =
+        editor.interaction.getState().dragging ||
+        editor.hasDraft() ||
+        editor.pending();
+      if (busy) {
+        if (!waiting) {
+          waiting = true;
+          setTimeout(() => {
+            waiting = false;
+            reloadWhenIdle(revision);
+          }, 3000);
+        }
+        return;
+      }
+      void editor.load().then(() => editor.notify("Updated with a better model."));
+    };
+    return watchCloudRoom(roomId, reloadWhenIdle);
+  }, [roomId]);
 }

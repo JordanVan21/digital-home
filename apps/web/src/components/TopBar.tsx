@@ -16,6 +16,7 @@ import {
 import { editor } from "../state/editor";
 import { rooms } from "../state/rooms";
 import { Button } from "./Button";
+import { CloudAccount } from "./CloudAccount";
 
 export const searchInputId = "global-search";
 
@@ -219,6 +220,7 @@ export function TopBar() {
         <kbd>⌘ K</kbd>
       </label>
       <span className="spacer" />
+      <CloudAccount />
       <RoomSwitcher disabled={locked} />
       <div className="history-buttons">
         <Button

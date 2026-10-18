@@ -37,6 +37,7 @@ import {
 } from "@house/scene-engine";
 import {
   Autosave,
+  CloudSceneRepository,
   LocalStorageSceneRepository,
   type SaveState,
   type SceneRepository,
@@ -1159,7 +1160,7 @@ export function createEditor(
   };
 }
 export type Editor = ReturnType<typeof createEditor>;
-export const editor = createEditor(new LocalStorageSceneRepository());
+export const editor = createEditor(new CloudSceneRepository());
 /** The gesture session is mutable and deliberately lives outside all Zustand stores. */
 export class DragSession {
   private id: string | null = null;

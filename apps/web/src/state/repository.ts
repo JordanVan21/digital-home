@@ -14,6 +14,7 @@ import {
   type SceneSpec,
 } from "@house/contracts";
 import { roomById } from "./rooms";
+import { cloudRoomIds, fetchCloudScene, pushCloudScene } from "./cloud";
 export interface SceneRepository {
   load(roomId: string): Promise<SceneSpec>;
   save(scene: SceneSpec, baseRevision: number): Promise<{ revision: number }>;
@@ -97,7 +98,7 @@ export class LocalStorageSceneRepository implements SceneRepository {
   async load(roomId: string): Promise<SceneSpec> {
     return this.read(roomId);
   }
-  private write(scene: SceneSpec, receipts?: unknown[]) {
+  protected write(scene: SceneSpec, receipts?: unknown[]) {
     try {
       this.storage.setItem(
         this.key(scene.roomId),
@@ -338,4 +339,55 @@ export class Autosave {
     this.disposed = true;
     clearTimeout(this.timer);
   };
+}
+
+/**
+ * Local-first repository for scanned rooms stored in Supabase: opening a room
+ * adopts the saved copy when it is newer (e.g. the render agent swapped in a better
+ * model) or from a different import; every local save is pushed back.
+ */
+export class CloudSceneRepository extends LocalStorageSceneRepository {
+  async load(roomId: string): Promise<SceneSpec> {
+    if (cloudRoomIds.has(roomId)) {
+      const remote = await fetchCloudScene(roomId).catch(() => null);
+      if (remote) {
+        const local = await super.load(roomId).catch(() => null);
+        if (
+          !local ||
+          local.revision < remote.revision ||
+          local.id !== remote.id ||
+          local.shellId !== remote.shellId
+        )
+          this.write(remote);
+      }
+    }
+    return super.load(roomId);
+  }
+  async save(scene: SceneSpec, baseRevision: number) {
+    const result = await super.save(scene, baseRevision);
+    this.push(scene.roomId);
+    return result;
+  }
+  async saveScenePatch(
+    roomId: string,
+    baseRevision: number,
+    idempotencyKey: string,
+    operations: SceneOp[],
+  ) {
+    const result = await super.saveScenePatch(
+      roomId,
+      baseRevision,
+      idempotencyKey,
+      operations,
+    );
+    this.push(roomId);
+    return result;
+  }
+  private push(roomId: string) {
+    if (!cloudRoomIds.has(roomId)) return;
+    void super
+      .load(roomId)
+      .then(pushCloudScene)
+      .catch(() => {});
+  }
 }
