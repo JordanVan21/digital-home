@@ -13,6 +13,13 @@ export function installEditorKeyboard(editor: Editor) {
       return;
     const state = editor.interaction.getState();
     if (e.key === "Escape") {
+      if (state.navigationMode !== "edit" && !state.walk && !state.dragging) {
+        editor.interaction.setState({
+          navigationMode: "edit",
+          hoveredId: null,
+        });
+        return;
+      }
       if (state.walk) {
         editor.setWalk(false);
         return;
@@ -82,11 +89,16 @@ export function installEditorKeyboard(editor: Editor) {
       editor.setWalk(!state.walk);
       return;
     }
-    if (key === "v") editor.interaction.setState({ tool: "select" });
+    if (key === "v")
+      editor.interaction.setState({ tool: "select", navigationMode: "edit" });
     if (key === "g")
-      editor.interaction.setState({ tool: "move", movePlane: "floor" });
+      editor.interaction.setState({
+        tool: "move",
+        movePlane: "floor",
+        navigationMode: "edit",
+      });
     if (key === "r") {
-      editor.interaction.setState({ tool: "rotate" });
+      editor.interaction.setState({ tool: "rotate", navigationMode: "edit" });
       editor.rotate(e.shiftKey ? -1 : 1);
     }
     if (key === "l") editor.toggleLock();

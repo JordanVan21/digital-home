@@ -61,6 +61,7 @@ beforeEach(() => {
     hoveredId: null,
     dragging: false,
     tool: "move",
+    navigationMode: "edit",
     movePlane: "floor",
     heightModifier: false,
     boundingBoxes: false,
@@ -768,3 +769,25 @@ it("turns a wall item at a corner during an imperative drag and continues on the
   expect(editor.draft.getState().undo).toHaveLength(1);
   expect(editor.selected()?.placement?.parentId).toBe(fixtureId(13));
 });
+
+it.each(["orbit", "pan"] as const)(
+  "camera %s mode passes furniture drags through without selection or edits",
+  async (navigationMode) => {
+    const object = editor.scene
+      .getState()
+      .scene.objects.find((o) => o.id === fixtureId(111))!;
+    editor.interaction.setState({ navigationMode });
+    renderer = await ReactThreeTestRenderer.create(
+      <Furniture object={object} />,
+    );
+    const node = renderer.scene.children[0];
+    const start = (node.instance as Group).position.clone();
+    await renderer.fireEvent(node, "pointerDown", pointer(0.2, 1.75));
+    await renderer.fireEvent(node, "pointerMove", pointer(0.8, 1.75, 220));
+    await renderer.fireEvent(node, "pointerUp", pointer(0.8, 1.75, 220));
+    expect(editor.interaction.getState().selectedId).toBeNull();
+    expect(editor.interaction.getState().dragging).toBe(false);
+    expect(editor.hasDraft()).toBe(false);
+    expect((node.instance as Group).position.equals(start)).toBe(true);
+  },
+);

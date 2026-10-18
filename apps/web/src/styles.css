@@ -1348,3 +1348,50 @@ kbd {
   background-color: var(--contrast-hover);
   filter: none;
 }
+
+.navigation-controls {
+  position: absolute;
+  left: 24px;
+  bottom: 24px;
+  z-index: 4;
+  display: flex;
+  gap: 3px;
+  padding: 5px;
+  border-radius: 999px;
+}
+.navigation-controls button {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 10px 13px;
+  border-radius: 999px;
+  color: var(--ink-soft);
+}
+.navigation-controls button:hover:not(:disabled) {
+  background: var(--glass-inset);
+}
+.navigation-controls button[aria-checked="true"] {
+  background: var(--contrast-fill);
+  background-image: linear-gradient(
+    155deg,
+    var(--contrast-sheen),
+    transparent 65%
+  );
+  color: var(--contrast-ink);
+  box-shadow: inset 0 1px 0 var(--contrast-top-edge);
+}
+.canvas-wrap:is(.camera-orbit, .camera-pan) canvas {
+  cursor: grab;
+}
+.canvas-wrap:is(.camera-orbit, .camera-pan) canvas:active {
+  cursor: grabbing;
+}
+@media (max-width: 760px) {
+  .navigation-controls {
+    left: 12px;
+    bottom: 12px;
+  }
+  .navigation-controls button {
+    padding: 9px 10px;
+  }
+}

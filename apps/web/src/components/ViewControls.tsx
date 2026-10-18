@@ -1,6 +1,15 @@
 import { CameraViewMenu } from "./CameraViewMenu";
 import { useStore } from "zustand";
-import { Boxes, Scan, Sun, Moon, PanelsTopLeft } from "lucide-react";
+import {
+  Boxes,
+  Scan,
+  Sun,
+  Moon,
+  PanelsTopLeft,
+  Hand,
+  Orbit,
+  MousePointer2,
+} from "lucide-react";
 import { editor } from "../state/editor";
 import { nextPreset, useLighting } from "../theme";
 import { Button } from "./Button";
@@ -80,6 +89,51 @@ export function ViewControls() {
       >
         <Scan size={18} />
       </Button>
+    </div>
+  );
+}
+
+/** Explicit camera modes leave the selected furniture and its draft untouched. */
+export function NavigationControls() {
+  const mode = useStore(editor.interaction, (s) => s.navigationMode);
+  const dragging = useStore(editor.interaction, (s) => s.dragging);
+  return (
+    <div
+      className="navigation-controls glass"
+      role="radiogroup"
+      aria-label="Mouse controls"
+    >
+      {(
+        [
+          ["edit", "Edit objects", "Edit", MousePointer2],
+          ["orbit", "Orbit camera", "Orbit", Orbit],
+          ["pan", "Pan camera", "Pan", Hand],
+        ] as const
+      ).map(([id, label, text, Icon]) => (
+        <button
+          key={id}
+          type="button"
+          role="radio"
+          aria-label={label}
+          aria-checked={mode === id}
+          disabled={dragging}
+          title={
+            id === "edit"
+              ? "Select and edit furniture"
+              : `Left-drag to ${text.toLowerCase()} without selecting furniture`
+          }
+          onClick={() =>
+            editor.interaction.setState({
+              navigationMode: id,
+              walk: false,
+              hoveredId: null,
+            })
+          }
+        >
+          <Icon size={16} />
+          <span>{text}</span>
+        </button>
+      ))}
     </div>
   );
 }

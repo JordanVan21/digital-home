@@ -59,6 +59,7 @@ export function useMarquee() {
       },
       onPointerDown: (e: PointerEvent<HTMLDivElement>) => {
         if (
+          editor.interaction.getState().navigationMode !== "edit" ||
           !e.shiftKey ||
           e.button !== 0 ||
           editor.motion.pointerHandled ||

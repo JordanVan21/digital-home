@@ -225,3 +225,7 @@ Tipped pieces use a projected occupied-volume centre over their contact region, 
 Use the moon/sun button at the top of the right-side view controls to switch between neutral frosted light and dark panels. The browser remembers the choice independently of rooms, lighting presets, suggestions and undo history. Light is the default; storage restrictions do not prevent switching. Glass uses the original 26 px blur and backdrop saturation, translucent neutral fills, bright edges and inset highlights. It adds no coloured tint; the room remains visible through the frost. Light panels increase opacity over the evening backdrop for legibility. Inputs, menus and hover fills share the theme tokens.
 
 Panel buttons use grayscale fills and accents in both themes. The inactive Measurements control and bottom Edit log panel have been removed; typed operation logging remains internal.
+
+### Camera mouse modes
+
+The bottom-left **Edit / Orbit / Pan** control chooses what left-drag does. Edit keeps existing furniture gestures. Orbit and Pan bypass furniture selection, rotation handles and Shift-marquee; the current selection and draft remain intact, while floating object controls hide. Pan also maps one-finger camera dragging to pan. Escape or the V/G/R editing shortcuts return to Edit; camera presets and zoom remain available. This preference is temporary and does not change the saved room.

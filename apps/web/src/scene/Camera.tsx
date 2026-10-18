@@ -1,6 +1,6 @@
 import { useEffect, useRef, type ComponentRef } from "react";
 import { useFrame, useThree } from "@react-three/fiber";
-import { CameraControls } from "@react-three/drei";
+import { CameraControls, CameraControlsImpl } from "@react-three/drei";
 import { Box3, PerspectiveCamera, Sphere, Vector3 } from "three";
 import { useStore } from "zustand";
 import { insidePoint } from "@house/scene-engine";
@@ -159,7 +159,20 @@ export function Camera() {
     };
     c.addEventListener("rest", rest);
     apply("iso", false);
+    const navigation = () => {
+      const s = editor.interaction.getState();
+      const pan = s.navigationMode === "pan" && !s.walk;
+      c.mouseButtons.left = pan
+        ? CameraControlsImpl.ACTION.TRUCK
+        : CameraControlsImpl.ACTION.ROTATE;
+      c.touches.one = pan
+        ? CameraControlsImpl.ACTION.TOUCH_TRUCK
+        : CameraControlsImpl.ACTION.TOUCH_ROTATE;
+    };
+    navigation();
     const unsubscribe = editor.interaction.subscribe((s, prev) => {
+      if (s.navigationMode !== prev.navigationMode || s.walk !== prev.walk)
+        navigation();
       c.enabled = !s.dragging;
       if (s.dragging) {
         c.stop();

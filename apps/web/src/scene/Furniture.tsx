@@ -61,6 +61,10 @@ export const Furniture = memo(function Furniture({
   );
   const movePlane = useStore(editor.interaction, (s) => s.movePlane);
   const tool = useStore(editor.interaction, (s) => s.tool);
+  const editing = useStore(
+    editor.interaction,
+    (s) => s.navigationMode === "edit",
+  );
   const boundingBoxes = useStore(editor.interaction, (s) => s.boundingBoxes);
   const conflict = useStore(editor.draft, (s) => !!s.conflicts[object.id]);
   const resolved = useStore(editor.draft, (s) =>
@@ -253,7 +257,11 @@ export const Furniture = memo(function Furniture({
     );
   };
   const down = (e: ThreeEvent<PointerEvent>) => {
-    if (hiddenByWall()) return;
+    if (
+      editor.interaction.getState().navigationMode !== "edit" ||
+      hiddenByWall()
+    )
+      return;
     if (e.button !== 0 || !editor.scene.getState().ready) return;
     e.stopPropagation();
     editor.motion.pointerHandled = true;
@@ -408,7 +416,11 @@ export const Furniture = memo(function Furniture({
     return Math.atan2(drag.current.point.x - cx, drag.current.point.z - cz);
   };
   const ringDown = (e: ThreeEvent<PointerEvent>) => {
-    if (hiddenByWall()) return;
+    if (
+      editor.interaction.getState().navigationMode !== "edit" ||
+      hiddenByWall()
+    )
+      return;
     if (e.button !== 0 || latest.current.locked) return;
     e.stopPropagation();
     const angle = pointerAngle(e);
@@ -490,7 +502,11 @@ export const Furniture = memo(function Furniture({
         onPointerUp={up}
         onPointerCancel={() => endGesture()}
         onPointerOver={(e) => {
-          if (hiddenByWall()) return;
+          if (
+            editor.interaction.getState().navigationMode !== "edit" ||
+            hiddenByWall()
+          )
+            return;
           e.stopPropagation();
           if (!editor.interaction.getState().dragging)
             editor.interaction.setState({ hoveredId: object.id });
@@ -515,7 +531,7 @@ export const Furniture = memo(function Furniture({
         />
         {boundingBoxes && <CollisionOutline ref={outline} object={object} />}
 
-        {selected && !object.locked && tool !== "rotate" && (
+        {editing && selected && !object.locked && tool !== "rotate" && (
           <group
             ref={heightGuide}
             name="height-guide"
@@ -545,7 +561,7 @@ export const Furniture = memo(function Furniture({
             ))}
           </group>
         )}
-        {selected && !object.locked && tool === "rotate" && (
+        {editing && selected && !object.locked && tool === "rotate" && (
           <group ref={ringFrame} name="world-swivel-frame">
             <SwivelRing
               ref={angleLabel}
@@ -586,7 +602,7 @@ export const Furniture = memo(function Furniture({
             <span className="new-badge">New</span>
           </Html>
         )}
-        {selected && (
+        {editing && selected && (
           <Html
             portal={labelLayer}
             position={[0, labelY + 0.12, 0]}

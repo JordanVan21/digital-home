@@ -45,6 +45,7 @@ import { roomById } from "./rooms";
 export type CameraView = "iso" | "top" | "eye" | "selection" | "room" | "photo";
 export type Tool = "select" | "move" | "rotate";
 export type Interaction = {
+  navigationMode: "edit" | "orbit" | "pan";
   cameraView: CameraView;
   cameraRequest: number;
   walk: boolean;
@@ -183,6 +184,7 @@ export function createEditor(
     hoveredId: null,
     dragging: false,
     tool: "select",
+    navigationMode: "edit",
     movePlane: "floor",
     heightModifier: false,
     browser: false,

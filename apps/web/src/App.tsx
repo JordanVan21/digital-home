@@ -10,7 +10,7 @@ import { SceneCanvas } from "./scene/SceneCanvas";
 import { TopBar } from "./components/TopBar";
 import { SideNav } from "./components/SideNav";
 import { SuggestionsBar } from "./components/SuggestionsBar";
-import { ViewControls } from "./components/ViewControls";
+import { ViewControls, NavigationControls } from "./components/ViewControls";
 import { useLighting } from "./theme";
 import { usePanelTheme } from "./uiTheme";
 import { InspectorPanel } from "./components/InspectorPanel";
@@ -95,6 +95,7 @@ export default function App() {
       <TopBar />
       <SideNav />
       <ViewControls />
+      <NavigationControls />
       <WalkHint />
       {new URLSearchParams(window.location.search).has("perf") && (
         <PerfOverlay />

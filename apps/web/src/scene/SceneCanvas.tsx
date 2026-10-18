@@ -78,12 +78,13 @@ export const SceneCanvas = memo(function SceneCanvas() {
   const marquee = useMarquee();
   useEffect(() => {
     const update = () => {
-      const { hoveredId, dragging } = editor.interaction.getState();
+      const { hoveredId, dragging, navigationMode } =
+        editor.interaction.getState();
       const locked = editor
         .working()
         .objects.find((o) => o.id === hoveredId)?.locked;
       if (wrapper.current)
-        wrapper.current.className = `canvas-wrap ${dragging ? "dragging" : locked ? "locked" : hoveredId ? "hovering" : ""}`;
+        wrapper.current.className = `canvas-wrap ${navigationMode !== "edit" ? `camera-${navigationMode}` : dragging ? "dragging" : locked ? "locked" : hoveredId ? "hovering" : ""}`;
     };
     const interaction = editor.interaction.subscribe(update),
       scene = editor.scene.subscribe(update);
@@ -130,7 +131,12 @@ export const SceneCanvas = memo(function SceneCanvas() {
           outputColorSpace: SRGBColorSpace,
         }}
         onPointerMissed={(e) => {
-          if (e.button === 0 && !e.shiftKey) editor.select(null);
+          if (
+            editor.interaction.getState().navigationMode === "edit" &&
+            e.button === 0 &&
+            !e.shiftKey
+          )
+            editor.select(null);
         }}
       >
         <Stage />
