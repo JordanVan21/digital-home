@@ -210,6 +210,7 @@ export function createEditor(
     cameraPosition: [7.2, 6.5, 8.3] as Vec3,
     cameraDirection: [0, 0, -1] as Vec3,
     cameraTarget: [0, 0.65, 0] as Vec3,
+    dropPoint: undefined as undefined | ((x:number,y:number)=>Vec3 | undefined),
     pointerHandled: false,
     projectPoint: undefined as undefined | ((point: Vec3) => [number, number]),
   };
@@ -879,6 +880,13 @@ export function createEditor(
         }
     notify("No free space for this piece. Move or remove something first.");
   };
+  const dropAsset = (asset: AssetSpec, point: Vec3): boolean => {
+    if (!scene.getState().ready || interaction.getState().dragging) return false;
+    let object: SceneObject = {id:crypto.randomUUID(),assetId:asset.id,category:asset.category,displayName:asset.title,dimensionsM:[...asset.dimensionsM],locked:false,source:"catalog",ownership:"planned_new",placement:{support:asset.mount ?? "floor"},transform:{position:point,rotation:[0,0,0,1],scale:[1,1,1]}};
+    object = asset.mount === "wall" ? onWall(sceneContext.room,object) : asset.mount === "ceiling" ? onCeiling(sceneContext.room,object) : onNearestSurface(working(),object,sceneContext.room,sceneContext.assets);
+    if(!suggest({type:"add",object})) return false;
+    select(object.id);interaction.setState({browser:false,replacing:false});return true;
+  };
   const reset = async () => {
     if (repository?.reset) {
       const wasReady = scene.getState().ready;
@@ -1053,6 +1061,7 @@ export function createEditor(
     toggleLock,
     travel,
     chooseAsset,
+    dropAsset,
     duplicate,
     reset,
     load,

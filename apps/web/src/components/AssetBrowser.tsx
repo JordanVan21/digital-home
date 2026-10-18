@@ -20,7 +20,12 @@ export function AssetBrowser() {
     return () => previous?.focus();
   }, []);
   const categories = ["all", ...new Set(catalog.map((a) => a.category))];
-  const candidates = replacing && object ? rankByDimensionFit(catalog, [object.category], object.dimensionsM).map(r=>r.asset) : catalog;
+  const candidates =
+    replacing && object
+      ? rankByDimensionFit(catalog, [object.category], object.dimensionsM).map(
+          (r) => r.asset,
+        )
+      : catalog;
   const shown = candidates.filter(
     (a) =>
       (!replacing || a.category === object?.category) &&
@@ -109,6 +114,8 @@ export function AssetBrowser() {
               key={a.id}
               label={`${replacing ? "Replace with" : "Add"} ${a.title}`}
               className="asset-card"
+              draggable={!replacing}
+              onDragStart={e=>{e.dataTransfer.setData("application/house-asset",a.id);e.dataTransfer.effectAllowed="copy";requestAnimationFrame(()=>editor.interaction.setState({browser:false}));}}
               onClick={() => editor.chooseAsset(a)}
             >
               <div className="asset-image">
@@ -137,7 +144,7 @@ export function AssetBrowser() {
         <p className="browser-note">
           {replacing
             ? "Best dimension fits first. Keeps the position and rotation of your piece."
-            : "New pieces find a free spot near the center of your room."}{" "}
+            : "Click to find a free spot, or drag a piece onto the floor or furniture."}{" "}
           All placements are checked.
         </p>
       </section>

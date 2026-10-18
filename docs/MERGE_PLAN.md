@@ -75,7 +75,7 @@ Codex's interaction stays: controls, the suggest/Accept flow, nearest-surface pl
 - [x] **20 Finishes:** asset `variants` swatches applied as `materialOverrides` (Jordan's catalog has `variants` and `light` metadata that the step 2 import dropped; re-import it with the schema extension).
 - [x] **21 Keep / Replace / Remove planning picker** (independent of the lock) with a ghost for Remove.
 - [x] **22 Replace model** ranked by dimension fit (`rankByDimensionFit` already exists in `scene-engine/src/matching.ts`).
-- [ ] **23 Drag from the library** into the room (drop point onto floor or surface); clicking keeps codex's ring search.
+- [x] **23 Drag from the library** into the room (drop point onto floor or surface); clicking keeps codex's ring search.
 - [ ] **24 Reference photo overlay and "Match photo" camera** for test2 (`photoCamera` and `referenceImage: "assets/test2.png"` are already on the room definition; the image lives in Jordan's branch).
 - [ ] **25 Dev menu:** simulate a save failure, simulate an edit from another session, reset room.
 
