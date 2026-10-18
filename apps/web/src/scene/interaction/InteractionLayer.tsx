@@ -1,3 +1,4 @@
+import { labelLayer } from '../labelLayer';
 import { useEffect, useMemo, useRef, useSyncExternalStore } from 'react';
 import { useFrame, useThree } from '@react-three/fiber';
 import { Html } from '@react-three/drei';
@@ -180,7 +181,7 @@ function objectsInRect(r: { x0: number; y0: number; x1: number; y1: number }, ho
 }
 
 /** Floor dial around the selection: drag anywhere on it to turn (works from any camera angle). */
-function RotationRing({ meshRef }: { meshRef: React.RefObject<Mesh> }) {
+function RotationRing({ meshRef }: { meshRef: React.RefObject<Mesh | null> }) {
   const sel = useEditor((s) => s.selectedIds);
   const objects = useEditor((s) => s.workingScene?.objects);
   const mode = useEditor((s) => s.mode);
@@ -256,7 +257,7 @@ function Guides() {
         </lineSegments>
       )}
       {height && (
-        <Html position={height.at} center zIndexRange={[25, 0]} style={{ pointerEvents: 'none' }}>
+        <Html portal={labelLayer} position={height.at} center zIndexRange={[25, 0]} style={{ pointerEvents: 'none' }}>
           <div className="readout">
             {Math.round((height.baseY - height.floorY) * 100)} cm above floor
             {height.surfaceLabel ? ` · ${Math.round((height.baseY - height.surfaceY) * 100)} cm above ${height.surfaceLabel}` : ''}
@@ -264,7 +265,7 @@ function Guides() {
         </Html>
       )}
       {note && notePos && !height && (
-        <Html position={notePos} center zIndexRange={[25, 0]} style={{ pointerEvents: 'none' }}>
+        <Html portal={labelLayer} position={notePos} center zIndexRange={[25, 0]} style={{ pointerEvents: 'none' }}>
           <div className="readout">{note}</div>
         </Html>
       )}

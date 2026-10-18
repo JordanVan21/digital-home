@@ -1,3 +1,4 @@
+import { labelLayer } from './labelLayer';
 import { useMemo, useRef, useSyncExternalStore } from 'react';
 import { useFrame } from '@react-three/fiber';
 import { Html } from '@react-three/drei';
@@ -99,7 +100,7 @@ function DragLabel({ id, height }: { id: string; height: number }) {
   if (!msgs.length) return null;
   const isError = dragFeedback.violations.some((v) => v.severity === 'error');
   return (
-    <Html position={[0, height + 0.2, 0]} center zIndexRange={[20, 0]} style={{ pointerEvents: 'none' }}>
+    <Html portal={labelLayer} position={[0, height + 0.2, 0]} center zIndexRange={[20, 0]} style={{ pointerEvents: 'none' }}>
       <div className={`violation-label ${isError ? 'error' : ''}`}>{msgs.join(' · ')}</div>
     </Html>
   );
@@ -111,7 +112,7 @@ function BlockerLabel({ id, height }: { id: string; height: number }) {
   const mover = b ? useEditor.getState().workingScene?.objects.find((o) => o.id === b.movingId) : undefined;
   if (!b) return null;
   return (
-    <Html position={[0, height + 0.12, 0]} center zIndexRange={[19, 0]} style={{ pointerEvents: 'none' }}>
+    <Html portal={labelLayer} position={[0, height + 0.12, 0]} center zIndexRange={[19, 0]} style={{ pointerEvents: 'none' }}>
       <div className="violation-label error">{mover ? `${mover.displayName} hits this` : 'blocked'}</div>
     </Html>
   );
@@ -135,7 +136,7 @@ function BadgeFor({ obj, flagged }: { obj: SceneObject; flagged: boolean }) {
   });
   return (
     <group ref={ref}>
-      <Html position={[0, effectiveDimsOf(obj)[1] + 0.08, 0]} center zIndexRange={[15, 0]} style={{ pointerEvents: 'none' }}>
+      <Html portal={labelLayer} position={[0, effectiveDimsOf(obj)[1] + 0.08, 0]} center zIndexRange={[15, 0]} style={{ pointerEvents: 'none' }}>
         <div className="badges">
           {obj.locked && <span className="badge lock" title="Locked"><LockGlyph /></span>}
           {flagged && <span className="badge warn" title="Has placement warnings">!</span>}

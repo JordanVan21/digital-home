@@ -1,3 +1,4 @@
+import { labelLayer } from './labelLayer';
 import { Component, memo, Suspense, useEffect, useLayoutEffect, useMemo, useRef, type ReactNode } from 'react';
 import { Bvh, Clone, Edges, Html, useGLTF } from '@react-three/drei';
 import type { Group, Mesh, Object3D } from 'three';
@@ -102,7 +103,7 @@ export function Placeholder({ obj, reason }: { obj: SceneObject; reason: 'unmatc
         </mesh>
       )}
       {label && (
-        <Html position={[0, h + 0.12, 0]} center distanceFactor={7} zIndexRange={[10, 0]} style={{ pointerEvents: 'none' }}>
+        <Html portal={labelLayer} position={[0, h + 0.12, 0]} center distanceFactor={7} zIndexRange={[10, 0]} style={{ pointerEvents: 'none' }}>
           <div className="proxy-label">{label}</div>
         </Html>
       )}

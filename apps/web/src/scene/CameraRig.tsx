@@ -123,7 +123,7 @@ const SPEED = 1.6;
  * Walk mode: eye-level first-person view. WASD/arrows move, drag to look, Esc exits. The camera
  * collides with furniture (not rugs) and walls via the same block-and-slide resolver as editing.
  */
-function WalkControls({ controls }: { controls: React.RefObject<CameraControls> }) {
+function WalkControls({ controls }: { controls: React.RefObject<CameraControls | null> }) {
   const camera = useThree((s) => s.camera);
   const gl = useThree((s) => s.gl);
   const keys = useRef(new Set<string>());

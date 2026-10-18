@@ -1,3 +1,4 @@
+import { labelLayer } from '../scene/labelLayer';
 import { Suspense, useEffect, useState } from 'react';
 import { Canvas } from '@react-three/fiber';
 import { Environment, Html, OrbitControls } from '@react-three/drei';
@@ -23,6 +24,7 @@ export function AssetGallery() {
   const cols = 6;
   const gap = 3;
   return (
+    <div style={{ position: 'fixed', inset: 0 }} ref={(el) => { labelLayer.current = el!; }}>
     <Canvas shadows camera={{ position: vec('cam', [7.5, 9, 16]), fov: 40 }} gl={{ toneMapping: ACESFilmicToneMapping, outputColorSpace: SRGBColorSpace }}>
       <color attach="background" args={['#2a2b30']} />
       <Environment files={EDITOR_POLICY.hdrFile} environmentIntensity={0.8} />
@@ -36,6 +38,7 @@ export function AssetGallery() {
         <GalleryItem key={a.id} asset={a} url={catalog.resolveUrl(a.id)!} x={(i % cols) * gap} z={Math.floor(i / cols) * gap} />
       ))}
     </Canvas>
+    </div>
   );
 }
 
@@ -54,7 +57,7 @@ function GalleryItem({ asset, url, x, z }: { asset: AssetSpec; url: string; x: n
         <coneGeometry args={[0.12, 0.3, 16]} />
         <meshBasicMaterial color="#8a8dff" />
       </mesh>
-      <Html position={[0, -0.05, d / 2 + 0.75]} center style={{ pointerEvents: 'none' }}>
+      <Html portal={labelLayer} position={[0, -0.05, d / 2 + 0.75]} center style={{ pointerEvents: 'none' }}>
         <div className="proxy-label">{asset.title} · {asset.category}</div>
       </Html>
       <mesh position={[0, h / 2, 0]}>

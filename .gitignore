@@ -5,3 +5,4 @@ dist/
 coverage/
 apps/web/public/decoders/
 asset-staging/
+test-output/smoke-*.png

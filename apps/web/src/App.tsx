@@ -3,6 +3,7 @@ import { LocalAssetCatalog, type AssetCatalog } from './catalog/AssetCatalog';
 import { LocalScenePersistence } from './persistence/ScenePersistence';
 import { floorPointAt, objectIdAt } from './scene/canvasBridge';
 import { SceneCanvas } from './scene/SceneCanvas';
+import { labelLayer } from './scene/labelLayer';
 import { startAutosave, type Autosave } from './state/autosave';
 import { loadSource } from './state/loader';
 import { addAsset, toast, useEditor, type SceneSource } from './state/store';
@@ -122,6 +123,7 @@ export function App() {
     <div className="app">
       <div
         className="canvas-wrap"
+        ref={(el) => { labelLayer.current = el!; }}
         onDragOver={(e) => { if (e.dataTransfer.types.includes(ASSET_DRAG_MIME)) { e.preventDefault(); e.dataTransfer.dropEffect = 'copy'; } }}
         onDrop={onDrop}
       >

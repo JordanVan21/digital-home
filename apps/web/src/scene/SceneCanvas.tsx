@@ -1,5 +1,6 @@
-import { lazy, Suspense } from 'react';
+import { Suspense } from 'react';
 import { Canvas } from '@react-three/fiber';
+import { Stats } from '@react-three/drei';
 import { ACESFilmicToneMapping, SRGBColorSpace } from 'three';
 import { useEditor } from '../state/store';
 import { CameraRig } from './CameraRig';
@@ -13,8 +14,6 @@ import { TransformControlsWrapper } from './TransformControlsWrapper';
 import { PerfProbe } from './PerfProbe';
 import { IdleFrameloop } from './IdleFrameloop';
 
-// Dev-only frame stats (?perf in the URL); never bundled into production code paths.
-const Perf = import.meta.env.DEV ? lazy(() => import('r3f-perf').then((m) => ({ default: m.Perf }))) : null;
 const params = typeof location !== 'undefined' ? new URLSearchParams(location.search) : new URLSearchParams();
 const showPerf = params.has('perf');
 
@@ -45,11 +44,8 @@ export function SceneCanvas() {
       <CanvasBridge />
       <IdleFrameloop />
       {import.meta.env.DEV && <PerfProbe />}
-      {Perf && showPerf && (
-        <Suspense fallback={null}>
-          <Perf position="bottom-right" minimal />
-        </Suspense>
-      )}
+      {/* Dev-only frame stats (?perf in the URL). */}
+      {import.meta.env.DEV && showPerf && <Stats />}
     </Canvas>
   );
 }

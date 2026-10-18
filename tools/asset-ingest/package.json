@@ -14,6 +14,6 @@
     "@house/contracts": "workspace:*",
     "meshoptimizer": "0.22.0",
     "sharp": "0.33.5",
-    "three": "0.170.0"
+    "three": "0.180.0"
   }
 }
