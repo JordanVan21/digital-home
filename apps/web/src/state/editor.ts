@@ -65,7 +65,6 @@ export type Interaction = {
   lighting: string | null;
   /** Visual-only view toggles; nothing renders differently yet. */
   planView: boolean;
-  measurements: boolean;
   boundingBoxes: boolean;
 };
 /**
@@ -193,7 +192,6 @@ export function createEditor(
     toast: null,
     lighting: null,
     planView: false,
-    measurements: false,
     boundingBoxes: false,
     wallMode: "cutaway",
   }));

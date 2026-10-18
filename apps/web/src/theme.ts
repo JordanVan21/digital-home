@@ -1,11 +1,7 @@
 import { useStore } from "zustand";
 import { editor } from "./state/editor";
 
-/**
- * Lighting presets drive both the 3D lighting and the UI accent colour. The
- * glass chrome itself stays neutral; warmth belongs to the room's design, so a
- * minimal room gets cool daylight and a monochrome accent instead.
- */
+/** Room lighting and backdrop presets; frosted panel themes are independent. */
 export type LightingPreset = {
   id: string;
   label: string;

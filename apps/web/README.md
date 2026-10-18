@@ -219,3 +219,9 @@ Collision BVHs now prune transformed three-dimensional boxes, with a 15-axis OBB
 Tipped pieces use a projected occupied-volume centre over their contact region, including side contact when leaning against a back cushion. Stability uses the existing 2 cm uneven-surface band; collision penetration still allows only 0.1 mm. Authored upright floor assets remain assumed stable because their material density and weighted bases are unavailable. This is a geometric stability approximation, not a rigid-body physics simulation. Supporting surfaces remain floor and upward horizontal furniture faces. test2's three pillows and folded throw have been re-posed without soft-item overlap exemptions; all 45 pieces validate.
 
 30. Full three-axis rotation supersedes the upright-only rule and separate fixture tilts. The inspector uses X/pitch, Y/turn, Z/roll (YXZ Euler order), while saves stay quaternion-based. Swivels turn about world Y, carry full child poses, and remain imperative. Accept uses the lowest occupied point and contact stability; see “Full rotation (merge step 5)” below.
+
+### Frosted panel themes
+
+Use the moon/sun button at the top of the right-side view controls to switch between neutral frosted light and dark panels. The browser remembers the choice independently of rooms, lighting presets, suggestions and undo history. Light is the default; storage restrictions do not prevent switching. Glass uses the original 26 px blur and backdrop saturation, translucent neutral fills, bright edges and inset highlights. It adds no coloured tint; the room remains visible through the frost. Light panels increase opacity over the evening backdrop for legibility. Inputs, menus and hover fills share the theme tokens.
+
+Panel buttons use grayscale fills and accents in both themes. The inactive Measurements control and bottom Edit log panel have been removed; typed operation logging remains internal.

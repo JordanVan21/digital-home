@@ -1,4 +1,3 @@
-import { EditLogPanel } from "./components/EditLogPanel";
 import { ReferencePhoto } from "./components/ReferencePhoto";
 import { installEditorKeyboard } from "./state/keyboard";
 import { PerfOverlay } from "./components/PerfOverlay";
@@ -12,8 +11,9 @@ import { SceneCanvas } from "./scene/SceneCanvas";
 import { TopBar } from "./components/TopBar";
 import { SideNav } from "./components/SideNav";
 import { SuggestionsBar } from "./components/SuggestionsBar";
-import { MeasurementsToggle, ViewControls } from "./components/ViewControls";
+import { ViewControls } from "./components/ViewControls";
 import { useLighting } from "./theme";
+import { usePanelTheme } from "./uiTheme";
 import { InspectorPanel } from "./components/InspectorPanel";
 import { AssetBrowser } from "./components/AssetBrowser";
 import { Button } from "./components/Button";
@@ -43,14 +43,16 @@ function Keyboard() {
   }, []);
   return null;
 }
-/** Publishes the active lighting preset's colours as CSS variables for the chrome. */
+/** Syncs independent panel appearance and the room lighting backdrop. */
 function ThemeSync() {
   const light = useLighting();
+  const theme = usePanelTheme((s) => s.theme);
+  useEffect(() => {
+    document.documentElement.dataset.uiTheme = theme;
+  }, [theme]);
   useEffect(() => {
     document.documentElement.dataset.lighting = light.id;
     const root = document.documentElement.style;
-    root.setProperty("--accent", light.accent);
-    root.setProperty("--accent-ink", light.accentInk);
     root.setProperty("--backdrop", light.backdrop);
   }, [light]);
   return null;
@@ -95,13 +97,11 @@ export default function App() {
       <SideNav />
       <ViewControls />
       <ReferencePhoto />
-      <EditLogPanel />
       <WalkHint />
       {new URLSearchParams(window.location.search).has("perf") && (
         <PerfOverlay />
       )}
       <InspectorPanel />
-      <MeasurementsToggle />
       <SuggestionsBar />
       {toast && (
         <div className="toast glass" role="status">

@@ -9,7 +9,7 @@ async function select(page: import("@playwright/test").Page, id: string) {
     editor.select(id);
   }, id);
 }
-test("floating, typed log, save retry and conflict use the real patch path", async ({
+test("floating, save retry and conflict use the real patch path", async ({
   page,
 }) => {
   await page.goto("/");
@@ -25,12 +25,7 @@ test("floating, typed log, save retry and conflict use the real patch path", asy
     page.getByRole("status").filter({ hasText: "Saved" }),
   ).toBeVisible();
   await expect(page.getByLabel("Height in meters")).toHaveValue("0.731");
-  await page.getByRole("button", { name: /^Edit log/ }).click();
-  await expect(
-    page.getByRole("complementary", { name: "Edit log" }),
-  ).toContainText("Accepted patch");
-  await page.screenshot({ path: "test-results/completion-log.png" });
-  await page.getByRole("button", { name: /^Edit log/ }).click();
+  await expect(page.getByRole("button", { name: /^Edit log/ })).toHaveCount(0);
   await page.getByRole("button", { name: "Room menu", exact: true }).click();
   await page
     .getByRole("button", { name: "Simulate save failure", exact: true })

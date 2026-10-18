@@ -1,8 +1,4 @@
-/*
- * Warm frosted-glass chrome. Panels take their colour from whatever room is
- * behind them; the only hue the UI adds is --accent, set per lighting preset
- * by ThemeSync (see theme.ts).
- */
+/* Neutral frosted panels; UI appearance is independent of room lighting. */
 :root {
   font-family: "DM Sans", sans-serif;
   font-synthesis: none;
@@ -11,21 +7,21 @@
   color: var(--ink);
   background: var(--backdrop);
 
-  --ink: #2b2520;
-  --ink-soft: #5d544b;
-  --muted: #6b5e52;
-  --line: rgba(70, 48, 26, 0.09);
-  --accent: #d9742f;
+  --ink: #252525;
+  --ink-soft: #484848;
+  --muted: #505050;
+  --line: rgba(32, 32, 32, 0.1);
+  --accent: #3a3a3a;
   --accent-ink: #ffffff;
   --backdrop: #e9e6df;
-  --select: #8b84ff;
+  --select: #929292;
 
-  --glass-fill: rgba(255, 249, 241, 0.6);
-  --glass-fill-strong: rgba(255, 251, 245, 0.82);
-  --glass-inset: rgba(255, 247, 236, 0.5);
-  --glass-edge: rgba(255, 251, 244, 0.85);
+  --glass-fill: rgba(255, 255, 255, 0.6);
+  --glass-fill-strong: rgba(255, 255, 255, 0.82);
+  --glass-inset: rgba(255, 255, 255, 0.28);
+  --glass-edge: rgba(255, 255, 255, 0.75);
   --glass-shadow:
-    0 10px 34px rgba(64, 40, 18, 0.12), 0 1px 2px rgba(64, 40, 18, 0.07);
+    0 10px 34px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.07);
   --glass-blur: blur(26px) saturate(160%);
 }
 * {
@@ -90,11 +86,11 @@ kbd {
   border: 1px solid var(--glass-edge);
   box-shadow:
     var(--glass-shadow),
-    inset 0 1px 0 rgba(255, 255, 255, 0.65);
+    inset 0 1px 0 var(--glass-highlight);
 }
 .glass-inset {
   background: var(--glass-inset);
-  border: 1px solid rgba(255, 255, 255, 0.6);
+  border: 1px solid var(--glass-edge);
   box-shadow: inset 0 1px 2px rgba(16, 18, 24, 0.05);
 }
 .round {
@@ -107,7 +103,7 @@ kbd {
 }
 .glass-button {
   background: var(--glass-inset);
-  border: 1px solid rgba(255, 255, 255, 0.6);
+  border: 1px solid var(--glass-edge);
 }
 .glass-button:hover:not(:disabled),
 .round:hover:not(:disabled) {
@@ -195,7 +191,7 @@ kbd {
   color: var(--ink-soft);
   padding: 4px 8px;
   border-radius: 8px;
-  background: rgba(255, 255, 255, 0.55);
+  background: var(--glass-inset);
 }
 .spacer {
   flex: 1;
@@ -227,7 +223,7 @@ kbd {
   white-space: nowrap;
 }
 .save-error {
-  color: #b2442f;
+  color: var(--ink-soft);
 }
 .primary-pill {
   display: flex;
@@ -268,7 +264,7 @@ kbd {
   text-align: left;
 }
 .room-menu button:hover {
-  background: rgba(255, 255, 255, 0.7);
+  background: var(--glass-inset);
 }
 .room-list {
   left: 0;
@@ -315,7 +311,7 @@ kbd {
   align-items: center;
   justify-content: center;
   background: var(--glass-inset);
-  border: 1px solid rgba(255, 255, 255, 0.6);
+  border: 1px solid var(--glass-edge);
 }
 .nav-icon.accent {
   background: color-mix(in srgb, var(--accent) 22%, white);
@@ -347,44 +343,6 @@ kbd {
   font-size: 14px;
 }
 
-/* ---------- Measurements toggle ---------- */
-.measurements {
-  position: absolute;
-  right: 24px;
-  bottom: 24px;
-  display: flex;
-  align-items: center;
-  gap: 14px;
-  height: 58px;
-  padding: 0 14px 0 20px;
-  border-radius: 999px;
-  font-size: 14px;
-  z-index: 3;
-}
-.switch {
-  width: 46px;
-  height: 26px;
-  border-radius: 999px;
-  background: rgba(20, 22, 26, 0.16);
-  padding: 3px;
-  display: flex;
-  transition: background 0.2s;
-}
-.switch span {
-  width: 20px;
-  height: 20px;
-  border-radius: 50%;
-  background: white;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
-  transition: transform 0.2s;
-}
-.measurements[aria-checked="true"] .switch {
-  background: var(--accent);
-}
-.measurements[aria-checked="true"] .switch span {
-  transform: translateX(20px);
-}
-
 /* ---------- Floating object toolbar (in 3D) ---------- */
 .object-toolbar {
   display: flex;
@@ -404,7 +362,7 @@ kbd {
 }
 .object-toolbar .round.active {
   background: color-mix(in srgb, var(--select) 18%, white);
-  color: #5b52d6;
+  color: #363636;
 }
 .object-toolbar .rule {
   width: 1px;
@@ -445,12 +403,12 @@ kbd {
   justify-content: center;
 }
 .tiny-button:hover:not(:disabled) {
-  background: rgba(255, 255, 255, 0.6);
+  background: var(--glass-inset);
 }
 .object-preview {
   height: 110px;
   border-radius: 16px;
-  background: rgba(255, 255, 255, 0.5);
+  background: var(--glass-inset);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -471,7 +429,7 @@ kbd {
   font-size: 10px;
   padding: 3px 8px;
   border-radius: 999px;
-  background: rgba(255, 255, 255, 0.8);
+  background: var(--glass-inset);
   text-transform: capitalize;
 }
 .inspector h2 {
@@ -495,7 +453,7 @@ kbd {
   margin-top: 12px;
   border-radius: 999px;
   background: var(--glass-inset);
-  border: 1px solid rgba(255, 255, 255, 0.6);
+  border: 1px solid var(--glass-edge);
   font-size: 12px;
 }
 .lock-control > span:nth-child(2) {
@@ -552,7 +510,7 @@ kbd {
   gap: 6px;
   padding: 7px 9px;
   border-radius: 10px;
-  background: rgba(255, 255, 255, 0.5);
+  background: var(--glass-inset);
   font-size: 12px;
 }
 .readout-grid > div > span {
@@ -573,8 +531,8 @@ kbd {
   width: 58px;
   height: 26px;
   border-radius: 8px;
-  border: 1px solid rgba(255, 255, 255, 0.7);
-  background: rgba(255, 255, 255, 0.6);
+  border: 1px solid var(--glass-edge);
+  background: var(--glass-inset);
   font: inherit;
   text-align: right;
   padding: 0 6px;
@@ -588,11 +546,11 @@ kbd {
   width: 26px;
   height: 26px;
   border-radius: 50%;
-  background: rgba(255, 255, 255, 0.55);
+  background: var(--glass-inset);
   font-size: 14px;
 }
 .step-button:hover:not(:disabled) {
-  background: white;
+  background: var(--glass-fill-strong);
 }
 .dimensions {
   font-size: 13px;
@@ -625,11 +583,11 @@ kbd {
   height: 38px;
   border-radius: 999px;
   background: var(--glass-inset);
-  border: 1px solid rgba(255, 255, 255, 0.6);
+  border: 1px solid var(--glass-edge);
   font-size: 12px;
 }
 .secondary-button:hover:not(:disabled) {
-  background: white;
+  background: var(--glass-fill-strong);
 }
 .danger-button {
   width: 38px;
@@ -638,11 +596,11 @@ kbd {
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #b2442f;
-  background: rgba(255, 255, 255, 0.45);
+  color: var(--ink-soft);
+  background: var(--glass-inset);
 }
 .danger-button:hover:not(:disabled) {
-  background: #fbe7e2;
+  background: var(--glass-fill-strong);
 }
 .panel-footnote {
   margin-top: 12px;
@@ -729,10 +687,10 @@ kbd {
   padding: 0 16px;
   border-radius: 999px;
   background: var(--glass-inset);
-  border: 1px solid rgba(255, 255, 255, 0.6);
+  border: 1px solid var(--glass-edge);
 }
 .discard-button:hover:not(:disabled) {
-  background: white;
+  background: var(--glass-fill-strong);
 }
 .accept-button {
   padding: 0 20px 0 16px;
@@ -753,7 +711,7 @@ kbd {
   border-radius: 12px;
 }
 .change-list li:hover {
-  background: rgba(255, 255, 255, 0.55);
+  background: var(--glass-inset);
 }
 .change-row {
   flex: 1;
@@ -783,14 +741,14 @@ kbd {
   color: #2f7a46;
 }
 .kind-removed {
-  background: #fbe7e2;
-  color: #b2442f;
+  background: var(--glass-fill-strong);
+  color: var(--ink-soft);
 }
 .kind-moved,
 .kind-rotated,
 .kind-replaced {
   background: color-mix(in srgb, var(--select) 16%, white);
-  color: #5048b8;
+  color: #363636;
 }
 .change-amount {
   color: var(--muted);
@@ -830,7 +788,7 @@ kbd {
 }
 .angle-label {
   background: #ffffffee;
-  color: #5048b8;
+  color: #363636;
   font-size: 12px;
   box-shadow: 0 2px 10px rgba(16, 18, 24, 0.12);
   font-variant-numeric: tabular-nums;
@@ -922,10 +880,10 @@ kbd {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  background: rgba(255, 255, 255, 0.55);
+  background: var(--glass-inset);
 }
 .icon-button:hover:not(:disabled) {
-  background: white;
+  background: var(--glass-fill-strong);
 }
 .browser-filters {
   display: flex;
@@ -940,8 +898,8 @@ kbd {
   padding: 0 16px;
   height: 42px;
   border-radius: 999px;
-  background: rgba(255, 255, 255, 0.6);
-  border: 1px solid rgba(255, 255, 255, 0.7);
+  background: var(--glass-inset);
+  border: 1px solid var(--glass-edge);
   color: var(--muted);
 }
 .search-field input {
@@ -960,8 +918,8 @@ kbd {
 .browser-filters select {
   height: 42px;
   border-radius: 999px;
-  border: 1px solid rgba(255, 255, 255, 0.7);
-  background: rgba(255, 255, 255, 0.6);
+  border: 1px solid var(--glass-edge);
+  background: var(--glass-inset);
   padding: 0 14px;
   font: inherit;
   color: var(--ink);
@@ -979,17 +937,17 @@ kbd {
   display: flex;
   flex-direction: column;
   gap: 4px;
-  background: rgba(255, 255, 255, 0.5);
-  border: 1px solid rgba(255, 255, 255, 0.7);
+  background: var(--glass-inset);
+  border: 1px solid var(--glass-edge);
 }
 .asset-card:hover:not(:disabled) {
-  background: rgba(255, 255, 255, 0.85);
+  background: var(--glass-fill-strong);
   box-shadow: 0 6px 18px rgba(16, 18, 24, 0.08);
 }
 .asset-image {
   height: 128px;
   border-radius: 14px;
-  background: rgba(255, 255, 255, 0.6);
+  background: var(--glass-inset);
   position: relative;
   overflow: hidden;
   width: 100%;
@@ -1159,12 +1117,29 @@ kbd {
   cursor: pointer;
 }
 
-/* Cream stays readable over the darker evening scene. */
-:root[data-lighting="evening"] {
-  --glass-fill: rgba(255, 249, 241, 0.9);
-  --glass-fill-strong: rgba(255, 251, 245, 0.96);
-  --glass-inset: rgba(255, 247, 236, 0.78);
-  --glass-edge: rgba(255, 251, 244, 0.94);
+/* Both themes retain blur, with enough opacity over any room lighting. */
+:root {
+  color-scheme: light;
+  --glass-highlight: rgba(255, 255, 255, 0.65);
+}
+/* Preserve light-panel legibility over the evening backdrop, as before. */
+:root[data-lighting="evening"]:not([data-ui-theme="dark"]) {
+  --glass-fill: rgba(255, 255, 255, 0.86);
+  --glass-fill-strong: rgba(255, 255, 255, 0.94);
+}
+:root[data-ui-theme="dark"] {
+  color-scheme: dark;
+  --ink: #f5f5f5;
+  --ink-soft: #dedede;
+  --muted: #e5e5e5;
+  --line: rgba(255, 255, 255, 0.14);
+  --accent: #dedede;
+  --accent-ink: #202020;
+  --glass-fill: rgba(28, 28, 28, 0.7);
+  --glass-fill-strong: rgba(38, 38, 38, 0.82);
+  --glass-inset: rgba(255, 255, 255, 0.08);
+  --glass-edge: rgba(255, 255, 255, 0.3);
+  --glass-highlight: rgba(255, 255, 255, 0.18);
 }
 
 .camera-menu-container {
@@ -1224,7 +1199,7 @@ kbd {
   position: absolute;
   pointer-events: none;
   border: 1px solid var(--accent);
-  background: rgba(191, 106, 70, 0.12);
+  background: color-mix(in srgb, var(--accent) 12%, transparent);
   z-index: 3;
 }
 .selection-summary {
@@ -1292,34 +1267,6 @@ kbd {
   opacity: 0.15;
 }
 
-.edit-log {
-  position: absolute;
-  left: 24px;
-  bottom: 24px;
-  z-index: 6;
-}
-.edit-log aside {
-  position: absolute;
-  bottom: 48px;
-  left: 0;
-  width: 420px;
-  max-width: calc(100vw - 48px);
-  max-height: 50vh;
-  overflow: auto;
-  padding: 16px;
-  border-radius: 20px;
-}
-.edit-log summary {
-  cursor: pointer;
-  padding: 10px 0;
-  font-size: 12px;
-}
-.edit-log pre {
-  font-size: 11px;
-  overflow: auto;
-  max-height: 260px;
-}
-
 .library-drag-preview {
   display: none;
   position: fixed;
@@ -1331,4 +1278,14 @@ kbd {
 }
 .asset-card {
   touch-action: none;
+}
+
+/* Standalone glass buttons need their own panel fill, rather than an inset. */
+.glass.glass-button,
+.glass.secondary-button {
+  background: var(--glass-fill);
+}
+.glass.glass-button:hover:not(:disabled),
+.glass.secondary-button:hover:not(:disabled) {
+  background: var(--glass-fill-strong);
 }
