@@ -37,6 +37,8 @@ Photo-based room reconstruction, three-way design comparison, structural remodel
 - `SCANNER_STATUS.md`: implementation history, builds/tests and accepted phone checkpoints.
 - `PHONE_SCANNER_BACKLOG.md`: deferred phone work and the next Supabase/Storage/end-to-end milestone.
 - `SCAN_FORMAT.md`: approved future version 2 target; current phone/importer still use version 1.
+- `SUPABASE_PLAN.md`: backend read-through, branch/schema examples, upload artifacts and
+  local tooling findings; design and implementation approval still pending.
 
 The user prioritized the single-room database/render connection after accepting
 phone capture, preview, durable saving and the scan list. Whole-house scanning and
