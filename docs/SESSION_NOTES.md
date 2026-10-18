@@ -132,3 +132,7 @@ Next keyboard extraction/tests are prepared in `/tmp/house-keyboard-step13.ts` a
 ## Step 13 completed
 
 Camera-relative 2 cm arrow nudges (Shift ×10), Q/E absolute-grid turns, F selection and Home room framing. Keyboard handling extracted for tests. All checks passed: 216 unit tests, 16 GPU browser tests, format/typecheck/lint/build. Review: `docs/review/STEP_13.md`. Next: editable XYZ position.
+
+## Step 14 completed
+
+Editable exact XYZ metre fields through suggestions, disabled during drags/locks; height-only movement summary fixed. All checks passed: 218 unit tests, 17 GPU browser tests, format/typecheck/lint/build. Review: `docs/review/STEP_14.md`. Existing browser tests now read position inputs instead of removed read-only outputs. Next: multi-select.

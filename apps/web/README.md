@@ -145,6 +145,8 @@ Poly Haven imports preserve original PBR materials and meter scale, embed 1K tex
 
 37. Arrow keys suggest camera-relative 2 cm moves (Shift ×10), Q/E turn on the absolute 15° grid without erasing tilt, F frames selection and Home frames room. View commands stay out of history.
 
+38. Inspector XYZ metre fields commit on Enter/blur through suggestions with snapping disabled, preserving exact entered coordinates. Accept still resolves support/collisions. Height-only edits count as movement.
+
 ## Verification and known gaps
 
 - The required build, test, typecheck, and lint commands pass. The test suite covers fixture parsing, shipped-file/license coverage, the fixture triangle budget, all operations, locks, rotated/concave bounds, SAT touching/overlap, occupancy exemptions, door clearance, inverse/history behavior, drag commit/rejection/cancel (including GPU-free tests of the actual canvas handler, live red feedback, spring-back, and no model rerenders during pointer movement), autosave debounce/serialization/retry, stale/concurrent saves, reset/recovery, and accessible locked controls.

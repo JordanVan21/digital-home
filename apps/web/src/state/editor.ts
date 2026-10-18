@@ -422,9 +422,9 @@ export function createEditor(
       if (!prev) {
         rows.push({ id: o.id, kind: "added", name: o.displayName });
       } else if (d.changed.includes(o.id)) {
-        const [x0, , z0] = prev.transform.position;
-        const [x1, , z1] = o.transform.position;
-        const distanceM = Math.hypot(x1 - x0, z1 - z0);
+        const [x0, y0, z0] = prev.transform.position;
+        const [x1, y1, z1] = o.transform.position;
+        const distanceM = Math.hypot(x1 - x0, y1 - y0, z1 - z0);
         const degrees = degreesBetween(prev, o);
         const kind: ChangeKind =
           prev.assetId !== o.assetId

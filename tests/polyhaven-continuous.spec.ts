@@ -90,9 +90,7 @@ test("holds Space to raise and releases to slide during one captured drag", asyn
   const height = Number(await page.getByLabel("Height in meters").inputValue());
   expect(height).toBeGreaterThan(0.4);
   expect(height).toBeLessThan(0.5);
-  const x = Number(
-    await page.locator(".readout-grid output").nth(0).textContent(),
-  );
+  const x = Number(await page.getByLabel("X position in meters").inputValue());
   expect(x).toBeGreaterThan(0.6);
   expect(x).toBeLessThan(0.8);
   await expect(
