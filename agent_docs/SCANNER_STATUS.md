@@ -132,3 +132,11 @@ This update supersedes the initial read-through's build/tooling status above.
 - Updated setup instructions with the exact worktree path, Apple Account/team/bundle ID selection, pairing, Developer Mode, profile trust and unplugged launch test.
 - Physical iPhone generic-target build includes both the SwiftUI app and RoomPlan adapter. Signing is disabled for this compilation check. Existing Swift tests: 2 passed.
 - Device discovery found no available iPhone (only an unavailable iPad Air). Signing, installation and unplugged launch await the user's connected LiDAR iPhone. Do not advance to checkpoint 2 until that phone test is accepted.
+
+### Phone evidence received after checkpoint 1
+
+- User selected a Personal Team in Xcode, installed/launched the app, reported scanning works, and supplied an AirDropped JSON file. Physical capture/export are now demonstrated. Unplugged launch/restart has not yet been confirmed.
+- Saved the original file byte-for-byte as `apps/ios/Fixtures/real-scan-1.json`: 5 walls, 5 doors, 2 windows, 1 floor, 5 objects; 4 objects have low confidence. See the fixtures README for provenance and limitations.
+- Raw syntax/UUID/matrix/dimension checks pass. Importer execution has not been verified here; pnpm/dependencies are absent.
+- Real data resolves an earlier unknown: floor polygon corners are surface-local, while the current version 1 importer fallback treats them as world-space. This is a documented downstream integration fix; preserve source data and correct the fallback with a regression check during integration.
+- Still required: explicit unplugged-launch confirmation, remaining phone checkpoints, and the second real scan.
