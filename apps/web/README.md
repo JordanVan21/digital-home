@@ -143,6 +143,8 @@ Poly Haven imports preserve original PBR materials and meter scale, embed 1K tex
 
 36. Duplicate (toolbar or Ctrl/Cmd+D) clones instance pose, scale, finishes and light state into a new planned piece, searches nearby valid surfaces, and creates one suggestion. Wall copies search along their wall. Locks and active gestures block duplication. Copies do not inherit scan/replacement identity or removal planning. Undo/redo and persistence use the existing flow.
 
+37. Arrow keys suggest camera-relative 2 cm moves (Shift ×10), Q/E turn on the absolute 15° grid without erasing tilt, F frames selection and Home frames room. View commands stay out of history.
+
 ## Verification and known gaps
 
 - The required build, test, typecheck, and lint commands pass. The test suite covers fixture parsing, shipped-file/license coverage, the fixture triangle budget, all operations, locks, rotated/concave bounds, SAT touching/overlap, occupancy exemptions, door clearance, inverse/history behavior, drag commit/rejection/cancel (including GPU-free tests of the actual canvas handler, live red feedback, spring-back, and no model rerenders during pointer movement), autosave debounce/serialization/retry, stale/concurrent saves, reset/recovery, and accessible locked controls.

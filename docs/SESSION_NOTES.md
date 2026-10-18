@@ -127,3 +127,8 @@ Demand rendering: imperative Furniture moves explicitly invalidate; easing clamp
 Toolbar/Ctrl-Cmd+D duplicate into a nearby valid spot, preserving pose/scale/finishes/light state, as one draft step per copy. Locks/gestures guarded, wall copies stay along their wall. All checks: 213 unit tests, 15 GPU browser tests, format/typecheck/lint/build. Review: `docs/review/STEP_12.md`. Browser screenshots must wait for model loading; an immediate screenshot can capture the blank/loading frame even after scene data is ready.
 
 Next keyboard extraction/tests are prepared in `/tmp/house-keyboard-step13.ts` and `/tmp/house-keyboard-tests-step13.ts`; they have not been applied.
+
+
+## Step 13 completed
+
+Camera-relative 2 cm arrow nudges (Shift ×10), Q/E absolute-grid turns, F selection and Home room framing. Keyboard handling extracted for tests. All checks passed: 216 unit tests, 16 GPU browser tests, format/typecheck/lint/build. Review: `docs/review/STEP_13.md`. Next: editable XYZ position.

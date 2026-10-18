@@ -479,6 +479,32 @@ export function createEditor(
   };
   const select = (id: string | null) =>
     interaction.setState({ selectedId: id });
+  const nudge = (forward: number, right: number, factor = 1) => {
+    const obj = selected();
+    if (!obj || interaction.getState().dragging || !scene.getState().ready)
+      return false;
+    const [x, , z] = motion.cameraDirection;
+    const length = Math.hypot(x, z);
+    const fx = length > 0.001 ? x / length : 0;
+    const fz = length > 0.001 ? z / length : -1;
+    const [px, py, pz] = obj.transform.position;
+    const stride = 0.02 * factor;
+    return suggest(
+      {
+        type: "move",
+        objectId: obj.id,
+        transform: {
+          ...obj.transform,
+          position: [
+            px + stride * (fx * forward - fz * right),
+            py,
+            pz + stride * (fz * forward + fx * right),
+          ],
+        },
+      },
+      { snap: false },
+    );
+  };
   const rotate = (direction = 1) => {
     const obj = selected();
     if (!obj) return;
@@ -850,6 +876,7 @@ export function createEditor(
     setWalk,
     rotate,
     setYaw,
+    nudge,
     remove,
     toggleLock,
     travel,

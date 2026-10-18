@@ -1,3 +1,4 @@
+import { installEditorKeyboard } from "./state/keyboard";
 import { PerfOverlay } from "./components/PerfOverlay";
 import { WalkHint } from "./components/CameraViewMenu";
 import { Component, useEffect, type ReactNode } from "react";
@@ -18,68 +19,7 @@ import { readLastRoom, rememberRoom } from "./state/lastRoom";
 function Keyboard() {
   useEffect(() => {
     const cleanupHeightModifier = installHeightModifier(editor);
-    const handle = (e: KeyboardEvent) => {
-      const target = e.target as HTMLElement;
-      if (
-        target.closest(
-          'input,textarea,select,[contenteditable="true"],[role="menu"]',
-        )
-      )
-        return;
-      const state = editor.interaction.getState();
-      if (e.key === "Escape") {
-        if (state.walk) {
-          editor.setWalk(false);
-          return;
-        }
-        // Esc deselects or closes first; with nothing to close it discards suggestions.
-        if (!state.selectedId && !state.browser && !state.dragging)
-          editor.discard();
-        editor.interaction.setState({
-          selectedId: null,
-          browser: false,
-          replacing: false,
-          dragging: false,
-        });
-        return;
-      }
-      if (state.dragging || !editor.scene.getState().ready || state.browser)
-        return;
-      if (e.key === "Enter" && editor.hasDraft()) {
-        e.preventDefault();
-        editor.accept();
-        return;
-      }
-      const key = e.key.toLowerCase();
-      if ((e.metaKey || e.ctrlKey) && key === "z") {
-        e.preventDefault();
-        editor.travel(e.shiftKey ? "redo" : "undo");
-        return;
-      }
-      if ((e.metaKey || e.ctrlKey) && key === "d" && !e.altKey && !e.shiftKey) {
-        e.preventDefault();
-        editor.duplicate();
-        return;
-      }
-      if (e.metaKey || e.ctrlKey || e.altKey) return;
-      if (key === "p" && !e.repeat) {
-        e.preventDefault();
-        editor.setWalk(!state.walk);
-      }
-      if (key === "v") editor.interaction.setState({ tool: "select" });
-      if (key === "g")
-        editor.interaction.setState({ tool: "move", movePlane: "floor" });
-      if (key === "r") {
-        editor.interaction.setState({ tool: "rotate" });
-        editor.rotate(e.shiftKey ? -1 : 1);
-      }
-      if (key === "l") editor.toggleLock();
-      if (key === "delete" || key === "backspace") {
-        e.preventDefault();
-        editor.remove();
-      }
-    };
-    window.addEventListener("keydown", handle);
+    const cleanupKeyboard = installEditorKeyboard(editor);
     const hide = () => {
       if (document.visibilityState === "hidden") void editor.flush();
     };
@@ -94,7 +34,7 @@ function Keyboard() {
     window.addEventListener("beforeunload", leave);
     return () => {
       cleanupHeightModifier();
-      window.removeEventListener("keydown", handle);
+      cleanupKeyboard();
       document.removeEventListener("visibilitychange", hide);
       window.removeEventListener("beforeunload", leave);
     };
