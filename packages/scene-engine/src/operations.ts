@@ -1,3 +1,4 @@
+import { canSupport, supportCycle, topY, withContactSupport } from "./support";
 import {
   SceneObjectSchema,
   SceneOpSchema,
@@ -54,8 +55,9 @@ function occupiesFloor(o: SceneObject): boolean {
 }
 /**
  * Draft edits pass `allowConflicts` to skip only the checks a later resolve can
- * fix by moving the piece (bounds, wall band, doorway, overlaps). Locks, identity,
- * asset and transform rules always apply.
+ * fix by moving or settling the piece (bounds, wall band, doorway, overlaps,
+ * surface contact). Locks, identity, asset, upright rotation and support-reference
+ * rules always apply.
  */
 export type ValidationOptions = { allowConflicts?: boolean };
 export function validateObject(
@@ -76,6 +78,8 @@ export function validateObject(
   )
     return fail("UNKNOWN_ASSET", "This asset is unavailable.");
   const support = o.placement?.support ?? "floor";
+  if (supportCycle(scene, o))
+    return fail("INVALID_SUPPORT", "Support cannot form a cycle.");
   if (
     support === "object" &&
     (!o.placement?.parentId ||
@@ -89,33 +93,60 @@ export function validateObject(
     !ctx.room.walls.some((w) => w.id === o.placement?.parentId)
   )
     return fail("INVALID_SUPPORT", "Choose a supporting wall.");
-  // The manual editor is planar. Pitched floor furniture cannot evade footprint checks.
+  // Keep yaw-only footprints; elevation is a fixable draft conflict.
+  if (
+    support !== "wall" &&
+    (Math.abs(o.transform.rotation[0]) > 1e-6 ||
+      Math.abs(o.transform.rotation[2]) > 1e-6)
+  )
+    return fail("INVALID_TRANSFORM", "Keep furniture upright.");
+  if (options.allowConflicts) return { ok: true };
   if (
     support === "floor" &&
-    (Math.abs(o.transform.rotation[0]) > 1e-6 ||
-      Math.abs(o.transform.rotation[2]) > 1e-6 ||
-      Math.abs(o.transform.position[1] - ctx.room.floor.elevationY) > 1e-5)
+    Math.abs(o.transform.position[1] - ctx.room.floor.elevationY) > 1e-5
   )
-    return fail("INVALID_TRANSFORM", "Furniture must rest on the floor.");
-  if (options.allowConflicts) return { ok: true };
+    return fail(
+      "INVALID_SUPPORT",
+      "Accept will settle this piece onto the nearest floor or furniture surface.",
+    );
+  if (support === "object") {
+    const parent = scene.objects.find((p) => p.id === o.placement?.parentId)!;
+    if (
+      !canSupport(parent, o) ||
+      Math.abs(o.transform.position[1] - topY(parent)) > 1e-5
+    )
+      return fail(
+        "INVALID_SUPPORT",
+        "Place the bottom center on its supporting surface.",
+      );
+  }
+  if (
+    o.transform.position[1] < ctx.room.floor.elevationY - 1e-5 ||
+    (ctx.room.ceilingHeightM !== undefined &&
+      topY(o) > ctx.room.floor.elevationY + ctx.room.ceilingHeightM + 1e-5)
+  )
+    return fail("OUT_OF_BOUNDS", "Keep the piece between floor and ceiling.");
   const rect = footprint(o);
   if (!insidePolygon(rect, ctx.room.floor.polygonXZ))
     return fail("OUT_OF_BOUNDS", "Keep the whole object inside the room.");
   if (
-    support === "floor" &&
+    support !== "wall" &&
     wallFootprints(ctx.room).some((w) => overlaps(rect, w))
   )
     return fail("OUT_OF_BOUNDS", "Leave a little space from the wall.");
   if (
-    support === "floor" &&
+    support !== "wall" &&
     doorClearances(ctx.room).some((d) => overlaps(rect, d))
   )
     return fail("BLOCKS_OPENING", "Leave the doorway clear.");
-  if (occupiesFloor(o))
+  if (occupiesFloor(o) || support === "object")
     for (const other of scene.objects) {
       if (
         other.id !== o.id &&
-        occupiesFloor(other) &&
+        (occupiesFloor(other) || other.placement?.support === "object") &&
+        Math.min(topY(o), topY(other)) -
+          Math.max(o.transform.position[1], other.transform.position[1]) >
+          1e-7 &&
         overlaps(rect, footprint(other))
       )
         return fail(
@@ -174,14 +205,28 @@ export function validateOp(
       options,
     );
   }
-  return validateObject(
-    scene,
+  const next =
     op.type === "move"
-      ? { ...obj, transform: op.transform }
-      : { ...obj, assetId: op.assetId, dimensionsM: op.dimensionsM },
-    ctx,
-    options,
-  );
+      ? withContactSupport(scene, { ...obj, transform: op.transform }, ctx.room)
+      : { ...obj, assetId: op.assetId, dimensionsM: op.dimensionsM };
+  const validation = validateObject(scene, next, ctx, options);
+  if (!validation.ok || options.allowConflicts) return validation;
+  const candidateScene = {
+    ...scene,
+    objects: scene.objects.map((o) => (o.id === id ? next : o)),
+  };
+  for (const child of candidateScene.objects.filter(
+    (o) => o.placement?.parentId === id,
+  )) {
+    const supported = validateObject(candidateScene, child, ctx);
+    if (!supported.ok)
+      return fail(
+        "INVALID_SUPPORT",
+        "Move supported objects together as suggestions first.",
+        child.id,
+      );
+  }
+  return validation;
 }
 export type ApplyResult =
   | { ok: true; scene: SceneSpec }
@@ -210,7 +255,11 @@ export function applyOp(
       if (o.id !== op.objectId) return o;
       switch (op.type) {
         case "move":
-          return { ...o, transform: structuredClone(op.transform) };
+          return withContactSupport(
+            scene,
+            { ...o, transform: structuredClone(op.transform) },
+            ctx.room,
+          );
         case "replaceAsset":
           return {
             ...o,

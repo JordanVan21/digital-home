@@ -1,3 +1,4 @@
+import { onNearestSurface } from "./support";
 import type { SceneObject, SceneSpec } from "@house/contracts";
 import { validateObject, type SceneContext } from "./operations";
 
@@ -11,7 +12,7 @@ export type SceneDiff = {
 export type ResolutionEntry = {
   objectId: string;
   outcome: "applied" | "moved" | "reverted" | "dropped" | "removed";
-  /** Horizontal distance from the suggested position, for "moved". */
+  /** Spatial distance from the suggested position, for "moved". */
   distanceM?: number;
 };
 
@@ -63,7 +64,8 @@ function nearestFit(
           position: [x + Math.cos(a) * r, y, z + Math.sin(a) * r],
         },
       };
-      if (validateObject(placed, candidate, ctx).ok) return candidate;
+      const supported = onNearestSurface(placed, candidate, ctx.room);
+      if (validateObject(placed, supported, ctx).ok) return supported;
     }
   }
   return null;
@@ -89,23 +91,49 @@ export function resolveDraft(
 
   const report: ResolutionEntry[] = [];
   const unresolved: { objectId: string; message: string }[] = [];
-  for (const o of draft.objects) {
+  // Resolve edited supports before their dependent children, preserving stable
+  // array order otherwise. Cycles are still rejected by full validation.
+  const ordered: SceneObject[] = [];
+  const visiting = new Set<string>();
+  const done = new Set<string>();
+  const visit = (o: SceneObject) => {
+    if (done.has(o.id) || visiting.has(o.id)) return;
+    visiting.add(o.id);
+    const parent =
+      o.placement?.support === "object"
+        ? draft.objects.find((p) => p.id === o.placement?.parentId)
+        : undefined;
+    if (parent) visit(parent);
+    visiting.delete(o.id);
+    done.add(o.id);
+    ordered.push(o);
+  };
+  draft.objects.forEach(visit);
+  for (const o of ordered) {
     if (fixed.has(o.id)) continue;
     const scene = placedScene();
-    if (validateObject(scene, o, ctx).ok) {
-      final.set(o.id, o);
-      report.push({ objectId: o.id, outcome: "applied" });
+    const supported = o.locked ? o : onNearestSurface(scene, o, ctx.room);
+    if (validateObject(scene, supported, ctx).ok) {
+      final.set(o.id, supported);
+      const distanceM = Math.abs(
+        supported.transform.position[1] - o.transform.position[1],
+      );
+      report.push({
+        objectId: o.id,
+        outcome: distanceM > 1e-5 ? "moved" : "applied",
+        ...(distanceM > 1e-5 ? { distanceM } : {}),
+      });
       continue;
     }
     const fit = o.locked ? null : nearestFit(scene, o, ctx);
     if (fit) {
       final.set(o.id, fit);
-      const [x0, , z0] = o.transform.position;
-      const [x1, , z1] = fit.transform.position;
+      const [x0, y0, z0] = o.transform.position;
+      const [x1, y1, z1] = fit.transform.position;
       report.push({
         objectId: o.id,
         outcome: "moved",
-        distanceM: Math.hypot(x1 - x0, z1 - z0),
+        distanceM: Math.hypot(x1 - x0, y1 - y0, z1 - z0),
       });
       continue;
     }
@@ -124,6 +152,16 @@ export function resolveDraft(
       objectId: o.id,
       message: `Couldn't fit ${o.displayName}. Move something to make room.`,
     });
+  }
+  // Support changes can invalidate untouched children. Never silently move them.
+  const complete = placedScene();
+  for (const o of complete.objects) {
+    const validation = validateObject(complete, o, ctx);
+    if (!validation.ok && !unresolved.some((u) => u.objectId === o.id))
+      unresolved.push({
+        objectId: o.id,
+        message: `${o.displayName}: ${validation.error.message}`,
+      });
   }
   if (unresolved.length) return { ok: false, unresolved };
   for (const id of diff.removed)

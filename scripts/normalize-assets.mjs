@@ -21,6 +21,20 @@ import fs from "node:fs/promises";
 import path from "node:path";
 import { createHash } from "node:crypto";
 const root = path.resolve(import.meta.dirname, "..");
+// Separate importers own their entries; FurniMesh regeneration must retain them.
+const retainedCatalog = JSON.parse(
+  await fs.readFile(
+    path.join(root, "packages/contracts/src/catalog.json"),
+    "utf8",
+  ),
+);
+const retainedReport = JSON.parse(
+  await fs.readFile(path.join(root, "scripts/asset-report.json"), "utf8"),
+);
+const retainedLicenses = await fs.readFile(
+  path.join(root, "apps/web/public/models/LICENSES.md"),
+  "utf8",
+);
 const raw = process.env.HOUSE_RAW_MODELS || "/tmp/house-raw-models";
 const sources = JSON.parse(
   await fs.readFile(path.join(root, "scripts/asset-sources.json"), "utf8"),
@@ -160,11 +174,24 @@ for (const [i, source] of sources.entries()) {
 }
 await fs.writeFile(
   path.join(root, "packages/contracts/src/catalog.json"),
-  JSON.stringify(catalog, null, 2) + "\n",
+  JSON.stringify(
+    [...catalog, ...retainedCatalog.filter((a) => a.source !== "furnimesh")],
+    null,
+    2,
+  ) + "\n",
 );
 await fs.writeFile(
   path.join(root, "scripts/asset-report.json"),
-  JSON.stringify(report, null, 2) + "\n",
+  JSON.stringify(
+    [
+      ...report,
+      ...retainedReport.filter(
+        (r) => !sources.some((s) => `${s.slug}.glb` === r.file),
+      ),
+    ],
+    null,
+    2,
+  ) + "\n",
 );
 const license =
   `# Furniture model licenses\n\nDownloaded and terms checked 2026-10-17. Author: FurniMesh / UAB FURNISYSTEMS.\n\nThe [public library](https://furnimesh.com/library/) explicitly permits free commercial use without attribution, including games, AR, product pages, and client renders. Each model page exposes a public **Free download** GLB link and references [FurniMesh terms](https://furnimesh.com/terms/). The library license statement was checked at download time. FurniMesh describes its public models as photograph-derived models created with its generation engine.\n\nFiles below are downloaded source assets, then normalized, simplified, and meshopt compressed by House. Thumbnails use the licensed model page images. No user uploads or private assets are included.\n\n| File | Source | Author | License | Downloaded |\n|---|---|---|---|---|\n` +
@@ -177,5 +204,8 @@ const license =
   "\n\nThe neutral scanned-object proxy and structural geometry are original code in this repository; they are not downloaded model files.\n";
 await fs.writeFile(
   path.join(root, "apps/web/public/models/LICENSES.md"),
-  license,
+  license +
+    (retainedLicenses.includes("\n## Poly Haven")
+      ? "\n## Poly Haven" + retainedLicenses.split("\n## Poly Haven")[1]
+      : ""),
 );

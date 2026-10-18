@@ -142,5 +142,41 @@
     ],
     "bytes": 544996,
     "textureBytes": 219264
+  },
+  {
+    "file": "polyhaven-dining-chair.glb",
+    "beforeTriangles": 22013,
+    "triangles": 22013,
+    "dimensionsM": [
+      0.43362,
+      0.97338,
+      0.57648
+    ],
+    "bytes": 347684,
+    "textureBytes": 206610
+  },
+  {
+    "file": "polyhaven-potted-succulent.glb",
+    "beforeTriangles": 8929,
+    "triangles": 8929,
+    "dimensionsM": [
+      0.16789,
+      0.26746,
+      0.18475
+    ],
+    "bytes": 511304,
+    "textureBytes": 434126
+  },
+  {
+    "file": "polyhaven-ceramic-vase.glb",
+    "beforeTriangles": 10296,
+    "triangles": 10296,
+    "dimensionsM": [
+      0.20363,
+      0.40027,
+      0.20363
+    ],
+    "bytes": 118880,
+    "textureBytes": 47580
   }
 ]

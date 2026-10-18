@@ -22,3 +22,13 @@ Files below are downloaded source assets, then normalized, simplified, and mesho
 | sofa-sculpted.glb | [Model page](https://furnimesh.com/library/sofas/sofa/a-contemporary-twoseater-sofa-upholstered-in-light-yl03d4/) | FurniMesh / UAB FURNISYSTEMS | Free commercial use, no attribution required | 2026-10-17 |
 
 The neutral scanned-object proxy and structural geometry are original code in this repository; they are not downloaded model files.
+
+## Poly Haven
+
+These models are CC0-1.0 from [Poly Haven](https://polyhaven.com/license), imported as local GLBs with original PBR materials and meter scale, bottom-centered origins, embedded 1K textures and meshopt compression. House generates the thumbnails from the model geometry; Poly Haven website renders are not redistributed. Import requests identify HouseSandboxAssetImporter; the app does not call the live API.
+
+| File | Source | Author | License | Downloaded |
+|---|---|---|---|---|
+| polyhaven-dining-chair.glb | [Model page](https://polyhaven.com/a/dining_chair_02) | James Ray Cock | CC0-1.0 | 2026-10-17 |
+| polyhaven-potted-succulent.glb | [Model page](https://polyhaven.com/a/potted_plant_04) | James Ray Cock | CC0-1.0 | 2026-10-17 |
+| polyhaven-ceramic-vase.glb | [Model page](https://polyhaven.com/a/ceramic_vase_01) | James Ray Cock | CC0-1.0 | 2026-10-17 |

@@ -1,0 +1,161 @@
+[
+  {
+    "assetId": "dining_chair_02",
+    "catalogId": "00000000-0000-4000-8000-000000002000",
+    "sourceUrl": "https://polyhaven.com/a/dining_chair_02",
+    "author": "James Ray Cock",
+    "license": "CC0-1.0",
+    "licenseUrl": "https://polyhaven.com/license",
+    "downloadDate": "2026-10-17",
+    "downloads": [
+      {
+        "file": "dining_chair_02.gltf",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Models/gltf/1k/dining_chair_02/dining_chair_02_1k.gltf",
+        "bytes": 2723,
+        "md5": "5aff75016e0943e84161de89dcc3ceb8",
+        "sha256": "88352a44a17319846f61fe03ce75c79fb1849aa508b6a262366c149c1bbd06b8"
+      },
+      {
+        "file": "dining_chair_02.bin",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Models/gltf/8k/dining_chair_02/dining_chair_02.bin",
+        "bytes": 544592,
+        "md5": "b7f8a91c0a5249d02de7885f3b242c4e",
+        "sha256": "c7f1ef858f73815176d2ab304472a69ccf6097e971e5258eb924a75f841d4af5"
+      },
+      {
+        "file": "textures/dining_chair_02_nor_gl_1k.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/dining_chair_02/dining_chair_02_nor_gl_1k.jpg",
+        "bytes": 119612,
+        "md5": "9c0e1003f9c8859a2e5c2c7f92a8f238",
+        "sha256": "348703512ca1215f8389e9108419c2d1a46537663db25f423c3ef900d20cfe61"
+      },
+      {
+        "file": "textures/dining_chair_02_diff_1k.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/dining_chair_02/dining_chair_02_diff_1k.jpg",
+        "bytes": 91518,
+        "md5": "6b7b8e4ac0a3aad9ecdf314a97b0ef75",
+        "sha256": "343990f764790da1149485a422dee2bc6797945a6af06a37d02d7a7de041acf5"
+      },
+      {
+        "file": "textures/dining_chair_02_arm_1k.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/dining_chair_02/dining_chair_02_arm_1k.jpg",
+        "bytes": 162630,
+        "md5": "2b16c9ddb3ea83d200b02de54a4fdcb8",
+        "sha256": "0a81c0c886baa1e65d94fb6fb90ab4751bee319888ecf1c428ae62042d8a5b15"
+      }
+    ],
+    "normalizedSha256": "5865af56a8b0906d04857c1ce32bb38a49c0e916562ec54d52aee3d0528e490b",
+    "dimensionsM": [
+      0.43362,
+      0.97338,
+      0.57648
+    ],
+    "priceNote": "Curated physical-item estimate in USD cents, not a source or retailer quotation."
+  },
+  {
+    "assetId": "potted_plant_04",
+    "catalogId": "00000000-0000-4000-8000-000000002001",
+    "sourceUrl": "https://polyhaven.com/a/potted_plant_04",
+    "author": "James Ray Cock",
+    "license": "CC0-1.0",
+    "licenseUrl": "https://polyhaven.com/license",
+    "downloadDate": "2026-10-17",
+    "downloads": [
+      {
+        "file": "potted_plant_04.gltf",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Models/gltf/1k/potted_plant_04/potted_plant_04_1k.gltf",
+        "bytes": 7081,
+        "md5": "077d481764145f6e5e256593aab427bb",
+        "sha256": "b3a3bc3e97da75844999c4da07b7104b6c023f729a7c045979929b9504184339"
+      },
+      {
+        "file": "potted_plant_04.bin",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Models/gltf/8k/potted_plant_04/potted_plant_04.bin",
+        "bytes": 241800,
+        "md5": "03774ca8e28e2aa30fb26cb68d5e0093",
+        "sha256": "158c1d27503d4845eb3573f00c01ae3f4f77f1d6ca8754c67bf1762745946f7f"
+      },
+      {
+        "file": "textures/potted_plant_04_nor_gl_1k.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/potted_plant_04/potted_plant_04_nor_gl_1k.jpg",
+        "bytes": 817786,
+        "md5": "1c0b87906fd92c7b7ce5508110976474",
+        "sha256": "66e4627f6691a2d8104a6c53a39b41daddbd5bad8103e73f372c39166a3dcb07"
+      },
+      {
+        "file": "textures/potted_plant_04_arm_1k.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/potted_plant_04/potted_plant_04_arm_1k.jpg",
+        "bytes": 478413,
+        "md5": "ed0030c6085bba45b6f63f3043b0b237",
+        "sha256": "7f3288345570ef700c851ea382ed267490ffc8c901ccc31f2ec5507e4d098e48"
+      },
+      {
+        "file": "textures/potted_plant_04_diff_1k.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/potted_plant_04/potted_plant_04_diff_1k.jpg",
+        "bytes": 577545,
+        "md5": "4a72fb3667fd3686ca4014f6676f59c4",
+        "sha256": "8693a971557fbafb12a24a2e23c1a04ab6b04ecdc4d26808c5ad3516a4971f24"
+      }
+    ],
+    "normalizedSha256": "1ee9b3f5f090cf68248f382f04d89933576ef5e45b4f56e0c256d0c63ee33281",
+    "dimensionsM": [
+      0.16789,
+      0.26746,
+      0.18475
+    ],
+    "priceNote": "Curated physical-item estimate in USD cents, not a source or retailer quotation."
+  },
+  {
+    "assetId": "ceramic_vase_01",
+    "catalogId": "00000000-0000-4000-8000-000000002002",
+    "sourceUrl": "https://polyhaven.com/a/ceramic_vase_01",
+    "author": "James Ray Cock",
+    "license": "CC0-1.0",
+    "licenseUrl": "https://polyhaven.com/license",
+    "downloadDate": "2026-10-17",
+    "downloads": [
+      {
+        "file": "ceramic_vase_01.gltf",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Models/gltf/1k/ceramic_vase_01/ceramic_vase_01_1k.gltf",
+        "bytes": 2706,
+        "md5": "8f11b5472424578c2c505dee271a0868",
+        "sha256": "4e2c69eb5bbccf86e9fbf92af438464669d804c1f0eae041ee28651a5b57d91e"
+      },
+      {
+        "file": "textures/ceramic_vase_01_nor_gl_1k.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/ceramic_vase_01/ceramic_vase_01_nor_gl_1k.jpg",
+        "bytes": 36504,
+        "md5": "46081f52a4e9bb58d706477318627a22",
+        "sha256": "c35b59d15e0f08db44b0bc8a5870bc65ae781819e5abf0447996d0faf05b7722"
+      },
+      {
+        "file": "textures/ceramic_vase_01_diff_1k.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/ceramic_vase_01/ceramic_vase_01_diff_1k.jpg",
+        "bytes": 32351,
+        "md5": "52337c4fedc46490476d46a8950e1d6b",
+        "sha256": "5f7d22178b74a59fe92aa0ccc958b897e2fb80df514eb28b97000097c0e71beb"
+      },
+      {
+        "file": "textures/ceramic_vase_01_arm_1k.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/ceramic_vase_01/ceramic_vase_01_arm_1k.jpg",
+        "bytes": 74240,
+        "md5": "14e56f6d0f810525ddcf9305fa09f495",
+        "sha256": "121469880a7900513717685e9035dfc1b04613f85c778ab4e9dba98c1675d660"
+      },
+      {
+        "file": "ceramic_vase_01.bin",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Models/gltf/8k/ceramic_vase_01/ceramic_vase_01.bin",
+        "bytes": 272656,
+        "md5": "73f8a0f911f2d377e3b925b0ae9c7d4c",
+        "sha256": "56ffadcafff3f56538d04b0b43c06c9704baeec2ac3ec286ef01c313c82906f0"
+      }
+    ],
+    "normalizedSha256": "b28bb075978b81b2ab792094029d019662f15bdf744ce202ac3af4c4aea4e7a7",
+    "dimensionsM": [
+      0.20363,
+      0.40027,
+      0.20363
+    ],
+    "priceNote": "Curated physical-item estimate in USD cents, not a source or retailer quotation."
+  }
+]

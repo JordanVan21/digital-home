@@ -12,7 +12,8 @@
     "test:browser": "playwright test",
     "assets:verify": "node scripts/verify-assets.mjs",
     "format": "prettier --write \"apps/web/src/**/*.{ts,tsx,css}\" \"packages/*/src/**/*.ts\" \"scripts/*.mjs\" \"*.{json,js,ts,yaml}\" \"apps/web/*.{json,ts,html,md}\"",
-    "assets:preview": "node scripts/preview-assets.mjs"
+    "assets:preview": "node scripts/preview-assets.mjs",
+    "assets:import:polyhaven": "node scripts/import-polyhaven.mjs"
   },
   "devDependencies": {
     "@eslint/js": "^9.39.0",

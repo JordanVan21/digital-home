@@ -64,7 +64,7 @@ describe("allowConflicts", () => {
       expect(applyOp(base, op, ctx, { allowConflicts: true }).ok).toBe(true);
     }
   });
-  it("still rejects locks, unknown objects and invalid transforms", () => {
+  it("still rejects locks, unknown objects and tilted transforms", () => {
     const locked = sceneOf(box(1, 0, 0, { locked: true }));
     const opts = { allowConflicts: true };
     const move = (id: number, t = transformAt(1, 0, 0)) => ({
@@ -83,7 +83,10 @@ describe("allowConflicts", () => {
       ctx,
       opts,
     );
-    expect(!r3.ok && r3.error.code).toBe("INVALID_TRANSFORM");
+    expect(r3.ok).toBe(true);
+    expect(
+      applyOp(sceneOf(box(1, 0, 0)), move(1, lifted as never), ctx).ok,
+    ).toBe(false);
   });
 });
 
@@ -223,5 +226,103 @@ describe("recordCheckpoint", () => {
     const redone = traverseHistory(undone.scene, history, "redo", ctx);
     if (!redone.ok) throw new Error("redo failed");
     expect(redone.scene.objects).toEqual(after.objects);
+  });
+});
+
+describe("supported height editing", () => {
+  const table = box(700, 0, 0, { dimensionsM: [1.5, 0.7, 1.5] });
+  const small = box(701, 1.5, 0, { dimensionsM: [0.3, 0.2, 0.3] });
+  it("snaps a raised draft to a containing tabletop, records support and validates the result", () => {
+    const base = sceneOf(table, small);
+    const lifted = { ...small, transform: transformAt(0, 0, 0, 0.8) };
+    const r = resolveDraft(base, sceneOf(table, lifted), ctx);
+    expect(r.ok).toBe(true);
+    if (!r.ok) return;
+    expect(at(r.scene, 701)!.transform.position).toEqual([0, 0.7, 0]);
+    expect(at(r.scene, 701)!.placement).toEqual({
+      support: "object",
+      parentId: table.id,
+    });
+    expect(allValid(r.scene)).toBe(true);
+    expect(r.report.find((e) => e.objectId === small.id)!.outcome).toBe(
+      "moved",
+    );
+  });
+  it("settles an unsupported raised draft back to the floor", () => {
+    const r = resolveDraft(
+      sceneOf(small),
+      sceneOf({ ...small, transform: transformAt(1.5, 0, 0, 1) }),
+      ctx,
+    );
+    expect(r.ok && at(r.scene, 701)!.transform.position[1]).toBe(0);
+  });
+  it("rejects floating, off-center, intersecting, and above-ceiling accepted states", () => {
+    const supported = {
+      ...small,
+      placement: { support: "object" as const, parentId: table.id },
+      transform: transformAt(0, 0, 0, 0.7),
+    };
+    const scene = sceneOf(table, supported);
+    expect(validateObject(scene, supported, ctx).ok).toBe(true);
+    for (const transform of [
+      transformAt(0, 0, 0, 0.8),
+      transformAt(0.8, 0, 0, 0.7),
+      transformAt(0, 0, 0, 0.6),
+      transformAt(0, 0, 0, 3),
+    ])
+      expect(validateObject(scene, { ...supported, transform }, ctx).ok).toBe(
+        false,
+      );
+  });
+  it("does not move untouched supported pieces when their support moves", () => {
+    const supported = {
+      ...small,
+      placement: { support: "object" as const, parentId: table.id },
+      transform: transformAt(0, 0, 0, 0.7),
+    };
+    const r = resolveDraft(
+      sceneOf(table, supported),
+      sceneOf({ ...table, transform: transformAt(-1.5, 0, 0) }, supported),
+      ctx,
+    );
+    expect(r.ok).toBe(false);
+  });
+  it("rejects cyclic supports and direct edits that leave a child unsupported", () => {
+    const supported = {
+      ...small,
+      placement: { support: "object" as const, parentId: table.id },
+      transform: transformAt(0, 0, 0, 0.7),
+    };
+    const base = sceneOf(table, supported);
+    const cycle = {
+      ...table,
+      placement: { support: "object" as const, parentId: supported.id },
+    };
+    expect(validateObject(base, cycle, ctx, { allowConflicts: true }).ok).toBe(
+      false,
+    );
+    expect(
+      applyOp(
+        base,
+        {
+          type: "move",
+          objectId: table.id,
+          transform: transformAt(-1.5, 0, 0),
+        },
+        ctx,
+      ).ok,
+    ).toBe(false);
+    expect(
+      applyOp(
+        base,
+        {
+          type: "move",
+          objectId: table.id,
+          transform: transformAt(-1.5, 0, 0),
+        },
+        ctx,
+        { allowConflicts: true },
+      ).ok,
+    ).toBe(true);
   });
 });

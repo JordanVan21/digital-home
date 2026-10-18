@@ -19,9 +19,10 @@ export const SwivelRing = forwardRef<
     onDown: Handler;
     onMove: Handler;
     onUp: Handler;
+    onCancel: Handler;
   }
 >(function SwivelRing(
-  { dimensions: [w, , d], active, onDown, onMove, onUp },
+  { dimensions: [w, , d], active, onDown, onMove, onUp, onCancel },
   label,
 ) {
   const radius = Math.hypot(w, d) / 2 + 0.15;
@@ -29,7 +30,7 @@ export const SwivelRing = forwardRef<
     onPointerDown: onDown,
     onPointerMove: onMove,
     onPointerUp: onUp,
-    onPointerCancel: onUp,
+    onPointerCancel: onCancel,
   };
   return (
     <group position={[0, 0.02, 0]}>
@@ -46,9 +47,9 @@ export const SwivelRing = forwardRef<
           depthTest={false}
         />
       </mesh>
-      {/* Wider invisible band so the thin ring is easy to grab. */}
-      <mesh rotation={[-Math.PI / 2, 0, 0]} {...handlers}>
-        <torusGeometry args={[radius, 0.07, 6, 64]} />
+      {/* Full disk hit area; furniture hits route to the same swivel gesture. */}
+      <mesh name="swivel-area" rotation={[-Math.PI / 2, 0, 0]} {...handlers}>
+        <circleGeometry args={[radius, 64]} />
         <meshBasicMaterial visible={false} />
       </mesh>
       <mesh position={[0, 0, radius]} renderOrder={10} {...handlers}>

@@ -14,10 +14,11 @@ import {
   Vector3,
 } from "three";
 import type { SceneObject, Transform } from "@house/contracts";
-import { validateOp, yawOf } from "@house/scene-engine";
+import { snapToSurface, validateOp, yawOf } from "@house/scene-engine";
 import { DragSession, editor, sceneContext } from "../state/editor";
 import { Model } from "./Model";
 import { Selection } from "./Selection";
+import { SnapGuide, type SnapGuideHandle } from "./SnapGuide";
 import { SwivelRing } from "./SwivelRing";
 import { labelLayer } from "./labelLayer";
 import { useLighting } from "../theme";
@@ -50,6 +51,8 @@ export const Furniture = memo(function Furniture({
     editor.interaction,
     (s) => s.hoveredId === object.id,
   );
+  const movePlane = useStore(editor.interaction, (s) => s.movePlane);
+  const tool = useStore(editor.interaction, (s) => s.tool);
   const conflict = useStore(editor.draft, (s) => !!s.conflicts[object.id]);
   const resolved = useStore(editor.draft, (s) =>
     s.resolved.includes(object.id),
@@ -59,10 +62,14 @@ export const Furniture = memo(function Furniture({
   const [pulse, setPulse] = useState(false);
   const group = useRef<Group>(null),
     outline = useRef<Group>(null),
+    heightGuide = useRef<Group>(null),
     angleLabel = useRef<HTMLSpanElement>(null);
+  const snapGuide = useRef<SnapGuideHandle>(null);
   const drag = useRef({
     session: new DragSession(editor),
     mode: null as "move" | "swivel" | null,
+    plane: new Plane(),
+    height: false,
     offset: new Vector3(),
     point: new Vector3(),
     lastValidation: 0,
@@ -87,6 +94,7 @@ export const Furniture = memo(function Furniture({
   }, [resolved]);
 
   const endGesture = () => {
+    snapGuide.current?.update();
     const state = drag.current;
     if (state.mode === "move") state.session.cancel();
     if (state.mode === "swivel") {
@@ -106,6 +114,11 @@ export const Furniture = memo(function Furniture({
   useFrame((_, delta) => {
     const state = drag.current;
     if (state.mode && !editor.interaction.getState().dragging) endGesture();
+    if (heightGuide.current) {
+      const interaction = editor.interaction.getState();
+      heightGuide.current.visible =
+        interaction.movePlane === "height" || interaction.heightModifier;
+    }
     const g = group.current;
     if (g && !state.mode) {
       // Ease toward the piece's transform in the working scene (draft or accepted),
@@ -158,13 +171,37 @@ export const Furniture = memo(function Furniture({
     }
   };
 
+  const setMovePlane = (
+    e: ThreeEvent<PointerEvent>,
+    current: Transform,
+    height: boolean,
+  ) => {
+    const state = drag.current;
+    state.height = height;
+    if (height) {
+      const normal = new Vector3(e.ray.direction.x, 0, e.ray.direction.z);
+      if (normal.lengthSq() < 1e-8) normal.set(0, 0, 1);
+      state.plane.setFromNormalAndCoplanarPoint(
+        normal.normalize(),
+        new Vector3(...current.position),
+      );
+    } else state.plane.set(new Vector3(0, 1, 0), -current.position[1]);
+    if (e.ray.intersectPlane(state.plane, state.point))
+      state.offset.copy(state.point).sub(new Vector3(...current.position));
+  };
   // ----- Move: drag across the floor -----
   const down = (e: ThreeEvent<PointerEvent>) => {
     if (e.button !== 0 || !editor.scene.getState().ready) return;
     e.stopPropagation();
     editor.select(object.id);
+    if (latest.current.locked) {
+      editor.notify(
+        `${latest.current.displayName} is locked. Unlock it first.`,
+      );
+      return;
+    }
     if (editor.interaction.getState().tool === "rotate") {
-      editor.rotate();
+      ringDown(e);
       return;
     }
     const state = drag.current;
@@ -176,36 +213,56 @@ export const Furniture = memo(function Furniture({
     state.startY = e.clientY;
     const current = latest.current.transform;
     state.transform = structuredClone(current);
-    floorPlane.constant = -current.position[1];
-    if (e.ray.intersectPlane(floorPlane, state.point))
-      state.offset.copy(state.point).sub(new Vector3(...current.position));
+    const interaction = editor.interaction.getState();
+    setMovePlane(
+      e,
+      current,
+      interaction.movePlane === "height" || interaction.heightModifier,
+    );
     (e.target as Element).setPointerCapture(e.pointerId);
   };
   const move = (e: ThreeEvent<PointerEvent>) => {
     const state = drag.current;
+    if (state.mode === "swivel") return ringMove(e);
     if (state.mode !== "move") return;
     e.stopPropagation();
+    const interaction = editor.interaction.getState();
+    const height =
+      interaction.movePlane === "height" || interaction.heightModifier;
+    if (height !== state.height) {
+      setMovePlane(e, state.transform, height);
+      return;
+    }
     if (
       Math.hypot(e.clientX - state.startX, e.clientY - state.startY) < 3 &&
       !state.moved
     )
       return;
-    if (!e.ray.intersectPlane(floorPlane, state.point)) return;
+    if (!e.ray.intersectPlane(state.plane, state.point)) return;
     state.moved = true;
     state.point.sub(state.offset);
     const snap = e.shiftKey ? 0.1 : 0;
-    const x = snap ? Math.round(state.point.x / snap) * snap : state.point.x,
-      z = snap ? Math.round(state.point.z / snap) * snap : state.point.z;
-    const current = latest.current.transform;
-    state.transform = { ...current, position: [x, current.position[1], z] };
-    group.current?.position.set(x, current.position[1], z);
+    const current = state.transform;
+    const snapped = (n: number) => (snap ? Math.round(n / snap) * snap : n);
+    const position: Transform["position"] = state.height
+      ? [current.position[0], snapped(state.point.y), current.position[2]]
+      : [snapped(state.point.x), current.position[1], snapped(state.point.z)];
+    const raw = { ...current, position };
+    const contact = e.altKey
+      ? { transform: raw }
+      : snapToSurface(editor.working(), latest.current, raw, sceneContext.room);
+    state.transform = contact.transform;
+    group.current?.position.fromArray(state.transform.position);
+    snapGuide.current?.update(contact.surface, state.transform.position);
     liveCheck(state.transform);
   };
   const up = (e: ThreeEvent<PointerEvent>) => {
     const state = drag.current;
+    if (state.mode === "swivel") return ringUp(e);
     if (state.mode !== "move") return;
     e.stopPropagation();
     state.mode = null;
+    snapGuide.current?.update();
     state.session.preview(state.transform);
     state.session.release();
     if ((e.target as Element).hasPointerCapture?.(e.pointerId))
@@ -269,93 +326,127 @@ export const Furniture = memo(function Furniture({
   const dimensions = object.dimensionsM;
   const labelY = dimensions[1] + 0.2;
   return (
-    <group
-      ref={group}
-      position={initial.current.position}
-      quaternion={initial.current.rotation}
-      scale={object.transform.scale}
-      onPointerDown={down}
-      onPointerMove={move}
-      onPointerUp={up}
-      onPointerCancel={() => endGesture()}
-      onPointerOver={(e) => {
-        e.stopPropagation();
-        if (!editor.interaction.getState().dragging)
-          editor.interaction.setState({ hoveredId: object.id });
-      }}
-      onPointerOut={() => {
-        if (!editor.interaction.getState().dragging)
-          editor.interaction.setState({ hoveredId: null });
-      }}
-    >
-      <mesh position={[0, dimensions[1] / 2, 0]}>
-        <boxGeometry args={dimensions} />
-        <meshBasicMaterial visible={false} />
-      </mesh>
-      <Model object={object} />
-      {object.category === "lamp" && lamps > 0 && (
-        <pointLight
-          position={[0, dimensions[1] * 0.86, 0]}
-          intensity={0.6 * lamps}
-          distance={2.5}
-          decay={2}
-          color="#ffcd80"
-        />
-      )}
-      <Selection
-        ref={outline}
-        dimensions={dimensions}
-        selected={selected}
-        hovered={hovered || conflict || pulse}
-      />
-      {selected && !object.locked && (
-        <SwivelRing
-          ref={angleLabel}
+    <>
+      <group
+        ref={group}
+        position={initial.current.position}
+        quaternion={initial.current.rotation}
+        scale={object.transform.scale}
+        onPointerDown={down}
+        onPointerMove={move}
+        onPointerUp={up}
+        onPointerCancel={() => endGesture()}
+        onPointerOver={(e) => {
+          e.stopPropagation();
+          if (!editor.interaction.getState().dragging)
+            editor.interaction.setState({ hoveredId: object.id });
+        }}
+        onPointerOut={() => {
+          if (!editor.interaction.getState().dragging)
+            editor.interaction.setState({ hoveredId: null });
+        }}
+      >
+        <mesh position={[0, dimensions[1] / 2, 0]}>
+          <boxGeometry args={dimensions} />
+          <meshBasicMaterial visible={false} />
+        </mesh>
+        <Model object={object} />
+        {object.category === "lamp" && lamps > 0 && (
+          <pointLight
+            position={[0, dimensions[1] * 0.86, 0]}
+            intensity={0.6 * lamps}
+            distance={2.5}
+            decay={2}
+            color="#ffcd80"
+          />
+        )}
+        <Selection
+          ref={outline}
           dimensions={dimensions}
-          active={swiveling}
-          onDown={ringDown}
-          onMove={ringMove}
-          onUp={ringUp}
+          selected={selected}
+          hovered={hovered || conflict || pulse}
         />
-      )}
-      {object.locked && !selected && (
-        <Html
-          portal={labelLayer}
-          zIndexRange={[2, 0]}
-          position={[0, labelY, 0]}
-          center
-          style={{ pointerEvents: "none" }}
-        >
-          <span
-            className="lock-badge"
-            aria-label={`${object.displayName} locked`}
+        {selected && !object.locked && tool !== "rotate" && (
+          <group
+            ref={heightGuide}
+            name="height-guide"
+            visible={movePlane === "height"}
           >
-            <LockKeyhole size={10} />
-            <span>Locked</span>
-          </span>
-        </Html>
-      )}
-      {isNew && !selected && (
-        <Html
-          portal={labelLayer}
-          zIndexRange={[2, 0]}
-          position={[0, labelY, 0]}
-          center
-          style={{ pointerEvents: "none" }}
-        >
-          <span className="new-badge">New</span>
-        </Html>
-      )}
-      {selected && (
-        <Html
-          portal={labelLayer}
-          position={[0, labelY + 0.12, 0]}
-          center
-          zIndexRange={[5, 0]}
-        >
-          <ObjectToolbar object={object} />
-        </Html>
-      )}
-    </group>
+            <mesh
+              position={[dimensions[0] / 2 + 0.12, dimensions[1] / 2, 0]}
+              raycast={() => null}
+            >
+              <cylinderGeometry args={[0.008, 0.008, dimensions[1] + 0.5, 8]} />
+              <meshBasicMaterial color="#8b84ff" depthTest={false} />
+            </mesh>
+            {[1, -1].map((direction) => (
+              <mesh
+                key={direction}
+                position={[
+                  dimensions[0] / 2 + 0.12,
+                  dimensions[1] / 2 + direction * (dimensions[1] / 2 + 0.3),
+                  0,
+                ]}
+                rotation={[direction < 0 ? Math.PI : 0, 0, 0]}
+                raycast={() => null}
+              >
+                <coneGeometry args={[0.045, 0.12, 12]} />
+                <meshBasicMaterial color="#8b84ff" depthTest={false} />
+              </mesh>
+            ))}
+          </group>
+        )}
+        {selected && !object.locked && tool === "rotate" && (
+          <SwivelRing
+            ref={angleLabel}
+            dimensions={dimensions}
+            active={swiveling}
+            onDown={ringDown}
+            onMove={ringMove}
+            onUp={ringUp}
+            onCancel={() => endGesture()}
+          />
+        )}
+        {object.locked && !selected && (
+          <Html
+            portal={labelLayer}
+            zIndexRange={[2, 0]}
+            position={[0, labelY, 0]}
+            center
+            style={{ pointerEvents: "none" }}
+          >
+            <span
+              className="lock-badge"
+              aria-label={`${object.displayName} locked`}
+            >
+              <LockKeyhole size={10} />
+              <span>Locked</span>
+            </span>
+          </Html>
+        )}
+        {isNew && !selected && (
+          <Html
+            portal={labelLayer}
+            zIndexRange={[2, 0]}
+            position={[0, labelY, 0]}
+            center
+            style={{ pointerEvents: "none" }}
+          >
+            <span className="new-badge">New</span>
+          </Html>
+        )}
+        {selected && (
+          <Html
+            portal={labelLayer}
+            position={[0, labelY + 0.12, 0]}
+            center
+            zIndexRange={[5, 0]}
+          >
+            <ObjectToolbar object={object} />
+          </Html>
+        )}
+      </group>
+      {selected && !object.locked && <SnapGuide ref={snapGuide} />}
+    </>
   );
 });

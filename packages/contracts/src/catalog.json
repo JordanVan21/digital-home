@@ -43,7 +43,7 @@
     "schemaVersion": 1,
     "id": "00000000-0000-4000-8000-000000001001",
     "category": "armchair",
-    "title": "Bouclé lounge chair",
+    "title": "Boucl\u00e9 lounge chair",
     "tags": [
       "warm",
       "minimal",
@@ -77,7 +77,7 @@
     "triangleCount": 78412,
     "textureBytes": 219440,
     "contentHash": "b42aaae02a968dc0b9efb94e1b441688e8f0a459d04cee831fd51247e9b5c464",
-    "searchableDescription": "Bouclé lounge chair in a warm minimal living room"
+    "searchableDescription": "Boucl\u00e9 lounge chair in a warm minimal living room"
   },
   {
     "schemaVersion": 1,
@@ -478,5 +478,129 @@
     "textureBytes": 219264,
     "contentHash": "8680e590befd18650ebfd9c274ac3715ffa8cece95d4879f1a21d1aaf8a355e1",
     "searchableDescription": "Sculpted two-seat sofa in a warm minimal living room"
+  },
+  {
+    "schemaVersion": 1,
+    "id": "00000000-0000-4000-8000-000000002000",
+    "category": "chair",
+    "title": "Poly Haven leather dining chair",
+    "tags": [
+      "polyhaven",
+      "poly haven",
+      "CC0",
+      "chair"
+    ],
+    "styles": [
+      "modern"
+    ],
+    "colors": [
+      "natural"
+    ],
+    "materials": [
+      "leather",
+      "wood"
+    ],
+    "dimensionsM": [
+      0.43362,
+      0.97338,
+      0.57648
+    ],
+    "glbStorageKey": "/models/polyhaven-dining-chair.glb",
+    "thumbnailStorageKey": "/thumbnails/polyhaven-dining-chair.webp",
+    "source": "other",
+    "sourceUrl": "https://polyhaven.com/a/dining_chair_02",
+    "licenseStatus": "verified",
+    "attribution": "James Ray Cock / Poly Haven (CC0)",
+    "estimatedPrice": {
+      "currency": "USD",
+      "minor": 24900
+    },
+    "triangleCount": 22013,
+    "textureBytes": 206610,
+    "contentHash": "5865af56a8b0906d04857c1ce32bb38a49c0e916562ec54d52aee3d0528e490b",
+    "searchableDescription": "Poly Haven leather dining chair, modern, CC0 model by James Ray Cock from Poly Haven"
+  },
+  {
+    "schemaVersion": 1,
+    "id": "00000000-0000-4000-8000-000000002001",
+    "category": "plant",
+    "title": "Poly Haven potted succulent",
+    "tags": [
+      "polyhaven",
+      "poly haven",
+      "CC0",
+      "plant"
+    ],
+    "styles": [
+      "natural",
+      "minimal"
+    ],
+    "colors": [
+      "natural"
+    ],
+    "materials": [
+      "foliage",
+      "ceramic"
+    ],
+    "dimensionsM": [
+      0.16789,
+      0.26746,
+      0.18475
+    ],
+    "glbStorageKey": "/models/polyhaven-potted-succulent.glb",
+    "thumbnailStorageKey": "/thumbnails/polyhaven-potted-succulent.webp",
+    "source": "other",
+    "sourceUrl": "https://polyhaven.com/a/potted_plant_04",
+    "licenseStatus": "verified",
+    "attribution": "James Ray Cock / Poly Haven (CC0)",
+    "estimatedPrice": {
+      "currency": "USD",
+      "minor": 2500
+    },
+    "triangleCount": 8929,
+    "textureBytes": 434126,
+    "contentHash": "1ee9b3f5f090cf68248f382f04d89933576ef5e45b4f56e0c256d0c63ee33281",
+    "searchableDescription": "Poly Haven potted succulent, natural, minimal, CC0 model by James Ray Cock from Poly Haven"
+  },
+  {
+    "schemaVersion": 1,
+    "id": "00000000-0000-4000-8000-000000002002",
+    "category": "decor",
+    "title": "Poly Haven ceramic vase",
+    "tags": [
+      "polyhaven",
+      "poly haven",
+      "CC0",
+      "decor"
+    ],
+    "styles": [
+      "modern",
+      "minimal"
+    ],
+    "colors": [
+      "natural"
+    ],
+    "materials": [
+      "ceramic"
+    ],
+    "dimensionsM": [
+      0.20363,
+      0.40027,
+      0.20363
+    ],
+    "glbStorageKey": "/models/polyhaven-ceramic-vase.glb",
+    "thumbnailStorageKey": "/thumbnails/polyhaven-ceramic-vase.webp",
+    "source": "other",
+    "sourceUrl": "https://polyhaven.com/a/ceramic_vase_01",
+    "licenseStatus": "verified",
+    "attribution": "James Ray Cock / Poly Haven (CC0)",
+    "estimatedPrice": {
+      "currency": "USD",
+      "minor": 3000
+    },
+    "triangleCount": 10296,
+    "textureBytes": 47580,
+    "contentHash": "b28bb075978b81b2ab792094029d019662f15bdf744ce202ac3af4c4aea4e7a7",
+    "searchableDescription": "Poly Haven ceramic vase, rustic, minimal, CC0 model by James Ray Cock from Poly Haven"
   }
 ]

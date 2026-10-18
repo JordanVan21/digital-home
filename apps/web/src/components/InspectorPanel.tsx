@@ -8,7 +8,7 @@ import {
   Trash2,
   Box,
 } from "lucide-react";
-import { assetById } from "@house/contracts";
+import { assetById, roomShell } from "@house/contracts";
 import { yawOf } from "@house/scene-engine";
 import { editor } from "../state/editor";
 import { useWorkingObject } from "../state/useWorking";
@@ -18,6 +18,10 @@ export function InspectorPanel() {
     open = useStore(editor.interaction, (s) => s.inspector);
   const object = useWorkingObject(id);
   const dragging = useStore(editor.interaction, (s) => s.dragging);
+  const movePlane = useStore(editor.interaction, (s) => s.movePlane);
+  const draftScene = useStore(editor.draft, (s) => s.scene);
+  const acceptedScene = useStore(editor.scene, (s) => s.scene);
+  const tool = useStore(editor.interaction, (s) => s.tool);
   const asset = object?.assetId ? assetById[object.assetId] : undefined;
   if (!open || !object) return null;
   const yaw =
@@ -83,6 +87,68 @@ export function InspectorPanel() {
             ))}
           </div>
           <div className="rotation-readout">
+            <label htmlFor="height-input">Height</label>
+            <input
+              id="height-input"
+              key={`${object.id}-height-${object.transform.position[1]}`}
+              className="rotation-input"
+              type="number"
+              step={0.1}
+              defaultValue={Number(object.transform.position[1].toFixed(3))}
+              disabled={object.locked || dragging}
+              aria-label="Height in meters"
+              onKeyDown={(e) => {
+                if (e.key === "Enter") e.currentTarget.blur();
+              }}
+              onBlur={(e) => {
+                const value = e.currentTarget.valueAsNumber;
+                if (
+                  Number.isFinite(value) &&
+                  value !== object.transform.position[1]
+                )
+                  editor.suggest({
+                    type: "move",
+                    objectId: object.id,
+                    transform: {
+                      ...object.transform,
+                      position: [
+                        object.transform.position[0],
+                        value,
+                        object.transform.position[2],
+                      ],
+                    },
+                  });
+              }}
+            />
+            <span className="unit">m</span>
+          </div>
+          <p className="subtle">
+            {object.placement?.support === "object"
+              ? `Resting on ${(draftScene ?? acceptedScene).objects.find((o) => o.id === object.placement?.parentId)?.displayName ?? "furniture"}.`
+              : "Nearby floor and object faces snap into place. Hold Alt to move freely."}
+          </p>
+          <Button
+            label="Place on floor"
+            className="secondary-button"
+            disabled={object.locked || dragging}
+            onClick={() =>
+              editor.suggest({
+                type: "move",
+                objectId: object.id,
+                transform: {
+                  ...object.transform,
+                  position: [
+                    object.transform.position[0],
+                    roomShell.floor.elevationY,
+                    object.transform.position[2],
+                  ],
+                },
+              })
+            }
+          >
+            Place on floor
+          </Button>
+          <div className="rotation-readout">
             <label htmlFor="rotation-input">Rotation</label>
             {/* Keyed on the angle so it resyncs after swivels, undo and steps. */}
             <input
@@ -137,7 +203,9 @@ export function InspectorPanel() {
             <ArrowDownToLine size={13} />
             {asset ? (
               <a href={asset.sourceUrl} target="_blank" rel="noreferrer">
-                FurniMesh · Licensed model ↗
+                {asset.sourceUrl?.startsWith("https://polyhaven.com/")
+                  ? "Poly Haven · CC0 ↗"
+                  : "FurniMesh · Licensed model ↗"}
               </a>
             ) : (
               <span>Scanned object · Approximate</span>
@@ -168,7 +236,11 @@ export function InspectorPanel() {
         <p className="panel-footnote">
           {object.locked
             ? "Unlock this piece to make changes."
-            : "Drag to move. Hold Shift to snap to 10 cm."}
+            : tool === "rotate"
+              ? "Drag inside the circle to rotate. Shift snaps to 15°."
+              : movePlane === "height"
+                ? "Drag up or down to change height. Shift snaps to 10 cm."
+                : "Drag to move. Hold Space for height, Shift for grid snapping."}
         </p>
       </>
     </aside>

@@ -30,6 +30,33 @@ beforeEach(() => vi.useFakeTimers());
 afterEach(() => vi.useRealTimers());
 
 describe("suggestions phase", () => {
+  it("accepts a raised piece on its support as one undoable checkpoint", () => {
+    const e = createEditor();
+    const small = e.working().objects.find((o) => o.id === smallId)!;
+    const desk = e.working().objects.find((o) => o.category === "desk")!;
+    const [x, y, z] = desk.transform.position;
+    const height = y + desk.dimensionsM[1] * desk.transform.scale[1];
+    e.suggest({
+      type: "move",
+      objectId: smallId,
+      transform: { ...small.transform, position: [x, height + 0.05, z] },
+    });
+    expect(e.accept()).toBe(true);
+    const placed = e.working().objects.find((o) => o.id === smallId)!;
+    expect(placed.transform.position[1]).toBeCloseTo(height);
+    expect(placed.placement).toEqual({ support: "object", parentId: desk.id });
+    expect(allValid(e)).toBe(true);
+    expect(e.history.getState().history.undo).toHaveLength(1);
+    e.travel("undo");
+    expect(
+      e.working().objects.find((o) => o.id === smallId)!.transform,
+    ).toEqual(small.transform);
+    e.travel("redo");
+    expect(
+      e.working().objects.find((o) => o.id === smallId)!.placement,
+    ).toEqual(placed.placement);
+    e.dispose();
+  });
   it("accepts a batch as one history entry and saves once", async () => {
     const repo = new LocalStorageSceneRepository(memoryStorage()),
       spy = vi.spyOn(repo, "save"),

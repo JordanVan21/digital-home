@@ -42,6 +42,19 @@ describe("normative fixtures", () => {
     );
     expect(triangles).toBeLessThan(500_000);
   });
+  it("includes self-hosted Poly Haven models with provenance and browser budgets", () => {
+    const imported = catalog.filter((a) =>
+      a.sourceUrl?.startsWith("https://polyhaven.com/"),
+    );
+    expect(imported).toHaveLength(3);
+    expect(new Set(imported.map((a) => a.id)).size).toBe(3);
+    for (const asset of imported) {
+      expect(asset.licenseStatus).toBe("verified");
+      expect(asset.attribution).toContain("CC0");
+      expect(asset.triangleCount).toBeLessThanOrEqual(25000);
+      expect(asset.dimensionsM.every((n) => n > 0 && n < 2)).toBe(true);
+    }
+  });
   it("rejects bad transforms and structural geometry", () => {
     expect(
       TransformSchema.safeParse({

@@ -17,6 +17,7 @@ import {
   record,
   recordCheckpoint,
   resolveDraft,
+  snapToSurface,
   traverseHistory,
   validateObject,
   validateOp,
@@ -37,6 +38,8 @@ export type Interaction = {
   hoveredId: string | null;
   dragging: boolean;
   tool: Tool;
+  movePlane: "floor" | "height";
+  heightModifier: boolean;
   browser: boolean;
   replacing: boolean;
   inspector: boolean;
@@ -132,6 +135,8 @@ export function createEditor(repository?: SceneRepository) {
     hoveredId: null,
     dragging: false,
     tool: "select",
+    movePlane: "floor",
+    heightModifier: false,
     browser: false,
     replacing: false,
     inspector: true,
@@ -203,8 +208,27 @@ export function createEditor(repository?: SceneRepository) {
     return true;
   };
   /** Applies an edit to the draft. Conflicts are allowed; hard errors are not. */
-  const suggest = (op: SceneOp): boolean => {
+  const suggest = (op: SceneOp, options: { snap?: boolean } = {}): boolean => {
     if (!scene.getState().ready) return false;
+    if (op.type === "move" && options.snap !== false) {
+      const move = op;
+      const object = working().objects.find((o) => o.id === move.objectId);
+      if (
+        object &&
+        object.transform.position.some(
+          (v, i) => v !== move.transform.position[i],
+        )
+      )
+        op = {
+          ...op,
+          transform: snapToSurface(
+            working(),
+            object,
+            op.transform,
+            sceneContext.room,
+          ).transform,
+        };
+    }
     const previous = draft.getState().scene;
     const result = applyOp(working(), op, sceneContext, {
       allowConflicts: true,
@@ -598,7 +622,10 @@ export class DragSession {
       .working()
       .objects.find((o) => o.id === id)?.transform;
     if (JSON.stringify(original) === JSON.stringify(transform)) return true;
-    return this.editor.suggest({ type: "move", objectId: id, transform });
+    return this.editor.suggest(
+      { type: "move", objectId: id, transform },
+      { snap: false },
+    );
   }
   cancel() {
     this.id = null;

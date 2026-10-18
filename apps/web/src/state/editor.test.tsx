@@ -230,10 +230,18 @@ describe("accessible editor controls", () => {
         <InspectorPanel />
       </>,
     );
-    for (const name of ["Move (G)", "Rotate 15° (R)", "Delete (Backspace)"])
+    for (const name of [
+      "Move (G)",
+      "Move up or down (Y)",
+      "Rotate freely (Shift to snap)",
+      "Delete (Backspace)",
+    ])
       expect(
         (screen.getByRole("button", { name }) as HTMLButtonElement).disabled,
       ).toBe(true);
+    expect(
+      (screen.getByLabelText("Height in meters") as HTMLInputElement).disabled,
+    ).toBe(true);
     expect(
       (
         screen.getByRole("button", {
@@ -258,6 +266,39 @@ describe("accessible editor controls", () => {
         }) as HTMLButtonElement
       ).disabled,
     ).toBe(false);
+  });
+});
+
+describe("spatial controls", () => {
+  it("chooses a movement plane or Rotate without creating edits and supports exact height", () => {
+    const object = editor.working().objects.find((o) => o.id === smallId)!;
+    editor.select(object.id);
+    editor.interaction.setState({ inspector: true });
+    render(
+      <>
+        <ObjectToolbar object={object} />
+        <InspectorPanel />
+      </>,
+    );
+    fireEvent.click(
+      screen.getByRole("button", { name: "Rotate freely (Shift to snap)" }),
+    );
+    expect(editor.interaction.getState().tool).toBe("rotate");
+    expect(editor.draft.getState().undo).toHaveLength(0);
+    fireEvent.click(
+      screen.getByRole("button", { name: "Move up or down (Y)" }),
+    );
+    expect(editor.interaction.getState().movePlane).toBe("height");
+    expect(editor.interaction.getState().tool).toBe("move");
+    const input = screen.getByLabelText("Height in meters");
+    fireEvent.change(input, { target: { value: "0.6" } });
+    fireEvent.blur(input);
+    expect(
+      editor.working().objects.find((o) => o.id === smallId)!.transform
+        .position[1],
+    ).toBe(0.6);
+    fireEvent.click(screen.getByRole("button", { name: "Move (G)" }));
+    expect(editor.interaction.getState().movePlane).toBe("floor");
   });
 });
 

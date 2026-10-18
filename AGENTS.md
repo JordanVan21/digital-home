@@ -1,3 +1,5 @@
+> **Read `docs/HANDOFF.md` first.** It describes the current state of this branch and the user's decisions since this brief was written, and it overrides this brief where they conflict. Notably, collisions no longer block edits: every edit is a suggestion that is resolved on Accept.
+
 # Task: Build the House 3D Sandbox (independent build)
 
 You are building the **3D sandbox** for House, a DubHacks 2026 project. Work autonomously from start to finish on branch `feature/3d-sandbox-codex`. Make reasonable decisions without asking; record notable ones in `apps/web/README.md` under "Decisions".

@@ -39,7 +39,12 @@ const transform = (p, m) => [
   m[2] * p[0] + m[6] * p[1] + m[10] * p[2] + m[14],
 ];
 const composites = [];
-for (const [i, a] of assets.entries()) {
+const selected = assets.filter(
+  (a) =>
+    !process.env.HOUSE_PREVIEW_PREFIX ||
+    a.glbStorageKey.includes(`/models/${process.env.HOUSE_PREVIEW_PREFIX}`),
+);
+for (const [i, a] of selected.entries()) {
   const doc = await io.read(
     path.join(root, "apps/web/public", a.glbStorageKey),
   );
@@ -143,6 +148,10 @@ for (const [i, a] of assets.entries()) {
       .join("") +
     `<text x="14" y="${height - 12}" font-family="sans-serif" font-size="11" fill="#555">${a.title}</text></svg>`;
   const png = await sharp(Buffer.from(svg)).png().toBuffer();
+  if (process.env.HOUSE_WRITE_THUMBNAILS === "1")
+    await sharp(png)
+      .webp({ quality: 86 })
+      .toFile(path.join(root, "apps/web/public", a.thumbnailStorageKey));
   composites.push({
     input: png,
     left: (i % 4) * width,
@@ -154,7 +163,7 @@ await fs.mkdir(path.join(root, "test-results"), { recursive: true });
 await sharp({
   create: {
     width: width * 4,
-    height: height * Math.ceil(assets.length / 4),
+    height: height * Math.ceil(selected.length / 4),
     channels: 3,
     background: "#f5f2eb",
   },

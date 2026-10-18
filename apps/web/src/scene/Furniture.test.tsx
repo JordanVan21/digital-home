@@ -1,9 +1,10 @@
 // @vitest-environment jsdom
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { act } from "react";
 import ReactThreeTestRenderer from "@react-three/test-renderer";
 import { Group, LineBasicMaterial, LineSegments, Ray, Vector3 } from "three";
 import { createFixtureScene, fixtureId } from "@house/contracts";
-import { createHistory } from "@house/scene-engine";
+import { createHistory, yawOf, topY } from "@house/scene-engine";
 import { editor } from "../state/editor";
 import { Furniture } from "./Furniture";
 (
@@ -42,6 +43,8 @@ beforeEach(() => {
     hoveredId: null,
     dragging: false,
     tool: "move",
+    movePlane: "floor",
+    heightModifier: false,
     toast: null,
   });
   model.renders = 0;
@@ -110,7 +113,7 @@ describe("actual canvas gesture adapter (without GPU)", () => {
     expect((edges.material as LineBasicMaterial).color.getHexString()).toBe(
       "e36856",
     );
-    editor.discard();
+    await act(async () => editor.discard());
     await renderer.advanceFrames(80, 0.016);
     expect((node.instance as Group).position.x).toBeCloseTo(0.2, 3);
   });
@@ -136,5 +139,301 @@ describe("actual canvas gesture adapter (without GPU)", () => {
     );
     expect(editor.interaction.getState().dragging).toBe(false);
     expect(editor.interaction.getState().toast).toContain("locked");
+  });
+  it.each([false, true])(
+    "swivels imperatively, then records exactly one draft step (snap=%s)",
+    async (snap) => {
+      const object = editor
+        .working()
+        .objects.find((o) => o.id === fixtureId(111))!;
+      editor.select(object.id);
+      editor.interaction.setState({ tool: "rotate" });
+      renderer = await ReactThreeTestRenderer.create(
+        <Furniture object={object} />,
+      );
+      const node = renderer.scene.children[0];
+      const ring = node.findByProps({ name: "swivel-area" });
+      const [x, , z] = object.transform.position;
+      await renderer.fireEvent(ring, "pointerDown", pointer(x, z + 0.2));
+      const renders = model.renders;
+      const angle = 0.38;
+      for (let i = 1; i <= 20; i++) {
+        const a = (angle * i) / 20;
+        await renderer.fireEvent(ring, "pointerMove", {
+          ...pointer(x + Math.sin(a) * 0.2, z + Math.cos(a) * 0.2),
+          shiftKey: snap,
+        });
+      }
+      const expected = snap ? Math.PI / 12 : angle;
+      expect(yawOf((node.instance as Group).quaternion.toArray())).toBeCloseTo(
+        expected,
+      );
+      expect(model.renders).toBe(renders);
+      expect(editor.draft.getState().undo).toHaveLength(0);
+      expect(editor.scene.getState().scene.revision).toBe(0);
+      await renderer.fireEvent(ring, "pointerUp", pointer(x, z + 0.2));
+      expect(editor.draft.getState().undo).toHaveLength(1);
+      expect(
+        yawOf(
+          editor.working().objects.find((o) => o.id === object.id)!.transform
+            .rotation,
+        ),
+      ).toBeCloseTo(expected);
+      expect(editor.interaction.getState().dragging).toBe(false);
+      expect(editor.history.getState().history.undo).toHaveLength(0);
+    },
+  );
+  it("shows no swivel area for locked pieces or in Move mode", async () => {
+    const object = editor.working().objects.find((o) => o.locked)!;
+    editor.select(object.id);
+    editor.interaction.setState({ tool: "rotate" });
+    renderer = await ReactThreeTestRenderer.create(
+      <Furniture object={object} />,
+    );
+    expect(renderer.scene.findAllByProps({ name: "swivel-area" })).toHaveLength(
+      0,
+    );
+    const unlocked = editor
+      .working()
+      .objects.find((o) => o.id === fixtureId(111))!;
+    await act(async () => {
+      editor.select(unlocked.id);
+      editor.interaction.setState({ tool: "move" });
+    });
+    await renderer.update(<Furniture object={unlocked} />);
+    expect(renderer.scene.findAllByProps({ name: "swivel-area" })).toHaveLength(
+      0,
+    );
+  });
+
+  it("rotates through the furniture hitbox in Rotate mode instead of moving or stepping on click", async () => {
+    const object = editor
+      .working()
+      .objects.find((o) => o.id === fixtureId(111))!;
+    editor.interaction.setState({ tool: "rotate" });
+    renderer = await ReactThreeTestRenderer.create(
+      <Furniture object={object} />,
+    );
+    const node = renderer.scene.children[0];
+    const [x, , z] = object.transform.position;
+    await renderer.fireEvent(node, "pointerDown", pointer(x, z + 0.1));
+    expect(editor.draft.getState().undo).toHaveLength(0);
+    await renderer.fireEvent(node, "pointerMove", pointer(x + 0.1, z));
+    await renderer.fireEvent(node, "pointerUp", pointer(x + 0.1, z));
+    expect(
+      editor.working().objects.find((o) => o.id === object.id)!.transform
+        .position,
+    ).toEqual(object.transform.position);
+    expect(editor.draft.getState().undo).toHaveLength(1);
+  });
+  it.each([false, true])(
+    "height drags preserve XZ, stay imperative and create one suggestion (snap=%s)",
+    async (snap) => {
+      const object = editor
+        .working()
+        .objects.find((o) => o.id === fixtureId(111))!;
+      editor.interaction.setState({ tool: "move", movePlane: "height" });
+      renderer = await ReactThreeTestRenderer.create(
+        <Furniture object={object} />,
+      );
+      const node = renderer.scene.children[0];
+      const [x, , z] = object.transform.position;
+      const verticalPointer = (y: number, clientX = 100) => ({
+        ...pointer(x, z, clientX),
+        shiftKey: snap,
+        ray: new Ray(new Vector3(x, y, z + 5), new Vector3(0, 0, -1)),
+      });
+      await renderer.fireEvent(node, "pointerDown", verticalPointer(0.2));
+      const renders = model.renders;
+      for (let i = 1; i <= 10; i++)
+        await renderer.fireEvent(
+          node,
+          "pointerMove",
+          verticalPointer(0.2 + 0.037 * i, 100 + i * 4),
+        );
+      const expected = snap ? 0.4 : 0.37;
+      expect((node.instance as Group).position.toArray()).toEqual([
+        x,
+        expect.closeTo(expected),
+        z,
+      ]);
+      expect(model.renders).toBe(renders);
+      expect(editor.draft.getState().undo).toHaveLength(0);
+      await renderer.fireEvent(node, "pointerUp", verticalPointer(0.57, 140));
+      expect(editor.draft.getState().undo).toHaveLength(1);
+      expect(
+        editor.working().objects.find((o) => o.id === object.id)!.transform
+          .position,
+      ).toEqual([x, expect.closeTo(expected), z]);
+      expect(editor.scene.getState().scene.revision).toBe(0);
+    },
+  );
+  it("cancels a height gesture without creating a suggestion", async () => {
+    const object = editor
+      .working()
+      .objects.find((o) => o.id === fixtureId(111))!;
+    editor.interaction.setState({ movePlane: "height" });
+    renderer = await ReactThreeTestRenderer.create(
+      <Furniture object={object} />,
+    );
+    const node = renderer.scene.children[0];
+    await renderer.fireEvent(node, "pointerDown", pointer(0.2, 1.75));
+    await renderer.fireEvent(node, "pointerCancel", pointer(0.2, 1.75));
+    expect(editor.draft.getState().undo).toHaveLength(0);
+    expect(editor.interaction.getState().dragging).toBe(false);
+  });
+  it("cancels a swivel without committing its preview", async () => {
+    const object = editor
+      .working()
+      .objects.find((o) => o.id === fixtureId(111))!;
+    editor.select(object.id);
+    editor.interaction.setState({ tool: "rotate" });
+    renderer = await ReactThreeTestRenderer.create(
+      <Furniture object={object} />,
+    );
+    const node = renderer.scene.children[0];
+    const ring = node.findByProps({ name: "swivel-area" });
+    const [x, , z] = object.transform.position;
+    await renderer.fireEvent(ring, "pointerDown", pointer(x, z + 0.2));
+    await renderer.fireEvent(ring, "pointerMove", pointer(x + 0.2, z));
+    await renderer.fireEvent(ring, "pointerCancel", pointer(x + 0.2, z));
+    expect(editor.draft.getState().undo).toHaveLength(0);
+    await renderer.advanceFrames(80, 0.016);
+    expect(yawOf((node.instance as Group).quaternion.toArray())).toBeCloseTo(0);
+    expect(editor.interaction.getState().dragging).toBe(false);
+  });
+  it.each([false, true])(
+    "height dragging magnetically lands on a tabletop, with Alt bypass=%s",
+    async (bypass) => {
+      const original = editor
+        .working()
+        .objects.find((o) => o.id === fixtureId(111))!;
+      const table = editor
+        .working()
+        .objects.find((o) => o.category === "coffee-table")!;
+      const [x, , z] = table.transform.position;
+      const object = {
+        ...original,
+        transform: {
+          ...original.transform,
+          position: [x, topY(table) + 0.3, z] as [number, number, number],
+        },
+      };
+      editor.scene.setState({
+        scene: { ...editor.working(), objects: [table, object] },
+      });
+      editor.select(object.id);
+      editor.interaction.setState({ tool: "move", movePlane: "height" });
+      renderer = await ReactThreeTestRenderer.create(
+        <Furniture object={object} />,
+      );
+      const node = renderer.scene.children[0];
+      const event = (y: number, clientX = 100) => ({
+        ...pointer(x, z, clientX),
+        altKey: bypass,
+        ray: new Ray(new Vector3(x, y, z + 5), new Vector3(0, 0, -1)),
+      });
+      await renderer.fireEvent(
+        node,
+        "pointerDown",
+        event(object.transform.position[1] + 0.2),
+      );
+      const renders = model.renders;
+      await renderer.fireEvent(
+        node,
+        "pointerMove",
+        event(topY(table) + 0.04 + 0.2, 180),
+      );
+      const expected = topY(table) + (bypass ? 0.04 : 0);
+      expect((node.instance as Group).position.y).toBeCloseTo(expected);
+      expect(model.renders).toBe(renders);
+      const guide = renderer.scene.findByProps({ name: "face-snap-guide" });
+      expect(guide.instance.visible).toBe(!bypass);
+      await renderer.fireEvent(node, "pointerUp", event(expected + 0.2, 180));
+      expect(guide.instance.visible).toBe(false);
+      expect(editor.draft.getState().undo).toHaveLength(1);
+      expect(
+        editor.working().objects.find((o) => o.id === object.id)!.transform
+          .position[1],
+      ).toBeCloseTo(expected);
+      expect(!!editor.draft.getState().conflicts[object.id]).toBe(bypass);
+      if (!bypass)
+        expect(
+          editor.working().objects.find((o) => o.id === object.id)!.placement,
+        ).toEqual({ support: "object", parentId: table.id });
+    },
+  );
+  it("lands precisely back on the floor while dragging a raised draft", async () => {
+    const original = editor
+      .working()
+      .objects.find((o) => o.id === fixtureId(111))!;
+    editor.suggest({
+      type: "move",
+      objectId: original.id,
+      transform: { ...original.transform, position: [0.2, 0.4, 1.75] },
+    });
+    const object = editor.working().objects.find((o) => o.id === original.id)!;
+    editor.select(object.id);
+    editor.interaction.setState({ tool: "move", movePlane: "height" });
+    renderer = await ReactThreeTestRenderer.create(
+      <Furniture object={object} />,
+    );
+    const node = renderer.scene.children[0];
+    const event = (y: number, c = 100) => ({
+      ...pointer(0.2, 1.75, c),
+      ray: new Ray(new Vector3(0.2, y, 6.75), new Vector3(0, 0, -1)),
+    });
+    await renderer.fireEvent(node, "pointerDown", event(0.6));
+    await renderer.fireEvent(node, "pointerMove", event(0.23, 180));
+    expect((node.instance as Group).position.y).toBe(0);
+    await renderer.fireEvent(node, "pointerUp", event(0.23, 180));
+    expect(
+      editor.working().objects.find((o) => o.id === object.id)!.transform
+        .position[1],
+    ).toBe(0);
+    expect(editor.draft.getState().conflicts[object.id]).toBeUndefined();
+  });
+  it("slides, raises and slides again in one continuous gesture without jumps or model rerenders", async () => {
+    const object = editor
+      .working()
+      .objects.find((o) => o.id === fixtureId(111))!;
+    renderer = await ReactThreeTestRenderer.create(
+      <Furniture object={object} />,
+    );
+    const node = renderer.scene.children[0];
+    await renderer.fireEvent(node, "pointerDown", pointer(0.2, 1.75));
+    const renders = model.renders;
+    await renderer.fireEvent(node, "pointerMove", pointer(0.4, 1.75, 150));
+    expect((node.instance as Group).position.x).toBeCloseTo(0.4);
+    editor.interaction.setState({ heightModifier: true });
+    const vertical = (y: number) => ({
+      ...pointer(0.4, 1.75, 180),
+      ray: new Ray(new Vector3(0.4, y, 6.75), new Vector3(0, 0, -1)),
+    });
+    await renderer.fireEvent(node, "pointerMove", vertical(0.2));
+    expect((node.instance as Group).position.toArray()).toEqual([0.4, 0, 1.75]);
+    await renderer.fireEvent(node, "pointerMove", vertical(0.6));
+    expect((node.instance as Group).position.y).toBeCloseTo(0.4);
+    editor.interaction.setState({ heightModifier: false });
+    await renderer.fireEvent(node, "pointerMove", pointer(0.4, 1.75, 200));
+    expect((node.instance as Group).position.toArray()).toEqual([
+      0.4,
+      expect.closeTo(0.4),
+      1.75,
+    ]);
+    await renderer.fireEvent(node, "pointerMove", pointer(0.6, 1.75, 220));
+    expect((node.instance as Group).position.toArray()).toEqual([
+      0.6,
+      expect.closeTo(0.4),
+      1.75,
+    ]);
+    expect(model.renders).toBe(renders);
+    expect(editor.draft.getState().undo).toHaveLength(0);
+    await renderer.fireEvent(node, "pointerUp", pointer(0.6, 1.75, 220));
+    expect(editor.draft.getState().undo).toHaveLength(1);
+    expect(
+      editor.working().objects.find((o) => o.id === object.id)!.transform
+        .position,
+    ).toEqual([0.6, expect.closeTo(0.4), 1.75]);
   });
 });

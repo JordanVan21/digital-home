@@ -1,6 +1,7 @@
 import { Component, useEffect, type ReactNode } from "react";
 import { useStore } from "zustand";
 import { X } from "lucide-react";
+import { installHeightModifier } from "./state/movementModifier";
 import { editor } from "./state/editor";
 import { SceneCanvas } from "./scene/SceneCanvas";
 import { TopBar } from "./components/TopBar";
@@ -13,6 +14,7 @@ import { AssetBrowser } from "./components/AssetBrowser";
 import { Button } from "./components/Button";
 function Keyboard() {
   useEffect(() => {
+    const cleanupHeightModifier = installHeightModifier(editor);
     const handle = (e: KeyboardEvent) => {
       const target = e.target as HTMLElement;
       if (target.closest('input,textarea,select,[contenteditable="true"]'))
@@ -45,7 +47,8 @@ function Keyboard() {
       }
       if (e.metaKey || e.ctrlKey || e.altKey) return;
       if (key === "v") editor.interaction.setState({ tool: "select" });
-      if (key === "g") editor.interaction.setState({ tool: "move" });
+      if (key === "g")
+        editor.interaction.setState({ tool: "move", movePlane: "floor" });
       if (key === "r") {
         editor.interaction.setState({ tool: "rotate" });
         editor.rotate(e.shiftKey ? -1 : 1);
@@ -70,6 +73,7 @@ function Keyboard() {
     document.addEventListener("visibilitychange", hide);
     window.addEventListener("beforeunload", leave);
     return () => {
+      cleanupHeightModifier();
       window.removeEventListener("keydown", handle);
       document.removeEventListener("visibilitychange", hide);
       window.removeEventListener("beforeunload", leave);

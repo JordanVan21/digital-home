@@ -1,5 +1,6 @@
 import { useStore } from "zustand";
 import {
+  ArrowUpDown,
   Copy,
   Ellipsis,
   LockKeyhole,
@@ -15,6 +16,7 @@ import { Button } from "./Button";
 /** Floating glass toolbar pinned above the selected object in the 3D view. */
 export function ObjectToolbar({ object }: { object: SceneObject }) {
   const tool = useStore(editor.interaction, (s) => s.tool);
+  const plane = useStore(editor.interaction, (s) => s.movePlane);
   const dragging = useStore(editor.interaction, (s) => s.dragging);
   const blocked = dragging || object.locked;
   return (
@@ -27,20 +29,35 @@ export function ObjectToolbar({ object }: { object: SceneObject }) {
       <Button
         label="Move (G)"
         className="round"
-        active={tool !== "rotate" && !object.locked}
+        active={tool !== "rotate" && plane === "floor" && !object.locked}
+        aria-pressed={tool !== "rotate" && plane === "floor" && !object.locked}
         disabled={blocked}
-        onClick={() => editor.interaction.setState({ tool: "move" })}
+        onClick={() =>
+          editor.interaction.setState({ tool: "move", movePlane: "floor" })
+        }
       >
         <Move size={15} />
       </Button>
       <Button
-        label="Rotate 15° (R)"
+        label="Move up or down (Y)"
+        className="round"
+        active={tool !== "rotate" && plane === "height" && !object.locked}
+        aria-pressed={tool !== "rotate" && plane === "height" && !object.locked}
+        disabled={blocked}
+        onClick={() =>
+          editor.interaction.setState({ tool: "move", movePlane: "height" })
+        }
+      >
+        <ArrowUpDown size={15} />
+      </Button>
+      <Button
+        label="Rotate freely (Shift to snap)"
         className="round"
         active={tool === "rotate"}
+        aria-pressed={tool === "rotate"}
         disabled={blocked}
         onClick={() => {
           editor.interaction.setState({ tool: "rotate" });
-          editor.rotate();
         }}
       >
         <RotateCw size={15} />

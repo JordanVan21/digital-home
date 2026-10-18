@@ -25,6 +25,18 @@ test("renders the room and edits, undoes and restores a saved arrangement", asyn
     page.getByRole("heading", { name: "Round brass side table" }),
   ).toBeVisible();
   await page
+    .getByRole("button", { name: "Rotate freely (Shift to snap)" })
+    .click();
+  await expect(page.getByLabel("Rotation in degrees")).toHaveValue("0");
+  await page.getByRole("button", { name: "Move up or down (Y)" }).click();
+  await expect(
+    page.getByRole("button", { name: "Move up or down (Y)" }),
+  ).toHaveAttribute("aria-pressed", "true");
+  await page.getByLabel("Height in meters").fill("0.4");
+  await page.getByLabel("Height in meters").press("Tab");
+  await expect(page.getByLabel("Height in meters")).toHaveValue("0.4");
+  await page.getByRole("button", { name: "Move (G)", exact: true }).click();
+  await page
     .getByRole("button", { name: "Rotate clockwise 15°", exact: true })
     .click();
   const rotation = page.getByLabel("Rotation in degrees");
@@ -38,7 +50,9 @@ test("renders the room and edits, undoes and restores a saved arrangement", asyn
   await page.keyboard.press("ControlOrMeta+Shift+z");
   await expect(rotation).toHaveValue("15");
   await page.getByRole("button", { name: /^Accept suggestions/ }).click();
-  await expect(page.getByRole("status").filter({ hasText: "Applied" })).toBeVisible();
+  await expect(
+    page.getByRole("status").filter({ hasText: "Applied" }),
+  ).toBeVisible();
   await expect(
     page.getByRole("status").filter({ hasText: "Saved" }),
   ).toBeVisible();
@@ -50,6 +64,17 @@ test("renders the room and edits, undoes and restores a saved arrangement", asyn
     ),
   );
   expect(saved.objects).toHaveLength(13);
+  // All boxes now support contact, including the rug under the added table.
+  const rug = saved.objects.find(
+    (o: { category: string }) => o.category === "rug",
+  );
+  expect(saved.objects[12].placement).toEqual({
+    support: "object",
+    parentId: rug.id,
+  });
+  expect(saved.objects[12].transform.position[1]).toBeCloseTo(
+    rug.transform.position[1] + rug.dimensionsM[1] * rug.transform.scale[1],
+  );
   expect(saved.objects[12].transform.rotation[1]).toBeCloseTo(
     Math.sin(Math.PI / 24),
   );
@@ -71,13 +96,13 @@ test("renders the room and edits, undoes and restores a saved arrangement", asyn
   await page.screenshot({ path: "test-results/room-conflict.png" });
   await page.keyboard.press("Escape");
   await page.keyboard.press("Enter");
-  await expect(page.getByRole("status").filter({ hasText: "to fit" })).toBeVisible();
+  await expect(
+    page.getByRole("status").filter({ hasText: "to fit" }),
+  ).toBeVisible();
   await page.waitForTimeout(600);
   await page.screenshot({ path: "test-results/room-resolved.png" });
   // Lighting presets restyle the room and the UI accent together.
-  await page
-    .getByRole("button", { name: /^Lighting: Golden hour/ })
-    .click();
+  await page.getByRole("button", { name: /^Lighting: Golden hour/ }).click();
   await expect(
     page.getByRole("button", { name: /^Lighting: Daylight/ }),
   ).toBeVisible();

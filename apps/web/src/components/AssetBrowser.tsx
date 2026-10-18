@@ -118,6 +118,11 @@ export function AssetBrowser() {
               <span className="asset-meta">
                 {a.dimensionsM.map((d) => d.toFixed(2)).join(" × ")} m
               </span>
+              <span className="asset-meta">
+                {a.sourceUrl?.startsWith("https://polyhaven.com/")
+                  ? "Poly Haven · CC0"
+                  : "FurniMesh"}
+              </span>
               <span className="asset-price">
                 ${((a.estimatedPrice?.minor ?? 0) / 100).toLocaleString()}{" "}
                 <small>est.</small>
