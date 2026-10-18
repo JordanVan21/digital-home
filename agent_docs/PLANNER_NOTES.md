@@ -69,3 +69,15 @@ Real-provider evidence: Pro planning smoke 7.546 s, Flash palette/material readi
 Final checks passed: TypeScript, ESLint, all 255 unit/integration tests, web production build, and all 28 GPU Chrome browser tests (2.2 minutes). Verified the built browser files contain none of the private keys read from the scanner environment. The existing navigation browser test needed a readiness guard for its selected object and camera projection; no editor or geometry behavior was changed.
 
 Try: http://127.0.0.1:5191/?planner-lab → Demo fallback (scripted) → Run design experiment → Show before / Show proposed design → Actual views sent for review. The API runs at 127.0.0.1:8791. Stop here for user review before building the next stage.
+
+### Model sourcing and visible connection status (2026-10-18)
+
+The server now reads verified shared catalog metadata with a bundled offline fallback. Usable closest render-worker matches remain real models and carry an explicit compromise label; uniform fitting follows the render module's minimum scale of 0.5. Requests deduplicate, wait through intermediate worker results and distinguish missing infrastructure, delay, failure, invalid output and no match. Unsupported optional mounted decor is not sent to the queue.
+
+The lab includes the existing sign-in control, a furniture-connection check before paid AI calls, per-object loading/failure status, and a clearly labelled catalog demo using real alternative furniture. Screenshot capture waits for actual models and lighting; unavailable pieces are reported individually. Service failures show a recoverable plain-language message. No shared sandbox component or saved-scene behavior changed.
+
+Read-only integration check: 233 catalog rows, 232 usable verified assets; `asset_requests` returned 404 / PGRST205. The existing integration/scanner migration is `supabase/migrations/20261018140000_asset_requests.sql`. It must be deployed through integration before live owner-authenticated worker verification. No database schema/rows were changed and no temporary account was created. No new paid AI evaluation was run; design quality and authenticated worker integration remain unproven.
+
+Checks passed: typecheck, lint, 271 unit tests, production build and three GPU Chrome planner browser tests. The demo visibly changed sofa/chair models and showed 12 real models ready, one unchanged scanned placeholder and zero model-load failures. Before/after leaves the saved scene identical. Browser bundle checked against private environment keys.
+
+Try: http://127.0.0.1:5191/?planner-lab → Catalog demo (real furniture) → Run design experiment → Show before / Show proposed design. Expect real alternative furniture, a model-status count and clearly scripted review. Live mode explains its missing connection and stays disabled. Stop here for user review. Intake, editable style summary, full preview highlights and named-version Accept/Reject remain later steps.

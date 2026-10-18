@@ -9,6 +9,7 @@ import {
 import { validateObject } from "@house/scene-engine";
 import { buildCandidate, checkPlan } from "./candidate";
 import { PlannerSession } from "./loop";
+import { ModelSourcingError } from "./ports";
 import {
   DesignBriefSchema,
   PriceRecordSchema,
@@ -79,6 +80,64 @@ const uuid = () => fixtureId(serial++);
 const signal = () => AbortSignal.timeout(20_000);
 
 describe("proposal protections and shared rules", () => {
+  it("keeps an approved closest match as a real model and labels the compromise", async () => {
+    const { catalog } = await import("@house/contracts");
+    const input = testInput(),
+      plan = planFor(input);
+    plan.items[0] = {
+      ...plan.items[0],
+      action: "replace",
+      desiredCategory: "chair",
+      description: "Oak chair",
+      maxDimensionsM: [0.6, 0.6, 0.6],
+    };
+    const asset = {
+      ...catalog[0],
+      id: fixtureId(8000),
+      category: "chair",
+      dimensionsM: [1, 1, 1] as [number, number, number],
+      mount: "floor" as const,
+    };
+    const port: RenderPort = {
+      async resolve() {
+        return { asset, source: "best_effort", notes: [] };
+      },
+    };
+    const result = await buildCandidate(plan, input, port, [], signal(), uuid);
+    expect(
+      result.scene.objects.find(
+        (o) => o.replacesObjectId === input.scene.objects[0].id,
+      )?.assetId,
+    ).toBe(asset.id);
+    expect(result.items[0].method).toBe("retrieved");
+    expect(result.items[0].matchQuality).toBe("closest_available");
+    expect(result.items[0].notes.join()).toContain("compromise");
+  });
+  it("records infrastructure failure separately from a missing catalog match", async () => {
+    const input = testInput(),
+      plan = planFor(input);
+    plan.items[0] = {
+      ...plan.items[0],
+      action: "replace",
+      desiredCategory: "chair",
+      description: "Oak chair",
+      maxDimensionsM: [0.4, 0.7, 0.4],
+    };
+    const port: RenderPort = {
+      async resolve() {
+        throw new ModelSourcingError(
+          "queue_missing",
+          "Furniture requests are not connected.",
+        );
+      },
+    };
+    const result = await buildCandidate(plan, input, port, [], signal(), uuid);
+    expect(result.items[0].placeholderReason).toBe("queue_missing");
+    expect(result.items[0].notes).toContain(
+      "Furniture requests are not connected.",
+    );
+    expect(result.items[0].price.estimatedUnitCost).toBeNull();
+  });
   it("locks override hostile planner output without changing the original", async () => {
     const input = testInput();
     input.scene.objects[0].locked = true;

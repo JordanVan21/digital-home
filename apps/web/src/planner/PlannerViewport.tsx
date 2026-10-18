@@ -4,12 +4,21 @@ import {
   useImperativeHandle,
   useLayoutEffect,
   useRef,
+  useState,
+  useCallback,
+  useEffect,
+  useMemo,
   type ComponentRef,
 } from "react";
 import { Canvas, useThree } from "@react-three/fiber";
 import { OrbitControls, useProgress } from "@react-three/drei";
 import { Vector3, type WebGLRenderer, type Scene, type Camera } from "three";
-import { assetById, type RoomShell, type SceneSpec } from "@house/contracts";
+import {
+  assetById,
+  type RoomShell,
+  type SceneSpec,
+  type SceneObject,
+} from "@house/contracts";
 import type { RoomView } from "@house/aesthetic-planner";
 import { Model } from "../scene/Model";
 import { AssetLight } from "../scene/AssetLight";
@@ -17,6 +26,7 @@ import { lightBudget } from "../scene/lightBudget";
 import { Room } from "../scene/Room";
 import { Lighting } from "../scene/Lighting";
 import { labelLayer } from "../scene/labelLayer";
+import { modelKey, modelStatuses, type ModelStatuses } from "./modelStatus";
 
 export type CaptureApi = { capture: () => Promise<RoomView[]> };
 const frame = () =>
@@ -26,10 +36,12 @@ function Capture({
   scene: snapshot,
   shell,
   api,
+  loaded,
 }: {
   scene: SceneSpec;
   shell: RoomShell;
   api: React.Ref<CaptureApi>;
+  loaded: React.RefObject<Set<string>>;
 }) {
   const { gl, scene, camera } = useThree();
   const controls = useRef<ComponentRef<typeof OrbitControls>>(null);
@@ -57,7 +69,18 @@ function Capture({
         if (controls.current) controls.current.enabled = false;
         try {
           const until = Date.now() + 15_000;
-          while (useProgress.getState().active && Date.now() < until)
+          while (
+            (useProgress.getState().active ||
+              Object.values(
+                modelStatuses(
+                  snapshot,
+                  assetById,
+                  loaded.current,
+                  useProgress.getState().errors,
+                ),
+              ).includes("loading")) &&
+            Date.now() < until
+          )
             await frame();
           // Give mounted GLBs and material effects time to commit, including a just-changed candidate.
           for (let n = 0; n < 8; n++) await frame();
@@ -79,7 +102,9 @@ function Capture({
             camera.lookAt(cx, 0.4, cz);
             for (let n = 0; n < 4; n++) await frame();
             gl.render(scene, camera);
-            views.push(captureView(gl, scene, camera, snapshot, name));
+            views.push(
+              captureView(gl, scene, camera, snapshot, name, loaded.current),
+            );
           }
           return views;
         } finally {
@@ -91,7 +116,7 @@ function Capture({
         }
       },
     }),
-    [gl, scene, camera, snapshot, cx, cz, span],
+    [gl, scene, camera, snapshot, cx, cz, span, loaded],
   );
   return (
     <OrbitControls
@@ -110,6 +135,7 @@ function captureView(
   camera: Camera,
   snapshot: SceneSpec,
   name: RoomView["name"],
+  loaded: ReadonlySet<string>,
 ): RoomView {
   const image = document.createElement("canvas");
   image.width = 768;
@@ -125,16 +151,15 @@ function captureView(
     12,
     19,
   );
-  const errors = useProgress.getState().errors;
+  const statuses = modelStatuses(
+    snapshot,
+    assetById,
+    loaded,
+    useProgress.getState().errors,
+  );
   const unavailableObjectIds: string[] = [];
   snapshot.objects.forEach((object, i) => {
-    const asset = object.assetId ? assetById[object.assetId] : null;
-    if (
-      !asset ||
-      errors.includes(asset.glbStorageKey) ||
-      useProgress.getState().active
-    )
-      unavailableObjectIds.push(object.id);
+    if (statuses[object.id] !== "ready") unavailableObjectIds.push(object.id);
     const p = new Vector3(...object.transform.position);
     p.y += object.dimensionsM[1] + 0.12;
     p.project(camera);
@@ -156,8 +181,27 @@ function captureView(
 
 export const PlannerViewport = forwardRef<
   CaptureApi,
-  { scene: SceneSpec; shell: RoomShell }
->(function PlannerViewport({ scene, shell }, ref) {
+  {
+    scene: SceneSpec;
+    shell: RoomShell;
+    onModelStatus?: (statuses: ModelStatuses) => void;
+  }
+>(function PlannerViewport({ scene, shell, onModelStatus }, ref) {
+  const loaded = useRef(new Set<string>());
+  const [revision, setRevision] = useState(0);
+  const errors = useProgress((s) => s.errors);
+  const onLoaded = useCallback((key: string) => {
+    if (loaded.current.has(key)) return;
+    loaded.current.add(key);
+    setRevision((r) => r + 1);
+  }, []);
+  const statuses = useMemo(
+    () => modelStatuses(scene, assetById, loaded.current, errors),
+    [scene, errors, revision],
+  );
+  useEffect(() => {
+    onModelStatus?.(statuses);
+  }, [onModelStatus, statuses]);
   const budget = lightBudget(scene, assetById);
   return (
     <div
@@ -187,7 +231,8 @@ export const PlannerViewport = forwardRef<
               shadow={budget.shadows.has(o.id)}
             />
             <Suspense fallback={null}>
-              <Model
+              <ObservedModel
+                onLoaded={onLoaded}
                 object={
                   !o.assetId
                     ? { ...o, displayName: `Placeholder: ${o.displayName}` }
@@ -197,8 +242,21 @@ export const PlannerViewport = forwardRef<
             </Suspense>
           </group>
         ))}
-        <Capture scene={scene} shell={shell} api={ref} />
+        <Capture scene={scene} shell={shell} api={ref} loaded={loaded} />
       </Canvas>
     </div>
   );
 });
+
+/** onShape(false) also signals a successfully loaded transparent GLB. It is not a load failure. */
+function ObservedModel({
+  object,
+  onLoaded,
+}: {
+  object: SceneObject;
+  onLoaded: (key: string) => void;
+}) {
+  const key = modelKey(object);
+  const onShape = useCallback(() => onLoaded(key), [key, onLoaded]);
+  return <Model object={object} onShape={onShape} />;
+}

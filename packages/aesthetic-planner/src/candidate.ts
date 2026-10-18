@@ -12,6 +12,8 @@ import {
   validateObject,
 } from "@house/scene-engine";
 import { placeObject } from "./placement";
+import { fitModelToEnvelope } from "./modelFit";
+import { ModelSourcingError } from "./ports";
 import { SemanticDesignPlanSchema, type SemanticDesignPlan } from "./schema";
 import type {
   DesignCandidate,
@@ -143,7 +145,12 @@ export async function buildCandidate(
     warnings: string[] = [];
   const resolutions = new Map<string, ModelResolution>();
   const requested = plan.items.filter(
-    (i) => i.action === "add" || i.action === "replace",
+    (i) =>
+      (i.action === "add" || i.action === "replace") &&
+      !(
+        i.action === "add" &&
+        ["wall-art", "pendant"].includes(i.desiredCategory ?? "")
+      ),
   );
   // Bound concurrency, but avoid waiting a full worker timeout separately for every piece.
   for (let start = 0; start < requested.length; start += 4) {
@@ -168,12 +175,20 @@ export async function buildCandidate(
             signal,
           );
           resolutions.set(item.key, structuredClone(response));
-        } catch {
+        } catch (error) {
           signal.throwIfAborted();
           resolutions.set(item.key, {
             asset: null,
             source: "placeholder",
-            notes: ["Model service unavailable; appearance unverified."],
+            placeholderReason:
+              error instanceof ModelSourcingError
+                ? error.reason
+                : "request_failed",
+            notes: [
+              error instanceof ModelSourcingError
+                ? error.message
+                : "The furniture request failed. Check the connection and try again.",
+            ],
           });
         }
       }),
@@ -228,21 +243,32 @@ export async function buildCandidate(
       const result = resolutions.get(item.key)!;
       let asset = result.asset ? AssetSpecSchema.parse(result.asset) : null;
       const dimensions = item.maxDimensionsM!;
-      const scale = asset
-        ? Math.min(1, ...dimensions.map((v, i) => v / asset!.dimensionsM[i]))
-        : 1;
+      const fitted = asset ? fitModelToEnvelope(asset, dimensions) : null;
+      line.placeholderReason = result.placeholderReason;
       if (
         asset &&
         (asset.licenseStatus !== "verified" ||
           asset.mount === "wall" ||
           asset.mount === "ceiling" ||
-          scale < 0.75 ||
-          result.source === "best_effort")
+          !fitted)
       ) {
+        line.placeholderReason =
+          asset.licenseStatus !== "verified"
+            ? "unverified_license"
+            : asset.mount === "wall" || asset.mount === "ceiling"
+              ? "unsupported_mount"
+              : "size_mismatch";
         result.notes.push(
           "Returned model is unsuitable for this request; using a labelled placeholder.",
         );
         asset = null;
+      }
+      if (!asset) line.placeholderReason ??= "no_match";
+      if (asset && result.source === "best_effort") {
+        line.matchQuality = "closest_available";
+        result.notes.push(
+          "Closest available catalog model. Its appearance is a compromise; check it against your style.",
+        );
       }
       if (asset) assets[asset.id] = asset;
       object = {
@@ -252,13 +278,7 @@ export async function buildCandidate(
         displayName:
           asset?.title ??
           `Planned ${item.desiredCategory!.replaceAll("-", " ")}`,
-        dimensionsM: asset
-          ? (asset.dimensionsM.map((n) => n * scale) as [
-              number,
-              number,
-              number,
-            ])
-          : dimensions,
+        dimensionsM: asset ? fitted! : dimensions,
         transform: {
           position: [0, input.shell.floor.elevationY, 0],
           rotation: [0, 0, 0, 1],

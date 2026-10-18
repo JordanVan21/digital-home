@@ -269,6 +269,8 @@ The experiment's semantic plan is an intermediate, unsaved composition: `schemaV
 
 `DesignBrief` adds `lightingMood` and `householdNeeds`. `PriceRecord` enforces amount/status agreement: unknown is null; existing pieces carry zero; replacements use new IDs and `replacesObjectId`. `DesignReview` contains subjective style/composition/usability scores, at most five object-keyed findings and a complete revised plan for repairs. `RoomView` carries three distinct JPEG views of a particular candidate plus unavailable-object IDs. Every revision repeats placement and shared geometry checks; at most two visual repairs. Placeholder appearance stays unverified.
 
+The planner's unsaved proposal-item port additionally records `matchQuality: "closest_available"` for usable `best_effort` models and a typed `placeholderReason` for unavailable models. Closest matches retain their real asset and are explicitly labelled as compromises. Unknown prices remain null. These diagnostics introduce no persisted scene or database schema changes.
+
 ### Endpoint additions
 | Operation | Request | Result |
 |---|---|---|

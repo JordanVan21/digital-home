@@ -14,15 +14,15 @@ On this machine, pnpm is available at `/tmp/house-tools/node_modules/.bin/pnpm`;
 ## Try it
 
 1. Open the lab and choose a base room.
-2. Choose **Demo fallback (scripted)** and **Run design experiment**. It keeps existing furniture, requests a rug in one scripted repair and captures three actual views per candidate. The page explicitly identifies the fallback.
+2. Choose **Catalog demo (real furniture)** and **Run design experiment**. It replaces two eligible pieces with real catalog alternatives, requests a rug in one scripted repair and captures three actual views per candidate. Design and review are explicitly labelled scripted; this demo makes no AI or worker calls.
 3. Toggle **Show before** / **Show proposed design**, inspect the change list and expand **Actual views sent for review**. No saved room changes.
-4. To try real design reasoning with the connected render worker, sign in through the sandbox on this same origin first. Return to the lab, choose **Live AI + connected render worker**, and run it. The scanner worker and `asset_requests` migration must be available. Queue/worker delays leave labelled placeholders.
+4. To try real design reasoning, sign in using the account control in the lab and choose **Live AI + connected render worker**. Check the Furniture connection message first. The scanner worker and `asset_requests` migration must be available; missing infrastructure blocks the run before paid AI calls. Queue/worker delays leave labelled placeholders with specific reasons.
 
 The editable JSON is a temporary approved-brief interface for this experiment. Consumer questionnaire and style-summary screens come later.
 
 ## How it works
 
-Pro proposes a composition using real object IDs and relations (center, wall, beside, in front of, facing). The renderer adapter submits model requests to the scanner worker's existing owner-scoped queue. Placement uses actual returned dimensions with uniform fitting, ranks deterministic candidates (including a nearest-fit search when the original spot fails), and runs the sandbox's shared rules. It validates all final objects and replays safe operations; physical replacements use `replacePhysicalItem` with new identity. Unknown cost is null, never zero.
+Pro proposes a composition using real object IDs and relations (center, wall, beside, in front of, facing). The renderer adapter submits model requests to the scanner worker's existing owner-scoped queue. The server loads verified shared catalog metadata, with the bundled catalog as an offline fallback. Queue requests are deduplicated, wait up to 45 seconds by default, and retain usable closest matches with an explicit compromise label. Placement uses actual returned dimensions with uniform fitting, ranks deterministic candidates (including a nearest-fit search when the original spot fails), and runs the sandbox's shared rules. It validates all final objects and replays safe operations; physical replacements use `replacePhysicalItem` with new identity. Unknown cost is null, never zero.
 
 The browser renders a separate scene with the sandbox's Model/Room/Lighting components. It captures top and opposing angled views with fixed cameras/lighting, adds numbered annotations and reports unavailable models. Flash reviews those actual views against the brief; a complete revised plan goes through the same checks. At most two repairs and a 240-second server session budget. The best visually scored valid candidate survives a failed/worse repair. Scores are subjective feedback, not proof of quality.
 
@@ -41,7 +41,7 @@ The browser renders a separate scene with the sandbox's Model/Room/Lighting comp
 
 Root checks: `pnpm typecheck`, `pnpm lint`, `pnpm test`, `pnpm --filter @house/web build`.
 
-Browser smoke: `HOUSE_E2E_PORT=5191 HOUSE_BROWSER_GPU=1 HOUSE_BROWSER_EXECUTABLE="/Applications/Google Chrome.app/Contents/MacOS/Google Chrome" pnpm exec playwright test tests/planner-loop.spec.ts` (start both services first). Verifies two distinct candidates, three real views each, before/after and unchanged saved scene.
+Browser smoke: `HOUSE_E2E_PORT=5191 HOUSE_BROWSER_GPU=1 HOUSE_BROWSER_EXECUTABLE="/Applications/Google Chrome.app/Contents/MacOS/Google Chrome" pnpm exec playwright test tests/planner-loop.spec.ts` (start both services first). Verifies real replacement models load, two distinct candidates, three real views each, before/after and unchanged saved scene. Also verifies missing-queue gating and recoverable service errors.
 
 Paid provider smoke, from the worktree root after the browser smoke:
 
@@ -62,3 +62,9 @@ This writes raw fixture-model responses, review history and a screenshot under i
 Completed real visual-feedback evaluation: a recorded real Pro plan was replayed, placed, and reviewed by live Flash against fresh sandbox captures. Three reviews and two repair rounds completed in 23.913 seconds (excluding the recorded planning call). Scores were 8/15, 7/15 and 7/15; the first candidate was retained. This proves the loop and regression safeguard, not improved design quality. Fresh live attempts also exposed invalid references, unsuitable placements and an interrupted provider connection; those findings drove the schema, dependency ordering, bounded retries and optional-decor reporting. Authenticated worker requests remain unverified with a real user session.
 
 Final local checks: typecheck, lint, production build and 255 unit tests. All 28 GPU Chrome browser tests passed in 2.2 minutes, including the planner loop and unchanged saved-scene check. The built browser bundle was checked against the scanner environment and contains none of its private keys.
+
+## Model-sourcing follow-up (2026-10-18)
+
+Read-only checks found 233 shared catalog rows (232 usable verified assets), but `asset_requests` returned HTTP 404 / `PGRST205`. The migration already exists at `supabase/migrations/20261018140000_asset_requests.sql` in the integration/scanner worktrees. Deploy it through the integration workflow, then verify owner-authenticated requests and a running worker. No database migrations or rows were written here; live worker integration remains unverified.
+
+Current checks: typecheck, lint, production build, 271 unit tests and three planner browser tests passed. The browser demo showed 12 real models ready, one unchanged scanned placeholder and zero load failures. The earlier 28-test full sandbox run above belongs to the first milestone. No new paid AI evaluation was run for this follow-up; aesthetic quality still needs live evaluation.

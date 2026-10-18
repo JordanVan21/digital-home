@@ -17,6 +17,19 @@ export type PlannerInput = {
   shell: RoomShell;
   brief: DesignBrief;
 };
+export type PlannerReadiness = {
+  liveReady: boolean;
+  aiConfigured: boolean;
+  renderStatus:
+    | "ready"
+    | "queue_missing"
+    | "sign_in_required"
+    | "not_configured"
+    | "unavailable";
+  catalogCount: number;
+  catalogSource: "shared" | "bundled";
+  message: string;
+};
 export type ModelRequest = {
   task: "plan" | "review";
   instructions: string;
@@ -39,6 +52,7 @@ export type ModelRequestSpec = {
   allowGeneration: boolean;
 };
 export type ModelResolution = {
+  placeholderReason?: ModelIssue;
   asset: AssetSpec | null;
   source:
     | "retrieved"
@@ -49,6 +63,26 @@ export type ModelResolution = {
     | "placeholder";
   notes: string[];
 };
+export type ModelIssue =
+  | "no_match"
+  | "queue_missing"
+  | "request_failed"
+  | "worker_pending"
+  | "worker_timeout"
+  | "worker_failed"
+  | "invalid_model"
+  | "size_mismatch"
+  | "unverified_license"
+  | "unsupported_mount";
+export class ModelSourcingError extends Error {
+  constructor(
+    public reason: ModelIssue,
+    message: string,
+  ) {
+    super(message);
+    this.name = "ModelSourcingError";
+  }
+}
 export interface RenderPort {
   resolve(
     request: ModelRequestSpec,
@@ -56,6 +90,8 @@ export interface RenderPort {
   ): Promise<ModelResolution>;
 }
 export type ProposalItem = {
+  placeholderReason?: ModelIssue;
+  matchQuality?: "closest_available";
   placement?: "applied" | "dropped";
   key: string;
   objectId?: string;

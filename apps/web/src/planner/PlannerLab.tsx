@@ -6,15 +6,18 @@ import {
   type DesignBrief,
   type LoopState,
   type RoomView,
+  type PlannerReadiness,
 } from "@house/aesthetic-planner";
 import { editor } from "../state/editor";
 import { rooms } from "../state/rooms";
 import { readLastRoom } from "../state/lastRoom";
-import { cloudRoomIds, supabase } from "../state/cloud";
+import { cloudRoomIds, cloudRoomsVersion, supabase } from "../state/cloud";
+import { CloudAccount } from "../components/CloudAccount";
+import type { ModelStatuses } from "./modelStatus";
 import { PlannerViewport, type CaptureApi } from "./PlannerViewport";
 import "./planner.css";
 
-type Result = LoopState & { id: string };
+type Result = LoopState & { id: string; mode?: "live" | "demo" };
 export const sampleBrief = (roomId: string): DesignBrief => ({
   schemaVersion: 1,
   roomId,
@@ -47,12 +50,20 @@ async function api(path: string, input: unknown): Promise<Result> {
     },
     body: JSON.stringify(input),
   });
-  const body = await response.json();
+  let body;
+  try {
+    body = await response.json();
+  } catch {
+    throw new Error(
+      "The planner service did not answer. Check the connection and try again.",
+    );
+  }
   if (!response.ok)
     throw new Error(body.error ?? "The planner could not finish. Try again.");
   return body;
 }
 export default function PlannerLab() {
+  useStore(cloudRoomsVersion, (s) => s.version);
   const room = useStore(editor.room, (s) => s.room);
   const accepted = useStore(editor.scene, (s) => s.scene);
   const ready = useStore(editor.scene, (s) => s.ready);
@@ -66,6 +77,11 @@ export default function PlannerLab() {
   const [busy, setBusy] = useState(false);
   const [message, setMessage] = useState("Ready to test the design loop.");
   const [error, setError] = useState("");
+  const [readiness, setReadiness] = useState<PlannerReadiness | null>(null);
+  const [connectionError, setConnectionError] = useState("");
+  const [check, setCheck] = useState(0);
+  const [authRevision, setAuthRevision] = useState(0);
+  const [modelStatus, setModelStatus] = useState<ModelStatuses>({});
   const [views, setViews] = useState<RoomView[]>([]);
   const capture = useRef<CaptureApi>(null);
   const generation = useRef(0);
@@ -74,10 +90,51 @@ export default function PlannerLab() {
   }, []);
   useEffect(() => {
     setBriefText(JSON.stringify(sampleBrief(room.roomId), null, 2));
+    setResult(null);
+    setBase(null);
+    setViews([]);
   }, [room.roomId]);
+  useEffect(() => {
+    const { data } = supabase.auth.onAuthStateChange(() =>
+      setAuthRevision((r) => r + 1),
+    );
+    return () => data.subscription.unsubscribe();
+  }, []);
+  useEffect(() => {
+    let active = true;
+    const controller = new AbortController();
+    setReadiness(null);
+    setConnectionError("");
+    void (async () => {
+      try {
+        const { data } = await supabase.auth.getSession();
+        const response = await fetch("/planner-api/readiness", {
+          headers: data.session
+            ? { Authorization: `Bearer ${data.session.access_token}` }
+            : {},
+          signal: controller.signal,
+        });
+        if (!response.ok) throw new Error("Planner service is unavailable.");
+        const state = (await response.json()) as PlannerReadiness;
+        if (active) setReadiness(state);
+      } catch {
+        if (active)
+          setConnectionError(
+            "The planner service is unavailable. Start it, then check the connection again.",
+          );
+      }
+    })();
+    return () => {
+      active = false;
+      controller.abort();
+    };
+  }, [check, authRevision]);
   const show = before
     ? (base ?? accepted)
     : (result?.candidate.scene ?? accepted);
+  const shownMode = result?.mode ?? mode;
+  const counts = { ready: 0, loading: 0, failed: 0, placeholder: 0 };
+  for (const status of Object.values(modelStatus)) counts[status]++;
 
   async function run() {
     const captured = new Map<string, RoomView[]>();
@@ -107,7 +164,7 @@ export default function PlannerLab() {
       for (;;) {
         if (runId !== generation.current) return;
         for (const asset of next.candidate.assets) assetById[asset.id] = asset;
-        setResult(next);
+        setResult({ ...next, mode });
         if (next.done) break;
         setMessage(
           `Capturing three views for visual review${next.repairs ? ` after repair ${next.repairs}` : ""}…`,
@@ -126,7 +183,11 @@ export default function PlannerLab() {
         });
       }
       setViews(captured.get(next.candidate.id) ?? []);
-      setMessage(next.messages.at(-1) ?? "Ready to review.");
+      setMessage(
+        mode === "demo"
+          ? "Catalog demo completed. Real furniture is shown below; the design and review are scripted. Your saved room is unchanged."
+          : (next.messages.at(-1) ?? "Ready to review."),
+      );
     } catch (e) {
       setError(e instanceof Error ? e.message : "Could not run the planner.");
       setMessage("Experiment stopped. Your saved room is unchanged.");
@@ -138,10 +199,13 @@ export default function PlannerLab() {
     <main className="planner-lab">
       <header>
         <a href="/">← Back to sandbox</a>
-        <strong>Design my space · first experiment</strong>
+        <strong>Design my space</strong>
+        <fieldset disabled={busy} className="planner-account">
+          <CloudAccount />
+        </fieldset>
         <span>
-          {mode === "demo"
-            ? "Demo fallback · scripted"
+          {shownMode === "demo"
+            ? "Catalog demo · real models, scripted design"
             : "Live AI + render worker"}
         </span>
       </header>
@@ -180,9 +244,31 @@ export default function PlannerLab() {
               onChange={(e) => setMode(e.target.value as "live" | "demo")}
             >
               <option value="live">Live AI + connected render worker</option>
-              <option value="demo">Demo fallback (scripted)</option>
+              <option value="demo">Catalog demo (real furniture)</option>
             </select>
           </label>
+          <section
+            className="planner-connection"
+            aria-label="Furniture connection"
+          >
+            <strong>
+              {connectionError ||
+                (mode === "demo" && readiness
+                  ? "Ready to show real catalog furniture."
+                  : readiness?.message) ||
+                "Checking the furniture connection…"}
+            </strong>
+            {readiness && (
+              <p>
+                {readiness.catalogCount} real models available from the{" "}
+                {readiness.catalogSource === "shared" ? "shared" : "bundled"}{" "}
+                catalog.
+              </p>
+            )}
+            <button disabled={busy} onClick={() => setCheck((n) => n + 1)}>
+              Check connection
+            </button>
+          </section>
           <details>
             <summary>
               Furniture instructions ({accepted.objects.length})
@@ -212,7 +298,9 @@ export default function PlannerLab() {
           </label>
           <button
             className="primary-pill"
-            disabled={busy || !ready}
+            disabled={
+              busy || !ready || (mode === "live" && !readiness?.liveReady)
+            }
             onClick={() => void run()}
           >
             {busy ? "Designing…" : "Run design experiment"}
@@ -242,10 +330,21 @@ export default function PlannerLab() {
               inspect
             </span>
           </div>
-          <PlannerViewport ref={capture} scene={show} shell={room.shell} />
+          <PlannerViewport
+            ref={capture}
+            scene={show}
+            shell={room.shell}
+            onModelStatus={setModelStatus}
+          />
+          <div className="planner-model-summary" data-testid="model-summary">
+            {counts.ready} real models ready · {counts.loading} loading ·{" "}
+            {counts.placeholder} placeholders · {counts.failed} failed to load
+          </div>
           {result && (
             <div className="planner-report">
-              <h2>{mode === "demo" ? "Demo fallback" : "Design proposal"}</h2>
+              <h2>
+                {shownMode === "demo" ? "Catalog demo" : "Design proposal"}
+              </h2>
               <p>{result.candidate.plan.rationale}</p>
               <p>
                 {result.repairs} repair rounds · {result.history.length} visual
@@ -265,9 +364,20 @@ export default function PlannerLab() {
                       {i.name}
                     </strong>{" "}
                     ·{" "}
-                    {i.method === "placeholder"
-                      ? "Labelled placeholder — appearance unverified"
-                      : i.method}
+                    {i.matchQuality === "closest_available"
+                      ? "Closest available model — check style"
+                      : i.method === "placeholder"
+                        ? "Labelled placeholder — appearance unverified"
+                        : i.method}
+                    {i.objectId && modelStatus[i.objectId] === "failed" && (
+                      <strong className="planner-error">
+                        {" "}
+                        · 3D file failed to load
+                      </strong>
+                    )}
+                    {i.objectId && modelStatus[i.objectId] === "loading" && (
+                      <span> · Loading 3D file…</span>
+                    )}
                     <span>
                       {" "}
                       ·{" "}

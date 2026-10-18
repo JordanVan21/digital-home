@@ -10,7 +10,6 @@ import {
   AssetSpecSchema,
   RoomShellSchema,
   SceneSpecSchema,
-  catalog,
 } from "@house/contracts";
 import {
   DesignBriefSchema,
@@ -19,7 +18,9 @@ import {
 } from "@house/aesthetic-planner";
 import { createPlannerModel } from "./model";
 import { renderQueue } from "./renderQueue";
-import { demoModel, demoRender } from "./demo";
+import { demoModel, createDemoRender } from "./demo";
+import { createCatalogSource } from "./catalog";
+import { checkReadiness } from "./readiness";
 
 export type PlannerConfig = {
   apiKey?: string;
@@ -66,6 +67,7 @@ export function createPlannerServer(config: PlannerConfig) {
     { session: PlannerSession; expires: number }
   >();
   const model = createPlannerModel(config);
+  const catalogSource = createCatalogSource(config);
   return createServer(async (request, response) => {
     // Local development service, through Vite's same-origin proxy; no cross-origin access.
     const origin = request.headers.origin;
@@ -75,6 +77,18 @@ export function createPlannerServer(config: PlannerConfig) {
     }
     const url = new URL(request.url ?? "/", "http://127.0.0.1");
     try {
+      if (
+        request.method === "GET" &&
+        url.pathname === "/planner-api/readiness"
+      ) {
+        const jwt = request.headers.authorization?.replace(/^Bearer /, "");
+        send(
+          response,
+          200,
+          await checkReadiness(config, await catalogSource.list(), jwt),
+        );
+        return;
+      }
       if (request.method === "GET" && url.pathname === "/planner-api/health") {
         send(response, 200, {
           aiConfigured: !!config.apiKey,
@@ -105,12 +119,26 @@ export function createPlannerServer(config: PlannerConfig) {
         if (input.scene.objects.length > 40)
           throw new Error("This first experiment supports up to 40 pieces.");
         const jwt = request.headers.authorization?.replace(/^Bearer /, "");
-        let render = demoRender;
+        const library = await catalogSource.list();
+        let render = createDemoRender(
+          library.assets,
+          new Set(
+            input.scene.objects.flatMap((o) => (o.assetId ? [o.assetId] : [])),
+          ),
+        );
         if (input.mode === "live") {
           if (!config.apiKey) {
             send(response, 503, {
               error:
                 "AI is not set up. Set DEEPSEEK_API_KEY in the server environment.",
+            });
+            return;
+          }
+          const readiness = await checkReadiness(config, library, jwt);
+          if (!readiness.liveReady) {
+            send(response, 503, {
+              error: readiness.message,
+              code: readiness.renderStatus,
             });
             return;
           }
@@ -132,9 +160,16 @@ export function createPlannerServer(config: PlannerConfig) {
             input.cloudRoom ? input.scene.roomId : undefined,
           );
         }
-        const assets = [...catalog, ...input.assets];
+        const assets = [...library.assets];
+        for (const existing of input.assets)
+          if (
+            !assets.some((a) => a.id === existing.id) &&
+            input.scene.objects.some((o) => o.assetId === existing.id)
+          )
+            assets.push(existing);
         const session = new PlannerSession(input, {
-          model: input.mode === "demo" ? demoModel(input) : model,
+          model:
+            input.mode === "demo" ? demoModel(input, library.assets) : model,
           render,
           assets,
           uuid: randomUUID,

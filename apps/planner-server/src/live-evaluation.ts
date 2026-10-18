@@ -54,6 +54,19 @@ try {
   let final: LoopState | undefined;
   const states: LoopState[] = [];
   const started = Date.now();
+  // This opt-in provider evaluation deliberately substitutes fixture model sourcing.
+  await page.route("**/planner-api/readiness", async (route) => {
+    await route.fulfill({
+      json: {
+        liveReady: true,
+        aiConfigured: true,
+        renderStatus: "ready",
+        catalogCount: catalog.length,
+        catalogSource: "bundled",
+        message: "Developer evaluation: fixture-only model sourcing.",
+      },
+    });
+  });
   await page.route("**/planner-api/sessions", async (route) => {
     try {
       const input = route.request().postDataJSON() as PlannerInput;

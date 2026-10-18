@@ -20,6 +20,37 @@
 .planner-lab a {
   color: inherit;
 }
+.planner-account {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  min-width: 0;
+}
+.planner-lab header {
+  position: relative;
+  z-index: 10;
+}
+.planner-connection {
+  margin: 16px 0;
+  padding: 12px;
+  border-radius: 10px;
+  background: #e9eee5;
+  font-size: 13px;
+  line-height: 1.5;
+}
+.planner-connection button {
+  padding: 5px 9px;
+  width: auto;
+  border: 1px solid #b5bfae;
+  border-radius: 6px;
+  background: white;
+}
+.planner-model-summary {
+  padding: 10px 24px;
+  font-size: 13px;
+  background: #fffc;
+  border-bottom: 1px solid #d8d9d1;
+}
 .planner-workspace {
   display: grid;
   grid-template-columns: 340px minmax(0, 1fr);
