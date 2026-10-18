@@ -1,5 +1,11 @@
 # iPhone Room Scanner Status
 
+**Current priority (2026-10-18):** checkpoints 1–3 accepted on the user's phone.
+The user chose to move to Supabase and the single-room end-to-end pipeline. See
+`PHONE_SCANNER_BACKLOG.md` for every deferred phone feature and the required upload/
+importer integration work. The original plan below is historical; remaining phone
+polish does not block starting backend work. Full original phone scope is not complete.
+
 **Read-through:** 2026-10-18  
 **Branch:** `feature/room-scanner`  
 **Scope:** iPhone app only. No code changes have been made during this read-through.
@@ -170,3 +176,13 @@ This update supersedes the initial read-through's build/tooling status above.
 - iPhone build passes with Xcode 27.1. All 13 Swift tests pass (8 new storage tests cover restart/recovery, immutable bytes, safe discard, duplicate identity, invalid names, corrupt siblings and preview failure/late completion).
 - Awaiting physical-phone preview, saved/draft persistence after force-close/restart, and Discard verification. Detailed taps are in `apps/ios/SETUP.md` checkpoint 3. Do not claim persistence on the actual phone until the user confirms it.
 - Remaining phone checkpoints: full version 2 JSON and sharing, multi-room capture, detail/delete/diagnostic log, and uploader placeholder/status/retry. Two real version 1 fixtures already exist; version 2 examples must be collected after that exporter is implemented.
+
+### Checkpoint 3 acceptance and priority change
+
+- User confirmed “works” after the preview/naming/storage/list checkpoint test instructions.
+- User explicitly chose to defer remaining standalone phone features and move to
+  Supabase schemas, raw-scan/GLB storage and end-to-end connections. No further
+  phone-only implementation is required before beginning that work.
+- Full backlog and integration prerequisites are recorded in `PHONE_SCANNER_BACKLOG.md`.
+  This supersedes the previous instruction to finish checkpoints 4–7 before backend
+  work; it does not mark those features implemented.

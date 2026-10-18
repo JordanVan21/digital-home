@@ -31,3 +31,14 @@ Required model-driven: Style Interpreter, Design Planner, Budget Priority Planne
 
 ## Non-goals for hackathon
 Photo-based room reconstruction, three-way design comparison, structural remodeling, multiplayer editing, full Git merge, mandatory Blender/GPU runtime generation, live retailer checkout, labor/construction estimation.
+
+## Scanner implementation handoff (2026-10-18)
+
+- `SCANNER_STATUS.md`: implementation history, builds/tests and accepted phone checkpoints.
+- `PHONE_SCANNER_BACKLOG.md`: deferred phone work and the next Supabase/Storage/end-to-end milestone.
+- `SCAN_FORMAT.md`: approved future version 2 target; current phone/importer still use version 1.
+
+The user prioritized the single-room database/render connection after accepting
+phone capture, preview, durable saving and the scan list. Whole-house scanning and
+remaining phone management/diagnostic features are deferred; shared contracts above
+remain authoritative.

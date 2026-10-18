@@ -2,6 +2,11 @@
 
 Status: approved as part of the phone plan on 2026-10-18; not yet implemented. Version 2 describes raw capture data; it does not replace `RoomShell` or `SceneSpec` from `CONTRACTS.md`.
 
+Priority update: the user deferred the expanded phone export in favor of the
+single-room Supabase connection. Current phone artifacts and the importer remain
+version 1. See `PHONE_SCANNER_BACKLOG.md`; negotiate/version the initial upload
+contract rather than assuming this version 2 proposal is implemented.
+
 ## Purpose and compatibility
 
 The phone preserves measured geometry and source identity. The TypeScript importer remains responsible for converting scan coordinates to the project's normalized room coordinates exactly once. Rendering and database writes remain downstream responsibilities.
