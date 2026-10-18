@@ -7,7 +7,7 @@ import {
   applyOps, carryTransform, ceilingPose, classOf, diffScenes, draftConflicts, duplicateObject, emptyHistory,
   findFreeSpot, findSupport, findWallSpot, groupTransformOps, hasDifferences, makeTransform, normalizeAngle,
   objectFromAsset, placementFor, pushHistory, settleWithGravity, snapToSurface, redo as redoHistory, resizeOps, resolveDraft, rootsOf, selectionPivot, setAsset, setOwnership,
-  stableStringify, subtreeIds, tiltOps, undo as undoHistory, validateScene, yawFromQuat,
+  stableStringify, stepYaw, subtreeIds, tiltOps, undo as undoHistory, validateScene, yawFromQuat,
   type History, type OpContext, type OpError, type ResolutionEntry, type Violation,
 } from '@house/scene-engine';
 import type { AssetCatalog } from '../catalog/AssetCatalog';
@@ -728,6 +728,18 @@ export function rotateSelectionBy(dYaw: number) {
   const ids = roots.map((r) => r.id);
   const pivot = roots.length === 1 ? [roots[0]!.transform.position[0], roots[0]!.transform.position[2]] as Vec2 : selectionPivot(c.scene, ids);
   commit('Rotate', groupTransformOps(c.ctx, c.scene, ids, [0, 0], dYaw, pivot, { settle: false }));
+}
+
+/**
+ * Step the selection to the next angle on the absolute grid (codex): ±15° by default (Q/E and the
+ * inspector's − / +), 90° with Shift. The primary piece lands on the grid; others turn with it.
+ */
+export function stepRotation(dir: 1 | -1, stepRad = (15 * Math.PI) / 180) {
+  const s = get();
+  const primary = objectById(s.selectedId);
+  if (!primary) return;
+  const yaw = yawFromQuat(primary.transform.rotation);
+  rotateSelectionBy(normalizeAngle(stepYaw(yaw, dir, stepRad) - yaw));
 }
 
 export function setYaw(id: string, yaw: number) {

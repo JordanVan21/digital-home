@@ -190,6 +190,15 @@ export class YawDial {
     const a = snapRad ? Math.round(this.acc / snapRad) * snapRad : this.acc;
     return normalizeAngle(this.startYaw + a);
   }
+
+  /**
+   * Rotation to apply so a piece starting at `fromYaw` follows the pointer; with `snapRad` the
+   * resulting angle lands on the absolute grid (0°, 15°, 30°…), not on steps from where it began.
+   */
+  delta(fromYaw: number, snapRad?: number): number {
+    if (!snapRad) return this.acc;
+    return Math.round((fromYaw + this.acc) / snapRad) * snapRad - fromYaw;
+  }
 }
 
 // ---------------------------------------------------------------- ceiling / wall poses
@@ -209,3 +218,11 @@ export function heightOf(obj: SceneObject): number {
 }
 
 
+
+/** The next angle on the absolute grid of `stepRad` in direction `dir` (±1) from `yaw`. */
+export function stepYaw(yaw: number, dir: 1 | -1, stepRad: number): number {
+  const k = yaw / stepRad;
+  const onGrid = Math.abs(k - Math.round(k)) < 1e-6;
+  const next = onGrid ? Math.round(k) + dir : dir > 0 ? Math.ceil(k) : Math.floor(k);
+  return normalizeAngle(next * stepRad);
+}

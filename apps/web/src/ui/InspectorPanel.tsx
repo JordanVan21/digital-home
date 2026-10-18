@@ -7,7 +7,7 @@ import type { AssetSpec, RenovationDecision, SceneObject, Tilt, Vec3 } from '@ho
 import { areaXZ, classOf, findSupport, isTiltable, lockedAspect, rankByDimensionFit, yawFromQuat } from '@house/scene-engine';
 import {
   deleteSelected, duplicateSelected, groupSelected, opContext, placeOnSurface, resizeObject, rotateSelectionBy, selectedObjects, setDecision,
-  setFloat, setPosition, setSceneSettings, setTilt, setVariant, setYaw, swapAsset, toggleLight, toggleLock, ungroupSelected,
+  setFloat, setPosition, setSceneSettings, stepRotation, setTilt, setVariant, setYaw, swapAsset, toggleLight, toggleLock, ungroupSelected,
   useEditor,
 } from '../state/store';
 import { humanCategory } from '../scene/categoryColors';
@@ -159,8 +159,8 @@ function PositionSection({ obj }: { obj: SceneObject }) {
           <NumInput className="rotation-input" label="Rotation in degrees" step={1} digits={0} value={yaw} disabled={disabled}
             onCommit={(v) => setYaw(obj.id, v * DEG)} />
           <span className="unit">°</span>
-          <Button label="Rotate counterclockwise 15° (Q)" disabled={disabled} className="step-button" onClick={() => rotateSelectionBy(15 * DEG)}>−</Button>
-          <Button label="Rotate clockwise 15° (E)" disabled={disabled} className="step-button" onClick={() => rotateSelectionBy(-15 * DEG)}>+</Button>
+          <Button label="Previous 15° angle (E)" disabled={disabled} className="step-button" onClick={() => stepRotation(-1)}>−</Button>
+          <Button label="Next 15° angle (Q)" disabled={disabled} className="step-button" onClick={() => stepRotation(1)}>+</Button>
         </div>
       )}
       {mode === 'rotate' && !obj.locked && <p className="section-note">Drag inside the ring to rotate. Shift snaps to 15°.</p>}

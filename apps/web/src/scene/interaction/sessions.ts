@@ -384,7 +384,7 @@ export class MoveSession implements DragSession {
 
 /**
  * Free swivel: the pointer's bearing around the pivot drives yaw continuously (no clamping or
- * jumps across ±180°, any number of turns). Shift snaps to 15°. Never blocked: new conflicts show
+ * jumps across ±180°, any number of turns). Shift lands it on the 15° grid. Never blocked: new conflicts show
  * red live and resolve on Accept.
  */
 export class RotateSession implements DragSession {
@@ -423,7 +423,8 @@ export class RotateSession implements DragSession {
     const h = hitPlaneY(setRay(this.host, e), this.planeY);
     if (!h) return;
     this.dial.update(bearing(this.pivot, [h.x, h.z]));
-    const dYaw = this.dial.yaw(e.shiftKey ? EDITOR_POLICY.snap.rotateRad : undefined);
+    // Shift lands the (primary) piece on the absolute 15° grid; the selection turns by the same amount.
+    const dYaw = this.dial.delta(yawFromQuat(this.roots[0]!.transform.rotation), e.shiftKey ? EDITOR_POLICY.snap.rotateRad : undefined);
     this.last = { dYaw };
     const rotated: SceneObject[] = [];
     for (const r of this.roots) {

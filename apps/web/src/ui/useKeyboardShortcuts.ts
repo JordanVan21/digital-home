@@ -2,8 +2,8 @@ import { useEffect } from 'react';
 import { EDITOR_POLICY } from '../config/editorPolicy';
 import { cameraAxisXZ } from '../scene/canvasBridge';
 import {
-  accept, deleteSelected, discard, duplicateSelected, frameCamera, groupSelected, nudge, nudgeVertical, redo, rotateSelectionBy, select,
-  setMode, toggleLock, undo, ungroupSelected, useEditor,
+  accept, deleteSelected, discard, duplicateSelected, frameCamera, groupSelected, nudge, nudgeVertical, redo, select,
+  setMode, stepRotation, toggleLock, undo, ungroupSelected, useEditor,
 } from '../state/store';
 
 function isTyping(target: EventTarget | null): boolean {
@@ -64,8 +64,8 @@ export function useKeyboardShortcuts() {
         case 't': setMode('translate'); break;
         case 'y': setMode('translate', 'height'); break;
         case 'r': setMode('rotate'); break;
-        case 'q': rotateSelectionBy((e.shiftKey ? 90 : 15) * DEG); break;
-        case 'e': rotateSelectionBy(-(e.shiftKey ? 90 : 15) * DEG); break;
+        case 'q': stepRotation(1, (e.shiftKey ? 90 : 15) * DEG); break;
+        case 'e': stepRotation(-1, (e.shiftKey ? 90 : 15) * DEG); break;
         case 'f': frameCamera('selection'); break;
         case 'p': useEditor.setState({ walkMode: true, selectedIds: [], selectedId: null }); break;
         case 'l': toggleLock(); break;

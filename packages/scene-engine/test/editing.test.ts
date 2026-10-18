@@ -266,3 +266,24 @@ describe('broad-phase', () => {
     expect(g.query([0.8, 0, -0.1], [1.2, 1, 0.1]).map((b) => b.id).sort()).toEqual([bodies[0]!.id, bodies[2]!.id].sort());
   });
 });
+
+describe('absolute angle snapping (codex)', () => {
+  it('Shift-swivel lands on the 15° grid from any starting angle', async () => {
+    const { YawDial: Dial } = await import('../src');
+    const from = 7 * DEG;
+    const dial = new Dial(0, 0);
+    dial.update(9 * DEG); // turned 9°: 16° → nearest grid angle is 15°
+    expect((from + dial.delta(from, 15 * DEG)) / DEG).toBeCloseTo(15, 9);
+    dial.update(20 * DEG); // turned 20°: 27° → 30°
+    expect((from + dial.delta(from, 15 * DEG)) / DEG).toBeCloseTo(30, 9);
+    expect(dial.delta(from)).toBeCloseTo(20 * DEG, 12); // free swivel is unchanged
+  });
+
+  it('steps move to the next grid angle (7° → 15° → 30°; down from 7° → 0°)', async () => {
+    const { stepYaw } = await import('../src');
+    expect(stepYaw(7 * DEG, 1, 15 * DEG) / DEG).toBeCloseTo(15, 9);
+    expect(stepYaw(15 * DEG, 1, 15 * DEG) / DEG).toBeCloseTo(30, 9);
+    expect(stepYaw(7 * DEG, -1, 15 * DEG) / DEG).toBeCloseTo(0, 9);
+    expect(Math.abs(stepYaw(170 * DEG, 1, 15 * DEG)) / DEG).toBeCloseTo(180, 9);
+  });
+});
