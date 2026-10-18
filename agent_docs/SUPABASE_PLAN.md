@@ -1,6 +1,6 @@
 # Supabase read-through and design inputs
 
-**Date:** 2026-10-18. **Status:** Step 1 read-through complete; no implementation approval yet.
+**Date:** 2026-10-18. **Status:** Read-through and questions complete; proposed implementation design below awaits approval.
 **Working branch:** `feature/room-scanner`, at `56650d2` before this document.
 **Worktree:** `/Users/jeffreyg/Projects/digital-home/.worktrees/room-scanner`.
 
@@ -456,17 +456,17 @@ Observed locally, without installing or starting anything:
 | Xcode / XcodeGen | 27.1 / 2.46.0 |
 | Local Supabase config | No `supabase/config.toml` in scanner worktree |
 | Repository link | No `supabase/.temp/project-ref` or alternate checked link marker in any listed worktree |
-| Remote access | No CLI login/project access or remote schema contents verified; project reference/URL not supplied in this task |
+| Remote access | No CLI login/project access or remote schema contents verified; user subsequently supplied project reference below |
 
 No remote link is evident. A Supabase account existing in the browser would not
 by itself link this worktree. Never print login tokens/service keys in diagnostics.
 
 Recommend **local Supabase first**: Docker is already installed, and local reset/
 pgTAP tests can prove a fresh migration and cross-user isolation before any remote
-project changes. Later, a separate hosted test project makes real phone uploads
-possible without keeping the Mac's local server reachable. Recommend separate test
-and production projects so test resets/scans cannot affect real data. No paid
-resource or remote project creation has been authorized by this recommendation.
+project changes. The initial suggestion was separate hosted test/production
+projects; the user subsequently chose **one hosted hackathon demo project**.
+Use local Supabase for reset/security testing and the supplied hosted project for
+the demo. No extra hosted project or paid resource is required by the revised plan.
 
 For the later setup checkpoint, exact starting actions will be:
 
@@ -491,9 +491,11 @@ Earlier table/bucket review checkpoints can use **local Studio**; requesting a
 remote dashboard review before approving remote migrations would conflict with
 the remote-approval rule.
 
-## 10. Decisions to ask about next — not yet approved
+## 10. Original discussion checklist
 
-After the user reviews this read-through, ask no more than five questions at once:
+The original checklist was below. Section 11 records the actual answers; section
+12 resolves routine contract/implementation details without asking the user to
+design them. No further product questions are needed before presenting that plan.
 
 - Confirm the intended hosted test project/reference and eventual separate production project.
 - Confirm House/design labels mapping to the normative projects/rooms/proposals/versions/roadmaps tables.
@@ -518,3 +520,259 @@ Then implement one checkpoint at a time, commit on the existing scanner branch,
 and stop for the user's check. No pushes, merges or remote mutations without the
 separate authorization already required by the task. The finished implementation
 must add `agent_docs/SUPABASE.md` as the setup/table/bucket runbook.
+
+## 11. User answers
+
+- Target project supplied by user: `synyznfvklhsosnaivno`.
+- Supplied dashboard URL: `https://supabase.com/dashboard/project/synyznfvklhsosnaivno/settings/general`.
+- This identifies the intended project; it does not establish CLI login/linking,
+  verify its remote state, or authorize migrations/deployment.
+- User approved **email + password** for shared phone/web Supabase sign-in.
+- User approved **existing version 1 JSON + native RoomPlan JSON + optional USDZ**
+  for the first upload; do not block this work on the deferred version 2 exporter.
+- User chose **one hosted hackathon/demo project**, the supplied project above;
+  do not create a second hosted test or production project. Local Supabase remains
+  the place to test migrations/resets/security before an approved demo deployment.
+- The original task required sign-in, shared phone/web identity and a recommended
+  method; it did not preselect a method. The user's latest reply settles that choice.
+- Public API URL/anon-key app configuration will be obtained during the approved
+  setup stage. Do not request service-role credentials in chat or app configuration.
+
+## 12. Concrete proposed implementation design — awaiting the user's OK
+
+This section proposes the design for implementation. The decisions in section 11
+are confirmed; approval to write implementation code and later approval to change
+the hosted project are separate checkpoints.
+
+### Domain/table names
+
+Use the existing `CONTRACTS.md` domain names, expressed in SQL snake_case. The UI
+can say House/Design; no competing `House` and `House_design` JSON formats are
+introduced. A **project** groups a house's **rooms**. Each room's original scan,
+immutable structure, working composition and accepted designs stay separate.
+Milestones belong to a room/roadmap, as required by the contracts.
+
+Every application table below gets UUID `id`, UTC `created_at`, `updated_at`,
+and `user_id` for user-owned records. Shared `assets` has server-managed provenance
+instead of user ownership. Parent references enforce same-owner/same-room context
+using constraints and narrow trusted transactions. All tables have RLS from creation.
+
+| Final proposed table | Purpose and main columns beyond the common fields |
+| --- | --- |
+| `projects` | House container: `name`, optional `original_scan_id`; owns rooms |
+| `rooms` | `project_id`, `name`, `source_scan_id`, optional source room identity/type/story; links original capture to future normalized state |
+| `scans` | `client_scan_id`, nullable-until-complete `project_id`, `schema_version`, `captured_at`, `name`, device metadata, `original_json`, manifest hash, status/error/upload receipt; unique `(user_id, client_scan_id)` |
+| `scan_files` | `scan_id`, `kind`, `bucket_id`, immutable `storage_key`, MIME/bytes/SHA-256, required/optional flag, verification state; unique `(scan_id, kind)` |
+| `room_shells` | `room_id`, `source_scan_id`, `coordinate_version`, immutable `shell` JSON, `scan_to_world` transform and normalizer version |
+| `scenes` | `room_id`, `shell_id`, `snapshot` SceneSpec JSON, revision, optional accepted version; one working scene per room |
+| `scene_versions` | `room_id`, `shell_id`, optional `parent_version_id`, immutable SceneSpec `snapshot`, source (import/user/accepted_proposal/milestone_edit) |
+| `scene_mutations` | Room/scene, idempotency key, base/result revision, operation/result JSON and actor/source for later validated autosave receipts |
+| `assets` | Immutable `spec` AssetSpec JSON, `glb_id`, GLB/thumbnail storage keys, category, width/height/depth meters, tag/style/color/material arrays, description, source/URL, license/status/attribution, creation method, parent asset, normalized content hash and optional price/geometry metrics |
+| `design_inputs` | Room/base version, original questionnaire/text/image references, interpreted DesignBrief and provenance; preserves explicit versus inferred preferences |
+| `inspiration_images` | Room/input, private key, MIME/bytes/hash, upload state for later style-image input |
+| `design_proposals` | Room/input, base version/revision, semantic plan, patch, explanation, estimate, validation and proposal status |
+| `roadmaps` | Room, baseline/desired/adjusted/funded version references, spending caps, savings contribution, starting cash/date, estimate-incomplete and unfunded backlog |
+| `purchases` | Roadmap, physical target object and asset, predecessor object, quantity, price in cents/currency, price provenance/status, priority and dependency IDs |
+| `milestones` | Roadmap/room, stage index/title, optional date, scene version, period/cumulative spend in cents/currency |
+| `milestone_purchases` | Milestone/purchase linkage; uniqueness prevents counting the same purchase at multiple stages of the same roadmap |
+| `processing_jobs` | Typed future normalize/proposal/roadmap jobs, source scan/proposal/plan, input/hash/version, stage/progress, attempts/max attempts, next attempt, lease, result/error; no processor executes in this step |
+| `render_jobs` | Explicit scan or design-proposal source, input/hash/version, status/stage/progress, counts, retries/lease/error; partial unique scan ID provides one durable job identity per scan |
+| `render_job_attempts` | Render job, attempt number, start/end/duration, worker/processing version, trace/usage/error; unique `(render_job_id, attempt)` |
+| `render_object_results` | Job/attempt and stable source object ID, optional future room/scene object ID, AssetRequest/RenderOutcome JSON, nullable asset and parent asset, method/source, reason, scores/breakdown, elapsed time, usage and error |
+
+Supabase `auth.users` supplies identity; a separate profile/password table is not
+needed for this milestone. The generic `processing_jobs` table replaces the
+candidate `scan_jobs`/`proposal_jobs` split in the read-through inventory. Render
+jobs remain explicit because their per-object results and Blender attempts have
+different progress/history requirements.
+
+Raw versus canonical IDs are explicit: `scans.id` is the server's scan identity;
+`client_scan_id` is the immutable UUID inside the phone file. Raw JSON stays
+unchanged. Later normalization must map `RoomShell.sourceScanId` to that persisted
+scan identity and retain the client/source identity in provenance. File retries
+return the original server identity from the owner/client-ID uniqueness constraint.
+
+For upload-only completion, store validated raw `original_json` and create the
+project/room source relationship atomically. **Do not invent a RoomShell, SceneSpec
+or accepted design before the later converter/normalizer runs.** Render/processing
+jobs can be queued, with no claim that a worker is already processing them.
+
+### Asset JSON, keys, consistency and indexes
+
+Keep the real AssetSpec example in section 4 as the baseline. Add the requested
+`glbId` as an agreed additive wire field, mapped to SQL `glb_id`; preserve existing
+`glbStorageKey` semantics and add lineage compatible with `derivedFromAssetId` on
+the asset-builder branch. Add no asset import or generated model during this step.
+Hosted keys are `<glb_id>.glb` in `glbs`. Never overwrite the binary behind an
+existing immutable asset version. Retrieval reuses an asset; editing/generation
+publishes a new version with explicit provenance and parent lineage where relevant.
+
+Keep source/provider independent from `creation_method` (imported, modified,
+generated). Render outcomes retain their exact richer source values and map to
+a/b/c only where applicable. Placeholder/best-effort results remain explicit.
+Shared asset descriptions must not contain private room captures, user prompts or
+private per-user job traces; those belong to their owner-protected records.
+
+SQL searchable projections and JSON must agree: enforce matching identity, GLB
+reference, dimensions and category, and derive projections from validated JSON
+where practical rather than letting two conflicting descriptions become authoritative.
+Preserve approved sandbox extension metadata; do not silently strip it via an
+older Zod schema. Existing differently named extension fields require explicit
+adapters, not wholesale adoption of another branch's contracts.
+
+Indexes: owner/creation-time and project-room listing; room/version/parent lookup;
+owner-client scan uniqueness; per-scan artifact kind/key; room/revision mutation
+receipts; assets category + dimensional bounds, tag/style/material/color GIN and
+full-text description; roadmap stage order; job claim/retry/lease and source IDs;
+per-job/attempt/source-object uniqueness. Use basic full-text search now and defer
+pgvector: the current demo does not have a hosted library to justify choosing and
+evaluating an embedding model yet.
+
+### Private buckets and limits
+
+| Bucket | Key format and access | Proposed per-file limits/types |
+| --- | --- | --- |
+| `glbs` | `<glb_id>.glb`; signed-in users read published/verified assets; server writes | 50 MB, `model/gltf-binary` |
+| `asset-previews` | `<asset_id>/<preview_id>.<ext>`; same shared asset rules | 5 MB, PNG/JPEG/WebP |
+| `scan-files` | `<user_id>/<server_scan_id>/scan.json`, `roomplan.json`, optional `scan.usdz`, future log artifacts; owner-only | Bucket 50 MB; JSON/native JSON 20 MB, USDZ 50 MB, future text logs 1 MB; JSON/USDZ/plain-text MIME allowlist |
+| `inspiration-images` | `<user_id>/<image_id>.<ext>`; owner-only, upload path reserved by future API | 10 MB, JPEG/PNG |
+
+There is no separate room-thumbnail bucket initially; optional user preview images
+can use reserved artifact kinds under an owner's scan folder if added later.
+Migrations create buckets, type/size restrictions, RLS policies and indexes.
+Per-artifact limits and byte/hash/content validation also run at the trusted upload
+boundary. Optional USDZ failure never blocks uploading valid required JSON.
+
+### Security matrix and testing
+
+| Data | Signed-in owner | Other signed-in user / anonymous | Trusted server |
+| --- | --- | --- | --- |
+| Projects/room labels | Read; create/rename/delete only through allowed ownership-checked paths | No access | Authorized management |
+| Scans/files | Read own; reserve/upload/complete/retry through checked API; no forging processing success | No access or signing URLs for another owner | Verify files and commit narrow transitions |
+| Shells/scenes/versions/mutation receipts | Read own; later scene edits only through shared-validator + revision-check path; immutable records not directly editable | No access | Validated version/scene writes |
+| Design inputs/inspiration | Own reads and checked mutable input/upload operations | No access | Owner-checked interpretation access |
+| Proposals/roadmaps/purchases/milestones | Own reads; future accept/reject/planning methods, not arbitrary JSON updates | No access | Atomic validated domain transitions |
+| Jobs/attempts/object results | Own progress/result reads and a narrow future retry request | No access | Claim leases, write progress/outcomes |
+| Assets/GLBs/previews | Read eligible shared library only | Anonymous denied | Register/publish and manage immutable files/metadata |
+
+Owner IDs come from the verified session; clients cannot nominate another owner.
+Composite ownership constraints/transaction checks reject cross-user parent links.
+Storage policies validate bucket, reserved key and scan ownership. Signed URLs are
+issued only after ownership checks. No public buckets and no client service-role key.
+
+Create all tables/buckets with RLS immediately; there is no interim unprotected
+hosted stage. pgTAP fixtures establish two users, switch to authenticated JWT claims,
+and exercise own/other/anonymous access, cross-owner FKs, immutable/job-state
+forgery, shared-library write denial and storage-object policy checks. API tests
+also exercise actual file upload/download/signing, checksums, incomplete manifests,
+repeat completion and same ID/different bytes. Tests never rely on service-role
+bypass to prove a user is denied access.
+
+### Sign-in, configuration and device retry
+
+Use Supabase Swift for email/password sign-up/sign-in/sign-out and session refresh;
+the future web app uses the same Auth users. Retain hosted email confirmation
+defaults unless an actual delivery issue requires a separately discussed change.
+For confirmation, explain inbox verification followed by returning to sign in;
+no native magic-link routing is necessary for the chosen first flow.
+
+Keep Supabase URL and public anon key in a gitignored iOS configuration with a
+committed placeholder example; no model/server credential is included. Keep refresh/
+access sessions in Keychain. CLI login is separate from app sign-in. Document the
+required hosted Auth settings and reproducible CLI/config steps rather than altering
+platform-managed auth tables manually. Never copy service-role values into chat/app.
+
+After sign-in, new **Save scan** commits locally first and schedules upload. Offer
+an explicit action for existing saved scans; do not silently backfill the user's
+whole local library. Bind each remote receipt/queue item to the authenticated user
+and demo project so account changes do not replay another account's upload.
+
+The injected file-based `ScanUploader` accepts stored URLs, scan identity and
+metadata. It uploads exact stored bytes, not a fresh re-encoding with new IDs/dates.
+Persist queue state, attempts/next retry, manifest hash, remote user/project/scan ID,
+and the last error with backward-compatible decoding of existing local records.
+Use bounded retry/backoff, connectivity observation and foreground/relaunch recovery;
+use iOS background file transfers where supported. Suspended/force-quit apps may
+need a later launch to complete API finalization. Local JSON stays shareable always.
+
+Local state: saved → readyToUpload → uploading → uploaded or failed; retry reuses
+the same receipt/input. Server scan state: uploading → uploaded → later processing
+→ done/failed. A confirmed upload must not be shown as completed rendering.
+
+### Upload protocol and server boundary
+
+Implement only short TypeScript upload handlers (Supabase Edge Functions are
+appropriate for this narrow boundary; no Blender/model/scene processing runs there):
+
+1. `createScanUpload`: validate the user JWT; reserve/dedupe the scan and fixed file
+   keys from its client identity and manifest; verify any existing project ownership;
+   return server scan ID, allowed keys and short-lived signed upload targets.
+2. File transfers: upload `scan.json` and `roomplan.json`; include USDZ when available.
+   The manifest makes required versus optional artifacts explicit. Expired targets
+   can be refreshed for the same owner/scan; retries cannot replace committed bytes.
+3. `completeScan`: independently verify stored size/type/checksum and raw v1 JSON,
+   then invoke a narrow transaction that marks receipt uploaded, stores original
+   source data, creates/links project+room once, and enqueues pending jobs. Repeated
+   successful completion returns the same rows. A changed payload for the same
+   client scan ID is a conflict, not an overwrite or duplicate House.
+
+SQL RPCs backing the completion transaction are not a shortcut around verification:
+only the verified server boundary can mark artifacts verified and perform those
+privileged transitions. Heavy JSON/file sizes must be bounded/tested against the
+chosen runtime; do not bundle all files into one huge function request.
+
+### Later services and Realtime
+
+The later TypeScript worker claims queued render jobs with leases and attempt
+history. Its render-agent adapter retrieves or edits/generates via Blender, stores
+new reusable asset metadata/GLBs and writes per-object results. The converter later
+produces/updates validated canonical scenes. Neither is built/executed here.
+Reuse the observed `AssetRegistry`, `GlbStore`, `AssetRequest` and `RenderOutcome`
+boundaries then; do not merge their branches now.
+
+Enable the Realtime publication for scans, rooms, working scenes, processing jobs,
+render jobs and object-result summaries via migration. Clients read only their
+RLS-permitted rows and refetch the canonical record; Realtime does not replace
+ownership checks, durable jobs or revision-aware scene loading. The sandbox client
+subscription/asset resolution itself is later implementation.
+
+### Small implementation checkpoints
+
+Each checkpoint ends in the relevant checks, a clear commit on `feature/room-scanner`,
+plain check instructions and a pause for the user's result. No pushes/merges.
+
+1. **Local tooling and project link.** Install/pin Supabase CLI; start installed
+   Docker, initialize/run local Supabase, and guide separate CLI login/link to
+   `synyznfvklhsosnaivno`. Check local Studio and link identity. Linking does not
+   authorize a remote migration/config push. No remote schema changes in this step.
+2. **Whole schema with RLS.** Create tables/relationships/indexes/owner rules and
+   minimal trusted transactional primitives using `supabase migration new` files.
+   Replay from a fresh local DB, run pgTAP two-user/anonymous/integrity tests and
+   inspect the table relationships in local Studio. Do not use remote resets.
+3. **Private storage and updates.** Add bucket limits, storage access policies and
+   Realtime publication entries in migrations; test two-user file policies and
+   shared-library write denial. Inspect local Studio buckets/policies.
+4. **Upload handlers and phone sign-in.** Implement/check short upload endpoints,
+   config examples/ignores, secure email/password sessions and local mocked/offline
+   tests. Build the app; check sign-in with local LAN access where practical. A
+   physical iPhone cannot reach the Mac's local backend through phone localhost.
+   If local phone networking is impractical, use the separately approved hosted
+   demo deployment for this device check rather than weakening security.
+5. **File-based uploader.** Wire Save, queue/status/retry, existing-scan upload,
+   hash-based manifests and confirmation. Test duplicates, offline/relaunch,
+   expired sessions/URLs, changed bytes and local artifact retention. Build and
+   explain the phone upload check; the real hosted check follows deployment approval.
+6. **Reviewable demo deployment.** Present the exact migration/function/config
+   changes and local test results, then obtain explicit approval before applying
+   anything to the hosted demo project. Deploy via CLI; user verifies sign-in,
+   new saved scan files, original source/project/room rows, queued jobs and retry
+   without duplicates. No worker or generated assets are implied by this check.
+7. **Fresh-start acceptance/runbook.** Repeat migration replay against fresh local
+   state, run security/API tests and app build, record the physical demo upload
+   results, and finish `agent_docs/SUPABASE.md` with table/bucket descriptions,
+   setup, auth/config requirements and exact local/hosted check commands.
+
+One hosted demo project is sufficient for this hackathon. Local isolation gives
+us repeatable reset/security tests without resetting that demo project. No extra
+hosted environment is proposed or needed. Keys are not needed for plan approval;
+they will be configured locally during the approved setup/sign-in steps.
