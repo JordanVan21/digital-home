@@ -131,6 +131,7 @@ Poly Haven imports preserve original PBR materials and meter scale, embed 1K tex
 
 30. Full three-axis rotation supersedes the upright-only rule and separate fixture tilts. The inspector uses X/pitch, Y/turn, Z/roll (YXZ Euler order), while saves stay quaternion-based. Swivels turn about world Y, carry full child poses, and remain imperative. Accept uses the lowest occupied point and contact stability; see “Full rotation (merge step 5)” below.
 
+31. Lighting presets use local CC0 HDRs imported from Jordan’s branch, with credits in `public/hdr/SOURCE.md`. Daylight, Golden hour and Evening fit their sun and shadow camera to the active room’s main glazed opening. The familiar Golden hour → Daylight first click remains; Evening follows Daylight. Presets also drive the backdrop and accent. ACES tone mapping stays in the existing canvas.
 
 ## Verification and known gaps
 

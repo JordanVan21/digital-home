@@ -9,7 +9,7 @@
 3. `docs/SESSION_NOTES.md`: environment, decisions and gotchas from the working sessions.
 4. `docs/COLLIDER_PRECISION.md`: the spec for the next step.
 
-**Next step: 7 (lighting).** Step 5 is complete: all checks green, 193 unit tests and 10 browser tests. Step 6 was skipped because all test2 pieces now validate without a soft-item exemption.
+**Next step: 8 (room shell).** Steps 5 and 7 are complete: all checks green, 196 unit tests and 10 browser tests. Step 6 was skipped because all test2 pieces now validate without a soft-item exemption.
 
 **Handoff (2026-10-17):** Claude Code did steps 0–4. Codex continues from step 5 under the same rules.
 
@@ -57,7 +57,7 @@ Codex's interaction stays: controls, the suggest/Accept flow, nearest-surface pl
 - [x] **6 (Skipped: no soft-item overlap needed after re-posing)** (Optional) a few cm of tolerance for soft items,** only if it still feels needed after steps 4 and 5. Ask the user first.
 
 ### Then: the look (Jordan wins these, adapted into codex)
-- [ ] **7 Lighting.** Jordan's day / golden hour / evening, with local HDRs (`public/hdr`), a sun fitted through the main opening, tone mapping and fog, mapped onto codex's `theme.ts` presets (`daylight`, `golden-hour`, `evening`; the fixtures already use these IDs). The accent and backdrop follow the preset.
+- [x] **7 Lighting.** Jordan's day / golden hour / evening, with local HDRs (`public/hdr`), a sun fitted through the main opening, tone mapping and fog, mapped onto codex's `theme.ts` presets (`daylight`, `golden-hour`, `evening`; the fixtures already use these IDs). The accent and backdrop follow the preset.
 - [ ] **8 Room shell.** Jordan's `RoomShellMesh`: wall modes cut-away / fade / show for camera-facing walls, glazed doors and windows (`glazing`), doorless openings, floor textures (`public/textures`), wall paint and floor finish from scene `appearance`. Hide or fade wall items on cut-down walls (the demo studio's painting floats today). Controls: wall mode in the round view controls; paint and floor in an inspector "Room" card when nothing is selected.
 - [ ] **9 Warm light glass.** Tint codex's glass warm and light. Start from the tokens in `feature/3d-sandbox-merge` (`styles.css` `:root`, `ui/theme.ts`): cream fill `rgba(255,249,241,0.6)`, ink `#2b2520`, warm shadow `rgba(64,40,18,…)`, a terracotta accent per preset, more opaque glass on the evening backdrop.
 - [ ] **10 Camera.** drei 10 `CameraControls`: animated transitions, dolly-to-cursor, damping; views top / iso / eye / frame selection / frame room; walk mode. Furniture drags must keep priority (codex stops propagation on pointer-down). Replaces codex's OrbitControls and the step 1 target clamp.

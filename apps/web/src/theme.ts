@@ -15,6 +15,8 @@ export type LightingPreset = {
   /** Page, fog and ground colour around the room. */
   backdrop: string;
   ambient: number;
+  environment: { file: string; intensity: number };
+  sunElevationDeg: number;
   hemisphere: { sky: string; ground: string; intensity: number };
   sun: {
     color: string;
@@ -34,68 +36,59 @@ export type LightingPreset = {
 
 export const lightingPresets: LightingPreset[] = [
   {
+    id: "daylight",
+    label: "Daylight",
+    accent: "#9e624b",
+    accentInk: "#ffffff",
+    backdrop: "#e9e5de",
+    ambient: 0.08,
+    environment: { file: "/hdr/warm-interior.hdr", intensity: 0.6 },
+    sunElevationDeg: 48,
+    hemisphere: { sky: "#fff1dd", ground: "#4a3626", intensity: 0.35 },
+    sun: { color: "#ffe8cc", intensity: 2.4, position: [-2.5, 8, 3.5] },
+    fill: { key: "#fff1dd", keyIntensity: 0, rim: "#ffffff", rimIntensity: 0 },
+    shadow: "#77634f",
+    lamps: 0,
+  },
+  {
     id: "golden-hour",
     label: "Golden hour",
-    accent: "#d9742f",
+    accent: "#bc6848",
     accentInk: "#ffffff",
-    backdrop: "#e9e6df",
-    ambient: 0.45,
-    hemisphere: { sky: "#fff1da", ground: "#c3b7a0", intensity: 1.3 },
-    sun: { color: "#ffe3b5", intensity: 3.5, position: [-3.5, 7, 2] },
-    fill: {
-      key: "#fff2dc",
-      keyIntensity: 2.5,
-      rim: "#eef0ff",
-      rimIntensity: 1.3,
-    },
+    backdrop: "#d4c4ad",
+    ambient: 0.06,
+    environment: { file: "/hdr/golden-garden.hdr", intensity: 0.5 },
+    sunElevationDeg: 20,
+    hemisphere: { sky: "#ffd2a0", ground: "#4a3626", intensity: 0.32 },
+    sun: { color: "#ffa95c", intensity: 4.6, position: [-3.5, 7, 2] },
+    fill: { key: "#ffd2a0", keyIntensity: 0, rim: "#ffffff", rimIntensity: 0 },
     shadow: "#77634f",
     lamps: 1,
   },
   {
-    id: "daylight",
-    label: "Daylight",
-    accent: "#2b2e33",
+    id: "evening",
+    label: "Evening",
+    accent: "#c88165",
     accentInk: "#ffffff",
-    backdrop: "#eceeef",
-    ambient: 0.6,
-    hemisphere: { sky: "#ffffff", ground: "#cfd3d6", intensity: 1.2 },
-    sun: { color: "#ffffff", intensity: 3, position: [-2.5, 8, 3.5] },
-    fill: {
-      key: "#ffffff",
-      keyIntensity: 2.2,
-      rim: "#f3f6ff",
-      rimIntensity: 1.4,
-    },
-    shadow: "#5d6166",
-    lamps: 0,
-  },
-  {
-    id: "overcast",
-    label: "Overcast",
-    accent: "#4d6b8c",
-    accentInk: "#ffffff",
-    backdrop: "#e1e5e9",
-    ambient: 0.7,
-    hemisphere: { sky: "#e8eef6", ground: "#b8bfc6", intensity: 1.25 },
-    sun: { color: "#dfe8f5", intensity: 2, position: [-2, 9, 1] },
-    fill: {
-      key: "#e9f0ff",
-      keyIntensity: 2,
-      rim: "#dfe6f2",
-      rimIntensity: 1.6,
-    },
-    shadow: "#55606b",
-    lamps: 0.4,
+    backdrop: "#22232a",
+    ambient: 0.025,
+    environment: { file: "/hdr/warm-interior.hdr", intensity: 0.12 },
+    sunElevationDeg: 30,
+    hemisphere: { sky: "#b9c5df", ground: "#4a3626", intensity: 0.06 },
+    sun: { color: "#8fa4c8", intensity: 0.25, position: [-2, 9, 1] },
+    fill: { key: "#fff1dd", keyIntensity: 0, rim: "#ffffff", rimIntensity: 0 },
+    shadow: "#17151a",
+    lamps: 1.4,
   },
 ];
 
 export function presetFor(id: string): LightingPreset {
-  return lightingPresets.find((p) => p.id === id) ?? lightingPresets[0];
+  return lightingPresets.find((p) => p.id === id) ?? lightingPresets[1];
 }
 
 export function nextPreset(id: string): LightingPreset {
-  const i = lightingPresets.findIndex((p) => p.id === id);
-  return lightingPresets[(i + 1) % lightingPresets.length];
+  const cycle = ["golden-hour", "daylight", "evening"];
+  return presetFor(cycle[(cycle.indexOf(id) + 1) % cycle.length]);
 }
 
 /** The active preset: a view override if the user picked one, else the room's own. */

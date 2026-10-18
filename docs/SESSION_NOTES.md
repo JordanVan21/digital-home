@@ -89,3 +89,9 @@ The user approved finishing all remaining merge steps autonomously, including co
 - Fixture tilt fields folded into quaternions; compatibility rendering retained. All 45 test2 pieces validate after the sofa textiles were re-posed.
 - Every check passed: format, typecheck, lint, 193 unit tests, build, 10 browser tests (`HOUSE_E2E_PORT=5185`, system Chrome). Browser suite took 3.6 minutes. GPU Chrome reported Apple M4 Metal; same real mouse drag produced the same movement and one suggestion on 5182 and 5185. No 60 FPS guarantee was measured.
 - Visual review: `docs/review/STEP_5.md`. Known geometric stability assumptions are documented there and in the web README. Step 6 skipped: no soft-item exemption needed. Next: step 7 lighting.
+
+## Step 7 completed
+
+Local CC0 HDRs, room-relative sunlight through the largest glazed opening, fitted shadows, daylight / golden-hour / evening, and preset accent/backdrop are in place. All checks passed: format, typecheck, lint, 196 unit tests, build, 10 browser tests (3.8 minutes), and M4 GPU images in `docs/review/STEP_7.md`. Preserve Golden hour → Daylight → Evening for the lighting button.
+
+Do not format or edit app source while Playwright runs against Vite: HMR can detach a button mid-click. A clean, unchanged-server rerun passed the chair stack test that a live reload had interrupted. Prepare the next feature in `/tmp` while browser checks finish.

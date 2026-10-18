@@ -1,21 +1,9 @@
-import {
-  Suspense,
-  memo,
-  useEffect,
-  useMemo,
-  useRef,
-  type ComponentRef,
-} from "react";
+import { Lighting } from "./Lighting";
+import { memo, useEffect, useMemo, useRef, type ComponentRef } from "react";
 import { diffScenes } from "@house/scene-engine";
 import { labelLayer } from "./labelLayer";
 import { Canvas, useThree } from "@react-three/fiber";
-import {
-  ContactShadows,
-  Environment,
-  Lightformer,
-  OrbitControls,
-  Stats,
-} from "@react-three/drei";
+import { ContactShadows, OrbitControls, Stats } from "@react-three/drei";
 import { ACESFilmicToneMapping, SRGBColorSpace, MathUtils } from "three";
 import { useStore } from "zustand";
 import { editor } from "../state/editor";
@@ -89,51 +77,7 @@ function Stage() {
   const light = useLighting();
   return (
     <>
-      <color attach="background" args={[light.backdrop]} />
-      <fog attach="fog" args={[light.backdrop, 18, 45]} />
-      <ambientLight intensity={light.ambient} />
-      <hemisphereLight
-        args={[
-          light.hemisphere.sky,
-          light.hemisphere.ground,
-          light.hemisphere.intensity,
-        ]}
-      />
-      <directionalLight
-        position={light.sun.position}
-        intensity={light.sun.intensity}
-        color={light.sun.color}
-        castShadow
-        shadow-mapSize={[2048, 2048]}
-        shadow-camera-left={-6}
-        shadow-camera-right={6}
-        shadow-camera-top={6}
-        shadow-camera-bottom={-6}
-        shadow-camera-near={0.5}
-        shadow-camera-far={20}
-        shadow-bias={-0.00015}
-        shadow-normalBias={0.025}
-        shadow-radius={3}
-      />
-      <Suspense fallback={null}>
-        {/* Keyed so the one-frame environment bake re-runs per preset. */}
-        <Environment key={light.id} resolution={128} frames={1}>
-          <Lightformer
-            intensity={light.fill.keyIntensity}
-            color={light.fill.key}
-            position={[-5, 5, 0]}
-            rotation={[0, Math.PI / 2, 0]}
-            scale={[8, 5, 1]}
-          />
-          <Lightformer
-            intensity={light.fill.rimIntensity}
-            color={light.fill.rim}
-            position={[4, 6, 2]}
-            rotation={[Math.PI / 2, 0, 0]}
-            scale={[6, 6, 1]}
-          />
-        </Environment>
-      </Suspense>
+      <Lighting />
       <Room />
       <Objects />
       <ContactShadows
