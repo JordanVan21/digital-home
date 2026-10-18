@@ -43,7 +43,7 @@ describe('compound exterior outlines', () => {
       expect(positions.length, a.title).toBeGreaterThan(0);
       expect(Array.from(positions).every(Number.isFinite)).toBe(true);
     }
-  });
+  }, 30_000); // ~1 s alone; slower when the whole suite runs in parallel
 
   it('outlines line up with the rendered model: same fit as SceneObjectMesh (±15% stretch, else uniform fit-inside)', () => {
     const native: Vec3 = [2, 1, 1];

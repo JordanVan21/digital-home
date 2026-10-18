@@ -245,7 +245,7 @@ function SelectedObject({ obj }: { obj: SceneObject }) {
       </div>
       {/* Must match the keys in sessions.ts / useKeyboardShortcuts.ts (MERGE_INVENTORY §10, decided key map). */}
       <div className="hint">
-        Drag to move · <span className="kbd">Scroll</span> while dragging to raise/lower · <span className="kbd">M</span> 3D move ·
+        Drag to move · hold <span className="kbd">Space</span> while dragging to move up/down (or <span className="kbd">Scroll</span>) ·
         {' '}<span className="kbd">R</span> then drag inside the ring to turn · <span className="kbd">Shift</span> 10 cm grid ·
         {' '}<span className="kbd">Alt</span> no snapping · <span className="kbd">Ctrl</span> (or <span className="kbd">C</span>) ignores collisions
       </div>
@@ -324,7 +324,7 @@ function RoomInfo() {
           ))}
         </div>
         <div className="hint">
-          {releaseMode === 'mix' ? 'Ordinary drags fall onto the surface below; pieces you raise on purpose (3D move, scroll wheel, PageUp, typed Y) stay up.'
+          {releaseMode === 'mix' ? 'Ordinary drags fall onto the surface below; pieces you raise on purpose (Space, scroll wheel, PageUp, typed Y) stay up.'
             : releaseMode === 'fall' ? 'Everything falls onto the surface below when you let go.'
               : 'Nothing falls: pieces stay exactly where you let go (codex).'}
         </div>

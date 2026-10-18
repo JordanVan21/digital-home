@@ -17,7 +17,12 @@ const _q = new Quaternion();
 const _s = new Vector3();
 const _f = new Vector3();
 
-type Kind = 'hover' | 'selected' | 'blocker' | 'all';
+/**
+ * 'blocker' outlines are no longer drawn on obstacles: while dragging, only the piece you hold is
+ * outlined (red when blocked, with a "hits …" label), so the selection never appears to jump to
+ * another piece. Contact guides show where they touch.
+ */
+type Kind = 'hover' | 'selected' | 'all';
 
 /**
  * Highlight overlay that follows the object's live group transform each frame (tracks drags without
@@ -69,7 +74,7 @@ function ObjectOutline({ obj, kind, primary }: { obj: SceneObject; kind: Kind; p
     _f.set(0, 0, 1).applyQuaternion(_q);
     o.position.copy(_p);
     o.rotation.set(0, Math.atan2(_f.x, _f.z), 0);
-    let color: string = kind === 'blocker' ? COLORS.invalid : kind === 'all' ? COLORS.selected : COLORS[kind];
+    let color: string = kind === 'all' ? COLORS.selected : COLORS[kind];
     if (kind === 'selected') {
       const live = dragFeedback.objectId === obj.id;
       if (live && (dragFeedback.blockers.length || dragFeedback.violations.length)) color = COLORS.invalid;
@@ -98,7 +103,6 @@ function ObjectOutline({ obj, kind, primary }: { obj: SceneObject; kind: Kind; p
         </points>
       )}
       {primary && <DragLabel id={obj.id} height={h} />}
-      {kind === 'blocker' && <BlockerLabel id={obj.id} height={h} />}
     </group>
   );
 }
@@ -115,18 +119,6 @@ function DragLabel({ id, height }: { id: string; height: number }) {
   return (
     <Html portal={labelLayer} position={[0, height + 0.2, 0]} center zIndexRange={[20, 0]} style={{ pointerEvents: 'none' }}>
       <div className={`violation-label ${isError ? 'error' : ''}`}>{msgs.join(' · ')}</div>
-    </Html>
-  );
-}
-
-function BlockerLabel({ id, height }: { id: string; height: number }) {
-  useSyncExternalStore(dragFeedback.subscribe.bind(dragFeedback), () => dragFeedback.signature);
-  const b = dragFeedback.blockers.find((x) => x.otherId === id);
-  const mover = b ? useEditor.getState().workingScene?.objects.find((o) => o.id === b.movingId) : undefined;
-  if (!b) return null;
-  return (
-    <Html portal={labelLayer} position={[0, height + 0.12, 0]} center zIndexRange={[19, 0]} style={{ pointerEvents: 'none' }}>
-      <div className="violation-label error">{mover ? `${mover.displayName} hits this` : 'blocked'}</div>
     </Html>
   );
 }
@@ -168,16 +160,6 @@ export function LockGlyph({ open = false }: { open?: boolean }) {
   );
 }
 
-function Blockers() {
-  useSyncExternalStore(dragFeedback.subscribe.bind(dragFeedback), () => dragFeedback.signature);
-  const objects = useEditor.getState().workingScene?.objects;
-  const ids = new Set([
-    ...dragFeedback.blockers.filter((b) => !b.wall).map((b) => b.otherId),
-    ...dragFeedback.violations.filter((v) => v.otherId).map((v) => v.otherId!),
-  ]);
-  return <>{objects?.filter((o) => ids.has(o.id)).map((o) => <ObjectOutline key={`b-${o.id}`} obj={o} kind="blocker" />)}</>;
-}
-
 export function SelectionOverlay() {
   const selectedIds = useEditor((s) => s.selectedIds);
   const objects = useEditor((s) => s.workingScene?.objects);
@@ -193,7 +175,6 @@ export function SelectionOverlay() {
       {showAll && objects?.filter((o) => !selectedIds.includes(o.id) && o.id !== hovered?.id).map((o) => <ObjectOutline key={`a-${o.id}`} obj={o} kind="all" />)}
       {hovered && <ObjectOutline key={`h-${hovered.id}`} obj={hovered} kind="hover" />}
       {selected.map((o) => <ObjectOutline key={`s-${o.id}`} obj={o} kind="selected" primary={o.id === primaryId} />)}
-      <Blockers />
       <Badges />
     </group>
   );

@@ -25,7 +25,6 @@ export function FloatingToolbar() {
     <nav className="toolbar panel" aria-label="Editor tools">
       <ToolButton label="Select" keys="V" active={mode === 'select'} onClick={() => setMode('select')}><Icon.select /></ToolButton>
       <ToolButton label="Move" keys="G" active={mode === 'translate'} onClick={() => setMode('translate')}><Icon.move /></ToolButton>
-      <ToolButton label="3D move: drag sideways and up/down" keys="M" active={mode === 'move3d'} onClick={() => setMode('move3d')}><Icon.move3d /></ToolButton>
       <ToolButton label="Rotate" keys="R" active={mode === 'rotate'} onClick={() => setMode('rotate')}><Icon.rotate /></ToolButton>
       <div className="sep" />
       <ToolButton label="Add furniture" active={libraryOpen} onClick={() => useEditor.setState({ libraryOpen: !libraryOpen })}><Icon.add /></ToolButton>

@@ -3,7 +3,7 @@ import { useFrame, useThree } from '@react-three/fiber';
 import { CameraControls } from '@react-three/drei';
 import { Box3, Euler, PerspectiveCamera, Vector3, type Camera } from 'three';
 import type { RoomShell } from '@house/contracts';
-import { effectiveDimsOf, obbAabbXZ, obbOf, polygonBounds, resolveTranslation, type Body } from '@house/scene-engine';
+import { bodyContact, effectiveDimsOf, obbAabbXZ, obbOf, pointInPolygonStrict, polygonBounds, resolveTranslation, type Body } from '@house/scene-engine';
 import { obstaclesFor } from '../state/physics';
 import { opContext, toast, useEditor, type CameraPreset } from '../state/store';
 import { photoCamera } from './photoCamera';
@@ -118,6 +118,39 @@ export function CameraRig({ shell }: { shell: RoomShell }) {
 
 const EYE = 1.6;
 const SPEED = 1.6;
+const R = 0.18;
+
+/** The walker as a collision body: a 36 cm column from knee to eye height. */
+function walkerAt(x: number, z: number): Body {
+  return {
+    id: '__camera__', label: 'you', kind: 'solid',
+    boxes: [{ center: [x, z], u: [1, 0], v: [0, 1], halfW: R, halfD: R, yMin: 0.25, yMax: EYE + 0.1 }],
+    min: [x - R, 0.25, z - R], max: [x + R, EYE + 0.1, z + R],
+  };
+}
+
+function walkObstacles(x: number, z: number) {
+  const ctx = opContext();
+  const scene = useEditor.getState().workingScene;
+  return ctx && scene ? obstaclesFor(ctx, scene, [], { bounds: { min: [x - 1.5, 0, z - 1.5], max: [x + 1.5, 2, z + 1.5] } }) : [];
+}
+
+/** Nearest spot to (x, z) inside the room where the walker doesn't stand inside furniture or a wall. */
+function freeSpot(x: number, z: number): [number, number] {
+  const poly = useEditor.getState().shell?.floor.polygonXZ;
+  const free = (px: number, pz: number) => (!poly || pointInPolygonStrict([px, pz], poly)) && !walkObstacles(px, pz).some((o) => bodyContact(walkerAt(px, pz), o));
+  if (free(x, z)) return [x, z];
+  for (let r = 0.1; r <= 3; r += 0.1) {
+    const n = Math.max(8, Math.round((2 * Math.PI * r) / 0.1));
+    for (let i = 0; i < n; i++) {
+      const a = (i / n) * Math.PI * 2;
+      const px = x + Math.cos(a) * r;
+      const pz = z + Math.sin(a) * r;
+      if (free(px, pz)) return [px, pz];
+    }
+  }
+  return [x, z];
+}
 
 /**
  * Walk mode: eye-level first-person view. WASD/arrows move, drag to look, Esc exits. The camera
@@ -128,6 +161,9 @@ function WalkControls({ controls }: { controls: React.RefObject<CameraControls |
   const gl = useThree((s) => s.gl);
   const keys = useRef(new Set<string>());
   const look = useRef({ yaw: 0, pitch: 0 });
+  // The walker's own position: camera-controls (drei 10) rewrites camera.position every frame even
+  // while disabled, so walk mode sets the camera absolutely from this each frame (like the look).
+  const pos = useRef(new Vector3());
 
   useEffect(() => {
     const keySet = keys.current;
@@ -146,6 +182,11 @@ function WalkControls({ controls }: { controls: React.RefObject<CameraControls |
       camera.position.x = Math.min(b.max[0] - 0.3, Math.max(b.min[0] + 0.3, camera.position.x));
       camera.position.z = Math.min(b.max[1] - 0.3, Math.max(b.min[1] + 0.3, camera.position.z));
     }
+    // Never start inside a piece of furniture (every step would be blocked).
+    const [fx, fz] = freeSpot(camera.position.x, camera.position.z);
+    camera.position.x = fx;
+    camera.position.z = fz;
+    pos.current.copy(camera.position);
     setFov(camera, 60);
     toast('Walk mode — WASD to move, drag to look, Esc to exit.', 'info', 2500);
 
@@ -196,23 +237,15 @@ function WalkControls({ controls }: { controls: React.RefObject<CameraControls |
       const step = Math.min(dt, 0.05) * SPEED * (k.has('shift') ? 2 : 1);
       const dx = (-Math.sin(yaw) * fwd + Math.cos(yaw) * side) * step;
       const dz = (-Math.cos(yaw) * fwd - Math.sin(yaw) * side) * step;
-      const ctx = opContext();
-      const scene = useEditor.getState().workingScene;
-      if (ctx && scene) {
-        const p = camera.position;
-        const r = 0.18;
-        const body: Body = {
-          id: '__camera__', label: 'you', kind: 'solid',
-          boxes: [{ center: [p.x, p.z], u: [1, 0], v: [0, 1], halfW: r, halfD: r, yMin: 0.25, yMax: EYE + 0.1 }],
-          min: [p.x - r, 0.25, p.z - r], max: [p.x + r, EYE + 0.1, p.z + r],
-        };
-        const obstacles = obstaclesFor(ctx, scene, [], { bounds: { min: [p.x - 1, 0, p.z - 1], max: [p.x + 1, 2, p.z + 1] } });
-        const res = resolveTranslation([body], obstacles, [0, 0], [dx, dz]);
-        p.x += res.offset[0];
-        p.z += res.offset[1];
-      }
+      const p = pos.current;
+      const body = walkerAt(p.x, p.z);
+      // Anything the walker is already inside (e.g. a piece moved onto it) doesn't trap it: walk out.
+      const obstacles = walkObstacles(p.x, p.z).filter((o) => !bodyContact(body, o));
+      const res = resolveTranslation([body], obstacles, [0, 0], [dx, dz]);
+      p.x += res.offset[0];
+      p.z += res.offset[1];
     }
-    camera.position.y = EYE;
+    camera.position.set(pos.current.x, EYE, pos.current.z);
     camera.quaternion.setFromEuler(new Euler(pitch, yaw, 0, 'YXZ'));
   });
   return null;

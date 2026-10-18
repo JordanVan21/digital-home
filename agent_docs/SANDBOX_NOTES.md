@@ -198,9 +198,10 @@ Dev hooks: `?perf` (r3f-perf), `window.__housePerf` (frame stats), `window.__hou
 ### What changed
 - **Stack:** React 19, R3F 9, drei 10, three 0.180, Vite 7, Vitest 3, TS 5.9. Every drei `<Html>` mounts into a fixed `labelLayer` (React 19 unmount race; fix from codex). `?perf` uses drei `<Stats>`.
 - **Edits stay immediate** (jordan). Codex's suggestions/Accept flow is not wired in; its draft resolver is kept aside for future AI proposals.
-- **Toolbar:** the arrow gizmo is gone. New tools: **3D move (M)**, which drags on a camera-facing "pane of glass", and **Collisions on/off (C)**. With collisions off nothing blocks, but problems are still flagged.
+- **Toolbar:** the arrow gizmo is gone. New tool: **Collisions on/off (C)**. With collisions off nothing blocks, but problems are still flagged. (A 3D move tool was tried and replaced by codex's Space key: hold Space while dragging to move up/down.)
 - **Panel:** editable **X / Y / Z** fields (codex). Typing a position slides there through collision; a typed height is kept. The Float checkbox is gone. Overcast lighting preset and "Reload saved room" come from codex.
-- **Outlines:** the selection outline is codex's shape-hugging outline of the model's baked shape. It is sized like the rendered model and carries jordan's corner dots. A "Show all outlines" switch is in the room panel. Drawing only.
+- **Walk mode** keeps its own camera position (camera-controls 3 rewrites the camera each frame) and starts at a free spot.
+- **Outlines:** the selection outline is codex's shape-hugging outline of the model's baked shape. It is sized like the rendered model and carries jordan's corner dots. A "Show all outlines" switch is in the room panel. Obstacles are not outlined while dragging, so the selection never appears to jump. Drawing only.
 - **Collision:** jordan's engine is the only authority. Codex's exception table is added on top: wall-mounted items and furniture never collide.
 - **Contact guides:** when a dragged piece presses against something, a line marks the touching side.
 - **Stacking + gravity:**
@@ -211,7 +212,7 @@ Dev hooks: `?perf` (r3f-perf), `window.__housePerf` (frame stats), `window.__hou
   - 12 cm magnetic catch with a green face outline;
   - a "Letting go (tryout)" switch: Mix (default), Always fall, or Never fall.
 - **Keys:**
-  - Scroll while dragging raises/lowers; Shift gives a 10 cm grid; Alt means no snapping; Ctrl ignores collisions.
+  - Hold Space while dragging to move up/down (codex); scroll while dragging also raises/lowers; Shift gives a 10 cm grid; Alt means no snapping; Ctrl ignores collisions.
   - R picks the Rotate tool, and you drag anywhere inside the ring or on the piece to turn it. Q/E turn 15°.
   - Undo/redo glide into place.
 - **Snapping:** only the back-to-wall snap is left; neighbour alignment was dropped.

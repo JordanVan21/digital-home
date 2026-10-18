@@ -47,7 +47,7 @@ Your answers are recorded in the **Decision** column during Step 2.
 | # | Feature | J | C | Mark | Decision |
 |---|---|---|---|---|---|
 | 2.1 | Drag across the floor | Drag the object itself across whatever it rests on (`sessions.ts` `MoveSession`). | Drag across a horizontal plane at the object's current height (`Furniture.tsx` `down/move/up`, `editor.ts` `DragSession`). | ≠ | **J drag feel** (drag the piece itself, block-and-slide), moving freely like C |
-| 2.2 | **Vertical (Y) movement** | Hold **Alt** and drag to lift. A guide line and readout show "cm above floor / above *surface*". The move gizmo's Y arrow also works. | A "Move up or down" button switches to height mode (camera-facing plane, up/down arrow guide). Holding **Space** during a floor drag switches to height temporarily; releasing Space switches back without jumping (`movementModifier.ts`). | ≠ | **3D move button = A + C**: with the button, drag moves on a camera-facing "pane of glass" (sideways + up/down; normal floor drag from the top view); in any drag the **scroll wheel** raises/lowers. Fallback if you want it later: C's Space trick |
+| 2.2 | **Vertical (Y) movement** | Hold **Alt** and drag to lift. A guide line and readout show "cm above floor / above *surface*". The move gizmo's Y arrow also works. | A "Move up or down" button switches to height mode (camera-facing plane, up/down arrow guide). Holding **Space** during a floor drag switches to height temporarily; releasing Space switches back without jumping (`movementModifier.ts`). | ≠ | **C: hold Space while dragging** to move straight up/down (X/Z kept); release Space to keep sliding at that height (2026-10-18: replaces the 3D move button, which felt janky). Scroll wheel also raises/lowers |
 | 2.3 | Move gizmo (X/Y/Z arrows) | A TransformControls gizmo in Move mode; Shift snaps it to 5 cm (`TransformControlsWrapper.tsx`). | No gizmo, by design. | J | **Drop** (no coloured arrow gizmo) |
 | 2.4 | Keyboard nudges | Arrow keys move 1 cm (Shift: 10 cm) relative to the camera; PageUp/PageDown move up and down. | — | J | **J** (keep) |
 | 2.5 | **Position display in the panel** | One line: "1.70, -0.98 m · 0 cm above floor · on *table*" (`InspectorPanel.tsx` `TransformSection`). | Separate **X / Y / Z** readouts (read-only), an editable **Height** box (m), a **Place on floor** button, and a "Resting on *X*" line (`components/InspectorPanel.tsx`). | ≠ | **Option B**: X/Y/Z all editable in J's panel; J's rotate row stays. **No Float checkbox**: float/drop/snap like C (finalized in the stacking + gravity tryout, §14) |
@@ -113,7 +113,7 @@ Your answers are recorded in the **Decision** column during Step 2.
 
 | # | Feature | J | C | Mark | Decision |
 |---|---|---|---|---|---|
-| 8.1 | **Left vertical toolbar** (`agent_docs/ui/toolbar.png`) | select, move, rotate · add, duplicate, delete, lock · undo, redo · top, iso, eye-level, frame selection, walk (`FloatingToolbar.tsx`). | A side nav with only Objects and Search. | J (you want it) | **J**, plus two new buttons: **3D move** (after Move) and **Collisions on/off** (after Lock) |
+| 8.1 | **Left vertical toolbar** (`agent_docs/ui/toolbar.png`) | select, move, rotate · add, duplicate, delete, lock · undo, redo · top, iso, eye-level, frame selection, walk (`FloatingToolbar.tsx`). | A side nav with only Objects and Search. | J (you want it) | **J**, plus **Collisions on/off** (after Lock). The 3D move button was removed (2026-10-18; Space replaces it) |
 | 8.2 | **Selected-object panel** (`agent_docs/ui/panel.png`) | Name, category · lock button; Model (thumbnail, price, licence) with Swap model and Light on/off; **Finish** colour swatches; Position & rotation; Float; **Size W/D/H** with Keep proportions; **Plan** (Undecided/Keep/Replace/Remove); placement warnings; Duplicate, Delete; key hints. A **Hide** button (`InspectorPanel.tsx`). | A "Details" card: preview, name, lock switch, Position X/Y/Z, Height, Place on floor, Rotation, Dimensions (read-only), asset source link, Replace model, Delete, footnote hint. | ≠ (you want J's, with C's position) | **J** panel with option B position (see 2.5, 7.1) |
 | 8.3 | Panel with nothing selected | Room info: area, ceiling, openings, items; lighting preset; wall mode; wall paint / floor finish. | Hidden. | J | **J** room panel, plus the "Show all outlines" switch |
 | 8.4 | Top bar | "House · Edit" · scene picker · Match photo / Reference (test2) · save status + Retry · Reset view · dev menu (simulate failures, reset room, frame stats). | Room menu (reset room, reload saved) · search (visual only, ⌘K) · room switcher (visual only) · undo/redo · Add furniture · save status / "N unsaved suggestions". | ≠ | **J top bar** + C's "Reload saved room" in the ⋯ menu. Leave out C's show-only search and room switcher (undo/redo and Add are in the toolbar) |
@@ -172,7 +172,7 @@ Your answers are recorded in the **Decision** column during Step 2.
 | Ctrl/Cmd while dragging | Ignore collisions for this drag (J), alongside the Collisions on/off button |
 | R | Rotate tool only (J) |
 | Q / E | Turn 15° (Shift: 90°) (J) |
-| V / G / **M** | Select / Move / **3D move** (new) |
+| V / G | Select / Move |
 | **C** | **Collisions on/off** (new) |
 | Arrows · PageUp/PageDown | Nudge 1 cm (Shift 10 cm) · up/down (J) |
 | F · Home · P | Frame selection · frame room · walk mode (J) |
@@ -180,7 +180,7 @@ Your answers are recorded in the **Decision** column during Step 2.
 | Ctrl+D · Ctrl+G (Shift: ungroup) | Duplicate · group (J) |
 | Ctrl+Z · Shift+Ctrl+Z / Ctrl+Y | Undo · redo |
 | Esc | Deselect, exit walk mode (J) |
-| Space | Unused (fallback: C's temporary height mode, if A + C is replaced) |
+| **Space** (hold while dragging) | Up / down, X/Z kept; release to keep sliding at that height (C; replaced the 3D move button 2026-10-18) |
 | Enter, ⌘K | Unused (Accept and search dropped) |
 
 Final panel hint: "Drag to move · **scroll** while dragging to raise/lower · drag inside the ring to turn · **Shift** 10 cm grid · **Alt** no snapping · **Ctrl** ignores collisions". It must match the shipped keys (check again at the end).
@@ -336,10 +336,10 @@ After each step: typecheck, lint, all tests (J's plus the ported C tests), a com
 **Final checks run:** typecheck, lint, 199 unit tests (contracts 3, scene-engine 148, web 48), production build, `pnpm assets:verify` (51/51), and `pnpm test:browser` on all three scenes with no page errors.
 
 ## 17. Final checklist (go through it once in the merged app)
-- [ ] **Toolbar** matches `toolbar.png`, plus **3D move** (after Move) and **Collisions on/off** (after Lock).
+- [ ] **Toolbar** matches `toolbar.png`, plus **Collisions on/off** (after Lock).
 - [ ] **Panel** matches `panel.png`: name + lock, model + Swap + light, finish, **X / Y / Z fields**, rotate row, size W/D/H + keep proportions, plan, duplicate / delete. No Float checkbox. Key hints at the bottom.
 - [ ] **Camera:** top, isometric and eye-level buttons; **F** frames the selection; **P** walk mode; double-click re-aims; walls cut away / fade / show.
-- [ ] **Moving:** drag freely; **M** for 3D move (pane of glass); **scroll** while dragging to raise/lower; type X/Y/Z; arrows / PageUp / PageDown nudge.
+- [ ] **Moving:** drag freely; hold **Space** while dragging to move up/down (release to keep sliding at that height); **scroll** while dragging to raise/lower; type X/Y/Z; arrows / PageUp / PageDown nudge.
 - [ ] **Rotating:** **R**, then drag anywhere inside the ring or on the piece; blocked by collisions; Shift for 15° steps; Q / E.
 - [ ] **Outlines:** the selected piece shows an outline hugging its shape with corner dots; white on hover; red when blocked; "Show all outlines" in the room panel.
 - [ ] **Collision:** a sofa pushed into a wall and into a corner sits flush with no red. A picture can hang over a cabinet. Ctrl or **C** lets things overlap, still flagged red. A green guide shows where pieces touch.
@@ -348,3 +348,10 @@ After each step: typecheck, lint, all tests (J's plus the ported C tests), a com
 - [ ] **Snapping:** a sofa backed toward a wall snaps flush (green wall line). **Shift** gives the 10 cm grid. **Alt** gives no snapping. Nothing lines up with neighbours.
 - [ ] **Undo / redo:** pieces glide back.
 - [ ] **Saving:** edits save; a second tab on the same room gets a conflict instead of overwriting; closing mid-save asks first.
+
+## 18. Fixes after your first test (2026-10-18)
+| Problem you saw | Cause | Fix |
+|---|---|---|
+| Walk mode broken | The upgraded camera library (camera-controls 3 in drei 10) rewrites the camera position every frame, even while disabled. Walk mode added each step to that position, so WASD never moved you (looking still worked). Walk mode could also start inside furniture, which blocked every step. | Walk mode keeps its own position and sets the camera from it every frame. It starts at the nearest free spot, and you can walk out of anything you're already inside. Browser check: walking, looking, walls stop you, Esc exits. |
+| Dragging seemed to switch to another object when the piece couldn't go further | The obstacle got a red outline, corner dots and a "… hits this" label, so it looked selected. The selection itself never changed. | Obstacles are no longer outlined. Only the piece you hold is outlined (red when blocked, with "hits …"), and a green line marks where they touch. Browser check: the selection stays on the held piece for the whole drag. |
+| 3D move button janky | — | Removed. Codex's Space-bar movement is back: hold Space while dragging to go straight up/down, and release to keep sliding at that height with no jump. Browser check added. |

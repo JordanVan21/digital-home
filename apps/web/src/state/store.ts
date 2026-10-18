@@ -16,8 +16,7 @@ import { bodiesOf, movingSet, obstaclesFor, sweptBounds } from './physics';
 import { interaction } from '../scene/registry';
 
 export type SceneSource = 'demo-room' | 'demo-scan' | 'test2';
-/** 'move3d' = 3D move: drags slide on a camera-facing plane (sideways + up/down). */
-export type TransformMode = 'select' | 'translate' | 'move3d' | 'rotate';
+export type TransformMode = 'select' | 'translate' | 'rotate';
 export type SaveStatus = 'idle' | 'saving' | 'saved' | 'error' | 'conflict';
 export type CameraPreset = 'top' | 'iso' | 'eye' | 'reset' | 'match';
 export type CameraRequest =
@@ -61,7 +60,7 @@ export type EditorState = {
   /** Draw every piece's shape outline (room panel switch, from codex's Bounding boxes toggle). */
   showAllOutlines: boolean;
   /**
-   * Tryout (MERGE_INVENTORY §14): what happens on release to a piece you deliberately raised (3D move,
+   * Tryout (MERGE_INVENTORY §14): what happens on release to a piece you deliberately raised (Space,
    * scroll wheel, typed Y). 'mix' = raised pieces stay, ordinary drags fall; 'fall' = everything falls;
    * 'stay' = nothing falls (codex).
    */
@@ -277,7 +276,7 @@ export function toggleCollisions() {
   toast(off ? 'Collisions off — things can overlap (still flagged in red).' : 'Collisions on.', 'info', 2200);
 }
 
-/** Does a released piece settle onto the surface below? `raised` = deliberately lifted (3D move, wheel, typed Y). */
+/** Does a released piece settle onto the surface below? `raised` = deliberately lifted (Space, wheel, PageUp, typed Y). */
 export function releaseSettles(raised: boolean, mode: ReleaseMode = get().releaseMode): boolean {
   return mode === 'fall' ? true : mode === 'stay' ? false : !raised;
 }

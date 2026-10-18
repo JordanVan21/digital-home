@@ -6,7 +6,7 @@ const proj = (page, p) => page.evaluate(([x, y, z]) => window.__houseDebug.proje
 export async function checks({ page, source, log, fail }) {
   if (source !== 'test2') return;
   const results = [];
-  for (const [label, setup] of [['Move tool', 'g'], ['3D move', 'm'], ['Move + all outlines', 'g']]) {
+  for (const [label, setup] of [['Move tool', 'g'], ['Move, Space held (up/down)', 'g'], ['Move + all outlines', 'g']]) {
     await page.keyboard.press(setup);
     await page.evaluate((all) => window.__houseDebug.store.setState({ showAllOutlines: all }), label.includes('outlines'));
     const chair = await obj(page, 'Bouclé barrel chair');
@@ -15,6 +15,7 @@ export async function checks({ page, source, log, fail }) {
     const [tx, ty] = await proj(page, [sofa.transform.position[0], 0.3, sofa.transform.position[2]]);
     await page.mouse.move(sx, sy);
     await page.mouse.down();
+    if (label.includes('Space')) await page.keyboard.down('Space');
     await page.evaluate(() => window.__housePerf?.reset());
     const t0 = Date.now();
     let i = 0;
@@ -25,6 +26,7 @@ export async function checks({ page, source, log, fail }) {
       i++;
     }
     const s = await page.evaluate(() => ({ fps: window.__housePerf.fps, p95: window.__housePerf.p95Ms, calls: window.__housePerf.calls, tris: window.__housePerf.triangles }));
+    if (label.includes('Space')) await page.keyboard.up('Space');
     await page.keyboard.press('Escape');
     await page.mouse.up();
     await page.waitForTimeout(300);

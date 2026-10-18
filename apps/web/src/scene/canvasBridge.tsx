@@ -34,6 +34,12 @@ export function CanvasBridge() {
           return [r.left + ((v.x + 1) / 2) * r.width, r.top + ((1 - v.y) / 2) * r.height];
         },
         store: useEditor,
+        /** Camera position and look direction (to check walk mode / presets). */
+        camera() {
+          const d = new Vector3();
+          camera.getWorldDirection(d);
+          return { position: camera.position.toArray(), direction: d.toArray() };
+        },
         /** World position of an object's rendered group (to check glides / live previews). */
         groupPosition(id: string) {
           const g = registry.get(id);

@@ -10,7 +10,7 @@ import { focusCamera, objectById, opContext, select, selectMany, useEditor } fro
 import { dragFeedback } from '../dragFeedback';
 import { interaction, registry } from '../registry';
 import { boxSelect } from './boxSelect';
-import { hitPlaneY, modsOf, MoveSession, RotateSession, setRay, type DragSession, type Host } from './sessions';
+import { heightKey, hitPlaneY, modsOf, MoveSession, RotateSession, setRay, type DragSession, type Host } from './sessions';
 
 type Controls = { enabled: boolean } | null;
 
@@ -28,7 +28,8 @@ function objectAt(r: Raycaster, root: Object3D | undefined): string | null {
 /**
  * Pointer routing for the canvas. A capture-phase listener runs before the camera controls see the
  * event, so a press on furniture or the rotation ring turns orbiting off for that drag:
- * - press + drag on an unlocked object → move it (Alt = no snapping; Shift = 10 cm grid; Ctrl/Cmd = ignore collisions; wheel = raise/lower);
+ * - press + drag on an unlocked object → move it (hold Space = up/down; Alt = no snapping; Shift = 10 cm grid;
+ *   Ctrl/Cmd = ignore collisions; wheel = raise/lower);
  * - press + drag on the ring → turn it; Shift+drag on empty space → box select;
  * - click (< 4 px) → select (Shift adds, Alt picks one member of a group); empty click deselects;
  * - double-click → focus the camera on the object / floor point. Locked objects just orbit.
@@ -130,6 +131,24 @@ export function InteractionLayer() {
       window.addEventListener('keydown', onKey);
     };
 
+    // Hold Space (codex) to move the dragged piece up / down; release to keep sliding at that height.
+    const refresh = () => (press?.session as (DragSession & { refresh?: () => void }) | null | undefined)?.refresh?.();
+    const typing = (t: EventTarget | null) => !!(t as HTMLElement | null)?.closest?.('input,textarea,select,[contenteditable="true"]');
+    const onSpaceDown = (e: KeyboardEvent) => {
+      if (e.code !== 'Space' || e.ctrlKey || e.metaKey || typing(e.target)) return;
+      // Never scroll the page or press a focused button with Space while dragging.
+      if (press?.session || !(e.target as HTMLElement | null)?.closest?.('button')) e.preventDefault();
+      if (heightKey.held) return;
+      heightKey.held = true;
+      refresh();
+    };
+    const onSpaceUp = (e: KeyboardEvent) => {
+      if (e.code !== 'Space') return;
+      heightKey.held = false;
+      refresh();
+    };
+    const onBlur = () => { heightKey.held = false; };
+
     // Scroll wheel while dragging raises / lowers the piece (the camera doesn't zoom mid-drag).
     const onWheel = (e: WheelEvent) => {
       const s = press?.session as (DragSession & { wheel?: (dy: number) => void }) | null | undefined;
@@ -156,7 +175,13 @@ export function InteractionLayer() {
     el.addEventListener('pointerdown', onDown, { capture: true });
     el.addEventListener('dblclick', onDbl);
     el.addEventListener('wheel', onWheel, { capture: true, passive: false });
+    window.addEventListener('keydown', onSpaceDown);
+    window.addEventListener('keyup', onSpaceUp);
+    window.addEventListener('blur', onBlur);
     return () => {
+      window.removeEventListener('keydown', onSpaceDown);
+      window.removeEventListener('keyup', onSpaceUp);
+      window.removeEventListener('blur', onBlur);
       el.removeEventListener('wheel', onWheel, { capture: true });
       el.removeEventListener('pointerdown', onDown, { capture: true });
       el.removeEventListener('dblclick', onDbl);

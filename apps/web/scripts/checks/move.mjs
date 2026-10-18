@@ -1,5 +1,6 @@
 /* global window */
-// Movement checks (merge step 6): 3D move, scroll-wheel height, rotate by dragging the piece, undo glide.
+// Movement checks: scroll-wheel height, Space up/down (codex), selection stays on the held piece,
+// rotate by dragging the piece, undo glide.
 const st = (page) => page.evaluate(() => {
   const s = window.__houseDebug.store.getState();
   return { mode: s.mode, sel: s.selectedId, objs: Object.fromEntries(s.workingScene.objects.map((o) => [o.id, o])) };
@@ -35,12 +36,29 @@ export async function checks({ page, log, fail }) {
   let after = (await st(page)).objs[id].transform.position;
   if (after[1] - before[1] > 0.1) log(`  ✓ wheel raised it ${((after[1] - before[1]) * 100).toFixed(0)} cm`); else fail(`wheel did not raise it (${before[1]} → ${after[1]})`);
 
-  // 2. 3D move: dragging up on screen lifts it, sideways moves it.
-  await page.keyboard.press('m');
+  // 2. Hold Space mid-drag (codex): straight up, X/Z kept; release Space and keep sliding at that height, no jump.
   before = (await st(page)).objs[id].transform.position;
-  await drag([[0, -10], [10, -30], [20, -60]]);
-  after = (await st(page)).objs[id].transform.position;
-  if (after[1] > before[1] + 0.05) log(`  ✓ 3D move lifted it ${((after[1] - before[1]) * 100).toFixed(0)} cm`); else fail(`3D move did not lift (${before[1]} → ${after[1]})`);
+  {
+    const [sx, sy] = await screenOf(page, id);
+    await page.mouse.move(sx, sy);
+    await page.mouse.down();
+    await page.mouse.move(sx + 6, sy); await page.waitForTimeout(40);
+    await page.keyboard.down('Space');
+    for (let i = 1; i <= 8; i++) { await page.mouse.move(sx + 6, sy - i * 10); await page.waitForTimeout(25); }
+    const up = await page.evaluate((i) => window.__houseDebug.groupPosition(i), id);
+    await page.keyboard.up('Space');
+    await page.waitForTimeout(40);
+    const atRelease = await page.evaluate((i) => window.__houseDebug.groupPosition(i), id);
+    for (let i = 1; i <= 6; i++) { await page.mouse.move(sx + 6 + i * 8, sy - 80); await page.waitForTimeout(25); }
+    const slid = await page.evaluate((i) => window.__houseDebug.groupPosition(i), id);
+    await page.mouse.up();
+    await page.waitForTimeout(400);
+    after = (await st(page)).objs[id].transform.position;
+    const xzKept = Math.hypot(up[0] - before[0], up[2] - before[2]) < 0.06;
+    if (up[1] > before[1] + 0.1 && xzKept) log(`  ✓ Space lifted it ${((up[1] - before[1]) * 100).toFixed(0)} cm straight up`); else fail(`Space did not lift straight up (y ${before[1]} → ${up[1]})`);
+    if (Math.abs(atRelease[1] - up[1]) < 0.01 && Math.abs(slid[1] - up[1]) < 0.02) log('  ✓ releasing Space kept the height and slid on without a jump'); else fail(`height jumped after releasing Space (${up[1]} → ${atRelease[1]} → ${slid[1]})`);
+    if (after[1] > before[1] + 0.1) log("  ✓ let go: it stays up ('Mix')"); else fail('it fell after a Space lift in Mix');
+  }
 
   // 4. Undo glides (not jumps) back.
   const target = (await st(page)).objs[id];
@@ -56,6 +74,27 @@ export async function checks({ page, log, fail }) {
   await page.keyboard.press('Control+Shift+z');
   await page.waitForTimeout(500);
   if (dEnd < 0.005) log(`  ✓ undo glided into place (${(dMid * 100).toFixed(1)} cm away after 40 ms, 0 at the end)`); else fail(`undo did not settle at the restored pose (${dEnd})`);
+  // 2b. The selection stays on the held piece the whole drag, even when it's blocked and the pointer
+  // runs over other furniture; obstacles aren't outlined.
+  {
+    await page.keyboard.press('g');
+    const [sx, sy] = await screenOf(page, id);
+    await page.mouse.move(sx, sy);
+    await page.mouse.down();
+    let switched = false;
+    for (let i = 1; i <= 30; i++) {
+      await page.mouse.move(sx - i * 14, sy - i * 6);
+      await page.waitForTimeout(20);
+      const sel = await page.evaluate(() => window.__houseDebug.store.getState().selectedIds);
+      if (sel.length !== 1 || sel[0] !== id) switched = true;
+    }
+    const outlined = await page.evaluate(() => window.__houseDebug.store.getState().selectedIds.length);
+    await page.mouse.up();
+    await page.waitForTimeout(300);
+    const sel = await page.evaluate(() => window.__houseDebug.store.getState().selectedIds);
+    if (!switched && sel.length === 1 && sel[0] === id && outlined === 1) log('  ✓ selection stayed on the held piece for the whole drag'); else fail('selection switched during the drag');
+  }
+
   // 3. Rotate tool: drag on the piece itself turns it.
   await page.keyboard.press('r');
   const yaw0 = yawOf((await st(page)).objs[id].transform.rotation);

@@ -4,7 +4,7 @@ import {
   bearing, bodyAt, candidateSurfaces, ceilingPose, classOf, EDGE_TOL_M, findSupport, groupTransformOps, isLarge,
   makeTransform, moveWithSupport, normalizeAngle, pointInPolygon, prepareShell, quatFromYaw, resolveRotation,
   resolveTranslation, restsOn, rootsOf, selectionPivot, subtreeIds, transformAbout, validateObject, wallPose, YawDial,
-  indexObjects, yawFromQuat, type Blocker, type Body, type SupportHit, type WorldSurface,
+  bodyContact, indexObjects, translateBody, yawFromQuat, type Blocker, type Body, type SupportHit, type WorldSurface,
 } from '@house/scene-engine';
 import { EDITOR_POLICY } from '../../config/editorPolicy';
 import { applyObjectTransform } from '../../lib/convert';
@@ -96,7 +96,14 @@ export interface DragSession {
 
 // ---------------------------------------------------------------- move / lift / wall / ceiling
 
-type Kind = 'move' | 'move3d' | 'wall' | 'ceiling' | 'ceilingLift';
+type Kind = 'move' | 'wall' | 'ceiling' | 'ceilingLift';
+
+/**
+ * Codex's height key: holding Space during a drag moves the piece straight up / down (on a camera-
+ * facing plane, X/Z kept); releasing it resumes the floor drag at the new height, without letting go
+ * of the mouse and without a jump. Set by InteractionLayer's key listeners.
+ */
+export const heightKey = { held: false };
 
 /** Scroll-wheel height step per notch (m), and the cap for one wheel event (trackpads send many small ones). */
 const WHEEL_M_PER_NOTCH = 0.05;
@@ -104,15 +111,26 @@ const WHEEL_M_PER_NOTCH = 0.05;
 const FACE_SNAP_M = 0.12;
 const GRID_M = 0.1;
 
+type Snapped = { label: string; polygon: Vec2[] | null; y: number };
+
+/** Green outline of the face a piece snapped to. */
+function outline(snapped: Snapped | null): { from: Vec3; to: Vec3 }[] {
+  const p = snapped?.polygon;
+  if (!snapped || !p) return [];
+  return p.map((a, i) => {
+    const b = p[(i + 1) % p.length]!;
+    return { from: [a[0], snapped.y + 0.006, a[1]] as Vec3, to: [b[0], snapped.y + 0.006, b[1]] as Vec3 };
+  });
+}
+
 /**
  * Direct manipulation of one or more objects (the primary interaction):
  * - move: horizontally across whatever they rest on; small items hop onto the support surface under
  *   the cursor (vase onto a table); dragged off an edge it holds its height and falls on release.
  * - Alt: move freely, no snapping (no hop, no magnetic catch, no wall snap). Shift: 10 cm grid.
  * - wall: slide along walls (crossing corners) and up/down. ceiling: across the ceiling; Alt = drop.
- * - move3d (3D move tool): the piece slides on a camera-facing "pane of glass" — sideways and up/down
- *   in one drag. From the top view (no screen "up") it falls back to a normal floor drag.
- * - The scroll wheel raises / lowers a single piece during any move or 3D move.
+ * - Hold Space (codex): up / down on a camera-facing plane; release to keep sliding at that height.
+ * - The scroll wheel raises / lowers a single piece during any move.
  */
 export class MoveSession implements DragSession {
   private readonly ctx = opContext()!;
@@ -139,8 +157,10 @@ export class MoveSession implements DragSession {
   private readonly owners = new Map(useEditor.getState().workingScene!.objects.map((o) => [o.id, o]));
   /** Height added with the scroll wheel during this drag (m). */
   private raise = 0;
-  /** 3D move: offset from the pane-of-glass hit to the piece's base (x, y, z). */
-  private grab3: Vec3 = [0, 0, 0];
+  /** Space held: moving vertically at the held X/Z; vGrabDy = pane hit height minus base height. */
+  private vertical = false;
+  private vGrabDy = 0;
+  private held: Vec2 = [0, 0];
   readonly ok: boolean;
 
   constructor(private readonly host: Host, down: PointerEvent, ids: string[], primaryId: string, private readonly mods: Mods) {
@@ -152,12 +172,7 @@ export class MoveSession implements DragSession {
     const mounted = cls === 'wall' || cls === 'ceiling';
     this.roots = mounted ? [this.primary] : roots.filter((r) => { const c = classOf(this.ctx, r); return c !== 'wall' && c !== 'ceiling'; });
     this.rootIds = this.roots.map((r) => r.id);
-    const look = new Vector3();
-    host.camera.getWorldDirection(look);
-    const topDown = look.y < -0.95;
-    const tool = useEditor.getState().mode;
-    this.kind = cls === 'wall' ? 'wall' : cls === 'ceiling' ? (mods.alt ? 'ceilingLift' : 'ceiling')
-      : tool === 'move3d' && !topDown && roots.length === 1 ? 'move3d' : 'move';
+    this.kind = cls === 'wall' ? 'wall' : cls === 'ceiling' ? (mods.alt ? 'ceilingLift' : 'ceiling') : 'move';
     this.small = this.roots.length === 1 && !isLarge(this.primary?.category ?? '') && !mounted;
     const moving = movingSet(this.scene, this.rootIds);
     this.movingBodies = bodiesOf(this.ctx, this.scene, moving);
@@ -169,10 +184,7 @@ export class MoveSession implements DragSession {
 
     const r = setRay(host, down);
     const [px, py, pz] = this.primary.transform.position;
-    if (this.kind === 'move3d') {
-      const h = this.liftPlaneHit(r) ?? new Vector3(px, py + 0.5, pz);
-      this.grab3 = [px - h.x, py - h.y, pz - h.z];
-    } else if (this.kind === 'ceilingLift' || this.kind === 'wall') {
+    if (this.kind === 'ceilingLift' || this.kind === 'wall') {
       const h = this.liftPlaneHit(r) ?? new Vector3(px, py, pz);
       this.grabDy = h.y - py;
       this.grab = [px - h.x, pz - h.z];
@@ -183,8 +195,9 @@ export class MoveSession implements DragSession {
     useEditor.setState({ dragging: true });
   }
 
-  private liftPlaneHit(r: Raycaster): Vector3 | null {
-    const [px, py, pz] = this.primary.transform.position;
+  /** Ray ∩ the vertical, camera-facing plane through `at` (defaults to the piece's start). */
+  private liftPlaneHit(r: Raycaster, at?: Vec3): Vector3 | null {
+    const [px, py, pz] = at ?? this.primary.transform.position;
     const n = new Vector3();
     this.host.camera.getWorldDirection(n);
     n.y = 0;
@@ -199,18 +212,97 @@ export class MoveSession implements DragSession {
     if (!this.raf) this.raf = requestAnimationFrame(() => { this.raf = 0; if (this.pending) this.tick(this.pending); });
   }
 
+  /** Switch between floor drag and Space-held vertical drag, rebasing so the piece doesn't jump. */
+  private setVertical(r: Raycaster, on: boolean) {
+    const [px, py, pz] = this.primary.transform.position;
+    const cur: Vec3 = [px + this.last.offset[0], py + this.last.dy, pz + this.last.offset[1]];
+    if (on) {
+      const h = this.liftPlaneHit(r, cur);
+      this.vGrabDy = h ? h.y - cur[1] : 0;
+      this.held = [cur[0], cur[2]];
+    } else {
+      // Keep sliding at the new height (counts as raised: magnetic catch on, release per mode).
+      this.raise = cur[1] - py;
+      const h = hitPlaneY(r, cur[1]);
+      if (h) this.grab = [cur[0] - h.x, cur[2] - h.z];
+      this.prev = this.last.offset;
+      this.prevDy = this.last.dy;
+    }
+    this.vertical = on;
+  }
+
+  /** Codex's magnetic catch: the nearest surface (or the floor) within 12 cm under `center`. */
+  private magnet(center: Vec2, targetY: number, floorY: number): { y: number; hit: SupportHit; snapped: Snapped | null } | null {
+    let best: { s: WorldSurface | null; dy: number } | null = null;
+    for (const s of this.surfaces) {
+      const gap = Math.abs(s.y - targetY);
+      if (gap > FACE_SNAP_M || (best && gap >= best.dy)) continue;
+      if (!pointInPolygon(center, s.polygon, EDGE_TOL_M)) continue;
+      const probe: SceneObject = { ...this.primary, transform: { ...this.primary.transform, position: [center[0], s.y, center[1]] } };
+      if (!restsOn(probe, s, this.owners.get(s.ownerId), this.ctx.assets)) continue;
+      best = { s, dy: gap };
+    }
+    const floorGap = Math.abs(targetY - floorY);
+    if (floorGap <= FACE_SNAP_M && (!best || floorGap < best.dy)) best = { s: null, dy: floorGap };
+    if (!best) return null;
+    const s = best.s;
+    const y = s ? s.y : floorY;
+    return {
+      y,
+      hit: s ? { ownerId: s.ownerId, surfaceId: s.id, y: s.y } : { ownerId: null, surfaceId: 'floor', y: floorY },
+      snapped: best.dy > 1e-4 ? { label: s ? objectById(s.ownerId)?.displayName ?? 'surface' : 'Floor', polygon: s ? s.polygon : null, y } : null,
+    };
+  }
+
+  /** Space held: straight up / down at the held X/Z. Blocked (keeps the last height) if it would hit something. */
+  private tickVertical(r: Raycaster, e: PointerEvent, ctrl: boolean) {
+    const floorY = this.ctx.shell.floor.elevationY;
+    const [px, py, pz] = this.primary.transform.position;
+    const h = this.liftPlaneHit(r, [this.held[0], py + this.last.dy, this.held[1]]);
+    if (!h) return;
+    let targetY = Math.max(floorY, h.y - this.vGrabDy);
+    let hit: SupportHit | null = null;
+    let snapped: Snapped | null = null;
+    if (!(e.altKey || this.mods.alt)) {
+      const m = this.magnet(this.held, targetY, floorY);
+      if (m) ({ y: targetY, hit, snapped } = m);
+    }
+    const offset: Vec2 = [this.held[0] - px, this.held[1] - pz];
+    const dy = targetY - py;
+    if (!ctrl && EDITOR_POLICY.collision === 'block-and-slide') {
+      const placed = liftBodies(this.movingBodies, dy).map((b) => translateBody(b, offset[0], offset[1]));
+      const obs = this.obstacles(sweptBounds(liftBodies(this.movingBodies, dy), offset[0], offset[1]), hit?.ownerId);
+      const hits = obs.filter((o) => placed.some((b) => bodyContact(b, o)));
+      if (hits.length) {
+        dragFeedback.set({ objectId: this.primary.id, blockers: hits.map((o) => ({ movingId: this.primary.id, otherId: o.id, label: o.label, wall: !!o.wall })), note: null });
+        return; // keep the last valid height
+      }
+    }
+    this.last = { offset, dy, hit };
+    this.prev = offset;
+    this.prevDy = dy;
+    this.preview(offset, dy);
+    const cand: SceneObject = { ...this.primary, transform: { ...this.primary.transform, position: [this.held[0], targetY, this.held[1]] } };
+    this.feedbackFor(cand, [], ctrl, outline(snapped), hit ? null : this.readout(cand.transform.position), snapped ? `Snapped to ${snapped.label}` : 'Space: up / down');
+  }
+
+  /** Re-run the last pointer position (Space pressed / released without moving the mouse). */
+  refresh() {
+    if (this.lastEvent) this.tick(this.lastEvent);
+  }
+
   /** Scroll wheel during the drag: raise (scroll up) or lower (scroll down) a single piece. */
   wheel(deltaY: number) {
-    if ((this.kind !== 'move' && this.kind !== 'move3d') || this.roots.length !== 1) return;
+    if (this.kind !== 'move' || this.roots.length !== 1 || this.vertical) return;
     const step = Math.max(-WHEEL_M_PER_NOTCH, Math.min(WHEEL_M_PER_NOTCH, (-deltaY / 100) * WHEEL_M_PER_NOTCH));
     const floorY = this.ctx.shell.floor.elevationY;
     this.raise = Math.max(floorY - this.primary.transform.position[1], this.raise + step);
     if (this.lastEvent) this.tick(this.lastEvent);
   }
 
-  /** True when the piece is being held above where it would rest (wheel or 3D move). */
+  /** True when the piece is being held above where it would rest (Space or wheel). */
   private get raised() {
-    return this.kind === 'move3d' || Math.abs(this.raise) > 1e-9;
+    return this.vertical || Math.abs(this.raise) > 1e-9;
   }
 
   private startOf(o: SceneObject): Vec3 {
@@ -233,6 +325,11 @@ export class MoveSession implements DragSession {
     const ctrl = ignoringCollisions(e.ctrlKey || e.metaKey || this.mods.ctrl);
     const floorY = this.ctx.shell.floor.elevationY;
     const [px, py, pz] = this.primary.transform.position;
+    if (this.kind === 'move') {
+      const wantVertical = heightKey.held && this.roots.length === 1;
+      if (wantVertical !== this.vertical) this.setVertical(r, wantVertical);
+      if (this.vertical) return this.tickVertical(r, e, ctrl);
+    }
 
     if (this.kind === 'wall') {
       const h = this.wallHit(r);
@@ -264,7 +361,7 @@ export class MoveSession implements DragSession {
       return;
     }
 
-    // --- horizontal move (+ wheel height), or 3D move on the camera-facing pane of glass.
+    // --- horizontal move (+ wheel / Space height).
     // Stacking (codex) decides where a piece can rest; gravity (jordan) decides when it falls:
     // small items hop *up* onto surfaces under the cursor, but never drop while dragging — off an
     // edge they hold their height (with a drop line) and fall on release. Within 12 cm of a surface
@@ -273,12 +370,7 @@ export class MoveSession implements DragSession {
     let center: Vec2 | null = null;
     let targetY = py;
     let hit: SupportHit | null = null;
-    if (this.kind === 'move3d') {
-      const h = this.liftPlaneHit(r);
-      if (!h) return;
-      center = [h.x + this.grab3[0], h.z + this.grab3[2]];
-      targetY = Math.max(floorY, h.y + this.grab3[1] + this.raise);
-    } else if (this.raised) {
+    if (this.raised) {
       targetY = Math.max(floorY, py + this.raise);
     } else if (this.small && !noSnap) {
       let bestT = Infinity;
@@ -318,25 +410,10 @@ export class MoveSession implements DragSession {
     if (shift) center = [Math.round(center[0] / GRID_M) * GRID_M, Math.round(center[1] / GRID_M) * GRID_M];
 
     // Magnetic catch (codex): a free piece within 12 cm of a surface under its bottom centre lands on it.
-    let snappedTo: { label: string; polygon: Vec2[] | null; y: number } | null = null;
+    let snappedTo: Snapped | null = null;
     if (!noSnap && !hit && (this.raised || this.small) && this.roots.length === 1) {
-      let best: { s: WorldSurface | null; dy: number } | null = null;
-      for (const s of this.surfaces) {
-        const gap = Math.abs(s.y - targetY);
-        if (gap > FACE_SNAP_M || (best && gap >= best.dy)) continue;
-        if (!pointInPolygon(center, s.polygon, EDGE_TOL_M)) continue;
-        const probe: SceneObject = { ...this.primary, transform: { ...this.primary.transform, position: [center[0], s.y, center[1]] } };
-        if (!restsOn(probe, s, this.owners.get(s.ownerId), this.ctx.assets)) continue;
-        best = { s, dy: gap };
-      }
-      const floorGap = Math.abs(targetY - floorY);
-      if (floorGap <= FACE_SNAP_M && (!best || floorGap < best.dy)) best = { s: null, dy: floorGap };
-      if (best) {
-        const s = best.s;
-        targetY = s ? s.y : floorY;
-        hit = s ? { ownerId: s.ownerId, surfaceId: s.id, y: s.y } : { ownerId: null, surfaceId: 'floor', y: floorY };
-        if (best.dy > 1e-4) snappedTo = { label: s ? objectById(s.ownerId)?.displayName ?? 'surface' : 'Floor', polygon: s ? s.polygon : null, y: targetY };
-      }
+      const m = this.magnet(center, targetY, floorY);
+      if (m) ({ y: targetY, hit, snapped: snappedTo } = m);
     }
     if (this.small && !this.raised) this.holdY = targetY;
 
@@ -348,14 +425,7 @@ export class MoveSession implements DragSession {
       desired = snapped.delta;
       guides = snapped.guides;
     }
-    if (snappedTo?.polygon) {
-      const p = snappedTo.polygon;
-      for (let i = 0; i < p.length; i++) {
-        const a = p[i]!;
-        const b = p[(i + 1) % p.length]!;
-        guides.push({ from: [a[0], snappedTo.y + 0.006, a[1]], to: [b[0], snappedTo.y + 0.006, b[1]] });
-      }
-    }
+    guides.push(...outline(snappedTo));
     let offset = desired;
     let blockers: Blocker[] = [];
     let touching: Body[] = [];

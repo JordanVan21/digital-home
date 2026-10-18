@@ -2,10 +2,11 @@
 // Smoke checks for the merged toolbar / panel (merge step 2). Run via: node apps/web/scripts/smoke.mjs --checks apps/web/scripts/checks/ui.mjs
 export async function checks({ page, log, fail }) {
   const count = (sel) => page.locator(sel).count();
-  for (const [sel, name] of [['[aria-label^="3D move"]', '3D move button'], ['[aria-label^="Collisions are"]', 'collisions button'], ['[aria-label="X position (m)"]', 'X field'], ['[aria-label^="Y position"]', 'Y field'], ['[aria-label="Z position (m)"]', 'Z field']]) {
+  for (const [sel, name] of [['[aria-label^="Collisions are"]', 'collisions button'], ['[aria-label="X position (m)"]', 'X field'], ['[aria-label^="Y position"]', 'Y field'], ['[aria-label="Z position (m)"]', 'Z field']]) {
     if (await count(sel)) log(`  ✓ ${name}`); else fail(`missing ${name}`);
   }
   if (await page.getByText('Float (don’t settle').count()) fail('Float checkbox still present');
+  if (await count('[aria-label^="3D move"]')) fail('3D move button should be gone (Space replaces it)');
   // Typing X moves the selected object.
   const id = await page.evaluate(() => window.__houseDebug.store.getState().selectedId);
   const x0 = await page.evaluate((i) => window.__houseDebug.store.getState().workingScene.objects.find((o) => o.id === i).transform.position[0], id);
