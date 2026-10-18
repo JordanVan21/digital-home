@@ -1,3 +1,4 @@
+import { WalkHint } from "./components/CameraViewMenu";
 import { Component, useEffect, type ReactNode } from "react";
 import { useStore } from "zustand";
 import { X } from "lucide-react";
@@ -18,10 +19,18 @@ function Keyboard() {
     const cleanupHeightModifier = installHeightModifier(editor);
     const handle = (e: KeyboardEvent) => {
       const target = e.target as HTMLElement;
-      if (target.closest('input,textarea,select,[contenteditable="true"]'))
+      if (
+        target.closest(
+          'input,textarea,select,[contenteditable="true"],[role="menu"]',
+        )
+      )
         return;
       const state = editor.interaction.getState();
       if (e.key === "Escape") {
+        if (state.walk) {
+          editor.setWalk(false);
+          return;
+        }
         // Esc deselects or closes first; with nothing to close it discards suggestions.
         if (!state.selectedId && !state.browser && !state.dragging)
           editor.discard();
@@ -47,6 +56,10 @@ function Keyboard() {
         return;
       }
       if (e.metaKey || e.ctrlKey || e.altKey) return;
+      if (key === "p" && !e.repeat) {
+        e.preventDefault();
+        editor.setWalk(!state.walk);
+      }
       if (key === "v") editor.interaction.setState({ tool: "select" });
       if (key === "g")
         editor.interaction.setState({ tool: "move", movePlane: "floor" });
@@ -133,6 +146,7 @@ export default function App() {
       <TopBar />
       <SideNav />
       <ViewControls />
+      <WalkHint />
       <InspectorPanel />
       <MeasurementsToggle />
       <SuggestionsBar />

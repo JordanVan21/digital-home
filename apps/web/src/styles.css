@@ -1166,3 +1166,44 @@ kbd {
   --glass-inset: rgba(255, 247, 236, 0.78);
   --glass-edge: rgba(255, 251, 244, 0.94);
 }
+
+.camera-menu-container {
+  position: relative;
+}
+.camera-menu {
+  position: absolute;
+  right: 60px;
+  top: 0;
+  width: 170px;
+  padding: 7px;
+  border-radius: 16px;
+}
+.camera-menu button {
+  display: block;
+  width: 100%;
+  text-align: left;
+  padding: 9px 10px;
+  border-radius: 10px;
+}
+.camera-menu button:hover:not(:disabled) {
+  background: var(--glass-inset);
+}
+.walk-hint {
+  position: fixed;
+  left: 50%;
+  bottom: 82px;
+  transform: translateX(-50%);
+  width: max-content;
+  max-width: calc(100vw - 48px);
+  z-index: 6;
+  pointer-events: none;
+  padding: 12px;
+  border-radius: 16px;
+  font-size: 11px;
+  line-height: 1.6;
+}
+
+/* View popovers must remain above the inspector they expand across. */
+.view-controls {
+  z-index: 6;
+}

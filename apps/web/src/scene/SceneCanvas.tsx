@@ -1,62 +1,17 @@
+import { Camera } from "./Camera";
 import { Lighting } from "./Lighting";
-import { memo, useEffect, useMemo, useRef, type ComponentRef } from "react";
+import { memo, useEffect, useMemo, useRef } from "react";
 import { diffScenes } from "@house/scene-engine";
 import { labelLayer } from "./labelLayer";
-import { Canvas, useThree } from "@react-three/fiber";
-import { ContactShadows, OrbitControls, Stats } from "@react-three/drei";
-import { ACESFilmicToneMapping, SRGBColorSpace, MathUtils } from "three";
+import { Canvas } from "@react-three/fiber";
+import { ContactShadows, Stats } from "@react-three/drei";
+import { ACESFilmicToneMapping, SRGBColorSpace } from "three";
 import { useStore } from "zustand";
 import { editor } from "../state/editor";
 import { Furniture } from "./Furniture";
 import { Room } from "./Room";
 import { useLighting } from "../theme";
-function Camera() {
-  const controls = useRef<ComponentRef<typeof OrbitControls>>(null);
-  const { camera } = useThree();
-  useEffect(() => {
-    const reset = () => {
-      camera.position.set(7.2, 6.5, 8.3);
-      controls.current?.target.set(0, 0.65, 0);
-      controls.current?.update();
-    };
-    reset();
-    const unsub = editor.interaction.subscribe((s, prev) => {
-      if (controls.current) controls.current.enabled = !s.dragging;
-      if (s.resetView !== prev.resetView) reset();
-    });
-    return unsub;
-  }, [camera]);
-  return (
-    <OrbitControls
-      ref={controls}
-      makeDefault
-      target={[0, 0.65, 0]}
-      minDistance={4.5}
-      maxDistance={17}
-      minPolarAngle={0.15}
-      maxPolarAngle={Math.PI / 2 - 0.08}
-      enableDamping
-      dampingFactor={0.09}
-      onChange={() => {
-        const orbit = controls.current;
-        if (!orbit) return;
-        const { x, y, z } = orbit.target;
-        // Keep the orbit target over the room's floor, inset slightly from the walls.
-        const floor = editor.context().room.floor.polygonXZ;
-        const xs = floor.map((p) => p[0]),
-          zs = floor.map((p) => p[1]);
-        orbit.target.set(
-          MathUtils.clamp(x, Math.min(...xs) + 0.8, Math.max(...xs) - 0.8),
-          MathUtils.clamp(y, 0.25, 1.4),
-          MathUtils.clamp(z, Math.min(...zs) + 0.7, Math.max(...zs) - 0.7),
-        );
-        camera.position.x += orbit.target.x - x;
-        camera.position.y += orbit.target.y - y;
-        camera.position.z += orbit.target.z - z;
-      }}
-    />
-  );
-}
+
 function Objects() {
   const accepted = useStore(editor.scene, (s) => s.scene);
   const draft = useStore(editor.draft, (s) => s.scene);

@@ -1,3 +1,4 @@
+import { CameraViewMenu } from "./CameraViewMenu";
 import { useStore } from "zustand";
 import { Box, Boxes, Scan, Sun, PanelsTopLeft } from "lucide-react";
 import { editor } from "../state/editor";
@@ -52,24 +53,20 @@ export function ViewControls() {
       >
         <Boxes size={19} />
       </Button>
-      {/* Visual only: plan view rendering is not built yet. */}
+      <CameraViewMenu />
       <Button
         label="2D plan view"
         className="round glass glass-button text-icon"
         active={planView}
         aria-pressed={planView}
-        onClick={() =>
-          editor.interaction.setState((s) => ({ planView: !s.planView }))
-        }
+        onClick={() => editor.requestView(planView ? "iso" : "top")}
       >
         2D
       </Button>
       <Button
         label="Fit room in view"
         className="round glass glass-button"
-        onClick={() =>
-          editor.interaction.setState((s) => ({ resetView: s.resetView + 1 }))
-        }
+        onClick={() => editor.requestView("room")}
       >
         <Scan size={18} />
       </Button>

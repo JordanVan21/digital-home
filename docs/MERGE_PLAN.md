@@ -9,7 +9,7 @@
 3. `docs/SESSION_NOTES.md`: environment, decisions and gotchas from the working sessions.
 4. `docs/COLLIDER_PRECISION.md`: the spec for the next step.
 
-**Next step: 10 (camera).** Steps 5, 7, 8 and 9 are complete: all checks green, 203 unit tests and 12 browser tests. Step 6 was skipped because all test2 pieces now validate without a soft-item exemption.
+**Next step: 11 (lamps and idle rendering).** Steps 5, 7–10 are complete: all checks green, 207 unit tests and 13 browser tests. Step 6 was skipped because all test2 pieces now validate without a soft-item exemption.
 
 **Handoff (2026-10-17):** Claude Code did steps 0–4. Codex continues from step 5 under the same rules.
 
@@ -60,7 +60,7 @@ Codex's interaction stays: controls, the suggest/Accept flow, nearest-surface pl
 - [x] **7 Lighting.** Jordan's day / golden hour / evening, with local HDRs (`public/hdr`), a sun fitted through the main opening, tone mapping and fog, mapped onto codex's `theme.ts` presets (`daylight`, `golden-hour`, `evening`; the fixtures already use these IDs). The accent and backdrop follow the preset.
 - [x] **8 Room shell.** Jordan's `RoomShellMesh`: wall modes cut-away / fade / show for camera-facing walls, glazed doors and windows (`glazing`), doorless openings, floor textures (`public/textures`), wall paint and floor finish from scene `appearance`. Hide or fade wall items on cut-down walls (the demo studio's painting floats today). Controls: wall mode in the round view controls; paint and floor in an inspector "Room" card when nothing is selected.
 - [x] **9 Warm light glass.** Tint codex's glass warm and light. Start from the tokens in `feature/3d-sandbox-merge` (`styles.css` `:root`, `ui/theme.ts`): cream fill `rgba(255,249,241,0.6)`, ink `#2b2520`, warm shadow `rgba(64,40,18,…)`, a terracotta accent per preset, more opaque glass on the evening backdrop.
-- [ ] **10 Camera.** drei 10 `CameraControls`: animated transitions, dolly-to-cursor, damping; views top / iso / eye / frame selection / frame room; walk mode. Furniture drags must keep priority (codex stops propagation on pointer-down). Replaces codex's OrbitControls and the step 1 target clamp.
+- [x] **10 Camera.** drei 10 `CameraControls`: animated transitions, dolly-to-cursor, damping; views top / iso / eye / frame selection / frame room; walk mode. Furniture drags must keep priority (codex stops propagation on pointer-down). Replaces codex's OrbitControls and the step 1 target clamp.
 - [ ] **11 Lamps.** Lamp and pendant lights with a shadow budget, emissive materials, on/off (`lightOn` contract field, `setLight` op). Render on demand when idle (`IdleFrameloop`) and add a `?perf` probe.
 
 ### Then: bonus features (adapt into codex's editor and gestures)

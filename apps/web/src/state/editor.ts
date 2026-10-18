@@ -37,8 +37,12 @@ import {
   type SceneRepository,
 } from "./repository";
 import { roomById } from "./rooms";
+export type CameraView = "iso" | "top" | "eye" | "selection" | "room" | "photo";
 export type Tool = "select" | "move" | "rotate";
 export type Interaction = {
+  cameraView: CameraView;
+  cameraRequest: number;
+  walk: boolean;
   wallMode: "cutaway" | "fade" | "show";
   selectedId: string | null;
   hoveredId: string | null;
@@ -165,6 +169,9 @@ export function createEditor(
     ready: !repository,
   }));
   const interaction = createStore<Interaction>(() => ({
+    cameraView: "iso",
+    cameraRequest: 0,
+    walk: false,
     selectedId: null,
     hoveredId: null,
     dragging: false,
@@ -193,6 +200,10 @@ export function createEditor(
   const motion = {
     transforms: new Map<string, Transform>(),
     wallVisibility: new Map<string, number>(),
+    cameraPosition: [7.2, 6.5, 8.3] as Vec3,
+    cameraDirection: [0, 0, -1] as Vec3,
+    cameraTarget: [0, 0.65, 0] as Vec3,
+    projectPoint: undefined as undefined | ((point: Vec3) => [number, number]),
   };
   const clearMotion = () => motion.transforms.clear();
   const previewMove = (id: string, transform: Transform) => {
@@ -436,6 +447,32 @@ export function createEditor(
   };
   const selected = () =>
     working().objects.find((o) => o.id === interaction.getState().selectedId);
+  const requestView = (view: CameraView): boolean => {
+    if (interaction.getState().dragging || !scene.getState().ready)
+      return false;
+    if (view === "selection" && !selected()) {
+      notify("Select a piece to frame.");
+      return false;
+    }
+    interaction.setState((s) => ({
+      cameraView: view,
+      cameraRequest: s.cameraRequest + 1,
+      planView:
+        view === "top" ||
+        ((view === "room" || view === "selection") && s.planView),
+      walk: false,
+    }));
+    return true;
+  };
+  const setWalk = (walk: boolean): boolean => {
+    if (interaction.getState().dragging || !scene.getState().ready)
+      return false;
+    interaction.setState((s) => ({
+      walk,
+      planView: walk ? false : s.planView,
+    }));
+    return true;
+  };
   const select = (id: string | null) =>
     interaction.setState({ selectedId: id });
   const rotate = (direction = 1) => {
@@ -647,6 +684,9 @@ export function createEditor(
     history.setState({ history: createHistory() });
     draft.setState(emptyDraft());
     interaction.setState({
+      cameraView: "iso",
+      walk: false,
+      planView: false,
       selectedId: null,
       hoveredId: null,
       dragging: false,
@@ -730,6 +770,8 @@ export function createEditor(
     hasDraft: () => draft.getState().scene !== null,
     selected,
     select,
+    requestView,
+    setWalk,
     rotate,
     setYaw,
     remove,

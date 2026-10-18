@@ -105,3 +105,11 @@ For subsequent local browser runs use `HOUSE_BROWSER_GPU=1 HOUSE_E2E_PORT=5185 H
 ## Step 9 completed
 
 Warm cream glass, warm ink/shadows, higher evening opacity and readable secondary text. A browser contrast regression failed before (2.64:1 in Golden hour) and passes across all three presets now. All checks green: 203 unit tests, 12 GPU browser tests (1.1 minutes), format/typecheck/lint/build. Visual review: `docs/review/STEP_9.md`. Next: CameraControls and views/walk, preserving Codex drag priority.
+
+## Step 10 completed
+
+CameraControls, smooth views, dolly-to-cursor, selection/room framing, eye/top/isometric views, and P/WASD/Escape walk mode. Initial living-room camera remains exactly [7.2,6.5,8.3] aimed at [0,.65,0], preserving existing real-mouse browser tests. Motion exposes transient camera position/direction/target and projection for later keyboard/marquee features. All checks passed: 207 unit tests, 13 GPU browser tests (1.1 minutes), build/typecheck/lint/format. Review: `docs/review/STEP_10.md`.
+
+CameraControls boundaryEnclosesCamera must stay off during walk entry and turn on at rest; enabling it immediately caused an 8.7 m single-frame jump, caught by the new browser test. View popovers need a higher stacking order than the inspector. Framing uses fitToSphere to retain viewing direction.
+
+The original 5185 server stopped during this step. A persistent Vite server is now running through exec session 80119, from this worktree’s apps/web on 5185. Keep it running. Browser commands must always set HOUSE_E2E_PORT=5185, HOUSE_BROWSER_GPU=1, and the system Chrome path.
