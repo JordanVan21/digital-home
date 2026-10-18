@@ -12,11 +12,14 @@ export default defineConfig({
     headless: true,
     launchOptions: {
       executablePath: process.env.HOUSE_BROWSER_EXECUTABLE,
-      args: [
-        "--enable-webgl",
-        "--use-angle=swiftshader",
-        "--enable-unsafe-swiftshader",
-      ],
+      args:
+        process.env.HOUSE_BROWSER_GPU === "1"
+          ? ["--use-angle=metal", "--enable-gpu", "--ignore-gpu-blocklist"]
+          : [
+              "--enable-webgl",
+              "--use-angle=swiftshader",
+              "--enable-unsafe-swiftshader",
+            ],
     },
   },
   webServer: {

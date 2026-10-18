@@ -95,3 +95,9 @@ The user approved finishing all remaining merge steps autonomously, including co
 Local CC0 HDRs, room-relative sunlight through the largest glazed opening, fitted shadows, daylight / golden-hour / evening, and preset accent/backdrop are in place. All checks passed: format, typecheck, lint, 196 unit tests, build, 10 browser tests (3.8 minutes), and M4 GPU images in `docs/review/STEP_7.md`. Preserve Golden hour → Daylight → Evening for the lighting button.
 
 Do not format or edit app source while Playwright runs against Vite: HMR can detach a button mid-click. A clean, unchanged-server rerun passed the chair stack test that a live reload had interrupted. Prepare the next feature in `/tmp` while browser checks finish.
+
+## Step 8 completed
+
+Glazing/open doorways, local PBR floor finishes, paint, Cut away / Fade / Show, wall-item visibility and click-through, and the Room inspector are complete. `setAppearance` is a schema-typed room-wide suggestion; scene diffs now include `appearanceChanged`. All checks pass: 203 unit tests, 11 browser tests, build, typecheck, lint and format. Visual review: `docs/review/STEP_8.md`.
+
+For subsequent local browser runs use `HOUSE_BROWSER_GPU=1 HOUSE_E2E_PORT=5185 HOUSE_BROWSER_EXECUTABLE="/Applications/Google Chrome.app/Contents/MacOS/Google Chrome" pnpm test:browser`. This opt-in uses the verified Apple M4 Metal backend and ran 11 tests in 57.5 s. Without the GPU flag, the original SwiftShader configuration remains available. Keep app source unchanged during the browser suite.

@@ -133,6 +133,8 @@ Poly Haven imports preserve original PBR materials and meter scale, embed 1K tex
 
 31. Lighting presets use local CC0 HDRs imported from Jordan’s branch, with credits in `public/hdr/SOURCE.md`. Daylight, Golden hour and Evening fit their sun and shadow camera to the active room’s main glazed opening. The familiar Golden hour → Daylight first click remains; Evening follows Daylight. Presets also drive the backdrop and accent. ACES tone mapping stays in the existing canvas.
 
+32. Room shell rendering keeps Codex’s low cut-away height and adds Fade / Show modes, Jordan’s glazing and local CC0 floor textures. Wall-mounted items hide and stop intercepting clicks with cut-away walls. Per-scene paint and floor finish use the additive `setAppearance` contract op through suggestions, Accept, undo and save; room-only edits appear in the change list. Legacy appearance strings still parse; new paint ops require six-digit hex colors. Texture credits are in `public/textures/SOURCE.md`.
+
 ## Verification and known gaps
 
 - The required build, test, typecheck, and lint commands pass. The test suite covers fixture parsing, shipped-file/license coverage, the fixture triangle budget, all operations, locks, rotated/concave bounds, SAT touching/overlap, occupancy exemptions, door clearance, inverse/history behavior, drag commit/rejection/cancel (including GPU-free tests of the actual canvas handler, live red feedback, spring-back, and no model rerenders during pointer movement), autosave debounce/serialization/retry, stale/concurrent saves, reset/recovery, and accessible locked controls.

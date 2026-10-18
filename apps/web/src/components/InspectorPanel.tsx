@@ -1,3 +1,4 @@
+import { RoomInspector } from "./RoomInspector";
 import { useStore } from "zustand";
 import {
   ArrowDownToLine,
@@ -28,7 +29,8 @@ export function InspectorPanel() {
   const acceptedScene = useStore(editor.scene, (s) => s.scene);
   const tool = useStore(editor.interaction, (s) => s.tool);
   const asset = object?.assetId ? assetById[object.assetId] : undefined;
-  if (!open || !object) return null;
+  if (!open) return null;
+  if (!object) return <RoomInspector />;
   const angles = rotationDegrees(object.transform.rotation);
   const setAngles = (next: typeof angles) =>
     editor.suggest({

@@ -50,6 +50,7 @@ const pointer = (x: number, z: number, clientX = 100) => ({
   },
 });
 beforeEach(() => {
+  editor.motion.wallVisibility.clear();
   editor.scene.setState({ scene: createFixtureScene(), ready: true });
   editor.history.setState({ history: createHistory() });
   editor.discard();
@@ -699,4 +700,24 @@ describe("tilted decor", () => {
     expect(size.y).toBeCloseTo(0.03, 6);
     expect(size.z).toBeCloseTo(0.26, 6);
   });
+});
+
+it("hides wall items and lets clicks pass through them when their wall is cut away", async () => {
+  const object = editor.working().objects.find((o) => o.id === fixtureId(111))!;
+  const wall = editor.context().room.walls[0].id;
+  object.placement = { support: "wall", parentId: wall };
+  editor.motion.wallVisibility.set(wall, 0);
+  renderer = await ReactThreeTestRenderer.create(<Furniture object={object} />);
+  const node = renderer.scene.children[0];
+  await renderer.advanceFrames(1, 0.016);
+  expect(node.instance.visible).toBe(false);
+  const event = { ...pointer(0.2, 1.75), stopPropagation: vi.fn() };
+  await renderer.fireEvent(node, "pointerDown", event);
+  expect(editor.interaction.getState().dragging).toBe(false);
+  expect(editor.interaction.getState().selectedId).toBe(null);
+  expect(event.stopPropagation).not.toHaveBeenCalled();
+  editor.motion.wallVisibility.set(wall, 1);
+  await renderer.advanceFrames(1, 0.016);
+  expect(node.instance.visible).toBe(true);
+  editor.motion.wallVisibility.delete(wall);
 });

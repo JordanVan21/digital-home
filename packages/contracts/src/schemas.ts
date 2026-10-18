@@ -225,6 +225,19 @@ export const AssetSpecSchema = z.object({
   embeddingVersion: z.string().optional(),
 });
 export const SceneOpSchema = z.discriminatedUnion("type", [
+  z.object({
+    type: z.literal("setAppearance"),
+    appearance: SceneAppearanceSchema.extend({
+      wallColor: z
+        .string()
+        .regex(/^#[0-9a-fA-F]{6}$/)
+        .optional(),
+      trimColor: z
+        .string()
+        .regex(/^#[0-9a-fA-F]{6}$/)
+        .optional(),
+    }).optional(),
+  }),
   z.object({ type: z.literal("add"), object: SceneObjectSchema }),
   z.object({ type: z.literal("delete"), objectId: UUIDSchema }),
   z.object({

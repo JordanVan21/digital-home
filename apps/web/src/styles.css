@@ -1139,3 +1139,22 @@ kbd {
     padding: 12px;
   }
 }
+
+.inspector select {
+  max-width: 145px;
+  border: 1px solid var(--glass-edge);
+  border-radius: 8px;
+  padding: 6px;
+  color: var(--ink);
+  background: var(--glass-inset);
+  font: inherit;
+}
+.inspector input[type="color"] {
+  width: 42px;
+  height: 28px;
+  border: 1px solid var(--glass-edge);
+  border-radius: 8px;
+  padding: 2px;
+  background: var(--glass-inset);
+  cursor: pointer;
+}

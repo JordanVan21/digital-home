@@ -174,6 +174,7 @@ export function validateOp(
       return fail("DUPLICATE_ID", "This object is already in the room.");
     return validateObject(scene, op.object, ctx, options);
   }
+  if (op.type === "setAppearance") return { ok: true };
   const id = op.type === "replacePhysicalItem" ? op.oldObjectId : op.objectId;
   const obj = scene.objects.find((o) => o.id === id);
   if (!obj)
@@ -255,6 +256,12 @@ export function applyOp(
 ): ApplyResult {
   const valid = validateOp(scene, op, ctx, options);
   if (!valid.ok) return valid;
+  if (op.type === "setAppearance") {
+    const next = { ...scene, revision: scene.revision + 1 };
+    if (op.appearance === undefined) delete next.appearance;
+    else next.appearance = structuredClone(op.appearance);
+    return { ok: true, scene: next };
+  }
   let objects: SceneObject[];
   if (op.type === "add")
     objects = [...scene.objects, structuredClone(op.object)];
@@ -303,6 +310,11 @@ export function applyOp(
 export type Checkpoint = { type: "checkpoint"; scene: SceneSpec };
 export type Inverse = SceneOp | Checkpoint;
 export function invertOp(before: SceneSpec, op: SceneOp): Inverse {
+  if (op.type === "setAppearance")
+    return {
+      type: "setAppearance",
+      appearance: structuredClone(before.appearance),
+    };
   if (op.type === "add") return { type: "delete", objectId: op.object.id };
   const id = op.type === "replacePhysicalItem" ? op.oldObjectId : op.objectId;
   const obj = before.objects.find((o) => o.id === id);

@@ -5,6 +5,7 @@ import { editor, type Change, type ChangeKind } from "../state/editor";
 import { Button } from "./Button";
 
 const kindLabel: Record<ChangeKind, string> = {
+  updated: "Updated",
   moved: "Moved",
   rotated: "Rotated",
   replaced: "Replaced",
@@ -12,6 +13,7 @@ const kindLabel: Record<ChangeKind, string> = {
   removed: "Removed",
 };
 const order: ChangeKind[] = [
+  "updated",
   "moved",
   "rotated",
   "replaced",

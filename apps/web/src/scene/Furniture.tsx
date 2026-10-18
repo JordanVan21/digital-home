@@ -157,6 +157,13 @@ export const Furniture = memo(function Furniture({
         .invert()
         .multiply(ringQuat);
     }
+    if (g) {
+      const wall =
+        latest.current.placement?.support === "wall"
+          ? latest.current.placement.parentId
+          : undefined;
+      g.visible = !wall || (editor.motion.wallVisibility.get(wall) ?? 1) > 0.2;
+    }
     const invalid = state.mode ? !state.valid : conflict;
     if (
       outline.current &&
@@ -211,7 +218,16 @@ export const Furniture = memo(function Furniture({
       state.offset.copy(state.point).sub(new Vector3(...current.position));
   };
   // ----- Move: drag across the floor -----
+  const hiddenByWall = () => {
+    const p = latest.current.placement;
+    return (
+      p?.support === "wall" &&
+      !!p.parentId &&
+      (editor.motion.wallVisibility.get(p.parentId) ?? 1) <= 0.2
+    );
+  };
   const down = (e: ThreeEvent<PointerEvent>) => {
+    if (hiddenByWall()) return;
     if (e.button !== 0 || !editor.scene.getState().ready) return;
     e.stopPropagation();
     editor.select(object.id);
@@ -304,6 +320,7 @@ export const Furniture = memo(function Furniture({
     return Math.atan2(drag.current.point.x - cx, drag.current.point.z - cz);
   };
   const ringDown = (e: ThreeEvent<PointerEvent>) => {
+    if (hiddenByWall()) return;
     if (e.button !== 0 || latest.current.locked) return;
     e.stopPropagation();
     const angle = pointerAngle(e);
@@ -384,6 +401,7 @@ export const Furniture = memo(function Furniture({
         onPointerUp={up}
         onPointerCancel={() => endGesture()}
         onPointerOver={(e) => {
+          if (hiddenByWall()) return;
           e.stopPropagation();
           if (!editor.interaction.getState().dragging)
             editor.interaction.setState({ hoveredId: object.id });

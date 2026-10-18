@@ -4,6 +4,7 @@ import type { SceneObject, SceneSpec } from "@house/contracts";
 import { validateObject, type SceneContext } from "./operations";
 
 export type SceneDiff = {
+  appearanceChanged: boolean;
   untouched: string[];
   changed: string[];
   added: string[];
@@ -28,6 +29,13 @@ export function diffScenes(accepted: SceneSpec, draft: SceneSpec): SceneDiff {
   const before = new Map(accepted.objects.map((o) => [o.id, o]));
   const after = new Set(draft.objects.map((o) => o.id));
   const diff: SceneDiff = {
+    appearanceChanged: ["wallColor", "trimColor", "floorMaterial"].some(
+      (key) =>
+        accepted.appearance?.[
+          key as keyof NonNullable<SceneSpec["appearance"]>
+        ] !==
+        draft.appearance?.[key as keyof NonNullable<SceneSpec["appearance"]>],
+    ),
     untouched: [],
     changed: [],
     added: [],
@@ -191,6 +199,8 @@ export function resolveDraft(
   if (unresolved.length) return { ok: false, unresolved };
   for (const id of diff.removed)
     report.push({ objectId: id, outcome: "removed" });
+  if (diff.appearanceChanged)
+    report.push({ objectId: draft.roomId, outcome: "applied" });
   return {
     ok: true,
     scene: {

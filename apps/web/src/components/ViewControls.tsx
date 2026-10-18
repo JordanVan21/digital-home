@@ -1,5 +1,5 @@
 import { useStore } from "zustand";
-import { Box, Boxes, Scan, Sun } from "lucide-react";
+import { Box, Boxes, Scan, Sun, PanelsTopLeft } from "lucide-react";
 import { editor } from "../state/editor";
 import { nextPreset, useLighting } from "../theme";
 import { Button } from "./Button";
@@ -7,6 +7,7 @@ import { Button } from "./Button";
 /** Round view buttons on the right edge: lighting preset, plan view, fit view. */
 export function ViewControls() {
   const light = useLighting();
+  const wallMode = useStore(editor.interaction, (s) => s.wallMode);
   const boundingBoxes = useStore(editor.interaction, (s) => s.boundingBoxes);
   const planView = useStore(editor.interaction, (s) => s.planView);
   return (
@@ -21,6 +22,22 @@ export function ViewControls() {
         }}
       >
         <Sun size={19} />
+      </Button>
+      <Button
+        label={`Walls: ${wallMode === "cutaway" ? "Cut away" : wallMode === "fade" ? "Fade" : "Show"}`}
+        className="round glass glass-button"
+        onClick={() =>
+          editor.interaction.setState({
+            wallMode:
+              wallMode === "cutaway"
+                ? "fade"
+                : wallMode === "fade"
+                  ? "show"
+                  : "cutaway",
+          })
+        }
+      >
+        <PanelsTopLeft size={19} />
       </Button>
       <Button
         label="Bounding boxes"

@@ -39,6 +39,7 @@ import {
 import { roomById } from "./rooms";
 export type Tool = "select" | "move" | "rotate";
 export type Interaction = {
+  wallMode: "cutaway" | "fade" | "show";
   selectedId: string | null;
   hoveredId: string | null;
   dragging: boolean;
@@ -70,7 +71,13 @@ export type Draft = {
   /** Pieces the last accept moved to fit, for a brief highlight. */
   resolved: string[];
 };
-export type ChangeKind = "moved" | "rotated" | "replaced" | "added" | "removed";
+export type ChangeKind =
+  | "updated"
+  | "moved"
+  | "rotated"
+  | "replaced"
+  | "added"
+  | "removed";
 export type Change = {
   id: string;
   kind: ChangeKind;
@@ -173,6 +180,7 @@ export function createEditor(
     planView: false,
     measurements: false,
     boundingBoxes: false,
+    wallMode: "cutaway",
   }));
   const history = createStore<{ history: History }>(() => ({
     history: createHistory(),
@@ -182,7 +190,10 @@ export function createEditor(
   /** The scene the user sees and edits: the draft if any, else the accepted room. */
   const working = () => draft.getState().scene ?? scene.getState().scene;
   // Transient transforms are read by the frame loop; pointer moves never notify React.
-  const motion = { transforms: new Map<string, Transform>() };
+  const motion = {
+    transforms: new Map<string, Transform>(),
+    wallVisibility: new Map<string, number>(),
+  };
   const clearMotion = () => motion.transforms.clear();
   const previewMove = (id: string, transform: Transform) => {
     const before = working();
@@ -201,7 +212,11 @@ export function createEditor(
     // A draft with no remaining differences is no draft at all.
     const d = next && diffScenes(accepted, next);
     const empty =
-      !d || (!d.changed.length && !d.added.length && !d.removed.length);
+      !d ||
+      (!d.changed.length &&
+        !d.added.length &&
+        !d.removed.length &&
+        !d.appearanceChanged);
     const value = empty ? null : next;
     draft.setState({
       scene: value,
@@ -318,6 +333,13 @@ export function createEditor(
   const revertPiece = (id: string) => {
     const current = draft.getState().scene;
     if (!current) return;
+    if (id === current.roomId) {
+      setDraft(
+        { ...current, appearance: scene.getState().scene.appearance },
+        { undo: [...draft.getState().undo, current], redo: [] },
+      );
+      return;
+    }
     const original = scene.getState().scene.objects.find((o) => o.id === id);
     let objects: SceneObject[];
     const root = current.objects.find((o) => o.id === id);
@@ -376,6 +398,12 @@ export function createEditor(
     const { conflicts } = draft.getState();
     const d = diffScenes(accepted, proposed);
     const rows: Change[] = [];
+    if (d.appearanceChanged)
+      rows.push({
+        id: proposed.roomId,
+        kind: "updated",
+        name: "Room finishes",
+      });
     for (const o of proposed.objects) {
       const prev = before.get(o.id);
       if (!prev) {
