@@ -29,8 +29,21 @@ import { labelLayer } from "../scene/labelLayer";
 import { modelKey, modelStatuses, type ModelStatuses } from "./modelStatus";
 
 export type CaptureApi = { capture: () => Promise<RoomView[]> };
-const frame = () =>
-  new Promise<void>((resolve) => requestAnimationFrame(() => resolve()));
+/**
+ * Waits `n` frames so React and three can commit. Hidden tabs stop sending
+ * animation frames, so there a timer stands in: captures draw each view
+ * explicitly with gl.render, so generation keeps going in a background tab.
+ */
+export const frames = (n = 1) =>
+  new Promise<void>((resolve) => {
+    if (document.hidden) {
+      setTimeout(resolve, n * 16);
+      return;
+    }
+    let left = n;
+    const tick = () => (--left <= 0 ? resolve() : requestAnimationFrame(tick));
+    requestAnimationFrame(tick);
+  });
 
 function Capture({
   scene: snapshot,
@@ -81,9 +94,9 @@ function Capture({
               ).includes("loading")) &&
             Date.now() < until
           )
-            await frame();
+            await frames();
           // Give mounted GLBs and material effects time to commit, including a just-changed candidate.
-          for (let n = 0; n < 8; n++) await frame();
+          await frames(8);
           const views: RoomView[] = [];
           for (const name of ["top", "angle-a", "angle-b"] as const) {
             const direction =
@@ -100,7 +113,7 @@ function Capture({
             controls.current?.target.set(cx, 0.4, cz);
             controls.current?.update();
             camera.lookAt(cx, 0.4, cz);
-            for (let n = 0; n < 4; n++) await frame();
+            await frames(4);
             gl.render(scene, camera);
             views.push(
               captureView(gl, scene, camera, snapshot, name, loaded.current),

@@ -29,7 +29,7 @@ import {
 } from "../state/cloud";
 import { CloudAccount } from "../components/CloudAccount";
 import type { ModelStatuses } from "./modelStatus";
-import { PlannerViewport, type CaptureApi } from "./PlannerViewport";
+import { PlannerViewport, frames, type CaptureApi } from "./PlannerViewport";
 import "./planner.css";
 
 type Result = LoopState & { id: string; mode?: "live" | "demo" };
@@ -330,9 +330,7 @@ export default function PlannerLab() {
           `Capturing three views for visual review${next.repairs ? ` after repair ${next.repairs}` : ""}…`,
         );
         // React must commit the candidate before its capture handle is read.
-        await new Promise<void>((resolve) =>
-          requestAnimationFrame(() => requestAnimationFrame(() => resolve())),
-        );
+        await frames(2);
         const candidateViews = await capture.current!.capture();
         captured.set(next.candidate.id, candidateViews);
         setViews(candidateViews);
