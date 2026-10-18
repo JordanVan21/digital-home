@@ -9,7 +9,7 @@
 3. `docs/SESSION_NOTES.md`: environment, decisions and gotchas from the working sessions.
 4. `docs/COLLIDER_PRECISION.md`: the spec for the next step.
 
-**Remaining merge steps are being implemented; full verification runs at the end.** Step 6 was skipped because all test2 pieces now validate without a soft-item exemption.
+**All merge steps are implemented. Final verification and comparison: `docs/review/MERGE_COMPLETE.md`.** Step 6 was skipped because all test2 pieces now validate without a soft-item exemption.
 
 **Handoff (2026-10-17):** Claude Code did steps 0–4. Codex continues from step 5 under the same rules.
 
@@ -23,7 +23,8 @@ Codex's interaction stays: controls, the suggest/Accept flow, nearest-surface pl
 
 - **One feature per commit.** Write tests first for engine and editor logic, and run them red before implementing.
 - **Autonomous continuation approved by the user (2026-10-17):** finish the merge and commit without further approval prompts. Never push. Compare the completed build with both reference versions.
-- **After each step, run every check:** `pnpm format`, `typecheck`, `lint`, `test`, `build`, and the browser suite. For the browser suite, set `HOUSE_E2E_PORT=5185` and `HOUSE_BROWSER_EXECUTABLE` to the system Chrome (see SESSION_NOTES).
+- **User-approved faster workflow (2026-10-18):** focused checks while implementing steps 18–27, then the complete check suite at the end.
+- **Final complete checks:** `pnpm format`, `typecheck`, `lint`, `test`, `build`, and the browser suite. For the browser suite, set `HOUSE_E2E_PORT=5185` and `HOUSE_BROWSER_EXECUTABLE` to the system Chrome (see SESSION_NOTES).
 - **Verify in GPU Chrome and compare against the original codex** at `127.0.0.1:5182`.
 - **Explain each finished step plainly:** what the user will *see* differently, with a before/after screenshot when it is visual. Keep summaries short.
 - **When a choice between versions is unclear, pick on UX,** and say which you picked and why.
@@ -80,8 +81,8 @@ Codex's interaction stays: controls, the suggest/Accept flow, nearest-surface pl
 - [x] **25 Dev menu:** simulate a save failure, simulate an edit from another session, reset room.
 
 ### Last: plumbing for the agent connection
-- [ ] **26 Patch-based saving.** Accept emits a validated contract patch (`diffToOps` from `feature/3d-sandbox-merge` `packages/scene-engine/src/draft.ts`) and saves it with `saveScenePatch(roomId, baseRevision, idempotencyKey, operations)`: revision CAS, idempotent retry, conflict state. Keep codex's autosave UX.
-- [ ] **27 Schema-typed edit log panel** (`opLog.ts`, `EditLogPanel.tsx` from the first merge attempt, extended to the op set).
+- [x] **26 Patch-based saving.** Accept emits a validated contract patch (`diffToOps` from `feature/3d-sandbox-merge` `packages/scene-engine/src/draft.ts`) and saves it with `saveScenePatch(roomId, baseRevision, idempotencyKey, operations)`: revision CAS, idempotent retry, conflict state. Keep codex's autosave UX.
+- [x] **27 Schema-typed edit log panel** (`opLog.ts`, `EditLogPanel.tsx` from the first merge attempt, extended to the op set).
 
 ### Never port
 Jordan's block-and-slide collision and snap-back, wireframe selection boxes and corner dots, the translate gizmo, floating "Hits X" labels, per-frame batched drag updates, relative rotation snapping, gravity on release while suggesting, falling-only gravity on Accept. Do not use `feature/3d-sandbox-merge`'s interaction code as a reference.

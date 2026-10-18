@@ -174,3 +174,13 @@ Step 23: drop library assets onto floor and occupied surfaces; complete checks a
 Step 24: add reference photo overlay and matching camera; complete checks and visual review pending final integration.
 
 Step 25: add local persistence failure and conflict simulations; complete checks and visual review pending final integration.
+
+## Final integration: steps 18–27
+
+The user requested faster implementation and explicitly approved focused checks with the full suite at the end. Resize, Float, finishes, planning, replacement ranking, library drop, photo matching, development actions, patch saving and typed logs are implemented. Native HTML dragging stalled in system Chrome automation; the library now uses captured pointer gestures with one React state change at the drag threshold, an imperative label preview, and the same occupied-face drop query. Furniture gesture semantics remain unchanged.
+
+Patch saving is atomic local storage with Web Locks, revision CAS, bounded retry receipts, and queued/idempotent retry after a lost acknowledgement. Accepted scene revisions synchronize on acknowledgement if no later local edit exists. Browser-state repository tests use jsdom rather than Node 25’s global Web Locks. The chair-stack browser fixture now seeds storage and calls load instead of mutating an acknowledged scene’s display name behind persistence.
+
+Final review and comparison: `docs/review/MERGE_COMPLETE.md`. No push.
+
+Final verification passed: format, typecheck, lint, 237 unit tests, build, all 24 GPU browser tests (1.9 minutes). Final code commits: `19fad57` patch persistence and `1c2ce65` typed log/integration. Screenshots and comparison are in `docs/review/MERGE_COMPLETE.md`. Recommendation: completed merge. New FPS benchmarks and human subjective feel comparison were not performed. All changes remain in this worktree; no push.
