@@ -4,3 +4,4 @@ export * from "./asset";
 export * from "./scene";
 export * from "./design";
 export * from "./budget";
+export * from "./assetRequest";
