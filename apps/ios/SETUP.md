@@ -61,6 +61,21 @@ contain the reproducible app settings and camera permission text.
 For this first checkpoint, report whether House opens unplugged and whether any signing/install error
 appears. Scanning and Finish/Cancel verification are the next step. RoomPlan does not work in the Simulator.
 
+### Checkpoint 2: Finish, Cancel and interruptions
+
+Install the latest source with Command-R using the same generated project (no regeneration needed),
+stop the debugger, unplug and launch House. Test these on the phone:
+
+1. Tap **Start scan**. Expect Apple's live view/coaching plus Single room, Cancel, guidance and Finish scan.
+2. Tap **Cancel > Keep scanning**. The scan should continue. Then **Cancel > Discard scan**; expect the start screen.
+3. Scan a small furnished room with a door/window, then **Finish scan**. Expect processing followed by counts;
+   even a low-quality result should offer JSON sharing. Start a new scan and repeat to verify a clean session.
+4. Start another scan and go to the Home Screen, then return. Expect an interruption message and a way to
+   start a fresh scan, without an old result appearing over it. Do not expect unfinished-scan persistence yet.
+
+If processing lasts long enough, also test Cancel during **Building your room…**; it should discard that
+attempt and keep its late result from appearing. Report any unexpected screen or error before advancing.
+
 To repeat the unsigned build and existing tests from `apps/ios`:
 
 ```sh

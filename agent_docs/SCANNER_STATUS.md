@@ -140,3 +140,14 @@ This update supersedes the initial read-through's build/tooling status above.
 - Raw syntax/UUID/matrix/dimension checks pass. Importer execution has not been verified here; pnpm/dependencies are absent.
 - Real data resolves an earlier unknown: floor polygon corners are surface-local, while the current version 1 importer fallback treats them as world-space. This is a documented downstream integration fix; preserve source data and correct the fallback with a regression check during integration.
 - Still required: explicit unplugged-launch confirmation, remaining phone checkpoints, and the second real scan.
+
+## Checkpoint 2 — single-room controls (2026-10-18)
+
+- User confirmed House reopens and starts scanning unplugged. Checkpoint 1 is accepted.
+- Added clear capture guidance, explicit Finish and confirmed Cancel/Discard controls during capture or processing. Kept Apple's coaching enabled and its internal session delegate intact.
+- Capture attempts have individual IDs and a lock-protected lifecycle: repeat Finish does not stop twice, a cancelled capture cannot deliver a result/error, and duplicate callbacks are ignored. Delegate result delivery hops to the main actor; the model also rejects callbacks from old attempts.
+- Backgrounding/locking during capture interrupts it with a restart message. Foreground permission checks no longer reset completed results or an active capture. Sharing is available even for captures that fail the upload quality gate.
+- iPhone-target app build passes with the currently installed Xcode 27.1 SDK. All 5 Swift tests pass, including cancellation during capture/processing, duplicate completion, and starting an independent new attempt after cancellation.
+- Second genuine AirDrop capture received and saved unchanged as `apps/ios/Fixtures/real-scan-2.json`; raw structural validation passes. Contains 4 walls, 3 doors, 3 windows, 1 floor, 9 objects. Two genuine captures now exist; room identity/simple-versus-larger coverage is not confirmed.
+- Awaiting phone verification of the updated capture controls. Next test: install with Command-R, unplug; test Keep scanning and Discard; scan a small furnished room and Finish; background a new capture and verify a clear restart message, then start again.
+- Durable saving/preview/list, version 2 export, house capture, diagnostic log and uploader placeholder remain later checkpoints. Current real fixtures are version 1.

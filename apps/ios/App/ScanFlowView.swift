@@ -4,7 +4,8 @@ struct ScanFlowView: View {
     @StateObject private var model = ScanModel()
     @AppStorage("uploadURL") private var uploadURL = ""
     @AppStorage("uploadToken") private var uploadToken = ""
-    @State private var stopRequested = false
+    @Environment(\.scenePhase) private var scenePhase
+    @State private var showCancelConfirmation = false
     @State private var showShare = false
 
     var body: some View {
@@ -24,22 +25,45 @@ struct ScanFlowView: View {
             case .ready:
                 VStack(spacing: 20) {
                     message("Scan your room", "Walk slowly around the room's edges, pointing the camera at walls, doors, windows and furniture. Finish where you started.")
-                    Button("Start scan") { stopRequested = false; model.phase = .scanning }
+                    Button("Start scan") { model.startCapture() }
                         .buttonStyle(.borderedProminent).controlSize(.large)
                     settings
                 }
             case .scanning, .processing:
-                ZStack(alignment: .bottom) {
-                    RoomCaptureViewRepresentable(stopRequested: $stopRequested,
-                                                 onResult: { model.didFinishCapture($0) },
-                                                 onError: { model.captureFailed($0) })
+                if let captureID = model.captureID {
+                    RoomCaptureViewRepresentable(stopRequested: model.phase == .processing,
+                                                 onResult: { model.didFinishCapture($0, captureID: captureID) },
+                                                 onError: { model.captureFailed($0, captureID: captureID) })
+                        .id(captureID)
                         .ignoresSafeArea()
-                    if model.phase == .scanning {
-                        Button("Finish scan") { model.phase = .processing; stopRequested = true }
-                            .buttonStyle(.borderedProminent).controlSize(.large).padding(.bottom, 32)
-                    } else {
-                        ProgressView("Building your room…").padding().background(.regularMaterial, in: Capsule()).padding(.bottom, 32)
-                    }
+                        .safeAreaInset(edge: .top) {
+                            HStack {
+                                Text("Single room").font(.headline)
+                                Spacer()
+                                Button("Cancel", role: .cancel) { showCancelConfirmation = true }
+                                    .buttonStyle(.bordered)
+                            }
+                            .padding().background(.regularMaterial)
+                        }
+                        .safeAreaInset(edge: .bottom) {
+                            VStack(spacing: 12) {
+                                if model.phase == .scanning {
+                                    Text("Walk slowly. Scan every wall, then doors, windows and furniture. Finish where you started.")
+                                        .font(.callout).multilineTextAlignment(.center)
+                                    Button("Finish scan") { model.finishCapture() }
+                                        .buttonStyle(.borderedProminent).controlSize(.large)
+                                } else {
+                                    ProgressView("Building your room…")
+                                    Text("Keep House open while your scan is processed.").font(.caption)
+                                }
+                            }
+                            .frame(maxWidth: .infinity).padding().background(.regularMaterial)
+                        }
+                        .confirmationDialog("Discard this unfinished scan?", isPresented: $showCancelConfirmation,
+                                            titleVisibility: .visible) {
+                            Button("Discard scan", role: .destructive) { model.cancelCapture() }
+                            Button("Keep scanning", role: .cancel) {}
+                        }
                 }
             case .review(let summary, let hint, let uploadable):
                 VStack(spacing: 16) {
@@ -50,9 +74,11 @@ struct ScanFlowView: View {
                         Button("Upload to desktop") { Task { await model.upload(to: uploadURL, token: uploadToken) } }
                             .buttonStyle(.borderedProminent).controlSize(.large)
                             .disabled(uploadURL.isEmpty)
-                        Button("Share scan file (AirDrop)") { showShare = true }
                     }
-                    Button("Scan again") { model.phase = .ready }
+                    // Even incomplete scans are useful for diagnosis and must be shareable.
+                    Button("Share scan file (AirDrop)") { showShare = true }
+                        .disabled(model.exportURL == nil)
+                    Button("Scan again") { model.returnToStart() }
                     settings
                 }
                 .padding()
@@ -63,18 +89,25 @@ struct ScanFlowView: View {
             case .uploaded:
                 VStack(spacing: 16) {
                     message("Uploaded", "Open House on your computer to see your room.")
-                    Button("Scan another room") { model.phase = .ready }
+                    Button("Scan another room") { model.returnToStart() }
                 }
             case .failed(let text):
                 VStack(spacing: 16) {
                     message("Something went wrong", text)
                     Button("Try again") { model.retryFromReview() }.buttonStyle(.borderedProminent)
-                    Button("Start over") { model.phase = .ready }
+                    Button("Start over") { model.returnToStart() }
                 }
             }
         }
-        .padding()
+        .padding(model.isCapturing ? 0 : 20)
         .task { await model.checkAvailability() }
+        .onChange(of: scenePhase) { _, phase in
+            if phase == .background { model.captureWasBackgrounded() }
+            if phase == .active { Task { await model.checkAvailability() } }
+        }
+        .onChange(of: model.phase) { _, _ in
+            if !model.isCapturing { showCancelConfirmation = false }
+        }
     }
 
     private var settings: some View {

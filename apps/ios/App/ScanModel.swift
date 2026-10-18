@@ -21,10 +21,13 @@ final class ScanModel: ObservableObject {
     }
 
     @Published var phase: Phase = .checking
+    private(set) var captureID: UUID?
     private(set) var scan: RawRoomScan?
     private(set) var exportURL: URL?
 
     func checkAvailability() async {
+        // Returning from Settings/share sheets must not reset an active result or scan.
+        guard phase == .checking || phase == .cameraDenied || phase == .ready else { return }
         guard RoomCaptureSession.isSupported else { phase = .unsupported; return }
         switch AVCaptureDevice.authorizationStatus(for: .video) {
         case .authorized: phase = .ready
@@ -33,7 +36,41 @@ final class ScanModel: ObservableObject {
         }
     }
 
-    func didFinishCapture(_ room: CapturedRoom) {
+    var isCapturing: Bool { phase == .scanning || phase == .processing }
+
+    func startCapture() {
+        guard phase == .ready else { return }
+        scan = nil
+        exportURL = nil
+        captureID = UUID()
+        phase = .scanning
+    }
+
+    func finishCapture() {
+        guard phase == .scanning else { return }
+        phase = .processing
+    }
+
+    func cancelCapture() {
+        guard isCapturing else { return }
+        captureID = nil
+        phase = .ready
+    }
+
+    func captureWasBackgrounded() {
+        guard isCapturing else { return }
+        captureID = nil
+        phase = .failed("Scanning was interrupted when House left the screen. Keep House open and your iPhone unlocked while scanning, then start a new scan.")
+    }
+
+    func returnToStart() {
+        captureID = nil
+        phase = .ready
+    }
+
+    func didFinishCapture(_ room: CapturedRoom, captureID: UUID) {
+        guard self.captureID == captureID, isCapturing else { return }
+        self.captureID = nil
         let device = RawRoomScan.Device(model: UIDevice.current.model, systemVersion: UIDevice.current.systemVersion)
         let raw = RawRoomScan(room: room, device: device)
         scan = raw
@@ -47,7 +84,11 @@ final class ScanModel: ObservableObject {
         }
     }
 
-    func captureFailed(_ error: Error) { phase = .failed("Scanning stopped: \(error.localizedDescription)") }
+    func captureFailed(_ error: Error, captureID: UUID) {
+        guard self.captureID == captureID, isCapturing else { return }
+        self.captureID = nil
+        phase = .failed("Scanning stopped: \(error.localizedDescription) Try scanning again with good lighting and slower movement.")
+    }
 
     /// `uploadURLString` empty = export file only (share sheet).
     func upload(to uploadURLString: String, token uploadToken: String) async {
