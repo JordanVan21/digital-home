@@ -9,6 +9,17 @@
 | `feature/3d-sandbox-codex-base` | `da1ddb8` | `/Users/jeffreyg/Projects/digital-home-codex-base` |
 | `main` | `6fc23a2` (the merge base of both) | `/Users/jeffreyg/Projects/digital-home` |
 
+**Decision (2026-10-18, agreed with the team): `feature/3d-sandbox-codex-base` is
+the sandbox going forward.** Every other branch on GitHub is older or superseded:
+`main`, `3d-sandbox`, `3d-sandbox-codex` and `aesthetic-planner` are fully contained
+in codex-base/room-scanner; `asset-builder` and `render-agent-demo` were copied
+unchanged into room-scanner (plus small improvements); `3d-sandblox-jordan` and
+`3d-sandbox-merge` were superseded by codex-base. `3d-sandbox-jordan-merge`
+(Jordan, 16 commits) is a parallel jordan+codex sandbox merge and is **reference
+only** — do not merge it. Individual fixes there (walk mode, held-piece drag
+feedback, wall-snap narrowing, pillows staying on sofa cushions, 60 FPS drag pass)
+may be ported into codex-base later if wanted.
+
 A teammate is starting the aesthetic planner on a new branch off codex-base
 (suggested name `feature/aesthetic-planner-v2`). Budgeting, a room-over-time timeline
 and web search for similar product listings are deliberately deferred until the
