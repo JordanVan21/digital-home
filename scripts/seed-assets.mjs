@@ -32,14 +32,25 @@ const mime = (path) =>
   : path.endsWith(".webp") ? "image/webp"
   : path.endsWith(".png") ? "image/png" : "image/jpeg";
 
+// Supabase closes idle keep-alive connections; Node's fetch can reuse one that is
+// already closed ("other side closed"). Retry those on a fresh connection.
 async function upload(key) {
   const path = bucketPath(key);
-  const res = await fetch(`${url}/storage/v1/object/glbs/${path}`, {
-    method: "POST",
-    headers: { ...auth, "Content-Type": mime(path), "x-upsert": "true", "Cache-Control": "31536000" },
-    body: show(key),
-  });
-  if (!res.ok) throw new Error(`upload ${path}: ${res.status} ${await res.text()}`);
+  const body = show(key);
+  for (let attempt = 1; ; attempt++) {
+    try {
+      const res = await fetch(`${url}/storage/v1/object/glbs/${path}`, {
+        method: "POST",
+        headers: { ...auth, "Content-Type": mime(path), "x-upsert": "true", "Cache-Control": "31536000" },
+        body,
+      });
+      if (!res.ok) throw new Error(`upload ${path}: ${res.status} ${await res.text()}`);
+      return;
+    } catch (error) {
+      if (attempt >= 4 || !(error instanceof TypeError)) throw error;
+      await new Promise((r) => setTimeout(r, 500 * attempt));
+    }
+  }
 }
 
 const rows = [];

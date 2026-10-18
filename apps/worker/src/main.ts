@@ -193,7 +193,7 @@ async function resolveAssets(scene: SceneSpec): Promise<{ outcomes: RenderOutcom
 for (;;) {
   const scan = await claim();
   if (!scan) {
-    if (once) break;
+    if (once) process.exit(0); // also stops the headless Blender we started
     await new Promise((r) => setTimeout(r, 5000));
     continue;
   }
