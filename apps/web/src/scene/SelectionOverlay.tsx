@@ -5,6 +5,7 @@ import { BoxGeometry, BufferGeometry, EdgesGeometry, Float32BufferAttribute, Qua
 import type { SceneObject } from '@house/contracts';
 import { effectiveDimsOf } from '@house/scene-engine';
 import { useEditor } from '../state/store';
+import { ObjectToolbar } from '../ui/ObjectToolbar';
 import { dragFeedback } from './dragFeedback';
 import { registry } from './registry';
 
@@ -187,6 +188,23 @@ function DraftOutlines({ exclude }: { exclude: readonly string[] }) {
   return <>{list.map((o) => <ObjectOutline key={`d-${o.id}`} obj={o} kind={conflicts[o.id] ? 'conflict' : 'resolved'} />)}</>;
 }
 
+/** The glass tool pill above the primary selection; follows its group live (drags, glides). */
+function ToolbarAnchor({ obj }: { obj: SceneObject }) {
+  const ref = useRef<Group>(null);
+  useFrame(() => {
+    const grp = registry.get(obj.id);
+    if (!grp || !ref.current) return;
+    grp.getWorldPosition(ref.current.position);
+  });
+  return (
+    <group ref={ref}>
+      <Html position={[0, effectiveDimsOf(obj)[1] + 0.32, 0]} center zIndexRange={[30, 0]}>
+        <ObjectToolbar object={obj} />
+      </Html>
+    </group>
+  );
+}
+
 export function SelectionOverlay() {
   const selectedIds = useEditor((s) => s.selectedIds);
   const objects = useEditor((s) => s.workingScene?.objects);
@@ -195,6 +213,7 @@ export function SelectionOverlay() {
   const selected = useMemo(() => objects?.filter((o) => selectedIds.includes(o.id)) ?? [], [objects, selectedIds]);
   const hovered = useMemo(() => (hoveredId && !selectedIds.includes(hoveredId) ? objects?.find((o) => o.id === hoveredId) : undefined), [objects, hoveredId, selectedIds]);
   const primaryId = selectedIds[selectedIds.length - 1];
+  const primary = selected.find((o) => o.id === primaryId);
   if (walk) return null;
   return (
     <group name="selection-overlay">
@@ -203,6 +222,7 @@ export function SelectionOverlay() {
       <Blockers />
       <DraftOutlines exclude={selectedIds} />
       <Badges />
+      {primary && <ToolbarAnchor key={`t-${primary.id}`} obj={primary} />}
     </group>
   );
 }

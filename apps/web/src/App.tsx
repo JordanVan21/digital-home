@@ -7,10 +7,13 @@ import { startAutosave, type Autosave } from './state/autosave';
 import { loadSource } from './state/loader';
 import { addAsset, toast, useEditor, type SceneSource } from './state/store';
 import { ASSET_DRAG_MIME, AssetBrowser } from './ui/AssetBrowser';
-import { FloatingToolbar } from './ui/FloatingToolbar';
 import { InspectorPanel } from './ui/InspectorPanel';
+import { SideNav } from './ui/SideNav';
+import { SuggestionsBar } from './ui/SuggestionsBar';
+import { ThemeSync } from './ui/theme';
 import { TopBar, type DevActions } from './ui/TopBar';
 import { useKeyboardShortcuts } from './ui/useKeyboardShortcuts';
+import { ViewControls } from './ui/ViewControls';
 import { BoxSelectRect, ReadyFlag, ReferenceOverlay } from './ui/Overlays';
 
 const SOURCE_KEY = 'house.source';
@@ -43,11 +46,11 @@ function ConflictBanner({ onReload }: { onReload: () => void }) {
   const save = useEditor((s) => s.save);
   if (save.status !== 'conflict') return null;
   return (
-    <div className="banner panel" role="alert">
+    <div className="banner glass" role="alert">
       <div>
         <strong>This room changed somewhere else.</strong> Your edits are kept here and nothing was overwritten.
       </div>
-      <button className="btn" onClick={onReload}>Load latest (discard my {save.pending.length} change{save.pending.length === 1 ? '' : 's'})</button>
+      <button onClick={onReload}>Load latest (discard my {save.pending.length} change{save.pending.length === 1 ? '' : 's'})</button>
     </div>
   );
 }
@@ -99,7 +102,8 @@ export function App() {
       void load(useEditor.getState().source);
     },
     loadSource: (s) => {
-      const { save } = useEditor.getState();
+      const { save, hasDraft } = useEditor.getState();
+      if (hasDraft && !confirm('Switching rooms discards your unaccepted suggestions. Continue?')) return;
       if (save.pending.length && save.status !== 'saved') {
         toast('Saving your changes first…');
         void autosave.current?.flushNow().then(() => load(s));
@@ -119,7 +123,8 @@ export function App() {
   };
 
   return (
-    <div className="app">
+    <div className="app-shell">
+      <ThemeSync />
       <div
         className="canvas-wrap"
         onDragOver={(e) => { if (e.dataTransfer.types.includes(ASSET_DRAG_MIME)) { e.preventDefault(); e.dataTransfer.dropEffect = 'copy'; } }}
@@ -133,9 +138,11 @@ export function App() {
       {!hideUi && (
         <>
           <TopBar actions={actions} />
-          <FloatingToolbar />
-          <AssetBrowser />
+          <SideNav />
+          <ViewControls />
           <InspectorPanel />
+          <SuggestionsBar />
+          <AssetBrowser />
         </>
       )}
       <ConflictBanner onReload={() => {

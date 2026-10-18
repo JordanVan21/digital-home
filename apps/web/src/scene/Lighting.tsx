@@ -16,13 +16,13 @@ const PRESETS: Record<LightingPreset, {
   hdr: string; envIntensity: number; background: boolean; blur: number; bgIntensity: number;
   sun: { color: string; intensity: number; elevationDeg: number }; hemi: number; bg: string;
 }> = {
-  day: { hdr: '/hdr/warm-interior.hdr', envIntensity: 0.6, background: false, blur: 0, bgIntensity: 1, sun: { color: '#ffe8cc', intensity: 2.4, elevationDeg: 48 }, hemi: 0.35, bg: '#1d1e22' },
-  golden: { hdr: '/hdr/golden-garden.hdr', envIntensity: 0.5, background: false, blur: 0, bgIntensity: 1, sun: { color: '#ffa95c', intensity: 4.6, elevationDeg: 20 }, hemi: 0.32, bg: '#cdbca1' },
-  evening: { hdr: '/hdr/warm-interior.hdr', envIntensity: 0.12, background: false, blur: 0, bgIntensity: 1, sun: { color: '#8fa4c8', intensity: 0.25, elevationDeg: 30 }, hemi: 0.06, bg: '#121318' },
+  day: { hdr: '/hdr/warm-interior.hdr', envIntensity: 0.6, background: false, blur: 0, bgIntensity: 1, sun: { color: '#ffe8cc', intensity: 2.4, elevationDeg: 48 }, hemi: 0.35, bg: '#e8e1d6' },
+  golden: { hdr: '/hdr/golden-garden.hdr', envIntensity: 0.5, background: false, blur: 0, bgIntensity: 1, sun: { color: '#ffa95c', intensity: 4.6, elevationDeg: 20 }, hemi: 0.32, bg: '#d9c6a6' },
+  evening: { hdr: '/hdr/warm-interior.hdr', envIntensity: 0.12, background: false, blur: 0, bgIntensity: 1, sun: { color: '#8fa4c8', intensity: 0.25, elevationDeg: 30 }, hemi: 0.06, bg: '#2b2420' },
 };
 
 /** Ground tone outside the room per preset. */
-export const GROUND_COLOR: Record<LightingPreset, string> = { day: '#2a2a2c', golden: '#c2ae90', evening: '#18191d' };
+export const GROUND_COLOR: Record<LightingPreset, string> = { day: '#ddd5c8', golden: '#c2ae90', evening: '#241e1b' };
 
 export const presetOf = (name: string | undefined): LightingPreset =>
   name === 'golden' || name === 'evening' ? name : 'day';

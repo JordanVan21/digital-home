@@ -33,10 +33,10 @@ export function ReferenceOverlay() {
   return (
     <>
       {ref.mode === 'full' && <img className="reference-full" src={url} alt="Reference photo" style={{ opacity: ref.opacity }} />}
-      <div className={`reference-panel panel ${ref.mode}`}>
+      <div className={`reference-panel glass ${ref.mode}`}>
         {ref.mode === 'pip' && <img src={url} alt="Reference photo" />}
         <div className="reference-controls">
-          <div className="segmented small">
+          <div className="segmented">
             <button className={ref.mode === 'pip' ? 'on' : ''} onClick={() => set({ mode: 'pip' })}>Side by side</button>
             <button className={ref.mode === 'full' ? 'on' : ''} onClick={() => set({ mode: 'full' })}>Overlay</button>
           </div>
@@ -46,7 +46,7 @@ export function ReferenceOverlay() {
               <input type="range" min={0} max={1} step={0.05} value={ref.opacity} onChange={(e) => set({ opacity: Number(e.target.value) })} />
             </label>
           )}
-          <button className="btn small" onClick={() => set({ open: false })}>Close</button>
+          <button className="chip-button" onClick={() => set({ open: false })}>Close</button>
         </div>
       </div>
     </>

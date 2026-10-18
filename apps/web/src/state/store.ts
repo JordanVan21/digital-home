@@ -87,6 +87,10 @@ export type EditorState = {
   // ---- ui
   toasts: Toast[];
   libraryOpen: boolean;
+  /** The library is open to replace the selected piece's model (same category). */
+  replacing: boolean;
+  /** Search text shared by the top-bar search and the library. */
+  libraryQuery: string;
   inspectorOpen: boolean;
   hideUi: boolean;
   cameraRequest: CameraRequest | null;
@@ -120,6 +124,8 @@ const initial: EditorState = {
   violations: {},
   toasts: [],
   libraryOpen: false,
+  replacing: false,
+  libraryQuery: '',
   inspectorOpen: true,
   hideUi: false,
   cameraRequest: null,
@@ -703,6 +709,37 @@ export function setYaw(id: string, yaw: number) {
   const cur = yawFromQuat(o.transform.rotation);
   set({ selectedIds: [id], selectedId: id });
   rotateSelectionBy(normalizeAngle(yaw - cur));
+}
+
+/**
+ * Type an exact coordinate (the inspector's X / Y / Z fields). X and Z keep the piece on its
+ * support; raising Y above its support turns Float on so it stays where it was put.
+ */
+export function setPosition(id: string, axis: 0 | 1 | 2, value: number) {
+  const c = ctxOrNull();
+  const o = objectById(id);
+  if (!c || !o || !Number.isFinite(value)) return;
+  const position = [...o.transform.position] as Vec3;
+  position[axis] = axis === 1 ? Math.max(c.ctx.shell.floor.elevationY, value) : value;
+  const transform = { ...o.transform, position };
+  const cls = classOf(c.ctx, o);
+  if (cls === 'wall' || cls === 'ceiling') {
+    commit('Set position', [{ type: 'move', objectId: id, transform }]);
+    return;
+  }
+  if (axis !== 1) {
+    commit('Set position', moveWithSupport(c.ctx, c.scene, id, transform, { settle: !o.placement?.float }));
+    return;
+  }
+  const below = findSupport(c.scene.objects.filter((x) => x.id !== id), { ...o, transform }, { assets: c.ctx.assets, floorY: c.ctx.shell.floor.elevationY }, { maxY: position[1] });
+  if (position[1] > below.y + 1e-4 && !o.placement?.float) {
+    commit('Set height', [
+      { type: 'setPlacement', objectId: id, placement: { ...(o.placement ?? { support: 'floor' }), float: true } },
+      { type: 'move', objectId: id, transform },
+    ]);
+  } else {
+    commit('Set height', moveWithSupport(c.ctx, c.scene, id, transform, { settle: !o.placement?.float }));
+  }
 }
 
 export function setFloat(id: string, float: boolean) {
