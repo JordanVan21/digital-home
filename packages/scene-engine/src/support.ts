@@ -1,5 +1,11 @@
 import { assetById, type AssetSpec } from "@house/contracts";
-import { COLLISION_TOLERANCE_M, objectsCollide } from "./collision";
+import {
+  COLLISION_TOLERANCE_M,
+  objectsCollide,
+  objectContactPoints,
+  colliderBlocks,
+  objectCentre,
+} from "./collision";
 import { topContactFaces, bottomContactFaces } from "./contactFaces";
 import type {
   RoomShell,
@@ -7,11 +13,18 @@ import type {
   SceneSpec,
   Transform,
 } from "@house/contracts";
-import { footprint, insidePoint, scaledDimensions, overlaps } from "./geometry";
+import {
+  footprint,
+  insidePoint,
+  scaledDimensions,
+  overlaps,
+  verticalBounds,
+  convexHull,
+  boxCorners,
+} from "./geometry";
 
 // Outer vertical extent remains useful for room bounds; contact uses exposed compound faces.
-export const topY = (o: SceneObject) =>
-  o.transform.position[1] + scaledDimensions(o)[1];
+export const topY = (o: SceneObject) => verticalBounds(o).top;
 export function canSupport(
   parent: SceneObject,
   child: SceneObject,
@@ -69,15 +82,18 @@ function contactFaces(
     tops = topContactFaces(parent, assets);
   const under = (polygon: [number, number][]) =>
     bottom.polygons.some((p) => overlaps(p, polygon));
-  return tops.flatMap((face) => {
-    // Retain the bottom-center stability rule, while requiring actual occupied contact.
-    if (
-      !insidePoint(
-        [child.transform.position[0], child.transform.position[2]],
-        face.polygonXZ,
-      ) ||
-      !under(face.polygonXZ)
-    )
+  const c = objectCentre(child, assets);
+  const centre: [number, number] = [c[0], c[2]];
+  const childFootprint = footprint(child);
+  const touching = tops.filter((t) => overlaps(childFootprint, t.polygonXZ));
+  const centred = touching.filter((t) => insidePoint(centre, t.polygonXZ));
+  const candidates = centred.length ? centred : touching;
+  const visited = new Set<number>();
+  return candidates.flatMap((face) => {
+    const contact = touching.filter(
+      (t) => Math.abs(t.heightY - face.heightY) <= SETTLE_BAND_M,
+    );
+    if (!insidePoint(centre, convexHull(contact.flatMap((t) => t.polygonXZ))))
       return [];
     // Real surfaces are uneven by millimetres: rest on the highest nearby top
     // beneath the piece's footprint, as a real object would.
@@ -92,6 +108,8 @@ function contactFaces(
         )
         .map((t) => t.heightY),
     );
+    if (visited.has(heightY)) return [];
+    visited.add(heightY);
     const candidate = {
       ...child,
       transform: {
@@ -104,6 +122,27 @@ function contactFaces(
       },
     };
     if (objectsCollide(parent, candidate, assets)) return [];
+    const upright =
+      Math.abs(child.transform.rotation[0]) +
+        Math.abs(child.transform.rotation[2]) <
+      1e-7;
+    if (!upright) {
+      const points = objectContactPoints(
+        parent,
+        candidate,
+        assets,
+        SETTLE_BAND_M,
+      );
+      if (
+        !stableOverContacts(
+          candidate,
+          points.map((p) => [p[0], p[2]]),
+          assets,
+        )
+      )
+        return [];
+    }
+
     return [
       {
         key: parent.id,
@@ -128,6 +167,7 @@ function surfaceFaces(
       key: "floor",
       face: "top",
       heightY: room.floor.elevationY,
+      offsetY: bottomContactFaces(o, assets).offsetY,
       polygonXZ: room.floor.polygonXZ,
       label: "Floor",
       placement: { support: "floor" },
@@ -212,4 +252,64 @@ export function onNearestSurface(
 ): SceneObject {
   if (o.placement?.support === "wall") return o;
   return rankedFaces(scene, o, room, assets)[0].object;
+}
+
+/** The projected geometric centre must lie within the convex contact region.
+ * Lines and points are valid only when the centre projects onto them. */
+export function stableOverContacts(
+  o: SceneObject,
+  points: [number, number][],
+  assets: Readonly<Record<string, AssetSpec>> = {},
+): boolean {
+  const c = objectCentre(o, assets);
+  const centre: [number, number] = [c[0], c[2]];
+  const hull = convexHull(points);
+  if (hull.length >= 3 && insidePoint(centre, hull)) return true;
+  return hull.some((a, i) => {
+    const b = hull[(i + 1) % hull.length];
+    const dx = b[0] - a[0],
+      dz = b[1] - a[1],
+      length = dx * dx + dz * dz;
+    const t = length
+      ? Math.max(
+          0,
+          Math.min(
+            1,
+            ((centre[0] - a[0]) * dx + (centre[1] - a[1]) * dz) / length,
+          ),
+        )
+      : 0;
+    return (
+      Math.hypot(centre[0] - a[0] - t * dx, centre[1] - a[1] - t * dz) <=
+      CONTACT_EPS_M
+    );
+  });
+}
+export function hasFloorSupport(
+  o: SceneObject,
+  room: RoomShell,
+  assets: Readonly<Record<string, AssetSpec>>,
+): boolean {
+  // Authored upright assets are assumed stable on their base: their material
+  // density (e.g. an arc lamp's weighted foot) is absent from collider metadata.
+  if (
+    Math.abs(o.transform.rotation[0]) + Math.abs(o.transform.rotation[2]) <
+    1e-7
+  )
+    return (
+      Math.abs(o.transform.position[1] - room.floor.elevationY) <= CONTACT_EPS_M
+    );
+  const points = colliderBlocks(o, assets)
+    .flatMap(([min, max]) => boxCorners(o, min, max))
+    .filter((p) => Math.abs(p[1] - room.floor.elevationY) <= CONTACT_EPS_M);
+  return (
+    points.length > 0 &&
+    (Math.abs(o.transform.rotation[0]) + Math.abs(o.transform.rotation[2]) <
+      1e-7 ||
+      stableOverContacts(
+        o,
+        points.map((p) => [p[0], p[2]]),
+        assets,
+      ))
+  );
 }

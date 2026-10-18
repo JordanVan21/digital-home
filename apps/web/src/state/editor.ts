@@ -25,6 +25,7 @@ import {
   validateObject,
   validateOp,
   yawOf,
+  worldYaw,
   type History,
   type ResolutionEntry,
   type SceneContext,
@@ -428,7 +429,10 @@ export function createEditor(
       objectId: obj.id,
       transform: {
         ...obj.transform,
-        rotation: [0, Math.sin(yaw / 2), 0, Math.cos(yaw / 2)],
+        rotation: worldYaw(
+          obj.transform.rotation,
+          yaw - yawOf(obj.transform.rotation),
+        ),
       },
     });
   };

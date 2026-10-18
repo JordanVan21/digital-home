@@ -116,10 +116,26 @@ describe("room registry", () => {
         .sort(),
     ).toEqual(["fireplace", "storage"]);
   });
+  it("starts all 45 test2 pieces in feasible poses", () => {
+    const e = createEditor(undefined, rooms[1]);
+    const scene = e.working();
+    expect(
+      scene.objects
+        .map((o) => ({
+          name: o.displayName,
+          result: validateObject(scene, o, e.context()),
+        }))
+        .filter((v) => !v.result.ok),
+    ).toEqual([]);
+    e.dispose();
+  });
   it("keeps test2's 45 pieces, tilts, finishes and appearance", () => {
     const test2 = rooms[1].createScene();
     expect(test2.objects).toHaveLength(45);
-    expect(test2.objects.filter((o) => o.tilt)).toHaveLength(7);
+    expect(test2.objects.filter((o) => o.tilt)).toHaveLength(0);
+    expect(
+      test2.objects.filter((o) => o.transform.rotation[0] !== 0),
+    ).toHaveLength(10);
     expect(test2.objects.filter((o) => o.materialOverrides)).toHaveLength(19);
     expect(test2.appearance).toEqual({
       wallColor: "#efe6da",

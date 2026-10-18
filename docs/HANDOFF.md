@@ -1,5 +1,7 @@
 # Handoff: 3D sandbox session state (2026-10-17)
 
+> **This file describes the codex sandbox *before* the merge.** For this branch's current state, read `docs/MERGE_PLAN.md` first. Since this file was written, colliders have changed: they bake at **2 cm with exact surface heights** (not 4 cm), close seams up to 4 cm, and let pieces settle on the highest top under them (`docs/COLLIDER_PRECISION.md`, README decision 29).
+
 This file records everything that happened in the Claude Code session after your original build. It covers what changed, why it changed, what the user decided, and what is still open.
 
 **Precedence:**

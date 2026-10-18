@@ -1,3 +1,17 @@
+> **A merge is in progress on this branch (`feature/3d-sandbox-codex-base`). Start here, in this order:**
+> 1. `docs/MERGE_GUIDELINES.md`: the rules.
+> 2. `docs/MERGE_PLAN.md`: what's done, the user's decisions, and the ordered checklist. The next step is the first unchecked one.
+> 3. `docs/SESSION_NOTES.md`: environment, ports, commands and gotchas.
+> 4. The spec for the step, if one exists (e.g. `docs/COLLIDER_PRECISION.md` for colliders).
+>
+> **Working rules for the merge override "work autonomously" below:**
+> - Write tests first and see them fail.
+> - One feature per commit.
+> - Run every check after each step (see MERGE_PLAN "How we work").
+> - Verify in GPU Chrome.
+> - **Ask the user before every commit, and never push.**
+> - Explain each finished step in plain words, with a before/after screenshot when it's visual.
+
 > **Merging Jordan's sandbox into this base? Read `docs/MERGE_GUIDELINES.md` first.** It sets the rule (keep codex; adapt Jordan's missing features and look into it) and its exceptions.
 
 > **Read `docs/HANDOFF.md` first.** It describes the current state of this branch and the user's decisions since this brief was written, and it overrides this brief where they conflict. Notably, collisions no longer block edits: every edit is a suggestion that is resolved on Accept.

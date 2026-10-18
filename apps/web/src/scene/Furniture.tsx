@@ -19,6 +19,7 @@ import {
   tiltedDimensions,
   validateOp,
   yawOf,
+  worldYaw,
 } from "@house/scene-engine";
 import { DragSession, editor } from "../state/editor";
 import { Model } from "./Model";
@@ -34,12 +35,8 @@ const SNAP = Math.PI / 12;
 const INVALID = "#e36856";
 const target = new Vector3();
 const targetQuat = new Quaternion();
-const yawQuaternion = (yaw: number): Transform["rotation"] => [
-  0,
-  Math.sin(yaw / 2),
-  0,
-  Math.cos(yaw / 2),
-];
+const ringQuat = new Quaternion();
+const upAxis = new Vector3(0, 1, 0);
 
 export const Furniture = memo(function Furniture({
   object,
@@ -67,6 +64,7 @@ export const Furniture = memo(function Furniture({
   const [hasShape, setHasShape] = useState(false);
   const [swiveling, setSwiveling] = useState(false);
   const [pulse, setPulse] = useState(false);
+  const ringFrame = useRef<Group>(null);
   const group = useRef<Group>(null),
     outline = useRef<Group>(null),
     heightGuide = useRef<Group>(null),
@@ -151,6 +149,13 @@ export const Furniture = memo(function Furniture({
       if (g.quaternion.angleTo(targetQuat) > 1e-4)
         g.quaternion.slerp(targetQuat, k);
       else g.quaternion.copy(targetQuat);
+    }
+    if (g && ringFrame.current) {
+      ringQuat.setFromAxisAngle(upAxis, yawOf(g.quaternion.toArray()));
+      ringFrame.current.quaternion
+        .copy(g.quaternion)
+        .invert()
+        .multiply(ringQuat);
     }
     const invalid = state.mode ? !state.valid : conflict;
     if (
@@ -335,7 +340,10 @@ export const Furniture = memo(function Furniture({
     if (angle === null) return;
     let yaw = state.startYaw + (angle - state.startAngle);
     if (e.shiftKey) yaw = Math.round(yaw / SNAP) * SNAP;
-    const rotation = yawQuaternion(yaw);
+    const rotation = worldYaw(
+      latest.current.transform.rotation,
+      yaw - state.startYaw,
+    );
     group.current?.quaternion.fromArray(rotation);
     state.transform = { ...latest.current.transform, rotation };
     editor.previewMove(object.id, state.transform);
@@ -435,15 +443,17 @@ export const Furniture = memo(function Furniture({
           </group>
         )}
         {selected && !object.locked && tool === "rotate" && (
-          <SwivelRing
-            ref={angleLabel}
-            dimensions={dimensions}
-            active={swiveling}
-            onDown={ringDown}
-            onMove={ringMove}
-            onUp={ringUp}
-            onCancel={() => endGesture()}
-          />
+          <group ref={ringFrame} name="world-swivel-frame">
+            <SwivelRing
+              ref={angleLabel}
+              dimensions={dimensions}
+              active={swiveling}
+              onDown={ringDown}
+              onMove={ringMove}
+              onUp={ringUp}
+              onCancel={() => endGesture()}
+            />
+          </group>
         )}
         {object.locked && !selected && (
           <Html

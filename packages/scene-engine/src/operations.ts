@@ -1,6 +1,13 @@
+import { bottomContactFaces } from "./contactFaces";
 import { moveAssembly, supportedDescendants } from "./assembly";
 import { objectsCollide } from "./collision";
-import { canSupport, supportCycle, topY, withContactSupport } from "./support";
+import {
+  canSupport,
+  hasFloorSupport,
+  supportCycle,
+  topY,
+  withContactSupport,
+} from "./support";
 import {
   SceneObjectSchema,
   SceneOpSchema,
@@ -16,6 +23,7 @@ import {
   insidePolygon,
   overlaps,
   wallFootprints,
+  verticalBounds,
 } from "./geometry";
 export type ErrorCode =
   | "OBJECT_LOCKED"
@@ -95,18 +103,8 @@ export function validateObject(
     !ctx.room.walls.some((w) => w.id === o.placement?.parentId)
   )
     return fail("INVALID_SUPPORT", "Choose a supporting wall.");
-  // Keep yaw-only footprints; elevation is a fixable draft conflict.
-  if (
-    support !== "wall" &&
-    (Math.abs(o.transform.rotation[0]) > 1e-6 ||
-      Math.abs(o.transform.rotation[2]) > 1e-6)
-  )
-    return fail("INVALID_TRANSFORM", "Keep furniture upright.");
   if (options.allowConflicts) return { ok: true };
-  if (
-    support === "floor" &&
-    Math.abs(o.transform.position[1] - ctx.room.floor.elevationY) > 1e-5
-  )
+  if (support === "floor" && !hasFloorSupport(o, ctx.room, ctx.assets))
     return fail(
       "INVALID_SUPPORT",
       "Accept will settle this piece onto the nearest floor or furniture surface.",
@@ -114,13 +112,11 @@ export function validateObject(
   if (support === "object") {
     const parent = scene.objects.find((p) => p.id === o.placement?.parentId)!;
     if (!canSupport(parent, o, ctx.assets))
-      return fail(
-        "INVALID_SUPPORT",
-        "Place the bottom center on its supporting surface.",
-      );
+      return fail("INVALID_SUPPORT", "Place the centre over its contact area.");
   }
   if (
-    o.transform.position[1] < ctx.room.floor.elevationY - 1e-5 ||
+    o.transform.position[1] + bottomContactFaces(o, ctx.assets).offsetY <
+      ctx.room.floor.elevationY - 0.0001 ||
     (ctx.room.ceilingHeightM !== undefined &&
       topY(o) > ctx.room.floor.elevationY + ctx.room.ceilingHeightM + 1e-5)
   )
@@ -144,7 +140,7 @@ export function validateObject(
         other.id !== o.id &&
         (occupiesFloor(other) || other.placement?.support === "object") &&
         Math.min(topY(o), topY(other)) -
-          Math.max(o.transform.position[1], other.transform.position[1]) >
+          Math.max(verticalBounds(o).bottom, verticalBounds(other).bottom) >
           1e-7 &&
         overlaps(rect, footprint(other)) &&
         objectsCollide(o, other, ctx.assets)

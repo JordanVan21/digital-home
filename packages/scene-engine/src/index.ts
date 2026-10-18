@@ -9,3 +9,5 @@ export * from "./collision";
 
 export * from "./assembly";
 export * from "./matching";
+
+export * from "./rotation";

@@ -129,6 +129,9 @@ Poly Haven imports preserve original PBR materials and meter scale, embed 1K tex
 
 29. Colliders bake at 2 cm with exact tops (`docs/COLLIDER_PRECISION.md`). Every solid cell with air above it gets its real top height, merged into thin caps, so shelf boards, seats and tabletops are millimetre-exact; seams up to 4 cm are closed for the outside fill so scanned shells stay solid. A piece settles on the highest top under its footprint within 2 cm, and contact uses the same 0.1 mm tolerance as collision because GLB positions are quantized. Convex decomposition (CoACD) was tried and dropped: inaccurate and slow on the scanned models.
 
+30. Full three-axis rotation supersedes the upright-only rule and separate fixture tilts. The inspector uses X/pitch, Y/turn, Z/roll (YXZ Euler order), while saves stay quaternion-based. Swivels turn about world Y, carry full child poses, and remain imperative. Accept uses the lowest occupied point and contact stability; see “Full rotation (merge step 5)” below.
+
+
 ## Verification and known gaps
 
 - The required build, test, typecheck, and lint commands pass. The test suite covers fixture parsing, shipped-file/license coverage, the fixture triangle budget, all operations, locks, rotated/concave bounds, SAT touching/overlap, occupancy exemptions, door clearance, inverse/history behavior, drag commit/rejection/cancel (including GPU-free tests of the actual canvas handler, live red feedback, spring-back, and no model rerenders during pointer movement), autosave debounce/serialization/retry, stale/concurrent saves, reset/recovery, and accessible locked controls.
@@ -175,3 +178,13 @@ Dashed previous-position ghosts draw only exterior crease edges of the baked com
 ### Current bounding-box view
 
 Previous-position ghosts have been removed. Use the **Bounding boxes** button in the right-side view controls to toggle collider outlines for the current working scene. It starts off, works in development and production, and does not create edits or affect undo/save history. The overlay follows each furniture group's live transform, including attached items during drag/rotation. It shows the compound union's exterior edges without shared box seams or sealed internal cavities. No old-position or implicit selected-object boxes are drawn. The view preference resets on reload; collision and snapping remain active regardless of visibility.
+
+### Full rotation (merge step 5)
+
+The inspector now edits X/pitch, Y/turn and Z/roll, with 15° steps and Lay flat / Lean back 15° poses. Stored rotations are quaternions; degree controls use YXZ Euler order. The full-disk swivel stays horizontal and turns about world Y without erasing pitch or roll. Drafts remain unrestricted; Accept settles the lowest occupied point onto the nearest floor or supported furniture surface.
+
+Collision BVHs now prune transformed three-dimensional boxes, with a 15-axis OBB SAT at the leaves. The 2 cm profiles and 0.1 mm collision tolerance are unchanged. Quarter-turn fixture tilts have been folded into the quaternion, preserving model centres; legacy tilt fields still render for compatibility. Attached pieces retain their complete relative rotation.
+
+Tipped pieces use a projected occupied-volume centre over their contact region, including side contact when leaning against a back cushion. Stability uses the existing 2 cm uneven-surface band; collision penetration still allows only 0.1 mm. Authored upright floor assets remain assumed stable because their material density and weighted bases are unavailable. This is a geometric stability approximation, not a rigid-body physics simulation. Supporting surfaces remain floor and upward horizontal furniture faces. test2's three pillows and folded throw have been re-posed without soft-item overlap exemptions; all 45 pieces validate.
+
+30. Full three-axis rotation supersedes the upright-only rule and separate fixture tilts. The inspector uses X/pitch, Y/turn, Z/roll (YXZ Euler order), while saves stay quaternion-based. Swivels turn about world Y, carry full child poses, and remain imperative. Accept uses the lowest occupied point and contact stability; see “Full rotation (merge step 5)” below.

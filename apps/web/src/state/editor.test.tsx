@@ -7,6 +7,7 @@ import {
   createFixtureScene,
   fixtureId,
 } from "@house/contracts";
+import { rotationDegrees } from "@house/scene-engine";
 import { createEditor, DragSession, editor } from "./editor";
 import {
   Autosave,
@@ -289,6 +290,36 @@ describe("accessible editor controls", () => {
 });
 
 describe("spatial controls", () => {
+  it("edits every rotation axis and quick poses through one suggestion per action", () => {
+    editor.discard();
+    editor.select(smallId);
+    editor.interaction.setState({ inspector: true, dragging: false });
+    render(<InspectorPanel />);
+    const pitch = screen.getByLabelText("X (pitch) in degrees");
+    fireEvent.change(pitch, { target: { value: "25" } });
+    fireEvent.blur(pitch);
+    expect(
+      rotationDegrees(editor.selected()!.transform.rotation)[0],
+    ).toBeCloseTo(25);
+    expect(editor.draft.getState().undo).toHaveLength(1);
+    fireEvent.click(
+      screen.getByRole("button", { name: "Rotate Z (roll) plus 15°" }),
+    );
+    expect(
+      rotationDegrees(editor.selected()!.transform.rotation)[2],
+    ).toBeCloseTo(15);
+    expect(editor.draft.getState().undo).toHaveLength(2);
+    fireEvent.click(screen.getByRole("button", { name: "Lean back 15°" }));
+    expect(
+      rotationDegrees(editor.selected()!.transform.rotation)[0],
+    ).toBeCloseTo(-15);
+    fireEvent.click(screen.getByRole("button", { name: "Lay flat" }));
+    expect(
+      rotationDegrees(editor.selected()!.transform.rotation)[0],
+    ).toBeCloseTo(90);
+    expect(editor.draft.getState().undo).toHaveLength(4);
+    editor.discard();
+  });
   it("chooses a movement plane or Rotate without creating edits and supports exact height", () => {
     const object = editor.working().objects.find((o) => o.id === smallId)!;
     editor.select(object.id);

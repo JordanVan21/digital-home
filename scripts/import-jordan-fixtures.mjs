@@ -1,3 +1,4 @@
+import { foldTilt, poseTextiles } from "./fixture-rotation.mjs";
 /**
  * Imports the room fixtures from Jordan's sandbox branch (test2, demo room and
  * the demo RoomPlan scan) into packages/contracts/src/rooms/.
@@ -134,10 +135,13 @@ const room = (authored) => {
       ...fixture.scene,
       lightingPreset:
         presets[fixture.scene.lightingPreset] ?? fixture.scene.lightingPreset,
-      objects: hangOnWalls(fixture.scene.objects, fixture.shell).map((o) => ({
-        ...o,
-        category: codexCategory(o.category),
-      })),
+      objects: hangOnWalls(fixture.scene.objects, fixture.shell)
+        .map(foldTilt)
+        .map(poseTextiles)
+        .map((o) => ({
+          ...o,
+          category: codexCategory(o.category),
+        })),
     },
   };
 };

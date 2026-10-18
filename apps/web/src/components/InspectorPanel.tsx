@@ -9,7 +9,11 @@ import {
   Box,
 } from "lucide-react";
 import { assetById } from "@house/contracts";
-import { yawOf } from "@house/scene-engine";
+import {
+  rotationDegrees,
+  rotationFromDegrees,
+  onNearestSurface,
+} from "@house/scene-engine";
 import { editor } from "../state/editor";
 import { useWorkingObject } from "../state/useWorking";
 import { Button } from "./Button";
@@ -25,8 +29,13 @@ export function InspectorPanel() {
   const tool = useStore(editor.interaction, (s) => s.tool);
   const asset = object?.assetId ? assetById[object.assetId] : undefined;
   if (!open || !object) return null;
-  const yaw =
-    ((((yawOf(object.transform.rotation) * 180) / Math.PI) % 360) + 360) % 360;
+  const angles = rotationDegrees(object.transform.rotation);
+  const setAngles = (next: typeof angles) =>
+    editor.suggest({
+      type: "move",
+      objectId: object.id,
+      transform: { ...object.transform, rotation: rotationFromDegrees(next) },
+    });
   return (
     <aside className="inspector glass" aria-label="Inspector">
       <div className="panel-heading">
@@ -138,57 +147,98 @@ export function InspectorPanel() {
                 objectId: object.id,
                 transform: {
                   ...object.transform,
-                  position: [
-                    object.transform.position[0],
-                    editor.context().room.floor.elevationY,
-                    object.transform.position[2],
-                  ],
+                  position: onNearestSurface(
+                    { ...editor.working(), objects: [] },
+                    object,
+                    editor.context().room,
+                    editor.context().assets,
+                  ).transform.position,
                 },
               })
             }
           >
             Place on floor
           </Button>
-          <div className="rotation-readout">
-            <label htmlFor="rotation-input">Rotation</label>
-            {/* Keyed on the angle so it resyncs after swivels, undo and steps. */}
-            <input
-              id="rotation-input"
-              key={`${object.id}-${Math.round(yaw)}`}
-              className="rotation-input"
-              type="number"
-              step={1}
-              defaultValue={Math.round(yaw)}
-              disabled={object.locked || dragging}
-              aria-label="Rotation in degrees"
-              onKeyDown={(e) => {
-                if (e.key === "Enter") e.currentTarget.blur();
-              }}
-              onBlur={(e) => {
-                const value = Number(e.currentTarget.value);
-                if (
-                  Number.isFinite(value) &&
-                  Math.round(value) !== Math.round(yaw)
-                )
-                  editor.setYaw((value * Math.PI) / 180);
-              }}
-            />
-            <span className="unit">°</span>
+          <h3>
+            Rotation <small>degrees</small>
+          </h3>
+          {(["X (pitch)", "Y (turn)", "Z (roll)"] as const).map((label, i) => (
+            <div className="rotation-readout" key={label}>
+              <label htmlFor={`rotation-${i}`}>{label}</label>
+              <input
+                id={`rotation-${i}`}
+                className="rotation-input"
+                type="number"
+                step={1}
+                key={`${object.id}-${i}-${angles[i].toFixed(3)}`}
+                defaultValue={Number(angles[i].toFixed(1))}
+                aria-label={
+                  i === 1 ? "Rotation in degrees" : `${label} in degrees`
+                }
+                disabled={object.locked || dragging}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") e.currentTarget.blur();
+                }}
+                onBlur={(e) => {
+                  const value = e.currentTarget.valueAsNumber;
+                  if (
+                    Number.isFinite(value) &&
+                    Math.abs(value - angles[i]) > 0.01
+                  ) {
+                    const next = [...angles] as typeof angles;
+                    next[i] = value;
+                    setAngles(next);
+                  }
+                }}
+              />
+              <Button
+                label={
+                  i === 1
+                    ? "Rotate counterclockwise 15°"
+                    : `Rotate ${label} minus 15°`
+                }
+                className="step-button"
+                disabled={object.locked || dragging}
+                onClick={() => {
+                  const next = [...angles] as typeof angles;
+                  next[i] -= 15;
+                  setAngles(next);
+                }}
+              >
+                −
+              </Button>
+              <Button
+                label={
+                  i === 1 ? "Rotate clockwise 15°" : `Rotate ${label} plus 15°`
+                }
+                className="step-button"
+                disabled={object.locked || dragging}
+                onClick={() => {
+                  const next = [...angles] as typeof angles;
+                  next[i] += 15;
+                  setAngles(next);
+                }}
+              >
+                +
+              </Button>
+            </div>
+          ))}
+          <div className="inspector-actions">
             <Button
-              label="Rotate counterclockwise 15°"
+              label="Lay flat"
+              className="secondary-button"
               disabled={object.locked || dragging}
-              className="step-button"
-              onClick={() => editor.rotate(-1)}
+              onClick={() => setAngles([90, angles[1], 0])}
             >
-              −
+              Lay flat
             </Button>
             <Button
-              label="Rotate clockwise 15°"
+              label="Lean back 15°"
+              className="secondary-button"
               disabled={object.locked || dragging}
-              className="step-button"
-              onClick={() => editor.rotate()}
+              onClick={() => setAngles([-15, angles[1], 0])}
             >
-              +
+              Lean back 15°
             </Button>
           </div>
         </section>

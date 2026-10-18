@@ -9,10 +9,17 @@ import {
   LineSegments,
   Mesh,
   Ray,
+  Quaternion,
   Vector3,
 } from "three";
 import { assetById, createFixtureScene, fixtureId } from "@house/contracts";
-import { createHistory, yawOf, topY } from "@house/scene-engine";
+import {
+  createHistory,
+  yawOf,
+  topY,
+  rotationFromDegrees,
+  worldYaw,
+} from "@house/scene-engine";
 import { editor } from "../state/editor";
 import { Furniture } from "./Furniture";
 (
@@ -150,12 +157,18 @@ describe("actual canvas gesture adapter (without GPU)", () => {
     expect(editor.interaction.getState().dragging).toBe(false);
     expect(editor.interaction.getState().toast).toContain("locked");
   });
-  it.each([false, true])(
+  it.each([
+    [false, 0],
+    [true, 0],
+    [false, 25],
+    [true, 25],
+  ])(
     "swivels imperatively, then records exactly one draft step (snap=%s)",
-    async (snap) => {
+    async (snap, pitch) => {
       const object = editor
         .working()
         .objects.find((o) => o.id === fixtureId(111))!;
+      object.transform.rotation = rotationFromDegrees([pitch as number, 0, 0]);
       editor.select(object.id);
       editor.interaction.setState({ tool: "rotate" });
       renderer = await ReactThreeTestRenderer.create(
@@ -163,6 +176,12 @@ describe("actual canvas gesture adapter (without GPU)", () => {
       );
       const node = renderer.scene.children[0];
       const ring = node.findByProps({ name: "swivel-area" });
+      await renderer.advanceFrames(1, 0.016);
+      node.instance.updateMatrixWorld(true);
+      const normal = new Vector3(0, 0, 1).applyQuaternion(
+        ring.instance.getWorldQuaternion(new Quaternion()),
+      );
+      expect(normal.y).toBeCloseTo(1);
       const [x, , z] = object.transform.position;
       await renderer.fireEvent(ring, "pointerDown", pointer(x, z + 0.2));
       const renders = model.renders;
@@ -178,6 +197,10 @@ describe("actual canvas gesture adapter (without GPU)", () => {
       expect(yawOf((node.instance as Group).quaternion.toArray())).toBeCloseTo(
         expected,
       );
+      const expectedRotation = worldYaw(object.transform.rotation, expected);
+      (node.instance as Group).quaternion
+        .toArray()
+        .forEach((n, i) => expect(n).toBeCloseTo(expectedRotation[i]));
       expect(model.renders).toBe(renders);
       expect(editor.draft.getState().undo).toHaveLength(0);
       expect(editor.scene.getState().scene.revision).toBe(0);

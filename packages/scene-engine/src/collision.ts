@@ -1,6 +1,7 @@
-import type { AssetSpec, SceneObject, Tilt } from "@house/contracts";
+import type { AssetSpec, SceneObject, Tilt, Vec3 } from "@house/contracts";
 import profiles from "./colliderProfiles.json";
-import { overlaps, rectangle, scaledDimensions, yawOf } from "./geometry";
+import { boxCorners, scaledDimensions } from "./geometry";
+import { rotateVector } from "./rotation";
 
 type Block = number[][];
 type Profile = { contentHash: string; boxes: Block[] };
@@ -57,34 +58,56 @@ export function colliderBlocks(
 }
 function worldBlocks(o: SceneObject) {
   const size = scaledDimensions(o);
-  const yaw = yawOf(o.transform.rotation),
-    c = Math.cos(yaw),
-    s = Math.sin(yaw);
+  const axes = (
+    [
+      [1, 0, 0],
+      [0, 1, 0],
+      [0, 0, 1],
+    ] as Vec3[]
+  ).map((v) => rotateVector(v, o.transform.rotation));
   return ([min, max]: Block, tolerance = COLLISION_TOLERANCE_M) => {
-    const x = ((min[0] + max[0]) / 2 - 0.5) * size[0];
-    const z = ((min[2] + max[2]) / 2 - 0.5) * size[2];
-    const width = Math.max(0, (max[0] - min[0]) * size[0] - tolerance);
-    const depth = Math.max(0, (max[2] - min[2]) * size[2] - tolerance);
-    const polygon = rectangle(
-      [
-        o.transform.position[0] + c * x + s * z,
-        o.transform.position[2] - s * x + c * z,
-      ],
-      width,
-      depth,
-      yaw,
-    );
+    const corners = boxCorners(o, min, max);
+    const center = corners[0].map(
+      (_, i) => corners.reduce((sum, p) => sum + p[i], 0) / 8,
+    ) as Vec3;
+    const half = size.map((v, i) =>
+      Math.max(0, ((max[i] - min[i]) * v - tolerance) / 2),
+    ) as Vec3;
     return {
-      minX: Math.min(...polygon.map((p) => p[0])),
-      maxX: Math.max(...polygon.map((p) => p[0])),
-      minZ: Math.min(...polygon.map((p) => p[1])),
-      maxZ: Math.max(...polygon.map((p) => p[1])),
-      bottom: o.transform.position[1] + min[1] * size[1],
-      top: o.transform.position[1] + max[1] * size[1],
-      polygon,
+      center,
+      half,
+      axes,
+      minX: Math.min(...corners.map((p) => p[0])),
+      maxX: Math.max(...corners.map((p) => p[0])),
+      minZ: Math.min(...corners.map((p) => p[2])),
+      maxZ: Math.max(...corners.map((p) => p[2])),
+      bottom: Math.min(...corners.map((p) => p[1])),
+      top: Math.max(...corners.map((p) => p[1])),
     };
   };
 }
+const dot3 = (a: Vec3, b: Vec3) => a.reduce((s, v, i) => s + v * b[i], 0);
+function obbOverlap(a: WorldBlock, b: WorldBlock) {
+  const axes = [...a.axes, ...b.axes];
+  for (const u of a.axes)
+    for (const v of b.axes)
+      axes.push([
+        u[1] * v[2] - u[2] * v[1],
+        u[2] * v[0] - u[0] * v[2],
+        u[0] * v[1] - u[1] * v[0],
+      ]);
+  const delta = b.center.map((n, i) => n - a.center[i]) as Vec3;
+  for (const axis of axes) {
+    const len = Math.hypot(...axis);
+    if (len < 1e-9) continue;
+    const n = axis.map((v) => v / len) as Vec3;
+    const radius = (box: WorldBlock) =>
+      box.axes.reduce((s, v, i) => s + Math.abs(dot3(n, v)) * box.half[i], 0);
+    if (radius(a) + radius(b) - Math.abs(dot3(delta, n)) <= 1e-7) return false;
+  }
+  return true;
+}
+
 type Node = {
   bounds: Block;
   count: number;
@@ -185,8 +208,7 @@ export function objectsCollide(
           if (work) work.boxPairs++;
           const p = leafBox(i, leavesA, aa, makeA),
             q = leafBox(j, leavesB, bb, makeB);
-          if (boundsOverlap(p, q) && overlaps(p.polygon, q.polygon))
-            return true;
+          if (boundsOverlap(p, q) && obbOverlap(p, q)) return true;
         }
       return false;
     }
@@ -195,4 +217,105 @@ export function objectsCollide(
     return y.children!.some((child) => visit(x, child));
   };
   return visit(tree(aa), tree(bb));
+}
+/** Contact vertices from reached BVH leaves, including side contact for leaning
+ * pieces. No whole-object box or category exemptions enter the support hull. */
+export function objectContactPoints(
+  a: SceneObject,
+  b: SceneObject,
+  assets: Readonly<Record<string, AssetSpec>>,
+  distanceM = COLLISION_TOLERANCE_M,
+): Vec3[] {
+  const aa = colliderBlocks(a, assets),
+    bb = colliderBlocks(b, assets),
+    makeA = worldBlocks(a),
+    makeB = worldBlocks(b);
+  const points: Vec3[] = [];
+  const near = (p: WorldBlock, q: WorldBlock) =>
+    p.minX <= q.maxX + distanceM &&
+    p.maxX >= q.minX - distanceM &&
+    p.minZ <= q.maxZ + distanceM &&
+    p.maxZ >= q.minZ - distanceM &&
+    p.bottom <= q.top + distanceM &&
+    p.top >= q.bottom - distanceM;
+  const collect = (source: SceneObject, block: Block, target: WorldBlock) => {
+    const corners = boxCorners(source, ...(block as [number[], number[]]));
+    const test = (vertex: Vec3) => {
+      const delta = vertex.map((n, i) => n - target.center[i]) as Vec3;
+      const local = target.axes.map((axis) => dot3(delta, axis));
+      if (
+        local.every((n, i) => Math.abs(n) <= target.half[i] + distanceM) &&
+        local.some(
+          (n, i) => Math.abs(Math.abs(n) - target.half[i]) <= distanceM,
+        )
+      )
+        points.push(vertex);
+    };
+    corners.forEach(test);
+    for (let i = 0; i < 8; i++)
+      for (const bit of [1, 2, 4]) {
+        const j = i ^ bit;
+        if (j <= i) continue;
+        const from = corners[i],
+          to = corners[j];
+        for (let axis = 0; axis < 3; axis++)
+          for (const sign of [-1, 1]) {
+            const n = target.axes[axis],
+              d = to.map((v, k) => v - from[k]) as Vec3,
+              den = dot3(d, n);
+            if (Math.abs(den) < 1e-10) continue;
+            const delta = from.map((v, k) => v - target.center[k]) as Vec3;
+            const t = (sign * target.half[axis] - dot3(delta, n)) / den;
+            if (t >= 0 && t <= 1)
+              test(from.map((v, k) => v + t * d[k]) as Vec3);
+          }
+      }
+  };
+  const visit = (x: Node, y: Node) => {
+    if (!near(makeA(x.bounds, 0), makeB(y.bounds, 0))) return;
+    if (x.indices && y.indices) {
+      for (const i of x.indices)
+        for (const j of y.indices) {
+          const p = makeA(aa[i], 0),
+            q = makeB(bb[j], 0);
+          if (!near(p, q)) continue;
+          collect(a, aa[i], q);
+          collect(b, bb[j], p);
+        }
+      return;
+    }
+    if (x.children && (!y.children || x.count >= y.count))
+      x.children.forEach((child) => visit(child, y));
+    else y.children!.forEach((child) => visit(x, child));
+  };
+  visit(tree(aa), tree(bb));
+  return points;
+}
+
+const centres = new WeakMap<Block[], Vec3>();
+/** Uniform occupied-volume centre; unlike the outer box this accounts for empty
+ * space around an arc lamp or the branches of a plant. */
+export function objectCentre(
+  o: SceneObject,
+  assets: Readonly<Record<string, AssetSpec>>,
+): Vec3 {
+  const boxes = colliderBlocks(o, assets);
+  let centre = centres.get(boxes);
+  if (!centre) {
+    let total = 0;
+    const sum = [0, 0, 0];
+    for (const [lo, hi] of boxes) {
+      const v = (hi[0] - lo[0]) * (hi[1] - lo[1]) * (hi[2] - lo[2]);
+      total += v;
+      for (let i = 0; i < 3; i++) sum[i] += (v * (lo[i] + hi[i])) / 2;
+    }
+    centre = sum.map((n) => n / total) as Vec3;
+    centres.set(boxes, centre);
+  }
+  const size = scaledDimensions(o);
+  const offset = rotateVector(
+    centre.map((n, i) => (n - (i === 1 ? 0 : 0.5)) * size[i]) as Vec3,
+    o.transform.rotation,
+  );
+  return offset.map((n, i) => n + o.transform.position[i]) as Vec3;
 }

@@ -9,6 +9,10 @@
 3. `docs/SESSION_NOTES.md`: environment, decisions and gotchas from the working sessions.
 4. `docs/COLLIDER_PRECISION.md`: the spec for the next step.
 
+**Next step: 7 (lighting).** Step 5 is complete: all checks green, 193 unit tests and 10 browser tests. Step 6 was skipped because all test2 pieces now validate without a soft-item exemption.
+
+**Handoff (2026-10-17):** Claude Code did steps 0–4. Codex continues from step 5 under the same rules.
+
 ## Framing (user, 2026-10-17)
 
 > "We are taking inspiration from jordan branch to make our codex branch look better. the core functionality is still codex, we are just making that experience richer with better visuals and some bonus fun features."
@@ -18,7 +22,7 @@ Codex's interaction stays: controls, the suggest/Accept flow, nearest-surface pl
 ## How we work
 
 - **One feature per commit.** Write tests first for engine and editor logic, and run them red before implementing.
-- **Ask before every commit.** Never push.
+- **Autonomous continuation approved by the user (2026-10-17):** finish the merge and commit without further approval prompts. Never push. Compare the completed build with both reference versions.
 - **After each step, run every check:** `pnpm format`, `typecheck`, `lint`, `test`, `build`, and the browser suite. For the browser suite, set `HOUSE_E2E_PORT=5185` and `HOUSE_BROWSER_EXECUTABLE` to the system Chrome (see SESSION_NOTES).
 - **Verify in GPU Chrome and compare against the original codex** at `127.0.0.1:5182`.
 - **Explain each finished step plainly:** what the user will *see* differently, with a before/after screenshot when it is visual. Keep summaries short.
@@ -33,6 +37,8 @@ Codex's interaction stays: controls, the suggest/Accept flow, nearest-surface pl
 | 2 Catalog merge | `72c77f2` | Jordan's 39 assets (54 total), colliders baked, self-authored thumbnails GPU-rendered, provider credits fixed |
 | 3a Rooms + fixtures | `d21478c` | Room switcher (living room, test2, demo studio, scanned studio); additive contract fields; walls re-centred on import; scan matching ported; sliding doors keep a 0.9 m walkway |
 | 3b Tilt | `8a6b889` | Quarter-turn tilt in engine geometry, colliders and rendering; test2's books lie flat |
+| Docs | `834ae2c` | This plan, session notes, collider spec |
+| 4 Collider precision | `75b7df1` | 2 cm colliders with exact surface heights, seam closing, settling on uneven tops; test2 40/45 valid (the 5 left are the sofa pillows and throw, fixed in step 5) |
 
 ## Decisions the user made (do not re-ask)
 
@@ -46,9 +52,9 @@ Codex's interaction stays: controls, the suggest/Accept flow, nearest-surface pl
 ## Checklist (in order)
 
 ### Next: geometry foundation
-- [x] **4 Collider precision** (awaiting commit). Bake at 2 cm and trim every block top to the real geometry (spec: `docs/COLLIDER_PRECISION.md`). Acceptance: test2's shelf books and dishes are valid and snap onto the real boards; the chair-under-desk and couch-containment regressions hold; dragging stays smooth.
-- [ ] **5 Full 3-axis rotation.** Relax the engine's "Keep furniture upright" rule; add X/Y/Z degree fields and quick poses in the inspector; Accept settles a rotated piece by its lowest point (nearest surface, up or down). Fold `tilt` into `transform.rotation` (the importer converts test2's tilts; keep the schema field for compatibility). Re-pose test2's three sofa pillows leaning back against the back cushion. Update the swivel ring to be yaw about world Y for tipped pieces.
-- [ ] **6 (Optional) a few cm of tolerance for soft items,** only if it still feels needed after steps 4 and 5. Ask the user first.
+- [x] **4 Collider precision** (`75b7df1`). Bake at 2 cm and trim every block top to the real geometry (spec: `docs/COLLIDER_PRECISION.md`). Acceptance: test2's shelf books and dishes are valid and snap onto the real boards; the chair-under-desk and couch-containment regressions hold; dragging stays smooth.
+- [x] **5 Full 3-axis rotation.** Relax the engine's "Keep furniture upright" rule; add X/Y/Z degree fields and quick poses in the inspector; Accept settles a rotated piece by its lowest point (nearest surface, up or down). Fold `tilt` into `transform.rotation` (the importer converts test2's tilts; keep the schema field for compatibility). Re-pose test2's three sofa pillows leaning back against the back cushion. Update the swivel ring to be yaw about world Y for tipped pieces.
+- [x] **6 (Skipped: no soft-item overlap needed after re-posing)** (Optional) a few cm of tolerance for soft items,** only if it still feels needed after steps 4 and 5. Ask the user first.
 
 ### Then: the look (Jordan wins these, adapted into codex)
 - [ ] **7 Lighting.** Jordan's day / golden hour / evening, with local HDRs (`public/hdr`), a sun fitted through the main opening, tone mapping and fog, mapped onto codex's `theme.ts` presets (`daylight`, `golden-hour`, `evening`; the fixtures already use these IDs). The accent and backdrop follow the preset.

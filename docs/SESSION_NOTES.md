@@ -1,6 +1,6 @@
 # Session notes: merge working knowledge (2026-10-17)
 
-Things learned while doing steps 0–3b that are not obvious from the code. See `docs/MERGE_PLAN.md` for the plan and `docs/COLLIDER_PRECISION.md` for the next step.
+Things learned while doing steps 0–4 that are not obvious from the code. See `docs/MERGE_PLAN.md` for the plan and next step, and `docs/COLLIDER_PRECISION.md` for how colliders work now.
 
 ## Environment
 
@@ -29,6 +29,9 @@ Things learned while doing steps 0–3b that are not obvious from the code. See 
   ```
   Use `deviceScaleFactor: 2` and `clip` for close-ups.
 - **Before/after comparisons:** `git stash -u`, screenshot (Vite hot-reloads), then `git stash pop`.
+- **Run vitest from the repo root** (`pnpm test` or `pnpm exec vitest run <path>`). Running it from `apps/web` loads two copies of Three.js, and `instanceof` checks in renderer tests fail even on clean code.
+- **Collider bake:** `pnpm geometry:bake` takes about 2 s. Box counts print per model; `collision.bench.ts` measured 0.042 ms per query (BVH) after step 4.
+- **Python** is available through `uv run --no-project --with <pkg> python …`; nothing is installed globally. It was used only for the CoACD trial.
 - **Engine diagnostics:** write a throwaway `*.test.ts` under `packages/scene-engine/src` or `apps/web/src/state` that prints measurements, run it with `pnpm exec vitest run <file>`, then delete it. `topContactFaces` is not exported from the engine index; import it from `packages/scene-engine/src/contactFaces`.
 - **Asset scripts:**
   - `node scripts/import-jordan-catalog.mjs`, `node scripts/import-jordan-fixtures.mjs` (both read from git `origin/feature/3d-sandblox-jordan`);
@@ -66,10 +69,23 @@ Things learned while doing steps 0–3b that are not obvious from the code. See 
 - **Models:** both catalogs are bottom-centred, metre scale, +Z front. Codex's renderer fits each model to `dimensionsM` non-uniformly, so a loosely matched model looks stretched.
 - **Validation:** codex only validates changed and added pieces. A fixture that breaks rules looks fine until you edit near it, then Accept tries to "fix" it. Always check new fixtures with `validateObject` over every object.
 - **Accept:** carries children at their local offset (`moveAssembly`), so a sofa's pillows keep their pose when the sofa moves.
-- **test2 status after step 3b:** the 17 shelf items and 4 sofa items are still invalid under the voxel colliders (see COLLIDER_PRECISION.md); everything else validates. The demo studio and the scanned studio validate fully.
+- **test2 status after step 4:** 40 of 45 pieces validate. The 5 invalid ones are the 3 sofa pillows, the knit throw and the sofa itself (which collides with a pillow); they sit 11–19 cm inside the real back cushion, and step 5 re-poses them. The living room, demo studio and scanned studio validate fully.
+- **The "Sculptural walnut coffee table" (codex `…1002`) is multi-level:** its real top is 0.282 m, with raised 0.35 m blocks. Tests that need a flat tabletop use the "Concrete-top coffee table" (`a55e7000-…0003`).
+- **GLB positions are quantized**, so baked heights differ from round authored numbers by tens of micrometres (Jordan's shelf boards are at 0.46994 / 0.89004). Contact and collision both allow 0.1 mm.
 
 ## User preferences seen this session
 
 - Wants to *see* what changed: plain language, a before/after picture for visual steps, no jargon. "Not sure what changed" came after a jargon-heavy tilt summary.
 - Judges by feel; prefers precise, general rules over category exceptions ("a general rule that can achieve high specificity for any scenario").
 - Approves commits explicitly; happy to say "commit and continue".
+
+## Autonomous continuation (2026-10-17)
+
+The user approved finishing all remaining merge steps autonomously, including commits without asking. Never push. Compare the finished merge against Codex (5182) and Jordan (5181). This overrides the earlier commit-approval instructions.
+
+## Step 5 completed
+
+- Full quaternion geometry, OBB collision, projected occupied-volume contact stability, full-pose assemblies, X/Y/Z inspector fields and quick poses; the swivel stays horizontal and rotates about world Y.
+- Fixture tilt fields folded into quaternions; compatibility rendering retained. All 45 test2 pieces validate after the sofa textiles were re-posed.
+- Every check passed: format, typecheck, lint, 193 unit tests, build, 10 browser tests (`HOUSE_E2E_PORT=5185`, system Chrome). Browser suite took 3.6 minutes. GPU Chrome reported Apple M4 Metal; same real mouse drag produced the same movement and one suggestion on 5182 and 5185. No 60 FPS guarantee was measured.
+- Visual review: `docs/review/STEP_5.md`. Known geometric stability assumptions are documented there and in the web README. Step 6 skipped: no soft-item exemption needed. Next: step 7 lighting.

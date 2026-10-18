@@ -244,7 +244,7 @@ describe("operation validation and purity", () => {
     const tilted = box();
     tilted.transform.rotation = [Math.sin(0.2), 0, 0, Math.cos(0.2)];
     expect(code(empty(), { type: "add", object: tilted })).toBe(
-      "INVALID_TRANSFORM",
+      "INVALID_SUPPORT",
     );
   });
   it("moves, replaces asset, edits material and deletes without changing identity", () => {

@@ -1,3 +1,4 @@
+import { rotateVector, rotationDegrees } from "./rotation";
 import type { RoomShell, SceneObject, Tilt, Vec3 } from "@house/contracts";
 export type Point = [number, number];
 export const EPS = 1e-7;
@@ -5,10 +6,7 @@ const dot = (a: Point, b: Point) => a[0] * b[0] + a[1] * b[1];
 const sub = (a: Point, b: Point): Point => [a[0] - b[0], a[1] - b[1]];
 const cross = (a: Point, b: Point) => a[0] * b[1] - a[1] * b[0];
 export function yawOf(q: [number, number, number, number]): number {
-  return Math.atan2(
-    2 * (q[3] * q[1] + q[0] * q[2]),
-    1 - 2 * (q[1] * q[1] + q[2] * q[2]),
-  );
+  return (rotationDegrees(q)[1] * Math.PI) / 180;
 }
 export function rectangle(
   center: Point,
@@ -31,13 +29,7 @@ export function rectangle(
   ]);
 }
 export function footprint(o: SceneObject): Point[] {
-  const [w, , d] = scaledDimensions(o);
-  return rectangle(
-    [o.transform.position[0], o.transform.position[2]],
-    w,
-    d,
-    yawOf(o.transform.rotation),
-  );
+  return convexHull(boxCorners(o).map((p) => [p[0], p[2]]));
 }
 /** SAT: a shared edge or corner is allowed, positive-area intersection is not. */
 export function overlaps(a: Point[], b: Point[]): boolean {
@@ -166,4 +158,51 @@ export function scaledDimensions(o: SceneObject): Vec3 {
     o.dimensionsM.map((d, i) => d * o.transform.scale[i]) as Vec3,
     o.tilt,
   );
+}
+
+/** Convex projected silhouette, including the vertical extent of tipped pieces. */
+export function convexHull(points: Point[]): Point[] {
+  const sorted = points.slice().sort((a, b) => a[0] - b[0] || a[1] - b[1]);
+  const half = (ps: Point[]) => {
+    const out: Point[] = [];
+    for (const p of ps) {
+      while (
+        out.length >= 2 &&
+        cross(
+          sub(out[out.length - 1], out[out.length - 2]),
+          sub(p, out[out.length - 1]),
+        ) <= EPS
+      )
+        out.pop();
+      out.push(p);
+    }
+    return out;
+  };
+  const a = half(sorted),
+    b = half(sorted.slice().reverse());
+  a.pop();
+  b.pop();
+  return [...a, ...b];
+}
+export function boxCorners(
+  o: SceneObject,
+  min = [0, 0, 0],
+  max = [1, 1, 1],
+): Vec3[] {
+  const size = scaledDimensions(o);
+  const points: Vec3[] = [];
+  for (const x of [min[0], max[0]])
+    for (const y of [min[1], max[1]])
+      for (const z of [min[2], max[2]]) {
+        const p = rotateVector(
+          [(x - 0.5) * size[0], y * size[1], (z - 0.5) * size[2]],
+          o.transform.rotation,
+        );
+        points.push(p.map((v, i) => v + o.transform.position[i]) as Vec3);
+      }
+  return points;
+}
+export function verticalBounds(o: SceneObject) {
+  const ys = boxCorners(o).map((p) => p[1]);
+  return { bottom: Math.min(...ys), top: Math.max(...ys) };
 }
