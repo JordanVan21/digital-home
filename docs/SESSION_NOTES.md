@@ -136,3 +136,7 @@ Camera-relative 2 cm arrow nudges (Shift ×10), Q/E absolute-grid turns, F selec
 ## Step 14 completed
 
 Editable exact XYZ metre fields through suggestions, disabled during drags/locks; height-only movement summary fixed. All checks passed: 218 unit tests, 17 GPU browser tests, format/typecheck/lint/build. Review: `docs/review/STEP_14.md`. Existing browser tests now read position inputs instead of removed read-only outputs. Next: multi-select.
+
+## Step 15 completed
+
+Shift-click/Shift-marquee selection, primary inspector/rotation, atomic multi-piece translation with transient preview and one undo step, selected supports carry children once, locks protect whole moves, F frames selection. Shift-drag keeps existing grid snapping; toggle selection happens on click release. All checks: 221 unit tests, 18 GPU browser tests, format/typecheck/lint/build. Review: `docs/review/STEP_15.md`. Next: persistent groups.

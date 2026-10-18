@@ -1218,3 +1218,22 @@ kbd {
   pointer-events: none;
   z-index: 6;
 }
+
+.selection-marquee {
+  display: none;
+  position: absolute;
+  pointer-events: none;
+  border: 1px solid var(--accent);
+  background: rgba(191, 106, 70, 0.12);
+  z-index: 3;
+}
+.selection-summary {
+  position: absolute;
+  left: 24px;
+  bottom: 80px;
+  padding: 12px 18px;
+  border-radius: 20px;
+  pointer-events: none;
+  z-index: 4;
+  font-size: 12px;
+}

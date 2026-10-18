@@ -56,6 +56,7 @@ beforeEach(() => {
   editor.discard();
   editor.interaction.setState({
     selectedId: null,
+    selectedIds: [],
     hoveredId: null,
     dragging: false,
     tool: "move",

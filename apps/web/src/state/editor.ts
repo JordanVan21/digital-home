@@ -46,6 +46,7 @@ export type Interaction = {
   walk: boolean;
   wallMode: "cutaway" | "fade" | "show";
   selectedId: string | null;
+  selectedIds: string[];
   hoveredId: string | null;
   dragging: boolean;
   tool: Tool;
@@ -174,6 +175,7 @@ export function createEditor(
     cameraRequest: 0,
     walk: false,
     selectedId: null,
+    selectedIds: [],
     hoveredId: null,
     dragging: false,
     tool: "select",
@@ -205,12 +207,53 @@ export function createEditor(
     cameraPosition: [7.2, 6.5, 8.3] as Vec3,
     cameraDirection: [0, 0, -1] as Vec3,
     cameraTarget: [0, 0.65, 0] as Vec3,
+    pointerHandled: false,
     projectPoint: undefined as undefined | ((point: Vec3) => [number, number]),
   };
   const clearMotion = () => motion.transforms.clear();
+  const selectionMoves = (id: string, transform: Transform): SceneOp[] => {
+    const before = working();
+    const root = before.objects.find((o) => o.id === id);
+    if (!root) return [];
+    const selection = interaction.getState().selectedIds;
+    const ids =
+      selection.includes(id) && selection.length > 1 ? selection : [id];
+    const descendants = new Set(
+      ids.flatMap((key) => [...supportedDescendants(before, key)]),
+    );
+    return ids
+      .filter((key) => !descendants.has(key))
+      .flatMap((key) => {
+        const obj = before.objects.find((o) => o.id === key);
+        if (!obj) return [];
+        return [
+          {
+            type: "move" as const,
+            objectId: key,
+            transform: {
+              ...obj.transform,
+              position:
+                key === id
+                  ? transform.position
+                  : (obj.transform.position.map(
+                      (v, i) =>
+                        v +
+                        (transform.position[i] - root.transform.position[i]),
+                    ) as Vec3),
+              ...(key === id
+                ? { rotation: transform.rotation, scale: transform.scale }
+                : {}),
+            },
+          },
+        ];
+      });
+  };
   const previewMove = (id: string, transform: Transform) => {
     const before = working();
-    const moved = moveAssembly(before, id, transform);
+    let moved = before;
+    for (const op of selectionMoves(id, transform))
+      if (op.type === "move")
+        moved = moveAssembly(moved, op.objectId, op.transform);
     motion.transforms = new Map(
       moved.objects.flatMap((o, i) =>
         o === before.objects[i] ? [] : [[o.id, o.transform] as const],
@@ -311,6 +354,27 @@ export function createEditor(
     });
     return true;
   };
+  /** Atomic UI batch: singular contract operations never depend on selection. */
+  const suggestMany = (operations: SceneOp[]): boolean => {
+    if (!scene.getState().ready || !operations.length) return false;
+    const previous = draft.getState().scene;
+    let next = working();
+    for (const op of operations) {
+      const result = applyOp(next, op, sceneContext, { allowConflicts: true });
+      if (!result.ok) {
+        notify(result.error.message);
+        return false;
+      }
+      next = result.scene;
+    }
+    setDraft(next, {
+      undo: [...draft.getState().undo, previous].slice(-80),
+      redo: [],
+    });
+    return true;
+  };
+  const moveSelection = (id: string, transform: Transform) =>
+    suggestMany(selectionMoves(id, transform));
   const accept = (): boolean => {
     const proposed = draft.getState().scene;
     if (!proposed || interaction.getState().dragging) return false;
@@ -477,33 +541,39 @@ export function createEditor(
     }));
     return true;
   };
-  const select = (id: string | null) =>
-    interaction.setState({ selectedId: id });
+  const selectMany = (ids: string[]) => {
+    const available = new Set(working().objects.map((o) => o.id));
+    const selectedIds = [...new Set(ids)].filter((id) => available.has(id));
+    interaction.setState({
+      selectedIds,
+      selectedId: selectedIds.at(-1) ?? null,
+    });
+  };
+  const select = (id: string | null) => selectMany(id ? [id] : []);
+  const toggleSelection = (id: string) => {
+    const ids = interaction.getState().selectedIds;
+    selectMany(
+      ids.includes(id) ? ids.filter((key) => key !== id) : [...ids, id],
+    );
+  };
   const nudge = (forward: number, right: number, factor = 1) => {
     const obj = selected();
     if (!obj || interaction.getState().dragging || !scene.getState().ready)
       return false;
-    const [x, , z] = motion.cameraDirection;
-    const length = Math.hypot(x, z);
-    const fx = length > 0.001 ? x / length : 0;
-    const fz = length > 0.001 ? z / length : -1;
-    const [px, py, pz] = obj.transform.position;
-    const stride = 0.02 * factor;
-    return suggest(
-      {
-        type: "move",
-        objectId: obj.id,
-        transform: {
-          ...obj.transform,
-          position: [
-            px + stride * (fx * forward - fz * right),
-            py,
-            pz + stride * (fz * forward + fx * right),
-          ],
-        },
-      },
-      { snap: false },
-    );
+    const [x, , z] = motion.cameraDirection,
+      length = Math.hypot(x, z);
+    const fx = length > 0.001 ? x / length : 0,
+      fz = length > 0.001 ? z / length : -1;
+    const [px, py, pz] = obj.transform.position,
+      stride = 0.02 * factor;
+    return moveSelection(obj.id, {
+      ...obj.transform,
+      position: [
+        px + stride * (fx * forward - fz * right),
+        py,
+        pz + stride * (fz * forward + fx * right),
+      ],
+    });
   };
   const rotate = (direction = 1) => {
     const obj = selected();
@@ -725,6 +795,7 @@ export function createEditor(
       scene.setState({ ready: false });
       interaction.setState({
         selectedId: null,
+        selectedIds: [],
         dragging: false,
         browser: false,
       });
@@ -790,6 +861,7 @@ export function createEditor(
       walk: false,
       planView: false,
       selectedId: null,
+      selectedIds: [],
       hoveredId: null,
       dragging: false,
       browser: false,
@@ -833,7 +905,11 @@ export function createEditor(
       scene.setState({ scene: loaded, ready: true });
       history.setState({ history: createHistory() });
       draft.setState(emptyDraft());
-      interaction.setState({ selectedId: null, dragging: false });
+      interaction.setState({
+        selectedId: null,
+        selectedIds: [],
+        dragging: false,
+      });
       save.setState({ status: "saved", error: null });
       autosave?.dispose();
       autosave = new Autosave(
@@ -872,6 +948,11 @@ export function createEditor(
     hasDraft: () => draft.getState().scene !== null,
     selected,
     select,
+    selectMany,
+    toggleSelection,
+    suggestMany,
+    moveSelection,
+    selectionMoves,
     requestView,
     setWalk,
     rotate,
@@ -904,20 +985,23 @@ export class DragSession {
   begin(id: string): boolean {
     const o = this.editor.working().objects.find((o) => o.id === id);
     if (!o) return false;
-    this.editor.select(id);
+    if (!this.editor.interaction.getState().selectedIds.includes(id))
+      this.editor.select(id);
     if (o.locked) {
       this.editor.notify(`${o.displayName} is locked. Unlock it first.`);
       return false;
     }
-    const valid = validateOp(
-      this.editor.working(),
-      { type: "move", objectId: id, transform: o.transform },
-      this.editor.context(),
-      { allowConflicts: true },
-    );
-    if (!valid.ok) {
-      this.editor.notify(valid.error.message);
-      return false;
+    for (const op of this.editor.selectionMoves(id, o.transform)) {
+      const valid = validateOp(
+        this.editor.working(),
+        op,
+        this.editor.context(),
+        { allowConflicts: true },
+      );
+      if (!valid.ok) {
+        this.editor.notify(valid.error.message);
+        return false;
+      }
     }
     this.id = id;
     this.candidate = structuredClone(o.transform);
@@ -943,10 +1027,7 @@ export class DragSession {
       .working()
       .objects.find((o) => o.id === id)?.transform;
     if (JSON.stringify(original) === JSON.stringify(transform)) return true;
-    return this.editor.suggest(
-      { type: "move", objectId: id, transform },
-      { snap: false },
-    );
+    return this.editor.moveSelection(id, transform);
   }
   cancel() {
     this.editor.clearMotion();

@@ -1,3 +1,4 @@
+import { useMarquee, SelectionSummary } from "./Marquee";
 import { assetById } from "@house/contracts";
 import { lightBudget } from "./lightBudget";
 import { IdleFrameloop, PerfProbe } from "./IdleFrameloop";
@@ -72,6 +73,7 @@ function Stage() {
 }
 export const SceneCanvas = memo(function SceneCanvas() {
   const wrapper = useRef<HTMLDivElement>(null);
+  const marquee = useMarquee();
   useEffect(() => {
     const update = () => {
       const { hoveredId, dragging } = editor.interaction.getState();
@@ -95,6 +97,7 @@ export const SceneCanvas = memo(function SceneCanvas() {
         wrapper.current = el;
         labelLayer.current = el!;
       }}
+      {...marquee.handlers}
       className="canvas-wrap"
     >
       <Canvas
@@ -110,11 +113,13 @@ export const SceneCanvas = memo(function SceneCanvas() {
           outputColorSpace: SRGBColorSpace,
         }}
         onPointerMissed={(e) => {
-          if (e.button === 0) editor.select(null);
+          if (e.button === 0 && !e.shiftKey) editor.select(null);
         }}
       >
         <Stage />
       </Canvas>
+      <div ref={marquee.box} className="selection-marquee" />
+      <SelectionSummary />
     </div>
   );
 });

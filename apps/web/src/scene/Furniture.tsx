@@ -86,6 +86,7 @@ export const Furniture = memo(function Furniture({
     startX: 0,
     startY: 0,
     moved: false,
+    shiftSelection: null as string[] | null,
     startYaw: 0,
     startAngle: 0,
     transform: structuredClone(object.transform),
@@ -240,7 +241,17 @@ export const Furniture = memo(function Furniture({
     if (hiddenByWall()) return;
     if (e.button !== 0 || !editor.scene.getState().ready) return;
     e.stopPropagation();
-    editor.select(object.id);
+    editor.motion.pointerHandled = true;
+    const selection = editor.interaction.getState().selectedIds;
+    drag.current.shiftSelection = e.shiftKey ? [...selection] : null;
+    if (e.shiftKey && (latest.current.locked || tool === "rotate")) {
+      editor.toggleSelection(object.id);
+      return;
+    }
+    if (!selection.includes(object.id)) {
+      if (e.shiftKey) editor.selectMany([...selection, object.id]);
+      else editor.select(object.id);
+    }
     if (latest.current.locked) {
       editor.notify(
         `${latest.current.displayName} is locked. Unlock it first.`,
@@ -319,6 +330,15 @@ export const Furniture = memo(function Furniture({
     snapGuide.current?.update();
     state.session.preview(state.transform);
     state.session.release();
+    if (!state.moved && state.shiftSelection) {
+      const ids = state.shiftSelection;
+      editor.selectMany(
+        ids.includes(object.id)
+          ? ids.filter((id) => id !== object.id)
+          : [...ids, object.id],
+      );
+    }
+    state.shiftSelection = null;
     if ((e.target as Element).hasPointerCapture?.(e.pointerId))
       (e.target as Element).releasePointerCapture(e.pointerId);
   };

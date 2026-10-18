@@ -147,6 +147,8 @@ Poly Haven imports preserve original PBR materials and meter scale, embed 1K tex
 
 38. Inspector XYZ metre fields commit on Enter/blur through suggestions with snapping disabled, preserving exact entered coordinates. Accept still resolves support/collisions. Height-only edits count as movement.
 
+39. Multi-select uses Shift-click and additive background Shift-marquee. Drag/nudge batches singular typed moves into one suggestion checkpoint; supported descendants are excluded from roots to avoid double movement. Locks make the batch atomic. Inspector/rotation edit the primary piece; no selection-centre rotation.
+
 ## Verification and known gaps
 
 - The required build, test, typecheck, and lint commands pass. The test suite covers fixture parsing, shipped-file/license coverage, the fixture triangle budget, all operations, locks, rotated/concave bounds, SAT touching/overlap, occupancy exemptions, door clearance, inverse/history behavior, drag commit/rejection/cancel (including GPU-free tests of the actual canvas handler, live red feedback, spring-back, and no model rerenders during pointer movement), autosave debounce/serialization/retry, stale/concurrent saves, reset/recovery, and accessible locked controls.

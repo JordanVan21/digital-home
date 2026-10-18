@@ -106,7 +106,14 @@ export function Camera() {
       configure(view);
       if (view === "selection") {
         const id = editor.interaction.getState().selectedId,
-          box = id ? selectionBounds(editor.working(), [id]) : undefined;
+          box = id
+            ? selectionBounds(
+                editor.working(),
+                editor.interaction.getState().selectedIds.length
+                  ? editor.interaction.getState().selectedIds
+                  : [id],
+              )
+            : undefined;
         if (box) {
           const sphere = new Box3(
             new Vector3(...box.min),

@@ -9,7 +9,7 @@
 3. `docs/SESSION_NOTES.md`: environment, decisions and gotchas from the working sessions.
 4. `docs/COLLIDER_PRECISION.md`: the spec for the next step.
 
-**Next step: 15 (multi-select).** Steps 5, 7–14 are complete: all checks green, 218 unit tests and 17 browser tests. Step 6 was skipped because all test2 pieces now validate without a soft-item exemption.
+**Next step: 16 (groups).** Steps 5, 7–15 are complete: all checks green, 221 unit tests and 18 browser tests. Step 6 was skipped because all test2 pieces now validate without a soft-item exemption.
 
 **Handoff (2026-10-17):** Claude Code did steps 0–4. Codex continues from step 5 under the same rules.
 
@@ -67,7 +67,7 @@ Codex's interaction stays: controls, the suggest/Accept flow, nearest-surface pl
 - [x] **12 Duplicate** (toolbar + Ctrl/Cmd+D; the copy goes to a nearby free spot; replaces the "coming soon" toast).
 - [x] **13 Keyboard:** arrow nudges relative to the camera (Shift ×10), Q/E rotate on the absolute 15° grid, F frame selection, Home frame room, P walk.
 - [x] **14 Editable X / Y / Z position** in the inspector, through `suggest`.
-- [ ] **15 Multi-select:** Shift-click and Shift-drag box select.
+- [x] **15 Multi-select:** Shift-click and Shift-drag box select.
 - [ ] **16 Groups:** Ctrl/Cmd+G group, Shift+Ctrl/Cmd+G ungroup; click selects the group, Alt picks a member.
 - [ ] **17 Wall and ceiling items:** art slides along walls and around corners; pendants hang from the ceiling (support `ceiling`).
 - [ ] **18 Resize** with keep-proportions; children stay seated.
