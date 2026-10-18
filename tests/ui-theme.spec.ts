@@ -14,11 +14,12 @@ test("switches neutral frosted themes independently of room lighting and remembe
     name: "Open furniture library",
     exact: true,
   });
-  await expect(add).toHaveCSS("background-color", "rgb(58, 58, 58)");
+  await expect(add).toHaveCSS("background-color", "rgba(28, 28, 28, 0.7)");
+  await expect(add).toHaveCSS("backdrop-filter", "blur(26px) saturate(1.6)");
   await expect(root).toHaveAttribute("data-ui-theme", "light");
   await expect(
     page.getByRole("complementary", { name: "Room inspector" }),
-  ).toHaveCSS("background-color", "rgba(255, 255, 255, 0.6)");
+  ).toHaveCSS("background-color", "rgba(255, 255, 255, 0.68)");
   await expect(
     page.getByRole("complementary", { name: "Room inspector" }),
   ).toHaveCSS("backdrop-filter", "blur(26px) saturate(1.6)");
@@ -36,7 +37,15 @@ test("switches neutral frosted themes independently of room lighting and remembe
   });
   expect(colors.fill).toContain("28, 28, 28");
   expect(colors.ink.trim()).toBe("#f5f5f5");
-  await expect(add).toHaveCSS("background-color", "rgb(222, 222, 222)");
+  await expect(add).toHaveCSS("background-color", "rgba(255, 255, 255, 0.6)");
+  const boxes = page.getByRole("button", {
+    name: "Bounding boxes",
+    exact: true,
+  });
+  await boxes.click();
+  await page.mouse.move(720, 900);
+  await expect(boxes).toHaveCSS("background-color", "rgba(255, 255, 255, 0.6)");
+  await boxes.click();
   await page.mouse.move(720, 900);
   await expect(
     page.getByRole("button", { name: "Switch to light panels" }),

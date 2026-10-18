@@ -18,11 +18,21 @@
 
   --glass-fill: rgba(255, 255, 255, 0.6);
   --glass-fill-strong: rgba(255, 255, 255, 0.82);
-  --glass-inset: rgba(255, 255, 255, 0.28);
-  --glass-edge: rgba(255, 255, 255, 0.75);
+  --glass-inset: rgba(255, 255, 255, 0.16);
+  --glass-edge: rgba(255, 255, 255, 0.32);
+  --glass-top-edge: rgba(255, 255, 255, 0.88);
+  --glass-bottom-edge: rgba(255, 255, 255, 0.18);
+  --glass-sheen: rgba(255, 255, 255, 0.16);
+  --glass-panel-fill: rgba(255, 255, 255, 0.68);
   --glass-shadow:
-    0 10px 34px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.07);
+    0 12px 38px rgba(0, 0, 0, 0.075), 0 2px 6px rgba(0, 0, 0, 0.035);
   --glass-blur: blur(26px) saturate(160%);
+  --contrast-fill: rgba(28, 28, 28, 0.7);
+  --contrast-hover: rgba(38, 38, 38, 0.82);
+  --contrast-ink: #f5f5f5;
+  --contrast-edge: rgba(255, 255, 255, 0.15);
+  --contrast-top-edge: rgba(255, 255, 255, 0.38);
+  --contrast-sheen: rgba(255, 255, 255, 0.075);
 }
 * {
   box-sizing: border-box;
@@ -81,9 +91,16 @@ kbd {
 /* ---------- Glass primitives ---------- */
 .glass {
   background: var(--glass-fill);
+  background-image: linear-gradient(
+    155deg,
+    var(--glass-sheen),
+    transparent 65%
+  );
   backdrop-filter: var(--glass-blur);
   -webkit-backdrop-filter: var(--glass-blur);
   border: 1px solid var(--glass-edge);
+  border-top-color: var(--glass-top-edge);
+  border-bottom-color: var(--glass-bottom-edge);
   box-shadow:
     var(--glass-shadow),
     inset 0 1px 0 var(--glass-highlight);
@@ -1126,9 +1143,16 @@ kbd {
 :root[data-lighting="evening"]:not([data-ui-theme="dark"]) {
   --glass-fill: rgba(255, 255, 255, 0.86);
   --glass-fill-strong: rgba(255, 255, 255, 0.94);
+  --glass-panel-fill: rgba(255, 255, 255, 0.9);
 }
 :root[data-ui-theme="dark"] {
   color-scheme: dark;
+  --contrast-fill: rgba(255, 255, 255, 0.6);
+  --contrast-hover: rgba(255, 255, 255, 0.82);
+  --contrast-ink: #252525;
+  --contrast-edge: rgba(255, 255, 255, 0.32);
+  --contrast-top-edge: rgba(255, 255, 255, 0.88);
+  --contrast-sheen: rgba(255, 255, 255, 0.16);
   --ink: #f5f5f5;
   --ink-soft: #dedede;
   --muted: #e5e5e5;
@@ -1138,7 +1162,11 @@ kbd {
   --glass-fill: rgba(28, 28, 28, 0.7);
   --glass-fill-strong: rgba(38, 38, 38, 0.82);
   --glass-inset: rgba(255, 255, 255, 0.08);
-  --glass-edge: rgba(255, 255, 255, 0.3);
+  --glass-edge: rgba(255, 255, 255, 0.15);
+  --glass-top-edge: rgba(255, 255, 255, 0.38);
+  --glass-bottom-edge: rgba(255, 255, 255, 0.07);
+  --glass-sheen: rgba(255, 255, 255, 0.075);
+  --glass-panel-fill: rgba(28, 28, 28, 0.76);
   --glass-highlight: rgba(255, 255, 255, 0.18);
 }
 
@@ -1236,29 +1264,6 @@ kbd {
   outline: 2px solid var(--accent);
 }
 
-.reference-photo {
-  position: absolute;
-  left: 24px;
-  top: 260px;
-  z-index: 5;
-  max-width: 340px;
-}
-.reference-photo section {
-  margin-top: 8px;
-  padding: 12px;
-  border-radius: 18px;
-}
-.reference-photo img {
-  width: 100%;
-  border-radius: 10px;
-}
-.reference-photo label {
-  display: flex;
-  gap: 8px;
-  font-size: 12px;
-  margin: 8px 0;
-}
-
 .browser-backdrop.asset-dragging {
   pointer-events: none;
   background: none;
@@ -1288,4 +1293,58 @@ kbd {
 .glass.glass-button:hover:not(:disabled),
 .glass.secondary-button:hover:not(:disabled) {
   background: var(--glass-fill-strong);
+}
+
+/* Reading surfaces are denser; controls inside them stay visually quiet. */
+.inspector.glass,
+.asset-browser.glass {
+  background-color: var(--glass-panel-fill);
+}
+.glass-inset,
+.inspector :is(input:not([type="color"]), select),
+.lock-control,
+.secondary-button:not(.glass),
+.search-field,
+.browser-filters select {
+  border-color: var(--line);
+  box-shadow: none;
+}
+.glass.glass-button,
+.glass.secondary-button {
+  background-image: linear-gradient(
+    155deg,
+    var(--glass-sheen),
+    transparent 65%
+  );
+  border-top-color: var(--glass-top-edge);
+  border-bottom-color: var(--glass-bottom-edge);
+}
+
+/* Primary and active actions borrow the opposite theme's frosted glass. */
+.primary-pill,
+.round.active,
+.view-controls .round.active,
+.object-toolbar .round.active,
+.load-error button,
+.canvas-error button,
+.asset-arrow {
+  background: var(--contrast-fill);
+  background-image: linear-gradient(
+    155deg,
+    var(--contrast-sheen),
+    transparent 65%
+  );
+  color: var(--contrast-ink);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  border: 1px solid var(--contrast-edge);
+  border-top-color: var(--contrast-top-edge);
+  box-shadow:
+    0 4px 14px rgba(0, 0, 0, 0.08),
+    inset 0 1px 0 var(--contrast-sheen);
+}
+.primary-pill:hover:not(:disabled),
+.round.active:hover:not(:disabled) {
+  background-color: var(--contrast-hover);
+  filter: none;
 }
