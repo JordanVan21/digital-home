@@ -1,5 +1,7 @@
 import AVFoundation
+import Combine
 import Foundation
+import HouseCloud
 import RoomPlan
 import RoomScanKit
 import UIKit
@@ -19,6 +21,9 @@ final class ScanModel: ObservableObject {
     @Published private(set) var previewLoadingIDs: Set<UUID> = []
     @Published var scanName = ""
     @Published var actionError: String?
+    @Published private(set) var isUploading = false
+    let cloud = ScanCloud()
+    private var cloudChanges: AnyCancellable?
     private(set) var captureID: UUID?
     private var store: ScanStore?
     private var previewTasks: [UUID: Task<Void, Never>] = [:]
@@ -26,6 +31,7 @@ final class ScanModel: ObservableObject {
     init() {
         // Retire the prototype's manual token setting. This milestone needs no credentials.
         UserDefaults.standard.removeObject(forKey: "uploadToken")
+        cloudChanges = cloud.objectWillChange.sink { [weak self] _ in self?.objectWillChange.send() }
         do {
             store = try ScanStore.applicationStore()
             reloadLibrary()
@@ -48,6 +54,41 @@ final class ScanModel: ObservableObject {
         return "\(scan.walls.count) walls · \(scan.doors.count) doors · \(scan.windows.count) windows · \(scan.objects.count) objects"
     }
     var qualityHint: String? { scan.flatMap { ScanQuality.assess($0).message } }
+
+    /// Saved scans from before sign-in/upload existed; uploaded only on request.
+    var notUploadedCount: Int { records.filter { $0.state == .saved && $0.status == .saved }.count }
+
+    /// Uploads queued scans (new saves, failed or interrupted uploads). Local files
+    /// are never removed. `includingSaved` also uploads older never-queued scans.
+    func uploadQueued(includingSaved: Bool = false) async {
+        guard cloud.isSignedIn, !isUploading, let store else { return }
+        isUploading = true
+        defer { isUploading = false; reloadLibrary() }
+        var pending: Set<ScanUploadStatus> = [.readyToUpload, .uploading, .failed]
+        if includingSaved { pending.insert(.saved) }
+        for record in records where record.state == .saved && pending.contains(record.status) {
+            // Include the USDZ backup if it is still being exported.
+            await previewTasks[record.id]?.value
+            do {
+                try store.setUploadStatus(id: record.id, .uploading)
+                reloadLibrary()
+                try await cloud.upload(try store.record(id: record.id), store: store)
+                try store.setUploadStatus(id: record.id, .uploaded)
+            } catch {
+                _ = try? store.setUploadStatus(id: record.id, .failed, error: error.localizedDescription)
+                if case ScanCloudError.signedOut = error { break }
+            }
+            if currentRecord?.id == record.id { currentRecord = try? store.record(id: record.id) }
+            reloadLibrary()
+        }
+    }
+
+    func retryUpload() {
+        guard let entry = currentRecord, let store else { return }
+        currentRecord = try? store.setUploadStatus(id: entry.id, .readyToUpload)
+        reloadLibrary()
+        Task { await uploadQueued() }
+    }
 
     func checkAvailability() async {
         guard phase == .checking || phase == .cameraDenied || phase == .ready else { return }
@@ -177,6 +218,7 @@ final class ScanModel: ObservableObject {
         do {
             _ = try store.saveDraft(id: entry.id, name: scanName)
             returnToStart()
+            Task { await uploadQueued() }
         } catch {
             actionError = "Could not save: \(error.localizedDescription)"
         }

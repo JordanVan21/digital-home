@@ -1,6 +1,7 @@
 import SceneKit
 import simd
 import SwiftUI
+import HouseCloud
 import RoomScanKit
 
 struct ScanFlowView: View {
@@ -10,6 +11,7 @@ struct ScanFlowView: View {
     @State private var showDiscardConfirmation = false
     @State private var showShare = false
     @State private var shareURL: URL?
+    @State private var showSignIn = false
     @FocusState private var nameIsFocused: Bool
 
     var body: some View {
@@ -33,10 +35,24 @@ struct ScanFlowView: View {
                 }.padding()
             }
         }
-        .task { await model.checkAvailability() }
+        .task {
+            await model.checkAvailability()
+            await model.uploadQueued()
+        }
         .onChange(of: scenePhase) { _, phase in
             if phase == .background { model.captureWasBackgrounded() }
-            if phase == .active { Task { await model.checkAvailability() } }
+            if phase == .active {
+                Task {
+                    await model.checkAvailability()
+                    await model.uploadQueued()
+                }
+            }
+        }
+        .sheet(isPresented: $showSignIn) {
+            SignInView(cloud: model.cloud) {
+                showSignIn = false
+                Task { await model.uploadQueued() }
+            }
         }
         .onChange(of: model.phase) { _, _ in
             if !model.isCapturing { showCancelConfirmation = false }
@@ -77,6 +93,7 @@ struct ScanFlowView: View {
             .padding(.horizontal).padding(.top)
 
             List {
+                account
                 if !model.libraryIssues.isEmpty {
                     Section("Storage notices") {
                         ForEach(Array(model.libraryIssues.enumerated()), id: \.offset) { _, issue in
@@ -100,6 +117,26 @@ struct ScanFlowView: View {
                 }
             }
             .listStyle(.insetGrouped)
+        }
+    }
+
+    @ViewBuilder private var account: some View {
+        Section("Cloud") {
+            if let email = model.cloud.userEmail {
+                Label(email, systemImage: "person.crop.circle.badge.checkmark")
+                if model.isUploading {
+                    ProgressView("Uploading scans…")
+                } else if model.notUploadedCount > 0 {
+                    Button("Upload \(model.notUploadedCount) earlier saved scan(s)") {
+                        Task { await model.uploadQueued(includingSaved: true) }
+                    }
+                }
+                Button("Sign out", role: .destructive) { Task { await model.cloud.signOut() } }
+            } else {
+                Text("Sign in to upload saved scans to your House account.")
+                    .font(.footnote).foregroundStyle(.secondary)
+                Button("Sign in or create account") { showSignIn = true }
+            }
         }
     }
 
@@ -202,7 +239,14 @@ struct ScanFlowView: View {
                         }
                         Button("Finish later") { nameIsFocused = false; model.returnToStart() }
                     } else {
-                        Label(record.status.title, systemImage: "checkmark.circle")
+                        Label(record.status.title, systemImage: record.status == .uploaded ? "icloud.and.arrow.up" : "checkmark.circle")
+                        if let error = record.uploadError, record.status == .failed {
+                            Text(error).font(.caption).foregroundStyle(.orange)
+                            Button("Retry upload") { model.retryUpload() }.disabled(!model.cloud.isSignedIn)
+                        }
+                        if !model.cloud.isSignedIn, record.status != .uploaded {
+                            Text("Sign in from Your scans to upload this scan.").font(.caption).foregroundStyle(.secondary)
+                        }
                         Button("Back to scans") { model.returnToStart() }.buttonStyle(.borderedProminent)
                     }
                     Button("Share scan file (AirDrop)") {
@@ -306,4 +350,44 @@ struct ShareSheet: UIViewControllerRepresentable {
         UIActivityViewController(activityItems: [url], applicationActivities: nil)
     }
     func updateUIViewController(_ vc: UIActivityViewController, context: Context) {}
+}
+
+struct SignInView: View {
+    @ObservedObject var cloud: ScanCloud
+    var onDone: () -> Void
+    @State private var email = ""
+    @State private var password = ""
+    @State private var busy = false
+    @State private var error: String?
+
+    var body: some View {
+        NavigationStack {
+            Form {
+                Section {
+                    TextField("Email", text: $email)
+                        .textContentType(.username).keyboardType(.emailAddress)
+                        .textInputAutocapitalization(.never).autocorrectionDisabled()
+                    SecureField("Password (6+ characters)", text: $password).textContentType(.password)
+                }
+                if let error { Text(error).foregroundStyle(.red).font(.footnote) }
+                Section {
+                    Button("Sign in") { run { try await cloud.signIn(email: email, password: password) } }
+                    Button("Create account") { run { try await cloud.signUp(email: email, password: password) } }
+                }
+                .disabled(busy || email.isEmpty || password.count < 6)
+                if busy { ProgressView() }
+            }
+            .navigationTitle("House account")
+            .toolbar { ToolbarItem(placement: .cancellationAction) { Button("Cancel", action: onDone) } }
+        }
+    }
+
+    private func run(_ action: @escaping () async throws -> Void) {
+        busy = true
+        error = nil
+        Task {
+            do { try await action(); onDone() } catch { self.error = error.localizedDescription }
+            busy = false
+        }
+    }
 }

@@ -26,6 +26,8 @@ public struct SavedScan: Codable, Equatable, Identifiable {
     public var status: ScanUploadStatus
     public var hasPreview: Bool
     public var previewWarning: String?
+    /// Last upload failure, shown with a Retry action. Absent in older records.
+    public var uploadError: String?
 
     public static func defaultName(for date: Date) -> String {
         "Room — " + date.formatted(date: .abbreviated, time: .shortened)
@@ -134,6 +136,16 @@ public final class ScanStore {
         return ScanLibrary(records: records, issues: issues)
     }
 
+    /// Records upload progress in the local record. Never touches the scan files.
+    @discardableResult
+    public func setUploadStatus(id: UUID, _ status: ScanUploadStatus, error: String? = nil) throws -> SavedScan {
+        var entry = try record(id: id)
+        entry.status = status
+        entry.uploadError = error
+        try writeRecord(entry)
+        return entry
+    }
+
     @discardableResult
     public func saveDraft(id: UUID, name: String) throws -> SavedScan {
         var entry = try record(id: id)
@@ -142,6 +154,8 @@ public final class ScanStore {
         guard !trimmed.isEmpty else { throw ScanStoreError.invalidName }
         entry.name = trimmed
         entry.state = .saved
+        // New saves queue for upload; they go up once the user is signed in.
+        entry.status = .readyToUpload
         try writeRecord(entry)
         return entry
     }

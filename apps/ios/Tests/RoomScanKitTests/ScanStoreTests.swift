@@ -41,7 +41,7 @@ final class ScanStoreTests: XCTestCase {
         let saved = try XCTUnwrap(afterRestart.loadLibrary().records.first)
         XCTAssertEqual(saved.name, "Living room")
         XCTAssertEqual(saved.state, .saved)
-        XCTAssertEqual(saved.status, .saved)
+        XCTAssertEqual(saved.status, .readyToUpload)
         XCTAssertEqual(saved.roomCount, 1)
         XCTAssertEqual(try Data(contentsOf: afterRestart.scanURL(for: raw.scanId)), sourceBytes)
         XCTAssertEqual(try Data(contentsOf: afterRestart.directory(for: raw.scanId)
