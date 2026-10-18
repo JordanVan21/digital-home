@@ -18,7 +18,7 @@ import { fileURLToPath } from "node:url";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { createClient } from "@supabase/supabase-js";
-import type { AssetSpec, SceneObject, SceneSpec } from "@house/contracts";
+import { AssetRequest, type AssetSpec, type SceneObject, type SceneSpec } from "@house/contracts";
 import {
   BlenderMcpClient,
   BlenderPool,
@@ -29,7 +29,7 @@ import {
   type RenderOutcome,
 } from "@house/render-agent";
 import { normalizeRoomScan } from "@house/scan-import";
-import { SupabaseAssetRegistry, SupabaseGlbStore, loadCatalog } from "./supabaseAssets";
+import { SupabaseAssetRegistry, SupabaseGlbStore, bucketPath, loadCatalog } from "./supabaseAssets";
 
 type ScanRow = {
   id: string;
@@ -315,19 +315,98 @@ async function swapIn(
   console.warn(`    could not swap ${objectId}: room kept changing`);
 }
 
-for (;;) {
-  const scan = await claim();
-  if (!scan) {
-    if (once) process.exit(0); // also stops the headless Blender we started
-    await new Promise((r) => setTimeout(r, 5000));
-    continue;
+// --- Planner asset requests: the caller decides placement; we only pick the model.
+type AssetRequestRow = { id: string; request: unknown };
+const requestTimeLimitMs = (Number(process.env.REQUEST_TIME_LIMIT_S) || 300) * 1000;
+const glbUrl = (key: string) => `${url}/storage/v1/object/public/glbs/${bucketPath(key)}`;
+const answer = (o: RenderOutcome, seconds: number) => ({
+  asset_id: o.assetId,
+  asset: o.asset ? { ...o.asset, glbUrl: glbUrl(o.asset.glbStorageKey) } : null,
+  method: method(o.source),
+  source: o.source,
+  notes: o.notes,
+  seconds: Math.round(seconds * 10) / 10,
+});
+
+async function claimRequest(): Promise<AssetRequestRow | null> {
+  const { data, error } = await db.from("asset_requests").select("id").eq("status", "pending").order("created_at").limit(1);
+  if (error) throw error;
+  if (!data.length) return null;
+  const claimed = await db
+    .from("asset_requests")
+    .update({ status: "processing" })
+    .eq("id", data[0].id)
+    .eq("status", "pending")
+    .select("id,request");
+  if (claimed.error) throw claimed.error;
+  return (claimed.data[0] as AssetRequestRow | undefined) ?? null;
+}
+
+/** Library match first (written immediately), then agents/Blender if it was not confident. */
+async function processRequest(row: AssetRequestRow) {
+  const parsed = AssetRequest.safeParse(row.request);
+  if (!parsed.success) throw new Error(`Invalid AssetRequest: ${parsed.error.issues[0]?.message}`);
+  const request = { ...parsed.data, allowGeneration: parsed.data.allowGeneration && allowGeneration };
+  const t0 = Date.now();
+  const first = await fast.resolve({ ...request, allowGeneration: false });
+  let final = first;
+  if (first.source !== "retrieved" && model) {
+    const interim = await db.from("asset_requests").update(answer(first, (Date.now() - t0) / 1000)).eq("id", row.id);
+    if (interim.error) throw interim.error;
+    const improved = await full.resolve(request, AbortSignal.timeout(requestTimeLimitMs));
+    if (improved.asset && improved.source !== "best_effort") final = improved;
   }
-  console.log(`scan ${scan.id} "${scan.name}"`);
-  try {
-    await processScan(scan);
-  } catch (error) {
-    const message = error instanceof Error ? error.message : String(error);
-    console.error(`  failed: ${message}`);
-    await db.from("scans").update({ status: "failed", error: message }).eq("id", scan.id);
+  const done = await db
+    .from("asset_requests")
+    .update({ ...answer(final, (Date.now() - t0) / 1000), status: "done", error: null })
+    .eq("id", row.id);
+  if (done.error) throw done.error;
+  console.log(`request ${row.id}: ${request.category} -> (${method(final.source)}) ${final.asset?.title ?? "placeholder"}`);
+}
+
+/** Runs one queue until it is empty (--once) or forever, one item at a time. */
+async function drain<T extends { id: string }>(
+  label: string,
+  next: () => Promise<T | null>,
+  work: (item: T) => Promise<void>,
+  fail: (item: T, message: string) => PromiseLike<unknown>,
+) {
+  for (;;) {
+    const item = await next().catch((error) => {
+      console.error(`${label} queue: ${error instanceof Error ? error.message : error}`);
+      return null;
+    });
+    if (!item) {
+      if (once) return;
+      await new Promise((r) => setTimeout(r, label === "request" ? 1500 : 5000));
+      continue;
+    }
+    try {
+      await work(item);
+    } catch (error) {
+      const message = error instanceof Error ? error.message : String(error);
+      console.error(`  ${label} ${item.id} failed: ${message}`);
+      await fail(item, message);
+    }
   }
 }
+
+// Scans and planner requests run side by side, so a long scan never blocks the planner.
+await Promise.all([
+  drain(
+    "scan",
+    claim,
+    (scan) => {
+      console.log(`scan ${scan.id} "${scan.name}"`);
+      return processScan(scan);
+    },
+    (scan, message) => db.from("scans").update({ status: "failed", error: message }).eq("id", scan.id),
+  ),
+  drain(
+    "request",
+    claimRequest,
+    processRequest,
+    (row, message) => db.from("asset_requests").update({ status: "failed", error: message }).eq("id", row.id),
+  ),
+]);
+process.exit(0); // --once: also stops the headless Blenders we started
