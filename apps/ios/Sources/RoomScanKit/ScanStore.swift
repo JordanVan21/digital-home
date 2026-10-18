@@ -182,7 +182,7 @@ public final class ScanStore {
     private func draftRecord(_ raw: RawRoomScan) -> SavedScan {
         SavedScan(id: raw.scanId, capturedAt: raw.capturedAt,
                   name: SavedScan.defaultName(for: raw.capturedAt), state: .draft,
-                  roomCount: 1, objectCount: raw.objects.count, status: .saved,
+                  roomCount: raw.roomCount, objectCount: raw.objects.count, status: .saved,
                   hasPreview: files.fileExists(atPath: previewURL(for: raw.scanId).path))
     }
 

@@ -3,8 +3,12 @@ import RoomScanKit
 import SwiftUI
 
 /// Hosts RoomPlan's own scanning UI (live coaching + wireframe overlay).
+/// Whole-house capture: each room is stopped without pausing the AR session, so
+/// the next room (bumped `roomNumber`) continues in the same coordinate frame.
 struct RoomCaptureViewRepresentable: UIViewRepresentable {
-    /// Flip to true to finish; the delegate then delivers the processed result.
+    /// Which room of the house is being captured (0-based). Increment to start the next room.
+    let roomNumber: Int
+    /// Flip to true to finish the current room; the delegate then delivers its result.
     let stopRequested: Bool
     let onResult: @MainActor (CapturedRoom) -> Void
     let onError: @MainActor (Error) -> Void
@@ -14,15 +18,20 @@ struct RoomCaptureViewRepresentable: UIViewRepresentable {
     func makeUIView(context: Context) -> RoomCaptureView {
         let view = RoomCaptureView(frame: .zero)
         view.delegate = context.coordinator
-        var configuration = RoomCaptureSession.Configuration()
-        configuration.isCoachingEnabled = true
-        view.captureSession.run(configuration: configuration)
+        context.coordinator.roomNumber = roomNumber
+        view.captureSession.run(configuration: Self.configuration)
         return view
     }
 
     func updateUIView(_ view: RoomCaptureView, context: Context) {
-        if stopRequested, context.coordinator.lifecycle.requestFinish() {
-            view.captureSession.stop()
+        let coordinator = context.coordinator
+        if roomNumber != coordinator.roomNumber, coordinator.lifecycle.restart() {
+            coordinator.roomNumber = roomNumber
+            view.captureSession.run(configuration: Self.configuration)
+            return
+        }
+        if stopRequested, roomNumber == coordinator.roomNumber, coordinator.lifecycle.requestFinish() {
+            view.captureSession.stop(pauseARSession: false)
         }
     }
 
@@ -31,6 +40,14 @@ struct RoomCaptureViewRepresentable: UIViewRepresentable {
         let needsStop = coordinator.lifecycle.cancel()
         view.delegate = nil
         if needsStop { view.captureSession.stop() }
+        // Between rooms the AR session is kept running; release the camera now.
+        view.captureSession.arSession.pause()
+    }
+
+    private static var configuration: RoomCaptureSession.Configuration {
+        var configuration = RoomCaptureSession.Configuration()
+        configuration.isCoachingEnabled = true
+        return configuration
     }
 
     /// RoomCaptureViewDelegate refines NSCoding, hence the (unused) coder plumbing.
@@ -39,6 +56,7 @@ struct RoomCaptureViewRepresentable: UIViewRepresentable {
         let onResult: @MainActor (CapturedRoom) -> Void
         let onError: @MainActor (Error) -> Void
         let lifecycle = CaptureLifecycle()
+        var roomNumber = 0
 
         init(onResult: @escaping @MainActor (CapturedRoom) -> Void,
              onError: @escaping @MainActor (Error) -> Void) {

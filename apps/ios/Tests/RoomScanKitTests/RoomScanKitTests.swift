@@ -39,4 +39,27 @@ final class RoomScanKitTests: XCTestCase {
         XCTAssertEqual(q.issues, [.noDoorOrWindow])
         XCTAssertTrue(q.isUploadable, "missing openings is a hint, not a blocker")
     }
+
+    func testRealSingleRoomFixturesStillRoundTripByteForByte() throws {
+        for name in ["real-scan-1", "real-scan-2"] {
+            let url = URL(fileURLWithPath: #filePath).deletingLastPathComponent()
+                .appendingPathComponent("../../Fixtures/\(name).json").standardized
+            let data = try Data(contentsOf: url)
+            let scan = try RawRoomScan.decode(data)
+            XCTAssertNil(scan.rooms)
+            XCTAssertEqual(scan.roomCount, 1)
+            XCTAssertEqual(try scan.encoded(), data, "\(name) must re-encode unchanged")
+        }
+    }
+
+    func testMultiRoomFieldsRoundTrip() throws {
+        var w = wall(0)
+        w.roomIndex = 1
+        let scan = RawRoomScan(capturedAt: Date(timeIntervalSince1970: 1_700_000_000), walls: [w], doors: [], windows: [], openings: [], objects: [],
+                               rooms: [.init(index: 0, id: "a", story: 0, label: "kitchen"),
+                                       .init(index: 1, id: "b", story: 0, label: nil)])
+        let decoded = try RawRoomScan.decode(scan.encoded())
+        XCTAssertEqual(decoded, scan)
+        XCTAssertEqual(decoded.roomCount, 2)
+    }
 }

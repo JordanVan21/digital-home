@@ -23,6 +23,8 @@ export const RawSurface = z.object({
   dimensions: Dims,
   /** Optional floor outline (iOS 17 floors), RoomPlan world coordinates. */
   polygonCorners: z.array(Point3).optional(),
+  /** Multi-room captures: index into RawRoomScan.rooms. Absent for single rooms. */
+  roomIndex: z.number().int().nonnegative().optional(),
 });
 export type RawSurface = z.infer<typeof RawSurface>;
 
@@ -33,6 +35,8 @@ export const RawObject = z.object({
   transform: Matrix4,
   /** [width, height, depth] in the object's local frame. */
   dimensions: Dims,
+  /** Multi-room captures: index into RawRoomScan.rooms. Absent for single rooms. */
+  roomIndex: z.number().int().nonnegative().optional(),
 });
 export type RawObject = z.infer<typeof RawObject>;
 
@@ -48,5 +52,19 @@ export const RawRoomScan = z.object({
   openings: z.array(RawSurface),
   floors: z.array(RawSurface).default([]),
   objects: z.array(RawObject),
+  /**
+   * Whole-house capture (one AR session, rooms already share a frame). Elements
+   * carry roomIndex; absent for single-room scans.
+   */
+  rooms: z
+    .array(
+      z.object({
+        index: z.number().int().nonnegative(),
+        id: z.string(),
+        story: z.number().int(),
+        label: z.string().optional(),
+      }),
+    )
+    .optional(),
 });
 export type RawRoomScan = z.infer<typeof RawRoomScan>;

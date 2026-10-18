@@ -9,7 +9,9 @@ import UIKit
 @MainActor
 final class ScanModel: ObservableObject {
     enum Phase: Equatable {
-        case checking, unsupported, cameraDenied, ready, scanning, processing, review, saved
+        // scanning/processing = current room; betweenRooms = room captured, AR still running;
+        // building = combining the house's rooms with StructureBuilder.
+        case checking, unsupported, cameraDenied, ready, scanning, processing, betweenRooms, building, review, saved
         case failed(String)
     }
 
@@ -22,6 +24,10 @@ final class ScanModel: ObservableObject {
     @Published var scanName = ""
     @Published var actionError: String?
     @Published private(set) var isUploading = false
+    /// Rooms of the house captured so far in this AR session.
+    @Published private(set) var capturedRooms: [CapturedRoom] = []
+    /// Index of the room being captured; bumped only by `nextRoom()`.
+    @Published private(set) var roomNumber = 0
     let cloud = ScanCloud()
     private var cloudChanges: AnyCancellable?
     private(set) var captureID: UUID?
@@ -41,7 +47,7 @@ final class ScanModel: ObservableObject {
     }
 
     var canStartCapture: Bool { phase == .ready && store != nil }
-    var isCapturing: Bool { phase == .scanning || phase == .processing }
+    var isCapturing: Bool { [.scanning, .processing, .betweenRooms, .building].contains(phase) }
     var isPreviewLoading: Bool { currentRecord.map { previewLoadingIDs.contains($0.id) } ?? false }
     var exportURL: URL? { currentRecord.flatMap { store?.scanURL(for: $0.id) } }
     var previewURL: URL? {
@@ -51,7 +57,8 @@ final class ScanModel: ObservableObject {
     }
     var summary: String {
         guard let scan else { return "" }
-        return "\(scan.walls.count) walls · \(scan.doors.count) doors · \(scan.windows.count) windows · \(scan.objects.count) objects"
+        let rooms = scan.roomCount > 1 ? "\(scan.roomCount) rooms · " : ""
+        return rooms + "\(scan.walls.count) walls · \(scan.doors.count) doors · \(scan.windows.count) windows · \(scan.objects.count) objects"
     }
     var qualityHint: String? { scan.flatMap { ScanQuality.assess($0).message } }
 
@@ -114,8 +121,52 @@ final class ScanModel: ObservableObject {
     func startCapture() {
         guard canStartCapture else { return }
         clearSelection()
+        capturedRooms = []
+        roomNumber = 0
         captureID = UUID()
         phase = .scanning
+    }
+
+    func nextRoom() {
+        guard phase == .betweenRooms else { return }
+        roomNumber += 1
+        phase = .scanning
+    }
+
+    /// Combine the captured rooms into one house and persist it as a draft.
+    func finishHouse() {
+        guard phase == .betweenRooms, !capturedRooms.isEmpty, let captureID else { return }
+        phase = .building
+        let rooms = capturedRooms
+        let device = RawRoomScan.Device(model: UIDevice.current.model, systemVersion: UIDevice.current.systemVersion)
+        Task {
+            let encoder = JSONEncoder()
+            encoder.outputFormatting = [.sortedKeys]
+            let pending: PendingSave
+            if rooms.count == 1 {
+                let room = rooms[0]
+                pending = PendingSave(raw: RawRoomScan(room: room, device: device),
+                                      native: (try? encoder.encode(room)) ?? Data(),
+                                      exportPreview: { try room.export(to: $0, exportOptions: .parametric) })
+            } else {
+                do {
+                    let structure = try await StructureBuilder(options: [.beautifyObjects])
+                        .capturedStructure(from: rooms)
+                    pending = PendingSave(raw: RawRoomScan(rooms: structure.rooms, device: device),
+                                          native: (try? encoder.encode(structure)) ?? Data(),
+                                          exportPreview: { try structure.export(to: $0, exportOptions: .parametric) })
+                } catch {
+                    // Rooms from one session already share a frame; keep them unmerged.
+                    pending = PendingSave(raw: RawRoomScan(rooms: rooms, device: device),
+                                          native: (try? encoder.encode(rooms)) ?? Data(),
+                                          exportPreview: { _ in throw error })
+                }
+            }
+            guard self.captureID == captureID, self.phase == .building else { return }
+            self.captureID = nil
+            self.capturedRooms = []
+            self.persist(pending)
+        }
     }
 
     func finishCapture() {
@@ -126,11 +177,18 @@ final class ScanModel: ObservableObject {
     func cancelCapture() {
         guard isCapturing else { return }
         captureID = nil
+        capturedRooms = []
         phase = .ready
     }
 
     func captureWasBackgrounded() {
-        guard isCapturing else { return }
+        guard isCapturing, phase != .building else { return }
+        if !capturedRooms.isEmpty {
+            // Keep the rooms already captured instead of losing the whole house.
+            phase = .betweenRooms
+            finishHouse()
+            return
+        }
         captureID = nil
         phase = .failed("Scanning was interrupted when House left the screen. Keep House open and your iPhone unlocked while scanning, then start a new scan.")
     }
@@ -159,56 +217,64 @@ final class ScanModel: ObservableObject {
     }
 
     func didFinishCapture(_ room: CapturedRoom, captureID: UUID) {
-        guard self.captureID == captureID, isCapturing, let store else { return }
-        self.captureID = nil
-        let device = RawRoomScan.Device(model: UIDevice.current.model, systemVersion: UIDevice.current.systemVersion)
-        let raw = RawRoomScan(room: room, device: device)
-        scan = raw
+        guard self.captureID == captureID, phase == .processing || phase == .scanning else { return }
+        capturedRooms.append(room)
+        phase = .betweenRooms
+    }
+
+    private struct PendingSave {
+        let raw: RawRoomScan
+        let native: Data
+        let exportPreview: @Sendable (URL) throws -> Void
+    }
+
+    private var pendingSave: PendingSave?
+
+    private func persist(_ pending: PendingSave) {
+        guard let store else { return }
+        scan = pending.raw
         do {
-            let encoder = JSONEncoder()
-            encoder.outputFormatting = [.sortedKeys]
             // Persist raw JSON + Apple's native data before preview work or user actions.
-            let entry = try store.createDraft(raw, nativeData: encoder.encode(room))
+            let entry = try store.createDraft(pending.raw, nativeData: pending.native)
+            pendingSave = nil
             currentRecord = entry
             scanName = entry.name
             actionError = nil
             reloadLibrary()
-            buildPreview(for: room, id: entry.id)
+            buildPreview(id: entry.id, export: pending.exportPreview)
             phase = .review
         } catch {
             // Leave the capture in memory so a storage failure can be retried.
-            pendingRoom = room
+            pendingSave = pending
             phase = .failed("Could not save the scan on this iPhone: \(error.localizedDescription)")
         }
     }
 
-    private var pendingRoom: CapturedRoom?
-
     func retrySavingCapture() {
-        guard let room = pendingRoom, let raw = scan, let store else { return }
-        do {
-            reloadLibrary()
-            let entry: SavedScan
-            if let recovered = records.first(where: { $0.id == raw.scanId }) {
-                entry = recovered
-            } else {
-                entry = try store.createDraft(raw, nativeData: JSONEncoder().encode(room))
-            }
-            pendingRoom = nil
-            currentRecord = entry
-            scanName = entry.name
-            reloadLibrary()
-            buildPreview(for: room, id: entry.id)
+        guard let pending = pendingSave else { return }
+        reloadLibrary()
+        if let recovered = records.first(where: { $0.id == pending.raw.scanId }) {
+            pendingSave = nil
+            scan = pending.raw
+            currentRecord = recovered
+            scanName = recovered.name
+            buildPreview(id: recovered.id, export: pending.exportPreview)
             phase = .review
-        } catch {
-            actionError = "Could not retry saving: \(error.localizedDescription)"
+        } else {
+            persist(pending)
         }
     }
 
-    var canRetrySaving: Bool { pendingRoom != nil }
+    var canRetrySaving: Bool { pendingSave != nil }
 
     func captureFailed(_ error: Error, captureID: UUID) {
         guard self.captureID == captureID, isCapturing else { return }
+        if !capturedRooms.isEmpty {
+            // Earlier rooms are fine: let the user rescan this room or finish the house.
+            phase = .betweenRooms
+            actionError = "This room could not be captured: \(error.localizedDescription) Scan it again or finish the house."
+            return
+        }
         self.captureID = nil
         phase = .failed("Scanning stopped: \(error.localizedDescription) Try scanning again with good lighting and slower movement.")
     }
@@ -237,19 +303,19 @@ final class ScanModel: ObservableObject {
 
     private func clearSelection() {
         scan = nil
-        pendingRoom = nil
+        pendingSave = nil
         currentRecord = nil
         scanName = ""
         actionError = nil
     }
 
-    private func buildPreview(for room: CapturedRoom, id: UUID) {
+    private func buildPreview(id: UUID, export: @escaping @Sendable (URL) throws -> Void) {
         let temporary = FileManager.default.temporaryDirectory
             .appendingPathComponent("preview-\(UUID().uuidString).usdz")
         previewLoadingIDs.insert(id)
         previewTasks[id] = Task { [weak self] in
             let result = await Task.detached(priority: .userInitiated) {
-                try room.export(to: temporary, exportOptions: .parametric)
+                try export(temporary)
             }.result
             defer {
                 try? FileManager.default.removeItem(at: temporary)

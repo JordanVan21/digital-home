@@ -19,7 +19,7 @@ struct ScanFlowView: View {
             switch model.phase {
             case .checking, .unsupported, .cameraDenied, .ready:
                 library
-            case .scanning, .processing:
+            case .scanning, .processing, .betweenRooms, .building:
                 capture
             case .review, .saved:
                 scanReview
@@ -149,7 +149,7 @@ struct ScanFlowView: View {
                     Text(record.name).font(.headline).foregroundStyle(.primary)
                     Text(record.capturedAt, format: .dateTime.month(.abbreviated).day().year().hour().minute())
                         .font(.caption).foregroundStyle(.secondary)
-                    Text("\(record.roomCount) room · \(record.objectCount) objects")
+                    Text("\(record.roomCount) room\(record.roomCount == 1 ? "" : "s") · \(record.objectCount) objects")
                         .font(.caption).foregroundStyle(.secondary)
                 }
                 Spacer()
@@ -169,24 +169,38 @@ struct ScanFlowView: View {
                     VStack(spacing: 8) {
                         HStack {
                             Button("Cancel") { showCancelConfirmation = true }.buttonStyle(.bordered)
+                                .disabled(model.phase == .building)
                             Spacer()
-                            Text("Room scan").font(.headline)
+                            Text("Room \(model.roomNumber + 1)").font(.headline)
                             Spacer()
-                            if model.phase == .scanning {
-                                Button("Finish scan") { model.finishCapture() }.buttonStyle(.borderedProminent)
-                            } else {
+                            switch model.phase {
+                            case .scanning:
+                                Button("Finish room") { model.finishCapture() }.buttonStyle(.borderedProminent)
+                            case .betweenRooms:
+                                Button("Finish house") { model.finishHouse() }.buttonStyle(.borderedProminent)
+                            default:
                                 ProgressView().accessibilityLabel("Building your room")
                             }
                         }
-                        Text(model.phase == .scanning
-                             ? "Move slowly. Cover every wall, door, window and furnishing."
-                             : "Building your room… Keep House open.")
-                            .font(.footnote).multilineTextAlignment(.center)
+                        switch model.phase {
+                        case .scanning:
+                            Text("Move slowly. Cover every wall, door, window and furnishing.")
+                                .font(.footnote).multilineTextAlignment(.center)
+                        case .processing:
+                            Text("Building this room… Keep House open.").font(.footnote)
+                        case .betweenRooms:
+                            Text("\(model.capturedRooms.count) room(s) captured. Walk through the doorway into the next room, then tap Scan next room. Keep the iPhone up.")
+                                .font(.footnote).multilineTextAlignment(.center)
+                            Button("Scan next room") { model.nextRoom() }.buttonStyle(.bordered)
+                        default:
+                            Text("Combining \(model.capturedRooms.count) rooms into your house…").font(.footnote)
+                        }
                     }
                     .padding(.horizontal).padding(.vertical, 8)
                     .frame(maxWidth: .infinity).background(.regularMaterial)
 
-                    RoomCaptureViewRepresentable(stopRequested: model.phase == .processing,
+                    RoomCaptureViewRepresentable(roomNumber: model.roomNumber,
+                                                 stopRequested: model.phase == .processing,
                                                  onResult: { model.didFinishCapture($0, captureID: captureID) },
                                                  onError: { model.captureFailed($0, captureID: captureID) })
                         .id(captureID)
@@ -196,7 +210,10 @@ struct ScanFlowView: View {
                 .alert("Discard this unfinished scan?", isPresented: $showCancelConfirmation) {
                     Button(model.phase == .processing ? "Keep processing" : "Keep scanning", role: .cancel) {}
                     Button("Discard scan", role: .destructive) { model.cancelCapture() }
-                } message: { Text("Discarding removes this unfinished scan.") }
+                } message: {
+                    Text(model.capturedRooms.isEmpty ? "Discarding removes this unfinished scan."
+                         : "Discarding removes all \(model.capturedRooms.count) captured room(s). Tap Finish house to keep them.")
+                }
             }
         }
     }
