@@ -1,6 +1,7 @@
 {
   "extends": "./tsconfig.base.json",
   "include": [
+    "apps/planner-server/src",
     "apps/web/src",
     "packages/*/src",
     "vitest.config.ts",

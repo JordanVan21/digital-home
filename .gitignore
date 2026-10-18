@@ -6,3 +6,6 @@ playwright-report/
 test-results/
 .DS_Store
 *.local
+.env
+.env.*
+!.env.example

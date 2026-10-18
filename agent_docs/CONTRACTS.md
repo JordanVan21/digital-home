@@ -259,6 +259,16 @@ interface BudgetPriorityPlannerPort {
 ```
 Model calls only happen inside trusted `apps/worker`. The orchestrator sequences ports explicitly and limits retries. The API validates every generated patch, persists as a proposal, and accepts only with explicit user approval and a version checked transaction. Never provide agents generic SQL/write-scene tools.
 
+### Aesthetic experiment amendment (2026-10-18)
+
+The approved first milestone is single-room. Shared runtime schemas live in `packages/contracts/src/aestheticPlanner.ts`; planner logic lives in `packages/aesthetic-planner`, and trusted model calls in the isolated `apps/planner-server`.
+
+`Keep` preserves physical identity, model, size and appearance but permits movement; `Lock` preserves everything. Replace and Remove are instructions, with Lock taking precedence. Proposal generation uses a frozen original snapshot. Eventually Accept creates and opens a separately named version; subsequent original edits remain on their own version and do not block saving the separate design. Merging changes and restoring unfinished runs are excluded.
+
+The experiment's semantic plan is an intermediate, unsaved composition: `schemaVersion`, `roomId`, `rationale`, and `items`. Each item has a stable `key`, action, existing `objectId` where applicable, desired category/appearance/size for new pieces, and a structured `placementIntent` (`original`, `center`, `wall` by real wall ID, or `near` or `on` another item key with `beside`/`in_front_of`/`faces`/`near`/`on` relationships; code orders the dependency graph and rejects unknown anchors/cycles). The model never supplies coordinates or asset IDs. Missing appearance arrays on existing keep/remove items normalize to empty arrays; new pieces require an appearance description and positive maximum dimensions. Version IDs and approved brief references become required in persisted proposals when version saving is built; this unsaved experiment has no accept endpoint.
+
+`DesignBrief` adds `lightingMood` and `householdNeeds`. `PriceRecord` enforces amount/status agreement: unknown is null; existing pieces carry zero; replacements use new IDs and `replacesObjectId`. `DesignReview` contains subjective style/composition/usability scores, at most five object-keyed findings and a complete revised plan for repairs. `RoomView` carries three distinct JPEG views of a particular candidate plus unavailable-object IDs. Every revision repeats placement and shared geometry checks; at most two visual repairs. Placeholder appearance stays unverified.
+
 ### Endpoint additions
 | Operation | Request | Result |
 |---|---|---|

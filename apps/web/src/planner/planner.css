@@ -1,0 +1,136 @@
+.planner-lab {
+  height: 100vh;
+  overflow: auto;
+  background: #f3f1ec;
+  color: #242723;
+  font-family: "DM Sans", sans-serif;
+}
+.planner-lab header {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 24px;
+  align-items: center;
+  padding: 18px 24px;
+  border-bottom: 1px solid #d8d9d1;
+}
+.planner-lab header span {
+  margin-left: auto;
+  font-size: 13px;
+}
+.planner-lab a {
+  color: inherit;
+}
+.planner-workspace {
+  display: grid;
+  grid-template-columns: 340px minmax(0, 1fr);
+  min-height: calc(100vh - 62px);
+}
+.planner-controls {
+  padding: 24px;
+  background: #fffc;
+  border-right: 1px solid #d8d9d1;
+}
+.planner-controls h1 {
+  font-size: 23px;
+  line-height: 1.3;
+  margin-top: 0;
+}
+.planner-controls p {
+  font-size: 13px;
+  line-height: 1.5;
+}
+.planner-controls label {
+  display: block;
+  margin: 18px 0;
+  font-size: 13px;
+  font-weight: 600;
+}
+.planner-controls select,
+.planner-controls textarea {
+  display: block;
+  width: 100%;
+  margin-top: 8px;
+  border: 1px solid #bdc5b9;
+  border-radius: 9px;
+  padding: 9px;
+  background: #fff;
+  color: #242723;
+}
+.planner-controls textarea {
+  font: 12px/1.5 monospace;
+  resize: vertical;
+}
+.planner-controls details {
+  font-size: 12px;
+}
+.planner-controls button {
+  width: 100%;
+  justify-content: center;
+}
+.planner-controls .planner-error {
+  background: #fff0e7;
+  color: #8c2d13;
+  padding: 12px;
+  border-radius: 8px;
+}
+.planner-controls .planner-note {
+  color: #687063;
+}
+.planner-preview {
+  min-width: 0;
+}
+.planner-view-toolbar {
+  display: flex;
+  gap: 18px;
+  align-items: center;
+  padding: 12px 20px;
+  font-size: 13px;
+}
+.planner-view-toolbar button {
+  border: 1px solid #bdc5b9;
+  padding: 8px 14px;
+  border-radius: 20px;
+  background: #fff;
+  color: #242723;
+}
+.planner-viewport {
+  position: relative;
+  height: min(62vh, 650px);
+  min-height: 360px;
+}
+.planner-report {
+  padding: 16px 24px;
+  font-size: 13px;
+}
+.planner-report h2 {
+  font-size: 20px;
+}
+.planner-report ul {
+  padding-left: 18px;
+}
+.planner-report li {
+  margin: 12px 0;
+}
+.planner-report small {
+  display: block;
+  color: #687063;
+  margin-top: 5px;
+}
+.planner-captures {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 10px;
+}
+.planner-captures img {
+  width: 240px;
+  border-radius: 8px;
+}
+@media (max-width: 850px) {
+  .planner-workspace {
+    grid-template-columns: 1fr;
+  }
+  .planner-controls {
+    border-right: 0;
+  }
+}

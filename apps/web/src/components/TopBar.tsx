@@ -118,7 +118,11 @@ function RoomSwitcher({ disabled }: { disabled: boolean }) {
                 void editor.switchRoom(r.roomId);
               }}
             >
-              {cloudRoomIds.has(r.roomId) ? <ScanLine size={14} /> : <House size={14} />}
+              {cloudRoomIds.has(r.roomId) ? (
+                <ScanLine size={14} />
+              ) : (
+                <House size={14} />
+              )}
               <span>{r.name}</span>
               {r === current && <Check size={14} className="room-current" />}
             </button>
@@ -245,6 +249,19 @@ export function TopBar() {
         </Button>
       </div>
       <SaveStatus />
+      <Button
+        label="Design my space"
+        className="glass-button"
+        disabled={locked || draftActive}
+        title={
+          draftActive
+            ? "Accept or discard your suggestions before starting a design"
+            : "Try the aesthetic planner"
+        }
+        onClick={() => window.location.assign("/?planner-lab")}
+      >
+        <span>Design my space</span>
+      </Button>
       <Button
         label="Open furniture library"
         className="primary-pill"
