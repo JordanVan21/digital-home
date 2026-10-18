@@ -34,6 +34,9 @@ interface SceneState {
    * a direct room-setting edit, not an undoable object operation. */
   setLightingPreset: (preset: string) => void;
 
+  /** Replace the working room with a freshly imported scan (clears history). */
+  loadImportedRoom: (shell: RoomShell, scene: SceneSpec) => void;
+
   undo: () => void;
   redo: () => void;
 }
@@ -83,6 +86,11 @@ export const useSceneStore = create<SceneState>((set, get) => ({
   opLog: [],
 
   select: (objectId) => set({ selectedId: objectId }),
+
+  loadImportedRoom: (shell, scene) => {
+    if (autosaveTimer) clearTimeout(autosaveTimer);
+    set({ shell, scene, selectedId: null, undoStack: [], redoStack: [], opLog: [], lastError: null, saveStatus: "saved" });
+  },
 
   getSelectedObject: () => {
     const { scene, selectedId } = get();

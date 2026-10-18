@@ -11,6 +11,7 @@
   },
   "dependencies": {
     "@house/contracts": "workspace:*",
+    "@house/scan-import": "workspace:*",
     "@house/scene-engine": "workspace:*",
     "@react-three/drei": "^9.114.0",
     "@react-three/fiber": "^8.17.10",
