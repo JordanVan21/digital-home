@@ -1,6 +1,6 @@
 # Shape-aware geometry experiment — first review checkpoint
 
-Baseline: `feature/3d-sandbox-codex` at **e5140ce**. All existing sandbox work is committed there. This prototype lives on `experiment/shape-aware-geometry`; it has not been merged or pushed.
+Baseline: `feature/3d-sandbox-codex` at **e5140ce**. All existing sandbox work is committed there. This prototype lives on `experiment/shape-aware-geometry`; the renderer integration is now promoted to the Codex sandbox; nothing has been pushed.
 
 ## Review locally
 
@@ -47,3 +47,9 @@ Support needs more than ray hits: bottom contact regions, upward-facing patches,
 Review the five overlays. Continue with a hybrid prototype: box broad phase, accelerated mesh queries for picking/contact locations, and validated compound volumes or explicit containment tests for authoritative collisions. Investigate finer/adaptive cells or convex decomposition for thin geometry and separate alpha-mask treatment. Measure full editor/frame costs on demo hardware before selecting the production policy.
 
 The current grid boxes should **not** replace editor validation as-is. Keep this branch separate until the geometry quality and full contact semantics are reviewed. A chair seat or couch cushion can legitimately support an item; geometry fidelity is not a category blacklist.
+
+## Renderer integration
+
+The normal editor now draws cached compound outlines for opaque GLBs and uses accelerated triangle picking, so empty space between legs is no longer a box hit target. Loading, missing, alpha-masked and transparent models retain box outlines and picking. Geometry is normalized with the same model transform as the visible asset; drag updates remain imperative. Shared source geometry is not mutated.
+
+This is deliberately a renderer integration, not a replacement for computational bounds: accepted-scene collisions, support, snapping, room checks and saved scenes still use the existing boxes. A compound outline is an approximate shape preview, not a feasibility guarantee. The containment and support issues above still block making the experimental volumes authoritative.

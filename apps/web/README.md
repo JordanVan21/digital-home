@@ -123,3 +123,7 @@ Poly Haven imports preserve original PBR materials and meter scale, embed 1K tex
 - **60 FPS is not yet measured.** Check it on the demo laptop with `pnpm dev` and `?debug`; the code and triangle budget support the target but do not prove it.
 - Collision is intentionally a floor-footprint editor policy, not mesh physics. Height editing can place objects on supported bounding-box tops; material changes remain engine-only. Scene/asset content is local; history is session-local. On browsers without Web Locks, cross-tab CAS remains best-effort, though stale sequential writes are rejected.
 - Desktop is the target. Panels adapt to smaller windows, but touch-first editing and mobile layouts are not the product scope. Asset fidelity reflects FurniMesh's source models; the scanned-object proxy is deliberately approximate.
+
+### Renderer shape outlines
+
+Opaque GLBs use cached compound selection outlines and accelerated mesh picking in the normal editor. Proxies, loading models and alpha/transparent assets retain box fallback. The displayed compound shape is approximate. Collision validation and surface snapping still use conservative whole boxes; these renderer changes do not change accepted scene feasibility or save formats. The geometry lab remains available at `?geometry-lab`.

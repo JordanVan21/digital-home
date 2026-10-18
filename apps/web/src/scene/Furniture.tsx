@@ -58,6 +58,8 @@ export const Furniture = memo(function Furniture({
     s.resolved.includes(object.id),
   );
   const { lamps } = useLighting();
+  const [hasShape, setHasShape] = useState(false);
+  const shapeOutline = useRef<Group>(null);
   const [swiveling, setSwiveling] = useState(false);
   const [pulse, setPulse] = useState(false);
   const group = useRef<Group>(null),
@@ -141,7 +143,7 @@ export const Furniture = memo(function Furniture({
       outline.current &&
       (selected || hovered || state.mode || conflict || pulse)
     )
-      outline.current.traverse((o) => {
+      (hasShape ? shapeOutline.current : outline.current)?.traverse((o) => {
         const color = invalid
           ? INVALID
           : pulse
@@ -346,11 +348,19 @@ export const Furniture = memo(function Furniture({
             editor.interaction.setState({ hoveredId: null });
         }}
       >
-        <mesh position={[0, dimensions[1] / 2, 0]}>
+        <mesh
+          position={[0, dimensions[1] / 2, 0]}
+          raycast={hasShape ? () => null : undefined}
+        >
           <boxGeometry args={dimensions} />
           <meshBasicMaterial visible={false} />
         </mesh>
-        <Model object={object} />
+        <Model
+          object={object}
+          outlineRef={shapeOutline}
+          highlighted={selected || hovered || conflict || pulse}
+          onShape={setHasShape}
+        />
         {object.category === "lamp" && lamps > 0 && (
           <pointLight
             position={[0, dimensions[1] * 0.86, 0]}
@@ -363,8 +373,8 @@ export const Furniture = memo(function Furniture({
         <Selection
           ref={outline}
           dimensions={dimensions}
-          selected={selected}
-          hovered={hovered || conflict || pulse}
+          selected={selected && !hasShape}
+          hovered={!hasShape && (hovered || conflict || pulse)}
         />
         {selected && !object.locked && tool !== "rotate" && (
           <group

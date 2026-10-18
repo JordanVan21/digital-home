@@ -1,7 +1,23 @@
-import { Component, Suspense, useEffect, useMemo, type ReactNode } from "react";
+import {
+  Component,
+  Suspense,
+  useEffect,
+  useMemo,
+  type ReactNode,
+  type RefObject,
+} from "react";
 import { Html, useGLTF } from "@react-three/drei";
-import { Box3, Mesh, MeshStandardMaterial, Vector3 } from "three";
+import {
+  Box3,
+  Mesh,
+  MeshStandardMaterial,
+  Vector3,
+  Group,
+  BufferGeometry,
+} from "three";
 import { assetById, type SceneObject } from "@house/contracts";
+import { shapeEdges } from "./modelShape";
+import { MeshBVH, acceleratedRaycast } from "three-mesh-bvh";
 import { labelLayer } from "./labelLayer";
 export function Proxy({
   object,
@@ -52,9 +68,25 @@ class ModelBoundary extends Component<
     return this.state.failed ? this.props.fallback : this.props.children;
   }
 }
-function GLB({ object }: { object: SceneObject }) {
+const pickingGeometry = new WeakMap<BufferGeometry, BufferGeometry>();
+function GLB({
+  object,
+  outlineRef,
+  highlighted,
+  onShape,
+}: {
+  object: SceneObject;
+  outlineRef?: RefObject<Group | null>;
+  highlighted?: boolean;
+  onShape?: (ready: boolean) => void;
+}) {
   const asset = assetById[object.assetId!];
   const { scene } = useGLTF(asset.glbStorageKey, false, true);
+  const edges = useMemo(() => shapeEdges(scene), [scene]);
+  useEffect(() => {
+    onShape?.(!!edges);
+    return () => onShape?.(false);
+  }, [edges, onShape]);
   const { clone, scale, offset, materials } = useMemo(() => {
     const clone = scene.clone(true);
     const materials: MeshStandardMaterial[] = [];
@@ -62,7 +94,18 @@ function GLB({ object }: { object: SceneObject }) {
       if (child instanceof Mesh) {
         child.castShadow = object.category !== "rug";
         child.receiveShadow = true;
-        child.raycast = () => null;
+        if (!edges) child.raycast = () => null;
+        else {
+          let geometry = pickingGeometry.get(child.geometry);
+          if (!geometry) {
+            const owned: BufferGeometry = child.geometry.clone();
+            owned.boundsTree = new MeshBVH(owned, { maxLeafTris: 10 });
+            pickingGeometry.set(child.geometry, owned);
+            geometry = owned;
+          }
+          child.geometry = geometry;
+          child.raycast = acceleratedRaycast;
+        }
         const source = Array.isArray(child.material)
           ? child.material
           : [child.material];
@@ -92,21 +135,59 @@ function GLB({ object }: { object: SceneObject }) {
       offset: [-center.x, -box.min.y, -center.z] as [number, number, number],
       materials,
     };
-  }, [scene, object.dimensionsM, object.materialOverrides, object.category]);
+  }, [
+    scene,
+    edges,
+    object.dimensionsM,
+    object.materialOverrides,
+    object.category,
+  ]);
   useEffect(() => () => materials.forEach((m) => m.dispose()), [materials]);
   return (
     <group scale={scale}>
       <primitive object={clone} position={offset} />
+      {edges && (
+        <group
+          ref={outlineRef}
+          position={offset}
+          visible={highlighted}
+          name="shape-outline"
+        >
+          <lineSegments geometry={edges} raycast={() => null} dispose={null}>
+            <lineBasicMaterial
+              color="#9187ff"
+              depthTest={false}
+              transparent
+              opacity={0.85}
+            />
+          </lineSegments>
+        </group>
+      )}
     </group>
   );
 }
-export function Model({ object }: { object: SceneObject }) {
+export function Model({
+  object,
+  outlineRef,
+  highlighted,
+  onShape,
+}: {
+  object: SceneObject;
+  outlineRef?: RefObject<Group | null>;
+  highlighted?: boolean;
+  onShape?: (ready: boolean) => void;
+}) {
   if (!object.assetId || !assetById[object.assetId])
     return <Proxy object={object} />;
   return (
     <ModelBoundary key={object.assetId} fallback={<Proxy object={object} />}>
       <Suspense fallback={<Proxy object={object} loading />}>
-        <GLB object={object} />
+        <GLB
+          object={object}
+          outlineRef={outlineRef}
+          highlighted={highlighted}
+          onShape={onShape}
+        />
       </Suspense>
     </ModelBoundary>
   );
