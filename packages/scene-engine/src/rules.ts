@@ -6,7 +6,7 @@ import { add2, angleDiff, dot2, scale2, sub2, yawFromQuat } from './math';
 import { obbCorners, obbOf, obbOverlap, type OBB } from './obb';
 import { pointSegmentDistance, polygonInsidePolygon } from './polygon';
 import { approachZone, openingFrames, wallFrames, type OpeningFrame, type WallFrame } from './shell';
-import { fitsSurface, restingSurface } from './support';
+import { restingSurface, restsOn } from './support';
 
 export type RuleId =
   | 'inside_room'
@@ -165,7 +165,7 @@ export function singleObjectViolations(ctx: RuleContext, index: ObjectIndex, obj
     else {
       const surface = restingSurface(parent, obj, ctx.assets, c.supportToleranceM);
       if (!surface) v('support', 'warning', `Not resting on ${nameOf(parent)}.`, parent.id);
-      else if (!fitsSurface(obj, surface)) v('support', 'warning', `Hangs over the edge of ${nameOf(parent)}.`, parent.id);
+      else if (!restsOn(obj, surface, parent, ctx.assets)) v('support', 'warning', `Not resting properly on ${nameOf(parent)} (centre off the edge, or sinking into it).`, parent.id);
     }
   } else if ((cls === 'floor' || cls === 'flat') && !obj.placement?.float) {
     if (Math.abs(box.yMin - floorY) > c.supportToleranceM) v('support', 'warning', 'Floating — let it settle or turn on Float.');

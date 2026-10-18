@@ -279,6 +279,7 @@ function RoomInfo() {
   const roomName = useEditor((s) => s.roomName);
   const wallMode = useEditor((s) => s.wallMode);
   const showAllOutlines = useEditor((s) => s.showAllOutlines);
+  const releaseMode = useEditor((s) => s.releaseMode);
   const flagged = useEditor((s) => Object.keys(s.violations).length);
   if (!shell || !scene) return null;
   const openings = shell.openings.reduce<Record<string, number>>((m, o) => ({ ...m, [o.kind]: (m[o.kind] ?? 0) + 1 }), {});
@@ -308,6 +309,19 @@ function RoomInfo() {
           {(['cutaway', 'fade', 'full'] as WallMode[]).map((m) => (
             <button key={m} className={wallMode === m ? 'on' : ''} onClick={() => useEditor.setState({ wallMode: m })}>{m === 'cutaway' ? 'Cut away' : m === 'fade' ? 'Fade' : 'Show'}</button>
           ))}
+        </div>
+      </div>
+      <div className="field">
+        <div className="field-label">Letting go (tryout)</div>
+        <div className="segmented small" role="radiogroup" aria-label="What happens when you let go of a raised piece">
+          {([['mix', 'Mix'], ['fall', 'Always fall'], ['stay', 'Never fall']] as const).map(([m, label]) => (
+            <button key={m} role="radio" aria-checked={releaseMode === m} className={releaseMode === m ? 'on' : ''} onClick={() => useEditor.setState({ releaseMode: m })}>{label}</button>
+          ))}
+        </div>
+        <div className="hint">
+          {releaseMode === 'mix' ? 'Ordinary drags fall onto the surface below; pieces you raise on purpose (3D move, scroll wheel, PageUp, typed Y) stay up.'
+            : releaseMode === 'fall' ? 'Everything falls onto the surface below when you let go.'
+              : 'Nothing falls: pieces stay exactly where you let go (codex).'}
         </div>
       </div>
       <div className="field">

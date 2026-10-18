@@ -1,7 +1,7 @@
 /**
  * Editor policy — the one place drag-end, autosave, snapping and asset-budget behavior is tuned.
  */
-import { DEFAULT_COLLISION_POLICY, type CollisionPolicy } from '@house/scene-engine';
+import { DEFAULT_COLLISION_POLICY, MAX_NON_UNIFORM_SCALE, type CollisionPolicy } from '@house/scene-engine';
 
 export const EDITOR_POLICY = {
   /**
@@ -46,7 +46,7 @@ export const EDITOR_POLICY = {
   snap: { translateM: 0.05, rotateRad: (15 * Math.PI) / 180 },
   historyCap: 100,
   /** Fit: per-axis non-uniform scale allowed while max/min ratio ≤ 1 + this; else uniform fit-inside. */
-  maxNonUniformScale: 0.15,
+  maxNonUniformScale: MAX_NON_UNIFORM_SCALE,
   /** Dev-only warning thresholds per GLB. */
   assetBudget: { maxBytes: 10 * 1024 * 1024, maxTriangles: 150_000 },
   /** Local decoder paths — nothing is fetched from a CDN at runtime. */

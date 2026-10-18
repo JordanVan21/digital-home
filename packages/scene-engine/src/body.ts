@@ -1,5 +1,7 @@
 import type { AssetSpec, CollisionKind, SceneObject, Vec2, Vec3 } from '@house/contracts';
 import { categoryRule } from './config';
+import { renderedSize } from './fit';
+import { exposedTopFaces, shapeOfAsset } from './shapes';
 import { add2, rotateXZ, yawFromQuat } from './math';
 import { effectiveDims, type OBB } from './obb';
 
@@ -14,7 +16,8 @@ export type AssetLookup = (assetId: string) => AssetSpec | undefined;
 /** Box in object-local meters (after tilt), origin at the footprint's base center, front = +Z. */
 export type LocalBox = { min: Vec3; max: Vec3 };
 
-export type LocalSurface = { id: string; y: number; polygon: Vec2[]; maxItemHeightM?: number };
+/** `shaped` = an exposed top face of the model's baked shape (subject to the no-penetration rule). */
+export type LocalSurface = { id: string; y: number; polygon: Vec2[]; maxItemHeightM?: number; shaped?: boolean };
 
 export type WorldSurface = {
   ownerId: string;
@@ -23,6 +26,8 @@ export type WorldSurface = {
   y: number;
   polygon: Vec2[];
   maxItemHeightM?: number;
+  /** Face of the owner's baked shape: an item resting here must not intersect the rest of that shape. */
+  shaped?: boolean;
 };
 
 export function assetOf(obj: Pick<SceneObject, 'assetId'>, assets?: AssetLookup): AssetSpec | undefined {
@@ -103,10 +108,55 @@ function rect(x0: number, z0: number, x1: number, z1: number): Vec2[] {
   return [[x0, z0], [x0, z1], [x1, z1], [x1, z0]];
 }
 
-/** Support surfaces in object-local meters. */
+/** Smallest face (each side, m) that still counts as a surface, and the lowest (m above its base). */
+const MIN_FACE_M = 0.03;
+const MIN_FACE_HEIGHT_M = 0.02;
+
+/**
+ * The model's baked shape in object-local meters (base-centre origin), sized as it is drawn. Null for
+ * proxies, alpha-tested models, stale profiles and tilted decor. Used for surfaces, never collision.
+ */
+export function shapeLocalBoxes(obj: SceneObject, assets?: AssetLookup): LocalBox[] | null {
+  const asset = assetOf(obj, assets);
+  const tilted = !!obj.tilt && (obj.tilt.x !== 0 || obj.tilt.z !== 0);
+  const shape = tilted ? null : shapeOfAsset(asset);
+  if (!shape || !asset) return null;
+  const [W, H, D] = renderedSize(asset.dimensionsM, obj.dimensionsM);
+  return shape.map(([lo, hi]) => ({
+    min: [(lo[0] - 0.5) * W, lo[1] * H, (lo[2] - 0.5) * D],
+    max: [(hi[0] - 0.5) * W, hi[1] * H, (hi[2] - 0.5) * D],
+  }));
+}
+
+/**
+ * Support surfaces in object-local meters. Precedence (merge decision 4.1):
+ * 1. surfaces authored in the catalog (`asset.supports`);
+ * 2. for downloaded / scanned models, the real exposed top faces of the baked shape (codex) — seats,
+ *    shelves, table tops (4 cm voxel accuracy);
+ * 3. jordan's category defaults (top / seat / boards): self-authored procedural models (exact boxes,
+ *    so these are exact) and models without a shape.
+ * Rugs (collision `flat`) never hold things.
+ */
 export function localSurfaces(obj: SceneObject, assets?: AssetLookup): LocalSurface[] {
   const asset = assetOf(obj, assets);
   const [w, h, d] = effectiveDimsOf(obj);
+  if (collisionKindOf(obj, assets) === 'flat') return [];
+  if (!asset?.supports && asset?.source !== 'self_authored') {
+    const tilted = !!obj.tilt && (obj.tilt.x !== 0 || obj.tilt.z !== 0);
+    const shape = tilted ? null : shapeOfAsset(asset);
+    if (shape && asset) {
+      const [W, H, D] = renderedSize(asset.dimensionsM, obj.dimensionsM);
+      return exposedTopFaces(shape)
+        .map((f, i) => ({ f, i }))
+        .filter(({ f }) => (f.rect[2] - f.rect[0]) * W >= MIN_FACE_M && (f.rect[3] - f.rect[1]) * D >= MIN_FACE_M && f.y * H >= MIN_FACE_HEIGHT_M)
+        .map(({ f, i }) => ({
+          id: `face-${i}`,
+          y: f.y * H,
+          polygon: rect((f.rect[0] - 0.5) * W, (f.rect[1] - 0.5) * D, (f.rect[2] - 0.5) * W, (f.rect[3] - 0.5) * D),
+          shaped: true,
+        }));
+    }
+  }
   if (asset?.supports) {
     return asset.supports.map((s) => ({
       id: s.id,
@@ -177,5 +227,6 @@ export function worldSurfaces(obj: SceneObject, assets?: AssetLookup): WorldSurf
     y: pos[1] + s.y,
     polygon: s.polygon.map((p) => toWorld(p, pos, yaw)),
     ...(s.maxItemHeightM !== undefined ? { maxItemHeightM: s.maxItemHeightM } : {}),
+    ...(s.shaped ? { shaped: true } : {}),
   }));
 }

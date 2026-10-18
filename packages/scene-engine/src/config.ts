@@ -157,20 +157,16 @@ export function isLarge(category: string): boolean {
 }
 
 /**
- * Which categories may rest on which. Default: anything that isn't large furniture or mounted may
- * rest on any support surface it fits on (footprint + shelf gap are checked in support.ts).
- * Overrides: [childCategory, parentCategory] pairs that are always refused.
+ * What may rest on what (merge decision 4.2): codex's rule — anything on anything, as long as its
+ * bottom centre is on a real surface (support.ts `restsOn`) — plus one jordan rule: large furniture
+ * always stays on the floor (a sofa never lands on a table). Mounted items never rest on objects.
+ * Overrides: [childCategory, parentCategory] pairs that are always refused (none today).
  */
 export const REST_DENY: ReadonlyArray<readonly [string, string]> = [];
-
-/** Upholstered seats only hold soft goods and light flat things (no plants, vases or lamps). */
-export const SEAT_CATEGORIES: ReadonlySet<string> = new Set(['sofa', 'armchair', 'chair', 'ottoman']);
-export const SEAT_OK: ReadonlySet<string> = new Set(['pillow', 'throw', 'book', 'tray', 'decor']);
 
 export function canRestOn(childCategory: string, parentCategory: string, childClass?: PlacementClass): boolean {
   if (childClass === 'wall' || childClass === 'ceiling') return false;
   if (isLarge(childCategory)) return false;
-  if (SEAT_CATEGORIES.has(parentCategory) && !SEAT_OK.has(childCategory)) return false;
   return !REST_DENY.some(([c, p]) => c === childCategory && p === parentCategory);
 }
 

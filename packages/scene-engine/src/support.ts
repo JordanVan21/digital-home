@@ -1,6 +1,7 @@
 import type { SceneObject, Vec2 } from '@house/contracts';
-import { assetOf, effectiveDimsOf, worldSurfaces, type AssetLookup, type WorldSurface } from './body';
+import { assetOf, effectiveDimsOf, shapeLocalBoxes, worldSurfaces, type AssetLookup, type WorldSurface } from './body';
 import { canRestOn, placementClassOf } from './config';
+import { rotateXZ, yawFromQuat } from './math';
 import { obbCorners, obbOf } from './obb';
 import { distanceToBoundary, pointInPolygon } from './polygon';
 
@@ -16,6 +17,9 @@ export type SupportHit = {
   /** World height the object's base should sit at. */
   y: number;
 };
+
+/** Points this close to a face edge count as on it (baked faces come in 4 cm strips that share edges). */
+export const EDGE_TOL_M = 0.002;
 
 export type SupportContext = { assets?: AssetLookup; floorY?: number; fitToleranceM?: number };
 
@@ -42,6 +46,45 @@ export function fitsSurface(item: SceneObject, surface: WorldSurface, tol = 0.02
   return surface.maxItemHeightM === undefined || h <= surface.maxItemHeightM + 1e-6;
 }
 
+/**
+ * Codex's no-penetration rule for real top faces: resting on a face of `owner`'s baked shape is only
+ * valid if the item's box doesn't intersect the rest of that shape (no vase inside a sofa's frame, no
+ * book under a seat). Touching is fine. Owners without a shape always pass.
+ */
+export function clearOfShape(item: SceneObject, owner: SceneObject, assets?: AssetLookup, tol = 0.004): boolean {
+  const boxes = shapeLocalBoxes(owner, assets);
+  if (!boxes) return true;
+  const ownerYaw = yawFromQuat(owner.transform.rotation);
+  const [ox, oy, oz] = owner.transform.position;
+  const [ix, iy, iz] = item.transform.position;
+  const rel = rotateXZ([ix - ox, iz - oz], -ownerYaw);
+  const [w, h, d] = effectiveDimsOf(item);
+  const a = yawFromQuat(item.transform.rotation) - ownerYaw;
+  const c = Math.abs(Math.cos(a));
+  const s = Math.abs(Math.sin(a));
+  const ex = (c * w + s * d) / 2;
+  const ez = (s * w + c * d) / 2;
+  const y0 = iy - oy;
+  const y1 = y0 + h;
+  for (const b of boxes) {
+    if (rel[0] - ex < b.max[0] - tol && rel[0] + ex > b.min[0] + tol && rel[1] - ez < b.max[2] - tol && rel[1] + ez > b.min[2] + tol
+      && y0 < b.max[1] - tol && y1 > b.min[1] + tol) return false;
+  }
+  return true;
+}
+
+/**
+ * Codex's resting rule (merge decision 4.2): the item's bottom centre lies on the surface (overhang is
+ * fine — a leafy plant may stick out over a table), it fits a shelf gap, and it doesn't sink into the
+ * owner's shape. `item` is at the candidate pose (base at the surface height).
+ */
+export function restsOn(item: SceneObject, surface: WorldSurface, owner?: SceneObject, assets?: AssetLookup): boolean {
+  const c: Vec2 = [item.transform.position[0], item.transform.position[2]];
+  if (!pointInPolygon(c, surface.polygon, EDGE_TOL_M)) return false;
+  if (surface.maxItemHeightM !== undefined && effectiveDimsOf(item)[1] > surface.maxItemHeightM + 1e-6) return false;
+  return !surface.shaped || !owner || clearOfShape(item, owner, assets);
+}
+
 /** All support surfaces in the scene that `item` may rest on (excluding itself and what rests on it). */
 export function candidateSurfaces(objects: readonly SceneObject[], item: SceneObject, ctx: SupportContext = {}, exclude?: ReadonlySet<string>): WorldSurface[] {
   const own = subtreeIds(objects, item.id);
@@ -64,14 +107,14 @@ export function findSupport(
   opts: { point?: Vec2; maxY?: number; exclude?: ReadonlySet<string> } = {},
 ): SupportHit {
   const point = opts.point ?? [item.transform.position[0], item.transform.position[2]];
-  const tol = ctx.fitToleranceM ?? 0.02;
   let best: SupportHit = { ownerId: null, surfaceId: 'floor', y: ctx.floorY ?? 0 };
+  const byId = new Map(objects.map((o) => [o.id, o]));
   for (const s of candidateSurfaces(objects, item, ctx, opts.exclude)) {
     if (opts.maxY !== undefined && s.y > opts.maxY + 0.005) continue;
     if (s.y <= best.y) continue;
-    if (!pointInPolygon(point, s.polygon, 0)) continue;
+    if (!pointInPolygon(point, s.polygon, EDGE_TOL_M)) continue;
     const probe = { ...item, transform: { ...item.transform, position: [point[0], s.y, point[1]] as [number, number, number] } };
-    if (!fitsSurface(probe, s, tol)) continue;
+    if (!restsOn(probe, s, byId.get(s.ownerId), ctx.assets)) continue;
     best = { ownerId: s.ownerId, surfaceId: s.id, y: s.y };
   }
   return best;

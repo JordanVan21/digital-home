@@ -28,3 +28,45 @@ export function shapeOf(obj: Pick<SceneObject, 'assetId'>, assets?: AssetLookup)
 /** Ids with a baked profile (for tests / tooling). */
 export const bakedShapeIds = (): string[] => Object.keys(baked);
 export const bakedShapeHash = (id: string): string | undefined => baked[id]?.contentHash;
+
+// ---------------------------------------------------------------- exposed top faces (from codex contactFaces.ts)
+
+/** A top face patch in normalized model bounds: rect = [x0, z0, x1, z1], y = height (0..1). */
+export type ShapeFace = { rect: [number, number, number, number]; y: number };
+
+const EPS = 1e-7;
+const faceCache = new WeakMap<readonly ShapeBox[], ShapeFace[]>();
+
+/** `rect` minus `cut` (both [x0, z0, x1, z1]) as up to four rectangles. */
+function subtract(rect: ShapeFace['rect'], cut: ShapeFace['rect']): ShapeFace['rect'][] {
+  const [x0, z0, x1, z1] = rect;
+  const a = Math.max(x0, cut[0]);
+  const b = Math.max(z0, cut[1]);
+  const c = Math.min(x1, cut[2]);
+  const d = Math.min(z1, cut[3]);
+  if (c - a <= EPS || d - b <= EPS) return [rect];
+  return ([[x0, z0, a, z1], [c, z0, x1, z1], [a, z0, c, b], [a, d, c, z1]] as ShapeFace['rect'][])
+    .filter(([x, z, u, v]) => u - x > EPS && v - z > EPS);
+}
+
+/**
+ * Exposed top faces of a baked shape: each box's top, minus the columns of any box that continues
+ * above it (so a chair seat under its backrest only keeps the open part, and the hidden top of an
+ * internal block is not a surface). Cached per shape.
+ */
+export function exposedTopFaces(boxes: readonly ShapeBox[]): ShapeFace[] {
+  const cached = faceCache.get(boxes);
+  if (cached) return cached;
+  const faces: ShapeFace[] = [];
+  for (const [min, max] of boxes) {
+    let patches: ShapeFace['rect'][] = [[min[0], min[2], max[0], max[2]]];
+    for (const [low, high] of boxes) {
+      if (low[1] > max[1] + EPS || high[1] <= max[1] + EPS) continue;
+      patches = patches.flatMap((r) => subtract(r, [low[0], low[2], high[0], high[2]]));
+      if (!patches.length) break;
+    }
+    faces.push(...patches.map((rect) => ({ rect, y: max[1] })));
+  }
+  faceCache.set(boxes, faces);
+  return faces;
+}

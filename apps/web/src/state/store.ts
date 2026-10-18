@@ -427,20 +427,24 @@ export function nudge(delta: Vec2, ignoreCollisions = ignoringCollisions()) {
   commit('Nudge', groupTransformOps(c.ctx, c.scene, roots.map((r) => r.id), d, 0, [0, 0]), { quiet: false });
 }
 
-/** Vertical nudge — wall/ceiling items, or items with Float on. */
+/**
+ * Vertical nudge (PageUp / PageDown). Wall and ceiling items just move; other pieces are deliberately
+ * raised, so whether they stay up follows the release mode (MERGE_INVENTORY §14).
+ */
 export function nudgeVertical(dy: number) {
   const c = ctxOrNull();
   if (!c) return;
   const roots = rootsOf(c.scene, c.s.selectedIds).filter((o) => !o.locked);
-  const movable = roots.filter((o) => {
+  if (!roots.length) return;
+  const floorY = c.ctx.shell.floor.elevationY;
+  const ops: SceneOp[] = [];
+  for (const o of roots) {
     const cls = classOf(c.ctx, o);
-    return cls === 'wall' || cls === 'ceiling' || o.placement?.float;
-  });
-  if (!movable.length) return toast('Turn on Float to raise or lower it (otherwise it settles back down).', 'info');
-  const ops: SceneOp[] = movable.map((o) => {
     const [x, y, z] = o.transform.position;
-    return { type: 'move', objectId: o.id, transform: { ...o.transform, position: [x, Math.max(c.ctx.shell.floor.elevationY, y + dy), z] } };
-  });
+    const transform = { ...o.transform, position: [x, Math.max(floorY, y + dy), z] as Vec3 };
+    if (cls === 'wall' || cls === 'ceiling') ops.push({ type: 'move', objectId: o.id, transform });
+    else ops.push(...moveWithSupport(c.ctx, c.scene, o.id, transform, { settle: releaseSettles(true) }));
+  }
   commit('Nudge up/down', ops);
 }
 

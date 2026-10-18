@@ -28,7 +28,7 @@ function objectAt(r: Raycaster, root: Object3D | undefined): string | null {
 /**
  * Pointer routing for the canvas. A capture-phase listener runs before the camera controls see the
  * event, so a press on furniture or the rotation ring turns orbiting off for that drag:
- * - press + drag on an unlocked object → move it (Alt = lift; Ctrl/Cmd = ignore collisions);
+ * - press + drag on an unlocked object → move it (Alt = no snapping; Shift = 10 cm grid; Ctrl/Cmd = ignore collisions; wheel = raise/lower);
  * - press + drag on the ring → turn it; Shift+drag on empty space → box select;
  * - click (< 4 px) → select (Shift adds, Alt picks one member of a group); empty click deselects;
  * - double-click → focus the camera on the object / floor point. Locked objects just orbit.

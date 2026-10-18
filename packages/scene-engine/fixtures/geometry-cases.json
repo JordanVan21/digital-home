@@ -537,7 +537,7 @@
       ]
     },
     {
-      "name": "lamp on a sofa is not on the nesting allow-list",
+      "name": "lamp on top of a sofa back: allowed to rest on a sofa (codex rule), but this is not a real surface",
       "shell": "room6",
       "objects": [
         {
@@ -571,8 +571,44 @@
         }
       ],
       "expect": [
-        "nesting:lamp"
+        "support:lamp"
       ]
+    },
+    {
+      "name": "lamp on a sofa seat is allowed (merge decision 4.2: anything on anything except large furniture)",
+      "shell": "room6",
+      "objects": [
+        {
+          "id": "sofa",
+          "category": "sofa",
+          "pos": [
+            0,
+            0,
+            0
+          ],
+          "dims": [
+            2,
+            0.85,
+            0.9
+          ]
+        },
+        {
+          "id": "lamp",
+          "category": "lamp",
+          "pos": [
+            0,
+            0.4675,
+            0
+          ],
+          "dims": [
+            0.25,
+            0.45,
+            0.25
+          ],
+          "parentId": "sofa"
+        }
+      ],
+      "expect": []
     },
     {
       "name": "missing parent is an error",
