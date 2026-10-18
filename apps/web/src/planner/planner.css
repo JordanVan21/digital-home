@@ -1,0 +1,626 @@
+/* Planner page: full-bleed room with floating glass panels, like the sandbox. */
+.planner-lab {
+  position: relative;
+  height: 100dvh;
+  min-height: 600px;
+  overflow: hidden;
+  /* Same tone as the 3D scene's backdrop, so the narrowed viewport blends in. */
+  background: #d4c4ad;
+  color: var(--ink);
+  font-family: "DM Sans", sans-serif;
+}
+/* The room fills the space between the floating panels. */
+.planner-lab .planner-viewport {
+  position: absolute;
+  inset: 0 0 0 396px;
+}
+.planner-lab.has-report .planner-viewport {
+  right: 416px;
+}
+
+/* ---------- Top bar ---------- */
+.planner-topbar {
+  position: absolute;
+  left: 24px;
+  right: 24px;
+  top: 20px;
+  height: 64px;
+  border-radius: 999px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 0 12px;
+  z-index: 10;
+}
+.planner-back {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  height: 42px;
+  padding: 0 16px 0 12px;
+  border-radius: 999px;
+  font-weight: 500;
+}
+.planner-title {
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  margin-left: 6px;
+  font-family: Manrope, sans-serif;
+  font-weight: 600;
+  font-size: 18px;
+  letter-spacing: -0.3px;
+}
+.planner-room-pill {
+  display: flex;
+  align-items: center;
+  height: 42px;
+  border-radius: 999px;
+  padding: 0 6px 0 10px;
+}
+.planner-room-pill select {
+  max-width: 260px;
+  border: 0;
+  background: transparent;
+  font: inherit;
+  font-weight: 500;
+  color: var(--ink);
+  padding: 8px 4px;
+  cursor: pointer;
+}
+.planner-room-pill select:focus-visible {
+  outline: none;
+}
+.planner-account {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  min-width: 0;
+}
+
+/* ---------- Floating panels ---------- */
+.planner-panel {
+  position: absolute;
+  top: 104px;
+  bottom: 24px;
+  z-index: 5;
+  overflow-y: auto;
+  border-radius: 26px;
+  padding: 22px;
+  background-color: var(--glass-panel-fill);
+  scrollbar-width: thin;
+}
+.planner-controls {
+  left: 24px;
+  width: 360px;
+}
+.planner-report {
+  right: 24px;
+  width: 380px;
+}
+.planner-eyebrow {
+  margin: 0 0 4px;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.planner-controls h1 {
+  margin: 0;
+  font-family: Manrope, sans-serif;
+  font-size: 22px;
+  line-height: 1.25;
+  letter-spacing: -0.4px;
+}
+.planner-sub {
+  margin: 8px 0 16px;
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--ink-soft);
+}
+
+/* Style cards */
+.style-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+.style-card {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 4px;
+  padding: 10px 11px 11px;
+  border-radius: 16px;
+  text-align: left;
+  background: rgba(255, 255, 255, 0.45);
+  border: 1px solid var(--line);
+}
+.style-card:hover:not(:disabled) {
+  background: var(--glass-fill-strong);
+}
+.style-card.selected {
+  background: var(--glass-fill-strong);
+  border-color: var(--accent);
+  box-shadow: 0 0 0 1px var(--accent);
+}
+.style-card strong {
+  font-size: 12.5px;
+  line-height: 1.25;
+}
+.style-card small {
+  font-size: 11px;
+  line-height: 1.35;
+  color: var(--muted);
+}
+.swatches {
+  display: flex;
+  margin-bottom: 4px;
+}
+.swatches i {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  border: 1.5px solid rgba(255, 255, 255, 0.9);
+  margin-right: -4px;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.12);
+}
+
+/* Fields */
+.planner-field {
+  display: block;
+  margin: 16px 0 0;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--ink-soft);
+}
+.planner-field select,
+.planner-field textarea {
+  display: block;
+  width: 100%;
+  margin-top: 6px;
+  padding: 10px 12px;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.55);
+  color: var(--ink);
+  font: inherit;
+  font-weight: 400;
+  font-size: 13px;
+}
+.planner-field textarea {
+  resize: vertical;
+  line-height: 1.45;
+}
+.planner-advanced .planner-field textarea {
+  font:
+    11.5px/1.5 ui-monospace,
+    monospace;
+}
+
+/* Connection status */
+.planner-connection {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  margin-top: 12px;
+  padding: 10px 10px 10px 12px;
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.4);
+  border: 1px solid var(--line);
+  font-size: 12px;
+  line-height: 1.45;
+}
+.planner-connection > div {
+  flex: 1;
+  min-width: 0;
+}
+.planner-connection strong {
+  font-weight: 600;
+}
+.planner-connection p {
+  margin: 2px 0 0;
+  color: var(--muted);
+}
+.planner-connection .dot {
+  flex-shrink: 0;
+  width: 8px;
+  height: 8px;
+  margin-top: 5px;
+  border-radius: 50%;
+  background: #c79a3a;
+  box-shadow: 0 0 0 3px rgba(199, 154, 58, 0.18);
+}
+.planner-connection.ok .dot {
+  background: #4f8f5b;
+  box-shadow: 0 0 0 3px rgba(79, 143, 91, 0.18);
+}
+.planner-connection .round {
+  width: 30px;
+  height: 30px;
+}
+
+/* Primary action + progress */
+.planner-go {
+  width: 100%;
+  justify-content: center;
+  margin-top: 16px;
+  height: 48px;
+  font-size: 14px;
+}
+.spin {
+  animation: planner-spin 0.9s linear infinite;
+}
+@keyframes planner-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+.planner-steps {
+  list-style: none;
+  margin: 16px 0 0;
+  padding: 0;
+  display: grid;
+  gap: 8px;
+  font-size: 12.5px;
+}
+.planner-steps li {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: var(--muted);
+}
+.planner-steps li.active,
+.planner-steps li.done {
+  color: var(--ink);
+}
+.step-dot {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  border: 1px solid var(--line);
+  background: rgba(255, 255, 255, 0.5);
+}
+.planner-steps li.done .step-dot {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: var(--accent-ink);
+}
+.planner-status {
+  margin: 12px 0 0;
+  font-size: 12px;
+  line-height: 1.5;
+  color: var(--ink-soft);
+}
+.planner-error {
+  margin: 10px 0 0;
+  padding: 10px 12px;
+  border-radius: 12px;
+  background: #fff0e7;
+  color: #8c2d13;
+  font-size: 12px;
+  line-height: 1.45;
+}
+.planner-error-text {
+  color: #8c2d13;
+}
+.planner-advanced {
+  margin-top: 18px;
+  padding-top: 12px;
+  border-top: 1px solid var(--line);
+  font-size: 12px;
+  color: var(--ink-soft);
+}
+.planner-advanced summary {
+  cursor: pointer;
+  font-weight: 600;
+}
+.planner-advanced p {
+  margin: 6px 0;
+  line-height: 1.45;
+}
+
+/* ---------- Before / after ---------- */
+.planner-compare {
+  position: absolute;
+  left: calc(50% + 198px);
+  bottom: 24px;
+  transform: translateX(-50%);
+  z-index: 6;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  pointer-events: none;
+}
+.planner-compare > * {
+  pointer-events: auto;
+}
+.segmented {
+  display: flex;
+  padding: 4px;
+  border-radius: 999px;
+}
+.segmented button {
+  min-width: 92px;
+  height: 38px;
+  padding: 0 18px;
+  border-radius: 999px;
+  font-weight: 600;
+  color: var(--ink-soft);
+}
+.segmented button.on {
+  background: var(--contrast-fill);
+  color: var(--contrast-ink);
+}
+.segmented button:disabled {
+  opacity: 0.45;
+}
+.planner-caption,
+.planner-model-summary {
+  font-size: 11.5px;
+  color: var(--ink-soft);
+  padding: 3px 10px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.55);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+
+/* ---------- Proposal panel ---------- */
+.report-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+.report-head h2 {
+  margin: 0;
+  font-family: Manrope, sans-serif;
+  font-size: 20px;
+  letter-spacing: -0.3px;
+}
+.mode-badge {
+  font-size: 11px;
+  font-weight: 600;
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: rgba(79, 143, 91, 0.14);
+  color: #2f6b3b;
+}
+.mode-badge.demo {
+  background: rgba(199, 154, 58, 0.16);
+  color: #7a5713;
+}
+.report-rationale {
+  margin: 10px 0 14px;
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--ink-soft);
+}
+.report-stats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+  margin-bottom: 14px;
+}
+.report-stats div {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 10px 12px;
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.5);
+  border: 1px solid var(--line);
+}
+.report-stats strong {
+  font-family: Manrope, sans-serif;
+  font-size: 17px;
+}
+.report-stats span {
+  font-size: 11px;
+  color: var(--muted);
+  line-height: 1.3;
+}
+.change-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.change-list li {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: start;
+  gap: 10px;
+  padding: 10px 0;
+  border-top: 1px solid var(--line);
+}
+.change-main {
+  min-width: 0;
+}
+.change-main strong {
+  display: block;
+  font-size: 13px;
+}
+.change-main small {
+  display: block;
+  margin-top: 2px;
+  font-size: 11.5px;
+  line-height: 1.4;
+  color: var(--muted);
+}
+.change-main small.note {
+  font-style: italic;
+}
+.price {
+  font-size: 12.5px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+.chip {
+  display: inline-block;
+  min-width: 62px;
+  text-align: center;
+  font-size: 11px;
+  font-weight: 600;
+  padding: 3px 8px;
+  border-radius: 999px;
+  background: rgba(0, 0, 0, 0.06);
+  color: var(--ink-soft);
+}
+.chip.add {
+  background: rgba(79, 143, 91, 0.16);
+  color: #2f6b3b;
+}
+.chip.replace {
+  background: rgba(199, 154, 58, 0.18);
+  color: #7a5713;
+}
+.chip.move {
+  background: rgba(64, 110, 170, 0.15);
+  color: #2c5585;
+}
+.chip.remove {
+  background: rgba(176, 72, 52, 0.15);
+  color: #8c2d13;
+}
+.chip.dropped {
+  background: transparent;
+  border: 1px dashed var(--line);
+}
+.report-warning {
+  margin: 8px 0 0;
+  padding: 8px 10px;
+  border-radius: 10px;
+  background: rgba(199, 154, 58, 0.12);
+  font-size: 12px;
+  line-height: 1.45;
+}
+.report-reviews {
+  margin-top: 14px;
+  padding-top: 12px;
+  border-top: 1px solid var(--line);
+  font-size: 12px;
+  color: var(--ink-soft);
+}
+.report-reviews summary {
+  cursor: pointer;
+  font-weight: 600;
+}
+.report-reviews p {
+  line-height: 1.45;
+}
+.planner-captures {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6px;
+  margin-top: 8px;
+}
+.planner-captures img {
+  width: 100%;
+  border-radius: 10px;
+}
+
+.planner-lab.has-report .planner-compare {
+  left: calc(50% - 10px);
+}
+@media (max-width: 1100px) {
+  .planner-lab.has-report .planner-viewport {
+    right: 0;
+  }
+  .planner-report {
+    top: auto;
+    left: 400px;
+    right: 24px;
+    width: auto;
+    height: 40vh;
+  }
+}
+@media (max-width: 760px) {
+  .planner-lab {
+    overflow: auto;
+  }
+  .planner-topbar {
+    left: 16px;
+    right: 16px;
+  }
+  .planner-back span {
+    display: none;
+  }
+  .planner-lab .planner-viewport,
+  .planner-lab.has-report .planner-viewport {
+    position: relative;
+    inset: auto;
+    height: 55vh;
+    margin-top: 100px;
+  }
+  .planner-compare,
+  .planner-lab.has-report .planner-compare {
+    position: relative;
+    left: auto;
+    bottom: auto;
+    transform: none;
+    margin-top: 8px;
+  }
+  .planner-panel {
+    position: relative;
+    inset: auto;
+    width: auto;
+    margin: 16px;
+  }
+}
+
+/* Saving a proposal as a design */
+.report-save {
+  display: grid;
+  gap: 8px;
+  margin-bottom: 14px;
+}
+.report-save .primary-pill {
+  width: 100%;
+  justify-content: center;
+}
+.report-save p {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin: 0;
+  font-size: 12.5px;
+  line-height: 1.4;
+}
+.report-save small {
+  font-size: 11.5px;
+  color: var(--muted);
+  text-align: center;
+}
+.planner-saved {
+  margin-top: 18px;
+  display: grid;
+  gap: 6px;
+}
+.saved-design {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  padding: 9px 12px;
+  border-radius: 12px;
+  border: 1px solid var(--line);
+  background: rgba(255, 255, 255, 0.45);
+  font-size: 12.5px;
+  text-align: left;
+}
+.saved-design span {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.saved-design:hover {
+  background: var(--glass-fill-strong);
+}

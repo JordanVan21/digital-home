@@ -318,6 +318,7 @@ async function swapIn(
 // --- Planner asset requests: the caller decides placement; we only pick the model.
 type AssetRequestRow = { id: string; request: unknown };
 const requestTimeLimitMs = (Number(process.env.REQUEST_TIME_LIMIT_S) || 300) * 1000;
+const requestLanes = Math.max(1, Number(process.env.REQUEST_CONCURRENCY) || 4);
 const glbUrl = (key: string) => `${url}/storage/v1/object/public/glbs/${bucketPath(key)}`;
 const answer = (o: RenderOutcome, seconds: number) => ({
   asset_id: o.assetId,
@@ -409,11 +410,16 @@ await Promise.all([
     },
     (scan, message) => db.from("scans").update({ status: "failed", error: message }).eq("id", scan.id),
   ),
-  drain(
-    "request",
-    claimRequest,
-    processRequest,
-    (row, message) => db.from("asset_requests").update({ status: "failed", error: message }).eq("id", row.id),
+  // Several request lanes: the planner asks for a room's pieces together and only waits
+  // so long, so one slow agent check must not hold up the library answers for the rest.
+  // claimRequest is atomic (pending -> processing), so lanes never take the same row.
+  ...Array.from({ length: requestLanes }, () =>
+    drain(
+      "request",
+      claimRequest,
+      processRequest,
+      (row, message) => db.from("asset_requests").update({ status: "failed", error: message }).eq("id", row.id),
+    ),
   ),
 ]);
 process.exit(0); // --once: also stops the headless Blenders we started

@@ -47,16 +47,26 @@ async function upload(key) {
       if (!res.ok) throw new Error(`upload ${path}: ${res.status} ${await res.text()}`);
       return;
     } catch (error) {
-      if (attempt >= 4 || !(error instanceof TypeError)) throw error;
-      await new Promise((r) => setTimeout(r, 500 * attempt));
+      // TypeError = network drop (EPIPE, "other side closed"): back off and retry.
+      if (attempt >= 8 || !(error instanceof TypeError)) throw error;
+      console.log(`\n  retry ${attempt} ${path}: ${error.cause?.code ?? error.message}`);
+      await new Promise((r) => setTimeout(r, Math.min(1000 * 2 ** attempt, 15000)));
     }
   }
 }
 
 const rows = [];
+const failed = [];
 for (const spec of assets) {
-  await upload(spec.glbStorageKey);
-  if (spec.thumbnailStorageKey) await upload(spec.thumbnailStorageKey);
+  try {
+    await upload(spec.glbStorageKey);
+    if (spec.thumbnailStorageKey) await upload(spec.thumbnailStorageKey);
+  } catch (error) {
+    // Skip this asset (no row) and keep going; rerun the script to retry it.
+    failed.push(`${spec.title} (${spec.glbStorageKey}): ${error.cause?.code ?? error.message}`);
+    process.stdout.write("x");
+    continue;
+  }
   const [width, height, depth] = spec.dimensionsM; // width, height, depth
   rows.push({
     id: spec.id,
@@ -83,3 +93,8 @@ const res = await fetch(`${url}/rest/v1/assets`, {
 });
 if (!res.ok) throw new Error(`assets upsert: ${res.status} ${await res.text()}`);
 console.log(`\nSeeded ${rows.length} assets from ${ref}. Public GLB base: ${url}/storage/v1/object/public/glbs/`);
+if (failed.length) {
+  console.log(`\n${failed.length} asset(s) skipped after retries (rerun to try again):`);
+  for (const line of failed) console.log(`  - ${line}`);
+  process.exitCode = 1;
+}

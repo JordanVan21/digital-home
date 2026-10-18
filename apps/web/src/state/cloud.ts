@@ -77,7 +77,8 @@ export async function loadCloudRooms(): Promise<string[]> {
       roomId: row.id,
       name: row.name,
       shell: shell.data,
-      createScene: () => settleImportedScene(structuredClone(scene.data), shell.data),
+      createScene: () =>
+        settleImportedScene(structuredClone(scene.data), shell.data),
     };
     const index = rooms.findIndex((r) => r.roomId === row.id);
     // Update in place: the editor compares room definitions by identity.
@@ -87,8 +88,90 @@ export async function loadCloudRooms(): Promise<string[]> {
     cloudShells.set(row.id, shell.data);
     ids.push(row.id);
   }
+  await loadCloudDesigns();
   cloudRoomsVersion.setState((s) => ({ version: s.version + 1 }));
   return ids;
+}
+
+/**
+ * Saved planner designs open like rooms: each has its own id (so edits never
+ * touch the original room) and reuses the original room's shell. Maps design id
+ * to the scanned room it was made from.
+ */
+export const designParents = new Map<string, string>();
+
+function addDesign(id: string, name: string, roomId: string, scene: SceneSpec) {
+  const shell = cloudShells.get(roomId);
+  if (!shell) return;
+  const definition: RoomDefinition = {
+    roomId: id,
+    name,
+    shell,
+    createScene: () => structuredClone({ ...scene, id, roomId: id }),
+  };
+  const index = rooms.findIndex((r) => r.roomId === id);
+  if (index >= 0) Object.assign(rooms[index], definition);
+  else rooms.push(definition);
+  designParents.set(id, roomId);
+}
+
+async function loadCloudDesigns() {
+  const { data, error } = await supabase
+    .from("designs")
+    .select("id,name,room_id,scene")
+    .eq("status", "accepted")
+    .not("scene", "is", null)
+    .order("created_at", { ascending: true });
+  if (error) return;
+  for (const row of data) {
+    const scene = SceneSpecSchema.safeParse(row.scene);
+    if (row.room_id && scene.success)
+      addDesign(row.id, row.name, row.room_id, scene.data);
+  }
+}
+
+/** Saves a planner proposal as a new, separately named design of a scanned room. */
+export async function saveCloudDesign(input: {
+  roomId: string;
+  name: string;
+  brief: unknown;
+  scene: SceneSpec;
+}): Promise<string> {
+  const roomId = designParents.get(input.roomId) ?? input.roomId;
+  if (!cloudRoomIds.has(roomId))
+    throw new Error("Open a scanned room while signed in to save designs.");
+  const { data: room, error: roomError } = await supabase
+    .from("rooms")
+    .select("house_id")
+    .eq("id", roomId)
+    .single();
+  if (roomError || !room) throw new Error("Could not find the original room.");
+  const id = crypto.randomUUID();
+  const scene: SceneSpec = {
+    ...input.scene,
+    id,
+    roomId: id,
+    revision: 0,
+    updatedAt: new Date().toISOString(),
+  };
+  const { error } = await supabase.from("designs").insert({
+    id,
+    house_id: room.house_id,
+    room_id: roomId,
+    name: input.name,
+    brief: input.brief,
+    scene,
+    status: "accepted",
+  });
+  if (error) throw new Error("The design could not be saved. Try again.");
+  addDesign(id, input.name, roomId, scene);
+  cloudRoomsVersion.setState((s) => ({ version: s.version + 1 }));
+  return id;
+}
+
+/** Saves edits made to an opened design back to that design only. */
+export async function pushCloudDesign(scene: SceneSpec) {
+  await supabase.from("designs").update({ scene }).eq("id", scene.roomId);
 }
 
 /** Scanned rooms' shells, so a newer saved copy can be settled when it is adopted. */
@@ -100,8 +183,15 @@ const cloudShells = new Map<string, RoomShell>();
  * that still overlap a wall or each other are moved to the nearest valid spot by the
  * sandbox's own resolver. Valid pieces are left exactly where they were scanned.
  */
-export function settleImportedScene(scene: SceneSpec, shell: RoomShell): SceneSpec {
-  const ctx: SceneContext = { room: shell, assets: assetById, roomId: scene.roomId };
+export function settleImportedScene(
+  scene: SceneSpec,
+  shell: RoomShell,
+): SceneSpec {
+  const ctx: SceneContext = {
+    room: shell,
+    assets: assetById,
+    roomId: scene.roomId,
+  };
   const objects = scene.objects.map((o) => {
     if (o.locked || (o.placement?.support ?? "floor") !== "floor") return o;
     if (o.transform.position[1] < 0.35) return o;
@@ -110,7 +200,8 @@ export function settleImportedScene(scene: SceneSpec, shell: RoomShell): SceneSp
     // little into the furniture below (a sink in a counter), it rests on that top.
     const rested = onNearestSurface(scene, o, shell, assetById);
     const dy = rested.transform.position[1] - o.transform.position[1];
-    const onTop = rested.placement?.support === "object" && dy > -0.05 && dy < 0.35;
+    const onTop =
+      rested.placement?.support === "object" && dy > -0.05 && dy < 0.35;
     return {
       ...o,
       transform: onTop ? rested.transform : o.transform,
@@ -122,7 +213,10 @@ export function settleImportedScene(scene: SceneSpec, shell: RoomShell): SceneSp
     objects.filter((o) => !validateObject(draft, o, ctx).ok).map((o) => o.id),
   );
   if (!invalid.size) return draft;
-  const accepted = { ...draft, objects: objects.filter((o) => !invalid.has(o.id)) };
+  const accepted = {
+    ...draft,
+    objects: objects.filter((o) => !invalid.has(o.id)),
+  };
   const result = resolveDraft(accepted, draft, ctx);
   if (!result.ok) return draft;
   const placed = new Map(result.scene.objects.map((o) => [o.id, o]));
@@ -143,10 +237,14 @@ function shrinkToFit(scene: SceneSpec, ctx: SceneContext): SceneSpec {
   for (const original of scene.objects) {
     const o = current.objects.find((p) => p.id === original.id)!;
     if (o.locked || validateObject(current, o, ctx).ok) continue;
-    for (const factor of [0.99, 0.98, 0.96, 0.94, 0.92, 0.88, 0.84, 0.8, 0.75]) {
+    for (const factor of [
+      0.99, 0.98, 0.96, 0.94, 0.92, 0.88, 0.84, 0.8, 0.75,
+    ]) {
       const smaller = {
         ...o,
-        dimensionsM: o.dimensionsM.map((n) => n * factor) as typeof o.dimensionsM,
+        dimensionsM: o.dimensionsM.map(
+          (n) => n * factor,
+        ) as typeof o.dimensionsM,
       };
       const trial = {
         ...current,
@@ -157,7 +255,10 @@ function shrinkToFit(scene: SceneSpec, ctx: SceneContext): SceneSpec {
         break;
       }
       // Smaller may still need a nudge (a gap from the wall, out of a neighbour).
-      const others = { ...trial, objects: trial.objects.filter((p) => p.id !== o.id) };
+      const others = {
+        ...trial,
+        objects: trial.objects.filter((p) => p.id !== o.id),
+      };
       const moved = resolveDraft(others, trial, ctx);
       const fitted = moved.ok && moved.scene.objects.find((p) => p.id === o.id);
       if (moved.ok && fitted && validateObject(moved.scene, fitted, ctx).ok) {
@@ -169,11 +270,19 @@ function shrinkToFit(scene: SceneSpec, ctx: SceneContext): SceneSpec {
   // One invalid piece blocks every Accept in the room, so a piece that still cannot
   // fit (usually RoomPlan detecting one cabinet twice, or a box cut by a wall) is
   // left out of the editable scene and named when the room opens.
-  const dropped = current.objects.filter((o) => !o.locked && !validateObject(current, o, ctx).ok);
+  const dropped = current.objects.filter(
+    (o) => !o.locked && !validateObject(current, o, ctx).ok,
+  );
   if (dropped.length) {
-    droppedPieces.set(scene.roomId, dropped.map((o) => o.displayName));
+    droppedPieces.set(
+      scene.roomId,
+      dropped.map((o) => o.displayName),
+    );
     const ids = new Set(dropped.map((o) => o.id));
-    current = { ...current, objects: current.objects.filter((o) => !ids.has(o.id)) };
+    current = {
+      ...current,
+      objects: current.objects.filter((o) => !ids.has(o.id)),
+    };
   }
   return current;
 }
@@ -194,10 +303,17 @@ export async function signOutCloud() {
     if (index >= 0) rooms.splice(index, 1);
   }
   cloudRoomIds.clear();
+  for (const id of designParents.keys()) {
+    const index = rooms.findIndex((r) => r.roomId === id);
+    if (index >= 0) rooms.splice(index, 1);
+  }
+  designParents.clear();
   cloudRoomsVersion.setState((s) => ({ version: s.version + 1 }));
 }
 
-export async function fetchCloudScene(roomId: string): Promise<SceneSpec | null> {
+export async function fetchCloudScene(
+  roomId: string,
+): Promise<SceneSpec | null> {
   const { data, error } = await supabase
     .from("rooms")
     .select("scene")
@@ -226,7 +342,12 @@ export function watchCloudRoom(
     .channel(`room-${roomId}`)
     .on(
       "postgres_changes",
-      { event: "UPDATE", schema: "public", table: "rooms", filter: `id=eq.${roomId}` },
+      {
+        event: "UPDATE",
+        schema: "public",
+        table: "rooms",
+        filter: `id=eq.${roomId}`,
+      },
       (payload) => onRevision((payload.new as { revision: number }).revision),
     )
     .subscribe();
@@ -240,16 +361,23 @@ export const cloudRoomsVersion = createStore(() => ({ version: 0 }));
  * Adds rooms the scan worker creates while the page is open (Realtime INSERT on
  * the signed-in user's rooms) and reports each new one.
  */
-export function watchNewCloudRooms(onNew: (name: string, roomId: string) => void): () => void {
+export function watchNewCloudRooms(
+  onNew: (name: string, roomId: string) => void,
+): () => void {
   const channel = supabase
     .channel("my-new-rooms")
-    .on("postgres_changes", { event: "INSERT", schema: "public", table: "rooms" }, async () => {
-      const before = new Set(cloudRoomIds);
-      const ids = await loadCloudRooms();
-      cloudRoomsVersion.setState((s) => ({ version: s.version + 1 }));
-      for (const id of ids)
-        if (!before.has(id)) onNew(rooms.find((r) => r.roomId === id)?.name ?? "New scan", id);
-    })
+    .on(
+      "postgres_changes",
+      { event: "INSERT", schema: "public", table: "rooms" },
+      async () => {
+        const before = new Set(cloudRoomIds);
+        const ids = await loadCloudRooms();
+        cloudRoomsVersion.setState((s) => ({ version: s.version + 1 }));
+        for (const id of ids)
+          if (!before.has(id))
+            onNew(rooms.find((r) => r.roomId === id)?.name ?? "New scan", id);
+      },
+    )
     .subscribe();
   return () => void supabase.removeChannel(channel);
 }

@@ -17,6 +17,8 @@ import { roomById } from "./rooms";
 import {
   cloudRoomIds,
   fetchCloudScene,
+  designParents,
+  pushCloudDesign,
   pushCloudScene,
   settleCloudScene,
 } from "./cloud";
@@ -353,6 +355,14 @@ export class Autosave {
  */
 export class CloudSceneRepository extends LocalStorageSceneRepository {
   async load(roomId: string): Promise<SceneSpec> {
+    // A saved design's definition holds the copy loaded from Supabase; adopt it
+    // when it is newer than this browser's copy (e.g. the design was updated).
+    const design = designParents.has(roomId) ? roomById(roomId) : undefined;
+    if (design) {
+      const remote = design.createScene();
+      const local = await super.load(roomId).catch(() => null);
+      if (!local || local.revision < remote.revision) this.write(remote);
+    }
     if (cloudRoomIds.has(roomId)) {
       const remote = await fetchCloudScene(roomId).catch(() => null);
       if (remote) {
@@ -389,6 +399,13 @@ export class CloudSceneRepository extends LocalStorageSceneRepository {
     return result;
   }
   private push(roomId: string) {
+    if (designParents.has(roomId)) {
+      void super
+        .load(roomId)
+        .then(pushCloudDesign)
+        .catch(() => {});
+      return;
+    }
     if (!cloudRoomIds.has(roomId)) return;
     void super
       .load(roomId)

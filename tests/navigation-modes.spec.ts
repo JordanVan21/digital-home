@@ -33,6 +33,10 @@ for (const mode of ["Orbit", "Pan"] as const) {
           .objects.find(
             (o: { id: string }) => o.id === e.interaction.getState().selectedId,
           );
+        if (!object || !e.motion.projectPoint)
+          throw new Error(
+            "Selected furniture and camera projection must be ready.",
+          );
         const p = object.transform.position;
         return {
           position: [...e.motion.cameraPosition],
