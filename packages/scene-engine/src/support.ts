@@ -157,7 +157,7 @@ function contactFaces(
     ];
   });
 }
-function surfaceFaces(
+export function surfaceFaces(
   scene: SceneSpec,
   o: SceneObject,
   room: RoomShell,

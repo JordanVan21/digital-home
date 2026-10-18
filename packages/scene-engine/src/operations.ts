@@ -1,3 +1,4 @@
+import { resizeAssembly } from "./resize";
 import { hasWallSupport, onCeiling } from "./mounting";
 import { bottomContactFaces } from "./contactFaces";
 import { moveAssembly, supportedDescendants } from "./assembly";
@@ -226,6 +227,30 @@ export function validateOp(
       options,
     );
   }
+  if (op.type === "resize") {
+    const descendants = supportedDescendants(scene, id);
+    const locked = scene.objects.find((o) => descendants.has(o.id) && o.locked);
+    if (locked)
+      return fail(
+        "OBJECT_LOCKED",
+        `${locked.displayName} is locked. Unlock it before resizing its support.`,
+        locked.id,
+      );
+    const resized = resizeAssembly(
+      scene,
+      id,
+      op.dimensionsM,
+      ctx.room,
+      ctx.assets,
+    );
+    for (const item of resized.objects.filter(
+      (o) => o.id === id || descendants.has(o.id),
+    )) {
+      const valid = validateObject(resized, item, ctx, options);
+      if (!valid.ok) return valid;
+    }
+    return { ok: true };
+  }
   if (op.type === "move") {
     const descendants = supportedDescendants(scene, id);
     const locked = scene.objects.find((o) => descendants.has(o.id) && o.locked);
@@ -297,6 +322,14 @@ export function applyOp(
         ? { ...structuredClone(op.newObject), replacesObjectId: op.oldObjectId }
         : o,
     );
+  else if (op.type === "resize")
+    objects = resizeAssembly(
+      scene,
+      op.objectId,
+      op.dimensionsM,
+      ctx.room,
+      ctx.assets,
+    ).objects;
   else if (op.type === "move") {
     const moved = moveAssembly(scene, op.objectId, op.transform);
     objects = moved.objects.map((o) =>
@@ -357,6 +390,8 @@ export function invertOp(before: SceneSpec, op: SceneOp): Inverse {
   const obj = before.objects.find((o) => o.id === id);
   if (!obj) throw new Error("Cannot invert an unknown object");
   switch (op.type) {
+    case "resize":
+      return { type: "checkpoint", scene: structuredClone(before) };
     case "setGroup":
       return { type: "setGroup", objectId: id, groupId: obj.groupId };
     case "setLight":

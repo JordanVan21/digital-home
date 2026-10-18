@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { lightSpecFor } from "../scene/lightBudget";
 import { RoomInspector } from "./RoomInspector";
 import { useStore } from "zustand";
@@ -21,6 +22,7 @@ import { useWorkingObject } from "../state/useWorking";
 import { Button } from "./Button";
 import { providerLabel } from "./provider";
 export function InspectorPanel() {
+  const [keepProportions, setKeepProportions] = useState(true);
   const id = useStore(editor.interaction, (s) => s.selectedId),
     open = useStore(editor.interaction, (s) => s.inspector);
   const object = useWorkingObject(id);
@@ -288,6 +290,62 @@ export function InspectorPanel() {
             {object.dimensionsM.map((n) => n.toFixed(2)).join(" × ")}{" "}
             <span>m</span>
           </p>
+          <label className="subtle">
+            <input
+              type="checkbox"
+              checked={keepProportions}
+              disabled={object.locked || dragging}
+              onChange={(e) => setKeepProportions(e.target.checked)}
+            />{" "}
+            Keep proportions
+          </label>
+          {(["Width", "Height", "Depth"] as const).map((label, i) => (
+            <div className="rotation-readout" key={label}>
+              <label htmlFor={`dimension-${i}`}>{label}</label>
+              <input
+                id={`dimension-${i}`}
+                className="rotation-input"
+                type="number"
+                min={0.001}
+                step={0.01}
+                key={`${object.id}-dimension-${i}-${object.dimensionsM[i]}-${object.transform.scale[i]}`}
+                defaultValue={Number(
+                  (object.dimensionsM[i] * object.transform.scale[i]).toFixed(
+                    3,
+                  ),
+                )}
+                aria-label={`${label} dimension in meters`}
+                disabled={object.locked || dragging}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") e.currentTarget.blur();
+                }}
+                onBlur={(e) => {
+                  const value =
+                    e.currentTarget.valueAsNumber / object.transform.scale[i];
+                  if (
+                    !Number.isFinite(value) ||
+                    value <= 0 ||
+                    value === object.dimensionsM[i]
+                  )
+                    return;
+                  const dimensionsM = object.dimensionsM.map((n, axis) =>
+                    keepProportions
+                      ? (n * value) / object.dimensionsM[i]
+                      : axis === i
+                        ? value
+                        : n,
+                  ) as typeof object.dimensionsM;
+                  editor.suggest({
+                    type: "resize",
+                    objectId: object.id,
+                    dimensionsM,
+                  });
+                }}
+              />
+              <span className="unit">m</span>
+            </div>
+          ))}
+
           <div className="asset-source">
             <ArrowDownToLine size={13} />
             {asset ? (

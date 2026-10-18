@@ -13,3 +13,5 @@ export * from "./matching";
 export * from "./rotation";
 
 export * from "./mounting";
+
+export * from "./resize";

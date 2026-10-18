@@ -80,6 +80,7 @@ export type Draft = {
   resolved: string[];
 };
 export type ChangeKind =
+  | "resized"
   | "updated"
   | "moved"
   | "rotated"
@@ -495,11 +496,13 @@ export function createEditor(
         const kind: ChangeKind =
           prev.assetId !== o.assetId
             ? "replaced"
-            : JSON.stringify(prev.transform) === JSON.stringify(o.transform)
-              ? "updated"
-              : distanceM > 0.005
-                ? "moved"
-                : "rotated";
+            : JSON.stringify(prev.dimensionsM) !== JSON.stringify(o.dimensionsM)
+              ? "resized"
+              : JSON.stringify(prev.transform) === JSON.stringify(o.transform)
+                ? "updated"
+                : distanceM > 0.005
+                  ? "moved"
+                  : "rotated";
         rows.push({
           id: o.id,
           kind,

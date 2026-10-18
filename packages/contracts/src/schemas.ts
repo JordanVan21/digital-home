@@ -238,6 +238,11 @@ export const AssetSpecSchema = z.object({
 });
 export const SceneOpSchema = z.discriminatedUnion("type", [
   z.object({
+    type: z.literal("resize"),
+    objectId: UUIDSchema,
+    dimensionsM: dimensions,
+  }),
+  z.object({
     type: z.literal("setGroup"),
     objectId: UUIDSchema,
     groupId: UUIDSchema.optional(),

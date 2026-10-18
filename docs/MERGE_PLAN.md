@@ -9,7 +9,7 @@
 3. `docs/SESSION_NOTES.md`: environment, decisions and gotchas from the working sessions.
 4. `docs/COLLIDER_PRECISION.md`: the spec for the next step.
 
-**Next step: 18 (resize).** Steps 5, 7–17 are complete: all checks green, 229 unit tests and 20 browser tests. Step 6 was skipped because all test2 pieces now validate without a soft-item exemption.
+**Remaining merge steps are being implemented; full verification runs at the end.** Step 6 was skipped because all test2 pieces now validate without a soft-item exemption.
 
 **Handoff (2026-10-17):** Claude Code did steps 0–4. Codex continues from step 5 under the same rules.
 
@@ -70,7 +70,7 @@ Codex's interaction stays: controls, the suggest/Accept flow, nearest-surface pl
 - [x] **15 Multi-select:** Shift-click and Shift-drag box select.
 - [x] **16 Groups:** Ctrl/Cmd+G group, Shift+Ctrl/Cmd+G ungroup; click selects the group, Alt picks a member.
 - [x] **17 Wall and ceiling items:** art slides along walls and around corners; pendants hang from the ceiling (support `ceiling`).
-- [ ] **18 Resize** with keep-proportions; children stay seated.
+- [x] **18 Resize** with keep-proportions; children stay seated.
 - [ ] **19 Float flag:** stays in the air after Accept (the explicit exception to nearest-surface placement).
 - [ ] **20 Finishes:** asset `variants` swatches applied as `materialOverrides` (Jordan's catalog has `variants` and `light` metadata that the step 2 import dropped; re-import it with the schema extension).
 - [ ] **21 Keep / Replace / Remove planning picker** (independent of the lock) with a ghost for Remove.
