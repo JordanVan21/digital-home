@@ -86,6 +86,7 @@ function Keyboard() {
 function ThemeSync() {
   const light = useLighting();
   useEffect(() => {
+    document.documentElement.dataset.lighting = light.id;
     const root = document.documentElement.style;
     root.setProperty("--accent", light.accent);
     root.setProperty("--accent-ink", light.accentInk);

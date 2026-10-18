@@ -1,5 +1,5 @@
 /*
- * Neutral frosted-glass chrome. Panels take their colour from whatever room is
+ * Warm frosted-glass chrome. Panels take their colour from whatever room is
  * behind them; the only hue the UI adds is --accent, set per lighting preset
  * by ThemeSync (see theme.ts).
  */
@@ -11,22 +11,22 @@
   color: var(--ink);
   background: var(--backdrop);
 
-  --ink: #1f2023;
-  --ink-soft: #55575c;
-  --muted: #8a8c91;
-  --line: rgba(20, 22, 26, 0.08);
+  --ink: #2b2520;
+  --ink-soft: #5d544b;
+  --muted: #6b5e52;
+  --line: rgba(70, 48, 26, 0.09);
   --accent: #d9742f;
   --accent-ink: #ffffff;
   --backdrop: #e9e6df;
   --select: #8b84ff;
 
-  --glass-fill: rgba(255, 255, 255, 0.52);
-  --glass-fill-strong: rgba(255, 255, 255, 0.72);
-  --glass-inset: rgba(255, 255, 255, 0.42);
-  --glass-edge: rgba(255, 255, 255, 0.78);
+  --glass-fill: rgba(255, 249, 241, 0.6);
+  --glass-fill-strong: rgba(255, 251, 245, 0.82);
+  --glass-inset: rgba(255, 247, 236, 0.5);
+  --glass-edge: rgba(255, 251, 244, 0.85);
   --glass-shadow:
-    0 10px 34px rgba(16, 18, 24, 0.1), 0 1px 2px rgba(16, 18, 24, 0.06);
-  --glass-blur: blur(26px) saturate(170%);
+    0 10px 34px rgba(64, 40, 18, 0.12), 0 1px 2px rgba(64, 40, 18, 0.07);
+  --glass-blur: blur(26px) saturate(160%);
 }
 * {
   box-sizing: border-box;
@@ -1157,4 +1157,12 @@ kbd {
   padding: 2px;
   background: var(--glass-inset);
   cursor: pointer;
+}
+
+/* Cream stays readable over the darker evening scene. */
+:root[data-lighting="evening"] {
+  --glass-fill: rgba(255, 249, 241, 0.9);
+  --glass-fill-strong: rgba(255, 251, 245, 0.96);
+  --glass-inset: rgba(255, 247, 236, 0.78);
+  --glass-edge: rgba(255, 251, 244, 0.94);
 }

@@ -101,3 +101,7 @@ Do not format or edit app source while Playwright runs against Vite: HMR can det
 Glazing/open doorways, local PBR floor finishes, paint, Cut away / Fade / Show, wall-item visibility and click-through, and the Room inspector are complete. `setAppearance` is a schema-typed room-wide suggestion; scene diffs now include `appearanceChanged`. All checks pass: 203 unit tests, 11 browser tests, build, typecheck, lint and format. Visual review: `docs/review/STEP_8.md`.
 
 For subsequent local browser runs use `HOUSE_BROWSER_GPU=1 HOUSE_E2E_PORT=5185 HOUSE_BROWSER_EXECUTABLE="/Applications/Google Chrome.app/Contents/MacOS/Google Chrome" pnpm test:browser`. This opt-in uses the verified Apple M4 Metal backend and ran 11 tests in 57.5 s. Without the GPU flag, the original SwiftShader configuration remains available. Keep app source unchanged during the browser suite.
+
+## Step 9 completed
+
+Warm cream glass, warm ink/shadows, higher evening opacity and readable secondary text. A browser contrast regression failed before (2.64:1 in Golden hour) and passes across all three presets now. All checks green: 203 unit tests, 12 GPU browser tests (1.1 minutes), format/typecheck/lint/build. Visual review: `docs/review/STEP_9.md`. Next: CameraControls and views/walk, preserving Codex drag priority.
