@@ -1,3 +1,4 @@
+import { lightSpecFor } from "../scene/lightBudget";
 import { RoomInspector } from "./RoomInspector";
 import { useStore } from "zustand";
 import {
@@ -86,6 +87,30 @@ export function InspectorPanel() {
             <span />
           </span>
         </button>
+        {lightSpecFor(object, assetById) && (
+          <section className="inspector-section">
+            <h3>Lighting</h3>
+            <Button
+              label={
+                object.lightOn === false
+                  ? "Switch light on"
+                  : "Switch light off"
+              }
+              className="secondary-button"
+              disabled={object.locked || dragging}
+              aria-pressed={object.lightOn !== false}
+              onClick={() =>
+                editor.suggest({
+                  type: "setLight",
+                  objectId: object.id,
+                  lightOn: object.lightOn === false,
+                })
+              }
+            >
+              Light {object.lightOn === false ? "off" : "on"}
+            </Button>
+          </section>
+        )}
         <section className="inspector-section">
           <h3>
             Position <small>meters</small>

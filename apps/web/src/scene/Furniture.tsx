@@ -1,5 +1,6 @@
+import { AssetLight } from "./AssetLight";
 import { memo, useEffect, useRef, useState } from "react";
-import { useFrame, type ThreeEvent } from "@react-three/fiber";
+import { useFrame, useThree, type ThreeEvent } from "@react-three/fiber";
 import { Html } from "@react-three/drei";
 import { LockKeyhole } from "lucide-react";
 import { useStore } from "zustand";
@@ -27,7 +28,6 @@ import { CollisionOutline } from "./CollisionOutline";
 import { SnapGuide, type SnapGuideHandle } from "./SnapGuide";
 import { SwivelRing } from "./SwivelRing";
 import { labelLayer } from "./labelLayer";
-import { useLighting } from "../theme";
 import { ObjectToolbar } from "../components/ObjectToolbar";
 
 const floorPlane = new Plane(new Vector3(0, 1, 0), 0);
@@ -41,9 +41,13 @@ const upAxis = new Vector3(0, 1, 0);
 export const Furniture = memo(function Furniture({
   object,
   isNew = false,
+  lightEnabled = true,
+  lightShadow = false,
 }: {
   object: SceneObject;
   isNew?: boolean;
+  lightEnabled?: boolean;
+  lightShadow?: boolean;
 }) {
   const selected = useStore(
     editor.interaction,
@@ -60,7 +64,7 @@ export const Furniture = memo(function Furniture({
   const resolved = useStore(editor.draft, (s) =>
     s.resolved.includes(object.id),
   );
-  const { lamps } = useLighting();
+  const invalidate = useThree((s) => s.invalidate);
   const [hasShape, setHasShape] = useState(false);
   const [swiveling, setSwiveling] = useState(false);
   const [pulse, setPulse] = useState(false);
@@ -118,6 +122,7 @@ export const Furniture = memo(function Furniture({
   }, []);
 
   useFrame((_, delta) => {
+    if (pulse) invalidate();
     const state = drag.current;
     if (state.mode && !editor.interaction.getState().dragging) endGesture();
     if (heightGuide.current) {
@@ -142,7 +147,12 @@ export const Furniture = memo(function Furniture({
       g.scale.fromArray(live.transform.scale);
       target.fromArray(live.transform.position);
       targetQuat.fromArray(live.transform.rotation);
-      const k = 1 - Math.exp(-delta * 20);
+      const k = 1 - Math.exp(-Math.min(delta, 0.05) * 20);
+      if (
+        g.position.distanceToSquared(target) > 1e-8 ||
+        g.quaternion.angleTo(targetQuat) > 1e-4
+      )
+        invalidate();
       if (g.position.distanceToSquared(target) > 1e-8)
         g.position.lerp(target, k);
       else g.position.copy(target);
@@ -295,6 +305,7 @@ export const Furniture = memo(function Furniture({
         );
     state.transform = contact.transform;
     editor.previewMove(object.id, state.transform);
+    invalidate();
     group.current?.position.fromArray(state.transform.position);
     snapGuide.current?.update(contact.surface, state.transform.position);
     liveCheck(state.transform);
@@ -364,6 +375,7 @@ export const Furniture = memo(function Furniture({
     group.current?.quaternion.fromArray(rotation);
     state.transform = { ...latest.current.transform, rotation };
     editor.previewMove(object.id, state.transform);
+    invalidate();
     const degrees = ((((yaw * 180) / Math.PI) % 360) + 360) % 360;
     if (angleLabel.current)
       angleLabel.current.textContent = `${Math.round(degrees)}°`;
@@ -419,15 +431,11 @@ export const Furniture = memo(function Furniture({
           <meshBasicMaterial visible={false} />
         </mesh>
         <Model object={object} onShape={setHasShape} />
-        {object.category === "lamp" && lamps > 0 && (
-          <pointLight
-            position={[0, dimensions[1] * 0.86, 0]}
-            intensity={0.6 * lamps}
-            distance={2.5}
-            decay={2}
-            color="#ffcd80"
-          />
-        )}
+        <AssetLight
+          object={object}
+          enabled={lightEnabled}
+          shadow={lightShadow}
+        />
         {boundingBoxes && <CollisionOutline ref={outline} object={object} />}
 
         {selected && !object.locked && tool !== "rotate" && (

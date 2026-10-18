@@ -61,6 +61,7 @@ for (const a of source.assets) {
     textureBytes: a.textureBytes,
     contentHash: createHash("sha256").update(glb).digest("hex"),
     searchableDescription: a.searchableDescription,
+    ...(a.light ? { light: a.light } : {}),
   });
 }
 await fs.writeFile(

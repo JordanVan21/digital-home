@@ -200,6 +200,7 @@ export function createEditor(
   const motion = {
     transforms: new Map<string, Transform>(),
     wallVisibility: new Map<string, number>(),
+    perf: { frames: 0, lastFrameAt: 0, fps: 0, drawCalls: 0, triangles: 0 },
     cameraPosition: [7.2, 6.5, 8.3] as Vec3,
     cameraDirection: [0, 0, -1] as Vec3,
     cameraTarget: [0, 0.65, 0] as Vec3,
@@ -427,9 +428,11 @@ export function createEditor(
         const kind: ChangeKind =
           prev.assetId !== o.assetId
             ? "replaced"
-            : distanceM > 0.005
-              ? "moved"
-              : "rotated";
+            : JSON.stringify(prev.transform) === JSON.stringify(o.transform)
+              ? "updated"
+              : distanceM > 0.005
+                ? "moved"
+                : "rotated";
         rows.push({
           id: o.id,
           kind,

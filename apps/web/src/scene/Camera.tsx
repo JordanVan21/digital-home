@@ -76,15 +76,30 @@ export function Camera() {
       target: readonly number[],
       smooth: boolean,
     ) => {
-      void c.setLookAt(
-        position[0],
-        position[1],
-        position[2],
-        target[0],
-        target[1],
-        target[2],
-        smooth,
-      );
+      if (smooth) {
+        invalidate();
+        requestAnimationFrame(() => {
+          void c.setLookAt(
+            position[0],
+            position[1],
+            position[2],
+            target[0],
+            target[1],
+            target[2],
+            smooth,
+          );
+        });
+      } else {
+        void c.setLookAt(
+          position[0],
+          position[1],
+          position[2],
+          target[0],
+          target[1],
+          target[2],
+          smooth,
+        );
+      }
       invalidate();
     };
     const apply = (view: CameraView, smooth = true) => {
@@ -98,7 +113,12 @@ export function Camera() {
             new Vector3(...box.max),
           ).getBoundingSphere(new Sphere());
           sphere.radius += 0.15;
-          void c.fitToSphere(sphere, smooth);
+          if (smooth) {
+            invalidate();
+            requestAnimationFrame(() => {
+              void c.fitToSphere(sphere, true);
+            });
+          } else void c.fitToSphere(sphere, false);
         }
       } else if (view === "room") {
         const sphere = new Box3(
@@ -106,7 +126,12 @@ export function Camera() {
           new Vector3(bounds.maxX, floor + height, bounds.maxZ),
         ).getBoundingSphere(new Sphere());
         sphere.radius += 0.3;
-        void c.fitToSphere(sphere, smooth);
+        if (smooth) {
+          invalidate();
+          requestAnimationFrame(() => {
+            void c.fitToSphere(sphere, true);
+          });
+        } else void c.fitToSphere(sphere, false);
       } else if (view === "photo" && room.photoCamera) {
         if (camera instanceof PerspectiveCamera) {
           camera.fov = room.photoCamera.fov;

@@ -1,3 +1,4 @@
+import { PerfOverlay } from "./components/PerfOverlay";
 import { WalkHint } from "./components/CameraViewMenu";
 import { Component, useEffect, type ReactNode } from "react";
 import { useStore } from "zustand";
@@ -147,6 +148,9 @@ export default function App() {
       <SideNav />
       <ViewControls />
       <WalkHint />
+      {new URLSearchParams(window.location.search).has("perf") && (
+        <PerfOverlay />
+      )}
       <InspectorPanel />
       <MeasurementsToggle />
       <SuggestionsBar />

@@ -519,6 +519,8 @@ describe("attached item gesture previews", () => {
     expect((attached.instance as Group).position.x).toBeCloseTo(0.7);
     await renderer.fireEvent(node, "pointerCancel", pointer(0.5, 0, 180));
     await renderer.advanceFrames(1, 1);
+    expect((attached.instance as Group).position.x).toBeGreaterThan(0.2);
+    await renderer.advanceFrames(80, 0.016);
     expect((attached.instance as Group).position.x).toBeCloseTo(0.2);
     expect(editor.motion.transforms.size).toBe(0);
     expect(editor.draft.getState().undo).toHaveLength(0);

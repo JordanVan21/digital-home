@@ -1,3 +1,5 @@
+import { useThree } from "@react-three/fiber";
+import { useLighting } from "../theme";
 import { Component, Suspense, useEffect, useMemo, type ReactNode } from "react";
 import { tiltedDimensions } from "@house/scene-engine";
 import { Html, useGLTF } from "@react-three/drei";
@@ -70,6 +72,8 @@ function GLB({
   onShape?: (ready: boolean) => void;
 }) {
   const asset = assetById[object.assetId!];
+  const glow = useLighting().lamps,
+    invalidate = useThree((s) => s.invalidate);
   const { scene } = useGLTF(asset.glbStorageKey, false, true);
   const meshPicking = useMemo(() => supportsMeshPicking(scene), [scene]);
   useEffect(() => {
@@ -131,6 +135,22 @@ function GLB({
     object.materialOverrides,
     object.category,
   ]);
+  useEffect(() => {
+    const light = asset.light;
+    if (!light) return;
+    for (const mat of materials) {
+      if (!("emissive" in mat)) continue;
+      if (
+        light.emissiveMaterials?.includes(mat.name) ||
+        /shade|bulb|candle|flame|frosted/i.test(mat.name)
+      ) {
+        mat.emissive.set(light.color);
+        mat.emissiveIntensity =
+          object.lightOn === false ? 0 : Math.min(0.5, glow * 0.25);
+      }
+    }
+    invalidate();
+  }, [asset.light, materials, object.lightOn, glow, invalidate]);
   useEffect(() => () => materials.forEach((m) => m.dispose()), [materials]);
   return (
     <group scale={scale}>

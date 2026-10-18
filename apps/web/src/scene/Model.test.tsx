@@ -87,3 +87,33 @@ it.each([
     }
   },
 );
+
+it("switches owned bulb emissive materials without changing the cached source", async () => {
+  const scene = new Group(),
+    material = new MeshStandardMaterial({
+      emissive: "#ffffff",
+      emissiveIntensity: 1,
+    });
+  material.name = "shade";
+  scene.add(new Mesh(new BoxGeometry(), material));
+  loader.scene = scene;
+  const object = {
+    ...createFixtureScene().objects.find((o) => o.category === "lamp")!,
+    lightOn: false,
+  };
+  const renderer = await ReactThreeTestRenderer.create(
+    <Model object={object} />,
+  );
+  try {
+    const mesh = renderer.scene.findAll((n) => n.instance instanceof Mesh)[0]
+      .instance as Mesh;
+    expect((mesh.material as MeshStandardMaterial).emissiveIntensity).toBe(0);
+    await renderer.update(<Model object={{ ...object, lightOn: true }} />);
+    expect(
+      (mesh.material as MeshStandardMaterial).emissiveIntensity,
+    ).toBeGreaterThan(0);
+    expect(material.emissiveIntensity).toBe(1);
+  } finally {
+    await renderer.unmount();
+  }
+});

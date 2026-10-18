@@ -1,3 +1,6 @@
+import { assetById } from "@house/contracts";
+import { lightBudget } from "./lightBudget";
+import { IdleFrameloop, PerfProbe } from "./IdleFrameloop";
 import { Camera } from "./Camera";
 import { Lighting } from "./Lighting";
 import { memo, useEffect, useMemo, useRef } from "react";
@@ -16,6 +19,7 @@ function Objects() {
   const accepted = useStore(editor.scene, (s) => s.scene);
   const draft = useStore(editor.draft, (s) => s.scene);
   const working = draft ?? accepted;
+  const lights = useMemo(() => lightBudget(working, assetById), [working]);
   const added = useMemo(
     () => new Set(draft ? diffScenes(accepted, draft).added : []),
     [accepted, draft],
@@ -23,7 +27,13 @@ function Objects() {
   return (
     <>
       {working.objects.map((o) => (
-        <Furniture key={o.id} object={o} isNew={added.has(o.id)} />
+        <Furniture
+          key={o.id}
+          object={o}
+          isNew={added.has(o.id)}
+          lightEnabled={lights.active.has(o.id)}
+          lightShadow={lights.shadows.has(o.id)}
+        />
       ))}
     </>
   );
@@ -54,6 +64,8 @@ function Stage() {
         <meshStandardMaterial color={light.backdrop} roughness={1} />
       </mesh>
       <Camera />
+      <IdleFrameloop />
+      {new URLSearchParams(window.location.search).has("perf") && <PerfProbe />}
       {new URLSearchParams(window.location.search).has("debug") && <Stats />}
     </>
   );
@@ -86,6 +98,7 @@ export const SceneCanvas = memo(function SceneCanvas() {
       className="canvas-wrap"
     >
       <Canvas
+        frameloop="demand"
         shadows
         dpr={[1, 1.7]}
         camera={{ position: [7.2, 6.5, 8.3], fov: 39, near: 0.1, far: 100 }}

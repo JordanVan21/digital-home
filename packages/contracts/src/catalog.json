@@ -197,7 +197,22 @@
     "triangleCount": 27000,
     "textureBytes": 291708,
     "contentHash": "46739dac0a05a09ee1ae2162948703ec37b3a9c9f2d33c712b3e150733fec6da",
-    "searchableDescription": "Linen shade floor lamp in a warm minimal living room"
+    "searchableDescription": "Linen shade floor lamp in a warm minimal living room",
+    "light": {
+      "kind": "point",
+      "color": "#ffcd80",
+      "intensity": 0.6,
+      "distanceM": 2.5,
+      "position": [
+        0,
+        0.86,
+        0
+      ],
+      "emissiveMaterials": [
+        "shade",
+        "bulb"
+      ]
+    }
   },
   {
     "schemaVersion": 1,
@@ -1093,7 +1108,18 @@
     "triangleCount": 12186,
     "textureBytes": 372540,
     "contentHash": "1b20d8df9cb8a8dc9d790548873e8ff80340de81742aff28dded8327db7b3e2a",
-    "searchableDescription": "Orange arm desk lamp, lamp, lamp, desk lamp, lighting, retro, industrial, metal"
+    "searchableDescription": "Orange arm desk lamp, lamp, lamp, desk lamp, lighting, retro, industrial, metal",
+    "light": {
+      "kind": "point",
+      "color": "#ffe4c0",
+      "intensity": 1.5,
+      "distanceM": 3,
+      "position": [
+        0,
+        0.75,
+        0.3
+      ]
+    }
   },
   {
     "schemaVersion": 1,
@@ -1486,7 +1512,22 @@
     "triangleCount": 3704,
     "textureBytes": 0,
     "contentHash": "a9d7b2b3eb8d3fd84e7a5d65bc49ac18e4bf4dc306dc90696ddd175598dbdd76",
-    "searchableDescription": "Arc floor lamp, floor lamp, floor lamp, arc lamp, lighting, modern, metal, glass"
+    "searchableDescription": "Arc floor lamp, floor lamp, floor lamp, arc lamp, lighting, modern, metal, glass",
+    "light": {
+      "kind": "point",
+      "color": "#ffd9a8",
+      "intensity": 3,
+      "distanceM": 4.5,
+      "position": [
+        0,
+        0.76,
+        0.318
+      ],
+      "emissiveMaterials": [
+        "shade",
+        "bulb"
+      ]
+    }
   },
   {
     "schemaVersion": 1,
@@ -1606,7 +1647,22 @@
     "triangleCount": 1208,
     "textureBytes": 0,
     "contentHash": "6ee2ada58ece0e42b47363d6edfd9e9d419f90fa1773921b978eef615274f40c",
-    "searchableDescription": "Tall glass lantern, lamp, lantern, candle, lighting, organic, glass, wood"
+    "searchableDescription": "Tall glass lantern, lamp, lantern, candle, lighting, organic, glass, wood",
+    "light": {
+      "kind": "point",
+      "color": "#ffb866",
+      "intensity": 1.2,
+      "distanceM": 2.5,
+      "position": [
+        0,
+        0.4,
+        0
+      ],
+      "emissiveMaterials": [
+        "candle",
+        "flame"
+      ]
+    }
   },
   {
     "schemaVersion": 1,
@@ -1644,7 +1700,21 @@
     "triangleCount": 1968,
     "textureBytes": 0,
     "contentHash": "e8dd31597fa5641ce527fca630ff5a7ac5324ca69e652235cd8a5c500636e571",
-    "searchableDescription": "Frosted orb lantern, lamp, lantern, lamp, lighting, organic, glass"
+    "searchableDescription": "Frosted orb lantern, lamp, lantern, lamp, lighting, organic, glass",
+    "light": {
+      "kind": "point",
+      "color": "#ffc985",
+      "intensity": 1,
+      "distanceM": 2.5,
+      "position": [
+        0,
+        0.55,
+        0
+      ],
+      "emissiveMaterials": [
+        "frosted"
+      ]
+    }
   },
   {
     "schemaVersion": 1,
@@ -2146,6 +2216,17 @@
     "triangleCount": 5602,
     "textureBytes": 126788,
     "contentHash": "4275e4f14340df8815daa7991e983c16f1ddb81765a523ee239475d3cfad31db",
-    "searchableDescription": "Modern pendant lamp, pendant, pendant, ceiling lamp, lighting, modern, metal"
+    "searchableDescription": "Modern pendant lamp, pendant, pendant, ceiling lamp, lighting, modern, metal",
+    "light": {
+      "kind": "point",
+      "color": "#ffe2bf",
+      "intensity": 4,
+      "distanceM": 5,
+      "position": [
+        0,
+        0.15,
+        0
+      ]
+    }
   }
 ]

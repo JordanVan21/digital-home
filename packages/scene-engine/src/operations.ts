@@ -186,6 +186,11 @@ export function validateOp(
       `${obj.displayName} is locked. Unlock it first.`,
       obj.id,
     );
+  if (op.type === "setLight")
+    return obj.category === "lamp" ||
+      (obj.assetId && ctx.assets[obj.assetId]?.light)
+      ? { ok: true }
+      : fail("INVALID_TRANSFORM", "Choose a light to switch.");
   if (op.type === "delete" || op.type === "replacePhysicalItem") {
     if (scene.objects.some((o) => o.placement?.parentId === id))
       return fail("INVALID_SUPPORT", "Move supported objects first.");
@@ -284,6 +289,13 @@ export function applyOp(
     objects = scene.objects.map((o) => {
       if (o.id !== op.objectId) return o;
       switch (op.type) {
+        case "setLight": {
+          const next = { ...o };
+          if (op.lightOn === undefined) delete next.lightOn;
+          else next.lightOn = op.lightOn;
+          return next;
+        }
+
         case "replaceAsset":
           return {
             ...o,
@@ -320,6 +332,8 @@ export function invertOp(before: SceneSpec, op: SceneOp): Inverse {
   const obj = before.objects.find((o) => o.id === id);
   if (!obj) throw new Error("Cannot invert an unknown object");
   switch (op.type) {
+    case "setLight":
+      return { type: "setLight", objectId: id, lightOn: obj.lightOn };
     case "delete":
       return { type: "add", object: structuredClone(obj) };
     case "move":

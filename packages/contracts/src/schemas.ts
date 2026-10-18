@@ -177,6 +177,7 @@ export const SceneObjectSchema = z.object({
     })
     .optional(),
   tilt: TiltSchema.optional(),
+  lightOn: z.boolean().optional(),
   scanMatch: ScanMatchSchema.optional(),
 });
 /** Additive: per-scene paint and floor finish. Never shell geometry. */
@@ -201,6 +202,14 @@ export const SceneSpecSchema = z
     (s) => new Set(s.objects.map((o) => o.id)).size === s.objects.length,
     "Duplicate object IDs",
   );
+export const AssetLightSchema = z.object({
+  kind: z.literal("point"),
+  color: z.string().regex(/^#[0-9a-fA-F]{6}$/),
+  intensity: finite.nonnegative(),
+  distanceM: positive.optional(),
+  position: Vec3Schema,
+  emissiveMaterials: z.array(z.string()).optional(),
+});
 export const AssetSpecSchema = z.object({
   schemaVersion: z.literal(1),
   id: UUIDSchema,
@@ -223,8 +232,14 @@ export const AssetSpecSchema = z.object({
   contentHash: z.string(),
   searchableDescription: z.string(),
   embeddingVersion: z.string().optional(),
+  light: AssetLightSchema.optional(),
 });
 export const SceneOpSchema = z.discriminatedUnion("type", [
+  z.object({
+    type: z.literal("setLight"),
+    objectId: UUIDSchema,
+    lightOn: z.boolean().optional(),
+  }),
   z.object({
     type: z.literal("setAppearance"),
     appearance: SceneAppearanceSchema.extend({

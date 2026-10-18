@@ -48,7 +48,7 @@ export const lightingPresets: LightingPreset[] = [
     sun: { color: "#ffe8cc", intensity: 2.4, position: [-2.5, 8, 3.5] },
     fill: { key: "#fff1dd", keyIntensity: 0, rim: "#ffffff", rimIntensity: 0 },
     shadow: "#77634f",
-    lamps: 0,
+    lamps: 0.6,
   },
   {
     id: "golden-hour",
@@ -78,7 +78,7 @@ export const lightingPresets: LightingPreset[] = [
     sun: { color: "#8fa4c8", intensity: 0.25, position: [-2, 9, 1] },
     fill: { key: "#fff1dd", keyIntensity: 0, rim: "#ffffff", rimIntensity: 0 },
     shadow: "#17151a",
-    lamps: 1.4,
+    lamps: 1.6,
   },
 ];
 

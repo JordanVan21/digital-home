@@ -113,3 +113,11 @@ CameraControls, smooth views, dolly-to-cursor, selection/room framing, eye/top/i
 CameraControls boundaryEnclosesCamera must stay off during walk entry and turn on at rest; enabling it immediately caused an 8.7 m single-frame jump, caught by the new browser test. View popovers need a higher stacking order than the inspector. Framing uses fitToSphere to retain viewing direction.
 
 The original 5185 server stopped during this step. A persistent Vite server is now running through exec session 80119, from this worktree’s apps/web on 5185. Keep it running. Browser commands must always set HOUSE_E2E_PORT=5185, HOUSE_BROWSER_GPU=1, and the system Chrome path.
+
+## Step 11 completed
+
+Lamp metadata imported, `lightOn`/`setLight`, owned emissive materials, 8 active practical lights / 1 practical shadow budget plus the sun, demand rendering, and `?perf`. All checks passed: 211 unit tests, 14 GPU browser tests, build/typecheck/lint/format. Visual review and benchmark: `docs/review/STEP_11.md`.
+
+Performance: real-pointer drag in test2 + one proxy averaged 58.9 rendered FPS, rolling 59.9, 164 final-scene draws / 186,457 triangles on Apple M4 Metal. Zero frames over a 400 ms idle check. Do not insert an extra 16 ms pause after each Playwright mouse move when measuring cadence; CDP already paces those inputs. PerfProbe must read in addAfterEffect after the main render: useFrame reads the contact-shadow blur pass (1 draw / 2 triangles), which was wrong and now has a browser regression.
+
+Demand rendering: imperative Furniture moves explicitly invalidate; easing clamps the initial post-idle delta. Camera transitions invalidate once and defer start to the next RAF so idle time cannot become one giant animation step. Stores subscribe through IdleFrameloop; transient motion remains outside React. The persistent 5185 server is still exec session 80119.

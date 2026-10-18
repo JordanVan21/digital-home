@@ -1207,3 +1207,14 @@ kbd {
 .view-controls {
   z-index: 6;
 }
+
+.perf-probe {
+  position: fixed;
+  left: 24px;
+  bottom: 24px;
+  padding: 9px 12px;
+  border-radius: 14px;
+  font-size: 11px;
+  pointer-events: none;
+  z-index: 6;
+}
