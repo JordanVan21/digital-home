@@ -56,6 +56,11 @@ function Keyboard() {
         editor.travel(e.shiftKey ? "redo" : "undo");
         return;
       }
+      if ((e.metaKey || e.ctrlKey) && key === "d" && !e.altKey && !e.shiftKey) {
+        e.preventDefault();
+        editor.duplicate();
+        return;
+      }
       if (e.metaKey || e.ctrlKey || e.altKey) return;
       if (key === "p" && !e.repeat) {
         e.preventDefault();

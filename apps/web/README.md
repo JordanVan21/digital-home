@@ -141,6 +141,8 @@ Poly Haven imports preserve original PBR materials and meter scale, embed 1K tex
 
 35. Asset `light` metadata supplies normalized emitter positions and emissive material names; instance `lightOn` and the typed `setLight` op use suggestions, locks, undo and save. Materials remain owned per instance. A scene budget enables at most eight practical lights and one practical shadow, alongside the sun. The canvas renders on demand, with explicit invalidation for imperative drags, scene changes and settling animations. `?perf` reads statistics after the final scene render, rather than the contact-shadow blur pass. M4 sample: 58.9 FPS average / 59.9 rolling during a pointer drag in test2 plus one probe, zero idle frames in 400 ms.
 
+36. Duplicate (toolbar or Ctrl/Cmd+D) clones instance pose, scale, finishes and light state into a new planned piece, searches nearby valid surfaces, and creates one suggestion. Wall copies search along their wall. Locks and active gestures block duplication. Copies do not inherit scan/replacement identity or removal planning. Undo/redo and persistence use the existing flow.
+
 ## Verification and known gaps
 
 - The required build, test, typecheck, and lint commands pass. The test suite covers fixture parsing, shipped-file/license coverage, the fixture triangle budget, all operations, locks, rotated/concave bounds, SAT touching/overlap, occupancy exemptions, door clearance, inverse/history behavior, drag commit/rejection/cancel (including GPU-free tests of the actual canvas handler, live red feedback, spring-back, and no model rerenders during pointer movement), autosave debounce/serialization/retry, stale/concurrent saves, reset/recovery, and accessible locked controls.

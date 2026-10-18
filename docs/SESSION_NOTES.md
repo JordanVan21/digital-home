@@ -121,3 +121,9 @@ Lamp metadata imported, `lightOn`/`setLight`, owned emissive materials, 8 active
 Performance: real-pointer drag in test2 + one proxy averaged 58.9 rendered FPS, rolling 59.9, 164 final-scene draws / 186,457 triangles on Apple M4 Metal. Zero frames over a 400 ms idle check. Do not insert an extra 16 ms pause after each Playwright mouse move when measuring cadence; CDP already paces those inputs. PerfProbe must read in addAfterEffect after the main render: useFrame reads the contact-shadow blur pass (1 draw / 2 triangles), which was wrong and now has a browser regression.
 
 Demand rendering: imperative Furniture moves explicitly invalidate; easing clamps the initial post-idle delta. Camera transitions invalidate once and defer start to the next RAF so idle time cannot become one giant animation step. Stores subscribe through IdleFrameloop; transient motion remains outside React. The persistent 5185 server is still exec session 80119.
+
+## Step 12 completed
+
+Toolbar/Ctrl-Cmd+D duplicate into a nearby valid spot, preserving pose/scale/finishes/light state, as one draft step per copy. Locks/gestures guarded, wall copies stay along their wall. All checks: 213 unit tests, 15 GPU browser tests, format/typecheck/lint/build. Review: `docs/review/STEP_12.md`. Browser screenshots must wait for model loading; an immediate screenshot can capture the blank/loading frame even after scene data is ready.
+
+Next keyboard extraction/tests are prepared in `/tmp/house-keyboard-step13.ts` and `/tmp/house-keyboard-tests-step13.ts`; they have not been applied.

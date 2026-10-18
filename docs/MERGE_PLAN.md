@@ -9,7 +9,7 @@
 3. `docs/SESSION_NOTES.md`: environment, decisions and gotchas from the working sessions.
 4. `docs/COLLIDER_PRECISION.md`: the spec for the next step.
 
-**Next step: 12 (duplicate).** Steps 5, 7–11 are complete: all checks green, 211 unit tests and 14 browser tests. Step 6 was skipped because all test2 pieces now validate without a soft-item exemption.
+**Next step: 13 (keyboard additions).** Steps 5, 7–12 are complete: all checks green, 213 unit tests and 15 browser tests. Step 6 was skipped because all test2 pieces now validate without a soft-item exemption.
 
 **Handoff (2026-10-17):** Claude Code did steps 0–4. Codex continues from step 5 under the same rules.
 
@@ -64,7 +64,7 @@ Codex's interaction stays: controls, the suggest/Accept flow, nearest-surface pl
 - [x] **11 Lamps.** Lamp and pendant lights with a shadow budget, emissive materials, on/off (`lightOn` contract field, `setLight` op). Render on demand when idle (`IdleFrameloop`) and add a `?perf` probe.
 
 ### Then: bonus features (adapt into codex's editor and gestures)
-- [ ] **12 Duplicate** (toolbar + Ctrl/Cmd+D; the copy goes to a nearby free spot; replaces the "coming soon" toast).
+- [x] **12 Duplicate** (toolbar + Ctrl/Cmd+D; the copy goes to a nearby free spot; replaces the "coming soon" toast).
 - [ ] **13 Keyboard:** arrow nudges relative to the camera (Shift ×10), Q/E rotate on the absolute 15° grid, F frame selection, Home frame room, P walk.
 - [ ] **14 Editable X / Y / Z position** in the inspector, through `suggest`.
 - [ ] **15 Multi-select:** Shift-click and Shift-drag box select.

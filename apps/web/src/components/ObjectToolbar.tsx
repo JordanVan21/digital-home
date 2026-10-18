@@ -66,7 +66,7 @@ export function ObjectToolbar({ object }: { object: SceneObject }) {
         label="Duplicate"
         className="round"
         disabled={blocked}
-        onClick={() => editor.notify("Duplicating pieces is coming soon.")}
+        onClick={() => editor.duplicate()}
       >
         <Copy size={15} />
       </Button>

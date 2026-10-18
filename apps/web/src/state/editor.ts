@@ -21,6 +21,7 @@ import {
   recordCheckpoint,
   resolveDraft,
   snapToSurface,
+  onNearestSurface,
   traverseHistory,
   validateObject,
   validateOp,
@@ -557,6 +558,78 @@ export function createEditor(
     if (!selected()) select(null);
     autosave?.schedule();
   };
+  const duplicate = (): boolean => {
+    const original = selected();
+    if (!original || interaction.getState().dragging || !scene.getState().ready)
+      return false;
+    if (original.locked) {
+      notify("Unlock this piece to duplicate it.");
+      return false;
+    }
+    const current = working(),
+      copy = structuredClone(original);
+    copy.id = crypto.randomUUID();
+    copy.locked = false;
+    copy.source = "user";
+    copy.ownership = "planned_new";
+    delete copy.replacesObjectId;
+    delete copy.scanMatch;
+    delete copy.renovationDecision;
+    const base = original.displayName.replace(/ copy(?: \d+)?$/, "");
+    let name = `${base} copy`,
+      suffix = 2;
+    while (current.objects.some((o) => o.displayName === name))
+      name = `${base} copy ${suffix++}`;
+    copy.displayName = name;
+    const wall =
+      copy.placement?.support === "wall"
+        ? sceneContext.room.walls.find((w) => w.id === copy.placement?.parentId)
+        : undefined;
+    const dx = wall ? wall.toXZ[0] - wall.fromXZ[0] : 0,
+      dz = wall ? wall.toXZ[1] - wall.fromXZ[1] : 0,
+      len = Math.hypot(dx, dz) || 1;
+    for (let ring = 1; ring <= 24; ring++)
+      for (let step = 0; step < (wall ? 2 : ring * 12); step++) {
+        const angle = (step / (ring * 12)) * Math.PI * 2,
+          radius = wall
+            ? ring * (copy.dimensionsM[0] * copy.transform.scale[0] + 0.03)
+            : ring * 0.14;
+        const x = wall
+            ? (dx / len) * radius * (step ? -1 : 1)
+            : Math.cos(angle) * radius,
+          z = wall
+            ? (dz / len) * radius * (step ? -1 : 1)
+            : Math.sin(angle) * radius;
+        const candidate = onNearestSurface(
+          current,
+          {
+            ...copy,
+            transform: {
+              ...copy.transform,
+              position: [
+                original.transform.position[0] + x,
+                original.transform.position[1],
+                original.transform.position[2] + z,
+              ],
+            },
+          },
+          sceneContext.room,
+          sceneContext.assets,
+        );
+        if (
+          !validateOp(current, { type: "add", object: candidate }, sceneContext)
+            .ok
+        )
+          continue;
+        if (suggest({ type: "add", object: candidate })) {
+          select(copy.id);
+          notify(`${copy.displayName} added.`);
+          return true;
+        }
+      }
+    notify("No free space nearby for a copy.");
+    return false;
+  };
   const chooseAsset = (a: AssetSpec) => {
     const old = selected();
     if (interaction.getState().replacing && old) {
@@ -781,6 +854,7 @@ export function createEditor(
     toggleLock,
     travel,
     chooseAsset,
+    duplicate,
     reset,
     load,
     switchRoom,
