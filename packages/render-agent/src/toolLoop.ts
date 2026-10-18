@@ -34,11 +34,11 @@ export type LoopResult<T> = {
   done: T | null;
   trace: ToolTrace[];
   usage: { inputTokens: number; outputTokens: number; requests: number };
-  endedBecause: "done" | "model_finished" | "round_limit" | "call_limit" | "aborted";
+  endedBecause: "done" | "model_finished" | "round_limit" | "call_limit" | "timeout" | "aborted";
   finalText: string;
 };
 
-export type LoopOptions = { maxRounds: number; maxToolCalls: number };
+export type LoopOptions = { maxRounds: number; maxToolCalls: number; /** Wall-clock budget for the whole loop. */ maxMs?: number };
 
 const toToolDef = (t: AgentTool<unknown>): Tool => ({ type: "function", name: t.name, description: t.description, parameters: t.parameters, strict: false });
 const summarize = (value: unknown) => JSON.stringify(value).slice(0, 300);
@@ -65,8 +65,10 @@ export async function runToolLoop<T>(params: {
   const finish = (done: T | null, endedBecause: LoopResult<T>["endedBecause"], finalText = ""): LoopResult<T> =>
     ({ done, trace, usage, endedBecause, finalText });
 
+  const started = Date.now();
   for (let round = 0; round < options.maxRounds; round++) {
     if (signal?.aborted) return finish(null, "aborted");
+    if (options.maxMs !== undefined && Date.now() - started > options.maxMs) return finish(null, "timeout");
     const reply = await model.respond(input, instructions, defs, signal);
     usage.requests++;
     usage.inputTokens += reply.usage.inputTokens;
@@ -81,6 +83,7 @@ export async function runToolLoop<T>(params: {
     for (const call of calls) {
       if (call.type !== "function_call") continue;
       if (trace.length >= options.maxToolCalls) return finish(null, "call_limit");
+      if (options.maxMs !== undefined && Date.now() - started > options.maxMs) return finish(null, "timeout");
       if (signal?.aborted) return finish(null, "aborted");
       const tool = byName.get(call.name);
       let result: ToolOutput<T>;

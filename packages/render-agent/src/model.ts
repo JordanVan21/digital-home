@@ -30,7 +30,8 @@ export function createModel(config: {
     apiKey: config.apiKey,
     ...(config.provider === "deepseek" ? { baseURL: "https://api.deepseek.com" } : {}),
     timeout: 120_000,
-    maxRetries: 1,
+    // A builder job can run for minutes; ride out transient connection errors instead of losing the work.
+    maxRetries: 4,
   });
   return {
     provider: config.provider,

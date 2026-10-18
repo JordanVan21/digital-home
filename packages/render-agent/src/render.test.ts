@@ -183,6 +183,14 @@ test("a rejected submission is fed back to the builder, which fixes it", async (
   const h = await harness({ model });
   try { const out = await h.service.resolve(bed); assert.equal(out.source, "generated"); assert.match(out.notes.join(" "), /after 2 submission/); } finally { await h.cleanup(); }
 });
+test("a wall-clock budget ends a slow builder job, and the service falls back instead of hanging", async () => {
+  const slow = { ...scriptedModel([]), respond: async () => { await new Promise((r) => setTimeout(r, 25)); return scriptedModel([[call("run_blender_python", { code: "BOX 1 1 1" })]]).respond([], "", []); } };
+  const h = await harness({ model: slow, extra: { limits: { maxRounds: 50, maxToolCalls: 100, maxSubmissions: 3, maxCodeRuns: 50, maxMs: 60 } } });
+  try {
+    const out = await h.service.resolve(bed);
+    assert.equal(out.source, "placeholder"); assert.match(out.notes.join(" "), /timeout/);
+  } finally { await h.cleanup(); }
+});
 test("a builder that never produces an acceptable model ends as a bounded placeholder; nothing invalid is stored", async () => {
   const model = scriptedModel((i) => i % 2 === 0 ? [call("run_blender_python", { code: "BOX 1.6 0.9 0.05" })] : [call("submit_asset", { title: "Bed" })]);
   const h = await harness({ model, extra: { limits: { maxRounds: 20, maxToolCalls: 40, maxSubmissions: 2, maxCodeRuns: 10 } } });
@@ -211,6 +219,43 @@ test("an unreachable Blender fails fast to a placeholder instead of looping", as
     const out = await h.service.resolve(bed);
     assert.equal(out.source, "placeholder"); assert.match(out.notes.join(" "), /Cannot reach Blender/); assert.ok(model.requests <= 1);
   } finally { await h.cleanup(); }
+});
+
+// ---- real-world failure modes found testing against Blender ---------------------------------------------------
+test("a 'modification' that deleted the imported asset and rebuilt is refused as a modification; submitted as a new model it is accepted", async () => {
+  const model = scriptedModel((i, input) => {
+    if (i === 0) return [call("send_to_builder", { reason: "r", baseAssetId: idOf("coffee_table"), change: "square top" })];
+    if (i === 1) return [call("import_asset_to_blender", { assetId: idOf("coffee_table") })];
+    if (i === 2) return [call("run_blender_python", { code: "BOX 1.2 0.45 1.2" })]; // rebuilds from scratch: imported mesh is gone
+    if (i === 3) return [call("submit_asset", { title: "Square table", derivedFromAssetId: idOf("coffee_table") })];
+    if (i === 4) { assert.match(lastToolOutput(input).error, /rebuild, not a modification/); return [call("submit_asset", { title: "Square table" })]; }
+    return "done";
+  });
+  const h = await harness({ model });
+  try {
+    const out = await h.service.resolve(looseTable);
+    assert.equal(out.source, "generated"); assert.equal(out.derivedFromAssetId, undefined); assert.equal(out.asset?.derivedFromAssetId, undefined);
+    assert.deepEqual(out.asset?.tags, ["generated"]);
+  } finally { await h.cleanup(); }
+});
+test("an edit that keeps the imported asset is a real modification", async () => {
+  const model = scriptedModel((i) => i === 0 ? [call("send_to_builder", { reason: "r", baseAssetId: idOf("coffee_table"), change: "wider" })]
+    : i === 1 ? [call("import_asset_to_blender", { assetId: idOf("coffee_table") })] : i === 2 ? [call("run_blender_python", { code: "SCALE 0.9 1 1" })]
+    : i === 3 ? [call("submit_asset", { title: "Narrower table", derivedFromAssetId: idOf("coffee_table") })] : "done");
+  const h = await harness({ model });
+  try { const out = await h.service.resolve(looseTable); assert.equal(out.source, "modified"); assert.equal(out.derivedFromAssetId, idOf("coffee_table")); } finally { await h.cleanup(); }
+});
+test("a requested color that is not in the exported model is rejected with a fix hint; painting it passes", async () => {
+  const redBed = req({ category: "bed", description: "red bed", colors: ["red"], targetDimensionsM: [1.6, 0.9, 2.1] });
+  const model = scriptedModel((i, input) => {
+    if (i === 0) return [call("run_blender_python", { code: "BOX 1.6 0.9 2.1" })];
+    if (i === 1) return [call("submit_asset", { title: "Bed" })];
+    if (i === 2) { assert.match(JSON.stringify(lastToolOutput(input)), /Requested color \\"red\\" is not in the model/); return [call("run_blender_python", { code: "PAINT 0.8 0.02 0.02" })]; }
+    if (i === 3) return [call("submit_asset", { title: "Bed" })];
+    return "done";
+  });
+  const h = await harness({ model });
+  try { const out = await h.service.resolve(redBed); assert.equal(out.source, "generated"); assert.match(out.notes.join(" "), /after 2 submission/); } finally { await h.cleanup(); }
 });
 
 // ---- builder policy: thresholds enforced in code ------------------------------------------------------------

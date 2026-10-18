@@ -1,6 +1,6 @@
 import type { ResponseOutputItem, Tool } from "openai/resources/responses/responses";
 import { buildBoxGlb, inspectGlb } from "@house/asset-service";
-import { BlenderError, MEASURE_SCRIPT, type BlenderPort, type PythonResult } from "./blender";
+import { BlenderError, MEASURE_SCRIPT, MESH_NAMES_SCRIPT, type BlenderPort, type PythonResult } from "./blender";
 import type { AgentModel, ModelReply } from "./model";
 
 export type ScriptedCall = { name: string; args?: unknown };
@@ -48,6 +48,8 @@ export function lastToolOutput(input: unknown[]): any {
  */
 export class FakeBlender implements BlenderPort {
   size: [number, number, number] | null = null;
+  names: string[] = [];
+  color: [number, number, number, number] | null = null;
   executed: string[] = [];
   resets = 0;
   active = 0;
@@ -63,9 +65,12 @@ export class FakeBlender implements BlenderPort {
       const [w, h, d] = this.size;
       return { ok: true, output: JSON.stringify({ mesh_objects: 1, triangles: 12, gltf_dims_width_height_depth: [w, h, d] }) };
     }
+    if (code === MESH_NAMES_SCRIPT) return { ok: true, output: JSON.stringify(this.names) };
     this.executed.push(code);
     const box = /BOX\s+([\d.]+)\s+([\d.]+)\s+([\d.]+)/.exec(code);
-    if (box) { this.size = [Number(box[1]), Number(box[2]), Number(box[3])]; return { ok: true, output: "built" }; }
+    if (box) { this.size = [Number(box[1]), Number(box[2]), Number(box[3])]; this.names = ["box"]; return { ok: true, output: "built" }; }
+    const paint = /PAINT\s+([\d.]+)\s+([\d.]+)\s+([\d.]+)/.exec(code);
+    if (paint) { this.color = [Number(paint[1]), Number(paint[2]), Number(paint[3]), 1]; return { ok: true, output: "painted" }; }
     const scale = /SCALE\s+([\d.]+)\s+([\d.]+)\s+([\d.]+)/.exec(code);
     if (scale && this.size) { this.size = this.size.map((n, i) => n * Number(scale[i + 1])) as [number, number, number]; return { ok: true, output: "scaled" }; }
     return { ok: false, output: "NameError: toy interpreter only understands 'BOX w h d' and 'SCALE x y z'" };
@@ -77,13 +82,14 @@ export class FakeBlender implements BlenderPort {
     if (this.delayMs) await new Promise((r) => setTimeout(r, this.delayMs));
     this.active--;
     if (!this.size) throw new BlenderError("No mesh objects to export");
-    return buildBoxGlb({ size: this.size, center: [0.3, this.size[1] / 2, -0.2] });
+    return buildBoxGlb({ size: this.size, center: [0.3, this.size[1] / 2, -0.2], ...(this.color ? { baseColor: this.color } : {}) });
   }
   imported: Uint8Array[] = [];
   async importGlb(glb: Uint8Array) {
     this.check();
     this.imported.push(glb);
     this.size = inspectGlb(glb).size; // glTF dims: width, height, depth
+    this.names = ["imported_mesh"];
   }
-  async reset() { this.check(); this.resets++; this.size = null; }
+  async reset() { this.check(); this.resets++; this.size = null; this.names = []; this.color = null; }
 }

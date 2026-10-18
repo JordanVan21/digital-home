@@ -3,7 +3,7 @@ import { z } from "zod";
 import { DEFAULT_OPTIONS, categoryAffinity, retrieveAsset, scoreAsset, type AssetRegistry, type GlbStore, type RetrieveOptions } from "@house/asset-service";
 import { AssetRequest, type AssetSpec } from "@house/contracts";
 import { checkBpyCode } from "./bpyGuard";
-import { BlenderError, MEASURE_SCRIPT, type BlenderPort } from "./blender";
+import { BlenderError, MEASURE_SCRIPT, MESH_NAMES_SCRIPT, type BlenderPort } from "./blender";
 import type { AgentModel } from "./model";
 import type { Handoff } from "./retrievalAgent";
 import { FatalToolError, runToolLoop, type AgentTool, type LoopResult } from "./toolLoop";
@@ -13,8 +13,8 @@ export type BuilderResult =
   | { kind: "created"; asset: AssetSpec; derivedFromAssetId?: string; warnings: string[]; submissions: number }
   | { kind: "placeholder"; reason: string };
 
-export type AgentLimits = { maxRounds: number; maxToolCalls: number; maxSubmissions: number; maxCodeRuns: number };
-export const DEFAULT_AGENT_LIMITS: AgentLimits = { maxRounds: 24, maxToolCalls: 48, maxSubmissions: 3, maxCodeRuns: 24 };
+export type AgentLimits = { maxRounds: number; maxToolCalls: number; maxSubmissions: number; maxCodeRuns: number; /** Wall-clock budget per builder job. */ maxMs?: number };
+export const DEFAULT_AGENT_LIMITS: AgentLimits = { maxRounds: 24, maxToolCalls: 48, maxSubmissions: 3, maxCodeRuns: 24, maxMs: 8 * 60_000 };
 
 /** Blender access, acquired only when the builder actually needs it. */
 export interface BlenderAccess {
@@ -32,7 +32,10 @@ Library candidates (best first, with similarity scores): ${JSON.stringify(handof
 
 Either MODIFY a library asset of the same kind (start with import_asset_to_blender, edit with run_blender_python, measure_model, then submit_asset with derivedFromAssetId) when a structural change gets you there, or CREATE a model from scratch (run_blender_python, measure_model, submit_asset) when nothing is close. You may search_assets / score_asset to look at other candidates. If neither is possible, call use_placeholder.
 Similarity scores are 0-1; thresholds (${t.generateBelow} reuse floor, ${t.accept} confident) are enforced by code against the original item: creating from scratch is blocked while a confident library match exists, and a modification must start from an asset of the same kind.
-Blender: units are meters, Z is up. Width is Blender X, depth is Blender Y, height is Blender Z. The front faces -Y. One standing item resting on the floor; no floor, walls, lights or cameras. Use primitives, bmesh and light modifiers; stay under ~30,000 triangles; give parts Principled BSDF materials (base color, roughness) matching the request; no image textures or external files. Only import bpy, bmesh, mathutils, math, random. File, OS, preferences and render access is rejected. If submit_asset reports problems, fix them and submit again.
+Blender: units are meters, Z is up. Width is Blender X, depth is Blender Y, height is Blender Z. The front faces -Y. One standing item resting on the floor; no floor, walls, lights or cameras. Use primitives, bmesh and light modifiers; stay under ~30,000 triangles; give parts Principled BSDF materials (base color, roughness) matching the request; no image textures or external files. Only import bpy, bmesh, mathutils, math, random. File, OS, preferences and render access is rejected. Python variables do not persist between run_blender_python calls (scene objects do): re-import bpy and look objects up by name each time.
+When modifying, edit the imported objects in place (scale, add or remove parts, change materials). Do not delete them and rebuild: that is creating, and derivedFromAssetId is rejected if no imported object remains.
+If the request names a color or material, set it on the materials (Principled BSDF Base Color) and check it: measure_model lists each material's base color and whether a texture drives it. Library materials are texture-driven, so unlink the Base Color texture first, e.g. for each material m: for l in list(m.node_tree.links): if l.to_socket.name == 'Base Color': m.node_tree.links.remove(l); then set m.node_tree.nodes['Principled BSDF'].inputs['Base Color'].default_value = (r, g, b, 1). submit_asset rejects a requested color that is not in the model.
+If submit_asset reports problems, fix them and submit again.
 Be brief. Reply with tool calls, not explanations.
 
 The item: ${JSON.stringify({ category: request.category, description: request.description, styles: request.styles, colors: request.colors, materials: request.materials, mustFitMeters: dimsText(request.targetDimensionsM) + " (width x height x depth)" })}`;
@@ -66,6 +69,12 @@ export async function runBuilderAgent(params: {
   // Blender is leased on first use and held until the job ends, so searching never blocks other jobs.
   const held: { lease: Awaited<ReturnType<BlenderAccess["lease"]>> | null } = { lease: null };
   const imported = new Set<string>();
+  /** Mesh object names present right after each import, to verify a "modification" really kept the imported asset. */
+  const importedNames = new Map<string, string[]>();
+  const meshNames = async (): Promise<string[]> => {
+    const r = await call((port) => port.runPython(MESH_NAMES_SCRIPT, signal));
+    try { return r.ok ? (JSON.parse(r.output.trim().split("\n").pop() ?? "[]") as string[]) : []; } catch { return []; }
+  };
   let submissions = 0;
   let codeRuns = 0;
 
@@ -150,12 +159,13 @@ export async function runBuilderAgent(params: {
         const glb = await store.readGlb(asset.glbStorageKey);
         await call(async (port) => { await port.reset(signal); await port.importGlb(glb, signal); });
         imported.add(asset.id);
-        return { output: { ok: true, imported: asset.title, note: "Imported. Blender is Z-up: width=X, depth=Y, height=Z. Call measure_model." } };
+        importedNames.set(asset.id, await meshNames());
+        return { output: { ok: true, imported: asset.title, note: "Imported and flattened: every mesh is a top-level object with an identity transform and world-space vertices (no parents). Blender is Z-up: width=X, depth=Y, height=Z. Call measure_model." } };
       },
     },
     {
       name: "run_blender_python",
-      description: "Run Python (bpy) in the Blender session. Returns printed output or the error. Scene state persists between calls.",
+      description: "Run Python (bpy) in the Blender session. Returns printed output or the error. Scene objects and data persist between calls, but each call runs in a fresh namespace: Python variables do NOT persist, so start each call with `import bpy` and look objects up by name (bpy.data.objects[...]).",
       parameters: { type: "object", properties: { code: { type: "string" } }, required: ["code"], additionalProperties: false },
       schema: z.object({ code: z.string() }),
       async run(args: { code: string }) {
@@ -200,6 +210,13 @@ export async function runBuilderAgent(params: {
       async run(args: { title: string; derivedFromAssetId?: string }) {
         if (!args.derivedFromAssetId && !createAllowed) return { output: { ok: false, error: createBlocked() } };
         if (args.derivedFromAssetId && !imported.has(args.derivedFromAssetId)) return { output: { ok: false, error: "derivedFromAssetId must be an asset you imported with import_asset_to_blender." } };
+        if (args.derivedFromAssetId) {
+          // A modification must still contain the imported asset; deleting it and rebuilding is creating.
+          const kept = new Set(await meshNames());
+          if (!(importedNames.get(args.derivedFromAssetId) ?? []).some((n) => kept.has(n))) {
+            return { output: { ok: false, error: "No imported object remains in the scene, so this is a rebuild, not a modification. Omit derivedFromAssetId to submit it as a new model, or edit the imported objects in place instead of deleting them." } };
+          }
+        }
         if (submissions >= limits.maxSubmissions) return { output: { ok: false, error: "No submissions left." } };
         submissions++;
         const glb = await call((port) => port.exportGlb(signal));
@@ -223,7 +240,7 @@ export async function runBuilderAgent(params: {
   try {
     const loop = await runToolLoop<BuilderResult>({
       model, instructions: instructions(request, { accept: opts.acceptThreshold, generateBelow: opts.generateBelow }, handoff), tools, signal,
-      options: { maxRounds: limits.maxRounds, maxToolCalls: limits.maxToolCalls },
+      options: { maxRounds: limits.maxRounds, maxToolCalls: limits.maxToolCalls, maxMs: limits.maxMs },
       input: [user("Build this item now.")],
     });
     return loop.done

@@ -1,4 +1,5 @@
 import type { AssetRequest } from "@house/contracts";
+import { checkRequestedColors } from "./colors";
 import type { GlbInspection } from "./glb";
 
 export type GlbPolicy = {
@@ -27,7 +28,7 @@ export type GlbValidation = { ok: boolean; errors: string[]; warnings: string[] 
  */
 export function validateGlb(
   inspection: GlbInspection,
-  request: Pick<AssetRequest, "targetDimensionsM">,
+  request: Pick<AssetRequest, "targetDimensionsM"> & { colors?: string[] },
   policy: GlbPolicy = DEFAULT_GLB_POLICY
 ): GlbValidation {
   const errors: string[] = [];
@@ -58,5 +59,6 @@ export function validateGlb(
       }
     }
   }
+  errors.push(...checkRequestedColors(inspection.materials, request.colors ?? []));
   return { ok: errors.length === 0, errors, warnings };
 }

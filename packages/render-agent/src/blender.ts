@@ -13,6 +13,18 @@ export class BlenderError extends Error {
 
 export type PythonResult = { ok: boolean; output: string };
 
+/** The addon reports execute_code failures as a JSON string {exception_type, message, traceback}; make it readable. */
+export function formatBlenderError(message: string): string {
+  try {
+    const parsed = JSON.parse(message) as { exception_type?: string; message?: string; traceback?: string };
+    if (parsed.exception_type) {
+      const lines = (parsed.traceback ?? "").trim().split("\n");
+      return `${parsed.exception_type}: ${parsed.message ?? ""}\n${lines.slice(-6).join("\n")}`.trim();
+    }
+  } catch { /* not structured; use as-is */ }
+  return message;
+}
+
 /** What the agent needs from one running Blender. Implemented over the Blender MCP socket or by a test fake. */
 export interface BlenderPort {
   /** Runs Python inside Blender. `output` is captured stdout, or the error text when !ok. */
@@ -65,6 +77,24 @@ for obj in bpy.data.objects:
             mx[i] = max(mx[i], w[i])
     tris += sum(max(len(p.vertices) - 2, 0) for p in me.polygons)
     ev.to_mesh_clear()
+mats = []
+seen = set()
+for obj in bpy.data.objects:
+    if obj.type != 'MESH' or obj.hide_viewport:
+        continue
+    for slot in obj.material_slots:
+        m = slot.material
+        if m is None or m.name in seen:
+            continue
+        seen.add(m.name)
+        base, tex = None, False
+        if m.use_nodes:
+            bsdf = next((n for n in m.node_tree.nodes if n.type == 'BSDF_PRINCIPLED'), None)
+            if bsdf is not None:
+                socket = bsdf.inputs['Base Color']
+                tex = bool(socket.is_linked)
+                base = [round(v, 2) for v in socket.default_value[:3]]
+        mats.append({"name": m.name, "base_color_linear_rgb": base, "texture_driven": tex})
 if count == 0:
     print(json.dumps({"mesh_objects": 0}))
 else:
@@ -74,7 +104,26 @@ else:
         "blender_size_xyz": [round(s, 4) for s in size],
         "gltf_dims_width_height_depth": [round(size[0], 4), round(size[2], 4), round(size[1], 4)],
         "lowest_z": round(mn[2], 4),
+        "materials": mats,
     }))
+`;
+
+/** Frames the model in a 3/4 view so a viewport screenshot actually shows it (GUI Blender only). */
+export const FRAME_VIEW_SCRIPT = `
+import bpy, math
+from mathutils import Euler
+for area in bpy.context.screen.areas:
+    if area.type == 'VIEW_3D':
+        region = next(r for r in area.regions if r.type == 'WINDOW')
+        area.spaces.active.region_3d.view_rotation = Euler((math.radians(70), 0, math.radians(35))).to_quaternion()
+        with bpy.context.temp_override(area=area, region=region):
+            bpy.ops.view3d.view_all(center=True)
+        break
+`;
+
+export const MESH_NAMES_SCRIPT = `
+import bpy, json
+print(json.dumps([o.name for o in bpy.data.objects if o.type == 'MESH' and not o.hide_viewport]))
 `;
 
 export const exportScript = (path: string) => `
@@ -93,10 +142,33 @@ bpy.ops.export_scene.gltf(filepath=${JSON.stringify(path)}, export_format='GLB',
 print("export-ok")
 `;
 
+/**
+ * Imports a GLB and FLATTENS it: glTF assets arrive under a parent empty carrying the Y-up->Z-up rotation and
+ * offsets, which makes editing painful (a model once spent ~10 rounds fighting parent transforms). After this
+ * every mesh is a plain top-level object with an identity transform and world-space vertices; names are kept.
+ */
 export const importScript = (path: string) => `
 import bpy
 bpy.ops.import_scene.gltf(filepath=${JSON.stringify(path)})
-print("import-ok")
+meshes = [o for o in bpy.data.objects if o.type == 'MESH']
+for o in meshes:
+    world = o.matrix_world.copy()
+    o.parent = None
+    o.matrix_world = world
+for o in list(bpy.data.objects):
+    if o.type != 'MESH':
+        bpy.data.objects.remove(o, do_unlink=True)
+if meshes:
+    try:
+        bpy.ops.object.select_all(action='DESELECT')
+        for o in meshes:
+            o.select_set(True)
+        bpy.context.view_layer.objects.active = meshes[0]
+        bpy.ops.object.make_single_user(object=True, obdata=True)
+        bpy.ops.object.transform_apply(location=True, rotation=True, scale=True)
+    except Exception as e:
+        print("flatten-warning:", e)
+print("import-ok", len(meshes))
 `;
 
 // --- Blender MCP socket client --------------------------------------------------
@@ -150,12 +222,18 @@ export class BlenderMcpClient implements BlenderPort {
       const result = response.result as { result?: unknown } | undefined;
       return { ok: true, output: String(result?.result ?? "") };
     }
-    return { ok: false, output: String(response.message ?? "Blender reported an error") };
+    return { ok: false, output: formatBlenderError(String(response.message ?? "Blender reported an error")) };
+  }
+
+  /** Cheap liveness check ({type:"ping"}); false when nothing answers on the port. */
+  async ping(signal?: AbortSignal): Promise<boolean> {
+    try { return (await this.command("ping", {}, signal)).status === "success"; } catch { return false; }
   }
 
   async screenshot(signal?: AbortSignal): Promise<Uint8Array | null> {
     const filepath = join(this.tempDir, `house-shot-${randomUUID()}.png`);
     try {
+      await this.runPython(FRAME_VIEW_SCRIPT, signal).catch(() => undefined);
       const response = await this.command("get_viewport_screenshot", { max_size: 768, filepath, format: "png" }, signal);
       if (response.status !== "success") return null;
       return new Uint8Array(await readFile(filepath));
@@ -170,8 +248,26 @@ export class BlenderMcpClient implements BlenderPort {
   async exportGlb(signal?: AbortSignal): Promise<Uint8Array> {
     const path = join(this.tempDir, `house-export-${randomUUID()}.glb`);
     try {
-      const result = await this.runPython(exportScript(path), signal);
-      if (!result.ok) throw new BlenderError(`GLB export failed: ${result.output}`);
+      // Prefer the addon's native export_scene command, limited to mesh objects (no cameras/lights);
+      // an older addon or the headless server answers "Unknown command", so fall back to a script.
+      const names = await this.runPython(MESH_NAMES_SCRIPT, signal);
+      let exported = false;
+      if (names.ok) {
+        try {
+          const meshNames = JSON.parse(names.output.trim().split("\n").pop() ?? "[]") as string[];
+          if (meshNames.length) {
+            const response = await this.command("export_scene", { filepath: path, format: "glb", object_names: meshNames, apply_modifiers: true }, signal);
+            const result = response.result as { error?: string } | undefined;
+            if (response.status === "success" && !result?.error) exported = true;
+            else if (response.status === "error" && !/Unknown command/i.test(String(response.message))) throw new BlenderError(`GLB export failed: ${formatBlenderError(String(response.message))}`);
+            else if (result?.error) throw new BlenderError(`GLB export failed: ${result.error}`);
+          }
+        } catch (error) { if (error instanceof BlenderError) throw error; /* unparseable names: use the script */ }
+      }
+      if (!exported) {
+        const result = await this.runPython(exportScript(path), signal);
+        if (!result.ok) throw new BlenderError(`GLB export failed: ${result.output}`);
+      }
       return new Uint8Array(await readFile(path));
     } finally {
       await unlink(path).catch(() => undefined);

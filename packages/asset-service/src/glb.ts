@@ -16,7 +16,7 @@ export type Gltf = {
   accessors?: { count: number; min?: number[]; max?: number[] }[];
   bufferViews?: { byteLength: number }[];
   images?: { uri?: string; bufferView?: number }[];
-  materials?: { name?: string }[];
+  materials?: { name?: string; pbrMetallicRoughness?: { baseColorFactor?: number[]; baseColorTexture?: unknown } }[];
   buffers?: { uri?: string; byteLength: number }[];
   [key: string]: unknown;
 };
@@ -125,6 +125,8 @@ export type GlbInspection = {
   contentHash: string;
   /** Material names, so material overrides can target them. */
   materialNames: string[];
+  /** Base color per material: linear RGBA factor (null when glTF default white) and whether a texture drives it. */
+  materials: { name: string; baseColor: [number, number, number, number] | null; textured: boolean }[];
 };
 
 export function inspectGlb(bytes: Uint8Array): GlbInspection {
@@ -191,6 +193,11 @@ export function inspectGlb(bytes: Uint8Array): GlbInspection {
     requiredExtensions: json.extensionsRequired ?? [],
     fileBytes: bytes.byteLength,
     materialNames: (json.materials ?? []).map((m, i) => m.name ?? `material_${i}`),
+    materials: (json.materials ?? []).map((m, i) => ({
+      name: m.name ?? `material_${i}`,
+      baseColor: (m.pbrMetallicRoughness?.baseColorFactor?.length === 4 ? (m.pbrMetallicRoughness.baseColorFactor as [number, number, number, number]) : null),
+      textured: !!m.pbrMetallicRoughness?.baseColorTexture,
+    })),
     contentHash: createHash("sha256").update(bytes).digest("hex"),
   };
 }

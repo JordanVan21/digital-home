@@ -5,6 +5,8 @@ export function buildBoxGlb(opts: {
   size: [number, number, number];
   /** Box center in mesh space. */
   center?: [number, number, number];
+  /** Linear RGBA base color factor for a single material applied to the box. */
+  baseColor?: [number, number, number, number];
   nodeScale?: number;
   nodeTranslation?: [number, number, number];
   /** Extra json merged into the top level (e.g. extensionsRequired, images). */
@@ -26,7 +28,8 @@ export function buildBoxGlb(opts: {
     scene: 0,
     scenes: [{ nodes: [0] }],
     nodes: [{ mesh: 0, ...(opts.nodeScale ? { scale: [opts.nodeScale, opts.nodeScale, opts.nodeScale] } : {}), ...(opts.nodeTranslation ? { translation: opts.nodeTranslation } : {}) }],
-    meshes: [{ primitives: [{ attributes: { POSITION: 0 }, indices: 1 }] }],
+    meshes: [{ primitives: [{ attributes: { POSITION: 0 }, indices: 1, ...(opts.baseColor ? { material: 0 } : {}) }] }],
+    ...(opts.baseColor ? { materials: [{ name: "paint", pbrMetallicRoughness: { baseColorFactor: opts.baseColor } }] } : {}),
     accessors: [
       { bufferView: 0, componentType: 5126, count: 8, type: "VEC3", min, max } as never,
       { bufferView: 1, componentType: 5123, count: 36, type: "SCALAR" } as never,

@@ -50,15 +50,39 @@ pnpm --filter @house/render-agent resolve requests.json --no-model --no-blender 
 Decision benchmark against a real model (no Blender needed; stops each run at the first commitment):
 `tsx --env-file=<.env> bench/run.ts --trials 2 --out results.json`. See `bench/RESULTS.md`.
 
-## Blender
-Two ways to provide the TCP endpoint `BlenderMcpClient` talks to (default 127.0.0.1:9876, `BLENDER_MCP_PORT`):
-- **Headless, no GUI/addon**: `blender -b --factory-startup -P packages/render-agent/blender/blender_server.py -- --port 9876`
-  (same JSON protocol; no viewport, so `view_model` reports unavailable).
-- **GUI with the Blender MCP addon** (`ahujasid/blender-mcp`): connect to the MCP server from the sidebar.
+## Blender (verified against Blender 5.2.2 and the real MCP addon)
+`BlenderMcpClient` speaks the Blender MCP addon's TCP protocol (`ahujasid/blender-mcp` `addon.py`, v1.8; default
+127.0.0.1:9876, `BLENDER_MCP_PORT`): `{type, params}` -> `{status, result|message}`. It uses `ping`, `execute_code`,
+the native `export_scene` (mesh objects only; script fallback for older addons) and `get_viewport_screenshot`.
+Facts learned from the real addon and real runs, now handled in code/prompts:
+- Each `execute_code` runs in a fresh namespace (only `bpy`): scene data persists, Python variables do not.
+- Errors arrive as JSON (`exception_type`, `message`, `traceback`) and are shown to the agent readably.
+- Imported glTF assets are **flattened** (no parent empties, identity transforms, world-space vertices, names kept);
+  otherwise editing them is a fight with parent transforms.
+- `measure_model` reports size, triangles, and every material's base color and whether a texture drives it.
+- Requested colors are verified in the exported GLB (a flat matching base color on an untextured material);
+  library materials are texture-driven, so the prompt carries the unlink-and-recolor recipe.
+- `derivedFromAssetId` is accepted only if an imported object is still in the scene (a delete-and-rebuild is creating).
+- Builder jobs have a wall-clock budget (default 8 min) and the model client retries transient errors.
+- Viewport screenshots are framed on the model (GUI Blender only).
 
-Export, import and screenshots go through temp files, so Blender must run on the same machine.
-**Neither path has been run against a real Blender yet** (none was installed when this was written): the
-protocol shape and the `bpy.ops.export_scene.gltf` / `import_scene.gltf` arguments are unconfirmed.
+Two ways to provide the endpoint:
+- **GUI Blender with the MCP addon** (the real thing; the addon refuses to run in `blender -b`). Without touching your
+  Blender profile (temp scripts/config dirs, factory settings, no update check, telemetry stays off):
+  ```sh
+  mkdir -p /tmp/bl/scripts/addons && cp addon.py /tmp/bl/scripts/addons/blender_mcp_addon.py
+  echo 'import addon_utils; addon_utils.enable("blender_mcp_addon", default_set=False, persistent=False)' > /tmp/bl/startup.py
+  BLENDERMCP_NO_UPDATE_CHECK=1 BLENDER_USER_SCRIPTS=/tmp/bl/scripts BLENDER_USER_CONFIG=/tmp/bl/config \
+    /Applications/Blender.app/Contents/MacOS/Blender --factory-startup --python /tmp/bl/startup.py
+  ```
+  Read the addon before enabling it: it executes arbitrary code by design (localhost only) and ships optional network integrations (off by default).
+- **Headless, no GUI/addon** (tests, servers): `blender -b --factory-startup -P blender/blender_server.py -- --port 9876`
+  (mirrors the addon's protocol for `ping`/`execute_code`/`get_scene_info`; no viewport).
+
+Tests against real Blender: `pnpm --filter @house/render-agent test` runs `src/blender.integration.test.ts`, spawning the
+headless server if Blender is installed (skips otherwise); set `BLENDER_MCP_PORT` (+ `BLENDER_EXPECT_GUI=1`) to run it
+against a GUI session. Full stack with a real model: `tsx --env-file=<.env> bench/e2e.ts <outDir> [caseId...]` (writes
+GLBs, traces and viewport screenshots to `<outDir>`).
 
 ## Safety
 Model-written Python runs inside Blender. `checkBpyCode` blocks filesystem/OS/network/process access and Blender

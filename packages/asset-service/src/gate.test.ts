@@ -54,7 +54,7 @@ test("registry stores a normalized asset the retriever can then find; re-registe
   try {
     const registry = new FileAssetRegistry({ publicRoot: root });
     const request = req({ targetDimensionsM: [2.2, 0.7, 0.5], styles: ["mid-century"], colors: ["walnut"] });
-    const glb = buildBoxGlb({ size: [220, 70, 50], center: [5, 5, 5] }); // wrong scale/offset on purpose
+    const glb = buildBoxGlb({ size: [220, 70, 50], center: [5, 5, 5], baseColor: [0.32, 0.18, 0.09, 1] }); // wrong scale/offset on purpose; walnut-brown
     const first = await registry.registerGenerated({ glb, request, title: "Walnut credenza" });
     assert.ok(first.ok && first.created);
     if (!first.ok) return;
@@ -99,4 +99,26 @@ test("concurrent registrations all land in the catalog", async () => {
       registry.registerGenerated({ glb: buildBoxGlb({ size: [2, 1, 1 + i * 0.02] }), request: req({ targetDimensionsM: [2, 1, 1.2] }), title: `Item ${i}` })));
     assert.equal((await registry.list()).length, 5);
   } finally { await rm(root, { recursive: true, force: true }); }
+});
+
+test("requested colors must actually be in the model: flat matching base color, not just a name or a texture", async () => {
+  const { inspectGlb: inspect } = await import("./glb");
+  const { colorMatches, checkRequestedColors } = await import("./colors");
+  const red = inspect(buildBoxGlb({ size: [1, 1, 1], baseColor: [0.8, 0.02, 0.02, 1] }));
+  const brown = inspect(buildBoxGlb({ size: [1, 1, 1], baseColor: [0.32, 0.18, 0.09, 1] }));
+  const none = inspect(buildBoxGlb({ size: [1, 1, 1] }));
+  assert.deepEqual(checkRequestedColors(red.materials, ["red"]), []);
+  assert.equal(checkRequestedColors(brown.materials, ["red"]).length, 1);
+  assert.deepEqual(checkRequestedColors(brown.materials, ["walnut", "Brown"]), []);
+  assert.equal(checkRequestedColors(none.materials, ["red"]).length, 1, "no material at all cannot confirm red");
+  assert.deepEqual(checkRequestedColors(none.materials, ["mid-century", "sparkly"]), [], "unknown color names are not checked");
+  assert.equal(colorMatches("navy", [0.0, 0.0, 0.2]), true); assert.equal(colorMatches("white", [0.9, 0.9, 0.9]), true); assert.equal(colorMatches("white", [0.8, 0.02, 0.02]), false);
+  // A textured material with no flat factor cannot confirm a color, and the message says how to fix it.
+  const textured = [{ name: "sofa_03", baseColor: null, textured: true }];
+  assert.match(checkRequestedColors(textured, ["red"])[0], /sofa_03 use a texture; unlink/);
+  // A matching factor that is still multiplied by a texture does not count either.
+  assert.equal(checkRequestedColors([{ name: "sofa_03", baseColor: [0.8, 0.02, 0.02, 1] as [number, number, number, number], textured: true }], ["red"]).length, 1);
+  const target = req({ targetDimensionsM: [1, 1, 1], colors: ["red"] });
+  assert.ok(!validateGlb(brown, target).ok && /Requested color "red"/.test(validateGlb(brown, target).errors.join()));
+  assert.ok(validateGlb(red, target).ok);
 });
