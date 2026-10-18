@@ -287,7 +287,7 @@ describe("supported height editing", () => {
     );
     expect(r.ok).toBe(false);
   });
-  it("rejects cyclic supports and direct edits that leave a child unsupported", () => {
+  it("rejects cyclic supports and carries children during direct support moves", () => {
     const supported = {
       ...small,
       placement: { support: "object" as const, parentId: table.id },
@@ -311,7 +311,7 @@ describe("supported height editing", () => {
         },
         ctx,
       ).ok,
-    ).toBe(false);
+    ).toBe(true);
     expect(
       applyOp(
         base,

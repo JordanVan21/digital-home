@@ -7,7 +7,6 @@ import {
   type ComponentRef,
 } from "react";
 import { diffScenes } from "@house/scene-engine";
-import { BeforeOutline } from "./BeforeOutline";
 import { labelLayer } from "./labelLayer";
 import { Canvas, useThree } from "@react-three/fiber";
 import {
@@ -70,22 +69,14 @@ function Objects() {
   const accepted = useStore(editor.scene, (s) => s.scene);
   const draft = useStore(editor.draft, (s) => s.scene);
   const working = draft ?? accepted;
-  const { before, added } = useMemo(() => {
-    if (!draft) return { before: [], added: new Set<string>() };
-    const diff = diffScenes(accepted, draft);
-    const changed = new Set([...diff.changed, ...diff.removed]);
-    return {
-      before: accepted.objects.filter((o) => changed.has(o.id)),
-      added: new Set(diff.added),
-    };
-  }, [accepted, draft]);
+  const added = useMemo(
+    () => new Set(draft ? diffScenes(accepted, draft).added : []),
+    [accepted, draft],
+  );
   return (
     <>
       {working.objects.map((o) => (
         <Furniture key={o.id} object={o} isNew={added.has(o.id)} />
-      ))}
-      {before.map((o) => (
-        <BeforeOutline key={`before-${o.id}`} object={o} />
       ))}
     </>
   );

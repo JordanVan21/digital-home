@@ -47,7 +47,12 @@ export function bakeGeometry(scene: Object3D): BufferGeometry {
     new Float32BufferAttribute(points, 3),
   );
 }
-function compoundBoxes(geometry: BufferGeometry, bounds: Box3, cell: number) {
+function compoundBoxes(
+  geometry: BufferGeometry,
+  bounds: Box3,
+  cell: number,
+  closeBase: boolean,
+) {
   const origin = bounds.min
     .clone()
     .divideScalar(cell)
@@ -104,8 +109,17 @@ function compoundBoxes(geometry: BufferGeometry, bounds: Box3, cell: number) {
   const queue = new Int32Array(total);
   let head = 0,
     tail = 1;
-  queue[0] = 0;
-  cells[0] = 2;
+  // A supporting plane blocks entry through the model's bottom. This fills
+  // enclosed skirt/body voids while retaining air reachable from the sides/top.
+  // Mark cells below it as exterior without queueing them into the flood fill.
+  if (closeBase) {
+    const baseY = Math.floor((bounds.min.y - origin.y) / cell);
+    for (let z = 0; z < nz; z++)
+      for (let y = 0; y < baseY; y++)
+        for (let x = 0; x < nx; x++) cells[indexOf(x, y, z)] = 2;
+  }
+  queue[0] = indexOf(0, ny - 1, 0);
+  cells[queue[0]] = 2;
   const enqueue = (i: number) => {
     if (cells[i] === 0) {
       cells[i] = 2;
@@ -167,6 +181,7 @@ function compoundBoxes(geometry: BufferGeometry, bounds: Box3, cell: number) {
 export function buildProfile(
   geometry: BufferGeometry,
   cellSize = 0.04,
+  options: { closeBase?: boolean } = {},
 ): Profile {
   if (!Number.isFinite(cellSize) || cellSize < 0.01)
     throw new Error("Invalid cell size.");
@@ -178,7 +193,12 @@ export function buildProfile(
   geometry.boundsTree = tree;
   const bvhMs = performance.now() - begin,
     gridBegin = performance.now();
-  const compound = compoundBoxes(geometry, bounds, cellSize);
+  const compound = compoundBoxes(
+    geometry,
+    bounds,
+    cellSize,
+    options.closeBase ?? false,
+  );
   return {
     geometry,
     tree,

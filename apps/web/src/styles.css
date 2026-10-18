@@ -329,6 +329,10 @@ kbd {
   width: 46px;
   height: 46px;
 }
+.view-controls .round.active {
+  background: var(--accent);
+  color: var(--accent-ink);
+}
 .text-icon {
   font-weight: 600;
   font-size: 14px;

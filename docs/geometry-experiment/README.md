@@ -53,3 +53,37 @@ The current grid boxes should **not** replace editor validation as-is. Keep this
 The normal editor now draws cached compound outlines for opaque GLBs and uses accelerated triangle picking, so empty space between legs is no longer a box hit target. Loading, missing, alpha-masked and transparent models retain box outlines and picking. Geometry is normalized with the same model transform as the visible asset; drag updates remain imperative. Shared source geometry is not mutated.
 
 This is deliberately a renderer integration, not a replacement for computational bounds: accepted-scene collisions, support, snapping, room checks and saved scenes still use the existing boxes. A compound outline is an approximate shape preview, not a feasibility guarantee. The containment and support issues above still block making the experimental volumes authoritative.
+
+## Compound collision promotion
+
+At the user's request, the approximation now also drives object-to-object collision checks. Offline generated, content-hash-matched profiles keep the engine independent of Three.js and runtime model loading. Whole bounds remain the broad phase and room/door policy; occupied sub-box pairs are the narrow phase, allowing gaps under tabletops. Touching is permitted with 0.1 mm penetration tolerance. Missing/stale and alpha-model profiles fall back to a solid box. Support/snapping still uses the original top faces.
+
+This deliberately accepts the approximation's documented fidelity limits; it is not exact mesh collision or a remedy for open meshes. Real desk/chair and low-object-under-desk cases, penetration, containment, transforms and resolver preservation are covered by engine tests. Regenerate profiles with `pnpm geometry:bake` when assets change.
+
+## Shape-based snapping and support assemblies
+
+Snapping now uses exposed top patches from the same baked compound data. Overlapping columns are subtracted from each top face to omit covered internal faces. Contact requires an occupied lowest child face, a supported bottom center and no compound penetration. The floor remains an exact plane. Lower chair seats and interior bookshelf shelves are tested, including yaw/scale and rejection of empty outer-box tops. Guides display the selected actual patch.
+
+The existing support-parent relationship also defines moving assemblies. A parent translation/yaw carries recursive descendants, including an imperative live preview with no per-pointer React updates. Independent child movement leaves its parent fixed; locked descendants prevent moving the support. Accept searches/reverts a changed stack as a unit. GPU-free renderer tests cover live translation/rotation, cancel, locks and a single draft step; editor tests cover stack revert/undo/redo; the browser regression covers chair-seat snapping, stack movement, save and reload.
+
+Fidelity remains limited by the reviewed compound approximation. Parent references persist as before; old saves relying on a formerly empty outer-box top require a fresh snap.
+
+## Collision acceleration checkpoint
+
+Compound boxes now have cached local-space BVHs. Queries lazily transform reached bounds and leaves, reject separated branches, and retain the original SAT leaf checks and tolerance. A single whole-model convex hull would seal the under-desk/chair gaps; this optimization preserves the reviewed shape instead. No asset/profile/save data changes are needed.
+
+A warm desk/tucked-chair CPU microbenchmark measured 6,018 linear leaf pairs versus 284 BVH leaf pairs plus 169 node pairs. Mean query time was 0.1116 ms linear and 0.0432 ms BVH (2.58×). Run `pnpm exec vitest bench --run packages/scene-engine/src/collision.bench.ts` to repeat. Timing varies by hardware and placement; this does not establish FPS or worst-case latency. 256 deterministic varied asset pairs match the linear oracle in both query orders.
+
+Production skips compound-outline generation/rendering and debug selection boxes. Development retains them. Accelerated model picking remains enabled independently of outline visibility.
+
+Compound sub-box outlines have now been removed from the normal editor in both development and production, including their runtime generation. Compound collision data, BVH acceleration and shape snapping remain active. The isolated geometry lab remains available for inspection.
+
+## Body containment and exterior ghost correction
+
+The walnut table could be fully hidden inside the linen couch because the baked void beneath the skirting was reachable by flood fill from below the model. Production profile baking now uses `buildProfile(..., {closeBase:true})` (third argument after cell size), blocking flood entry below the supporting plane. The corrected couch merges to 58 boxes. Synthetic regressions retain side-accessible table air and open-top container interiors, and actual desk/chair nesting remains valid. The opt-in lab keeps its original unclosed comparison unless requested explicitly.
+
+Previous-position ghosts now render the compound union's external crease edges, including genuine gaps, with no shared faces, overlap edges, coplanar seams, or sealed internal cavities. Tests cover touching/overlapping unions, concavity, closed cavities and open holes. Shapes are cached in normalized coordinates, independently copied into each object's dashed geometry and placed at its accepted transform.
+
+## Current overlay toggle
+
+The user subsequently removed previous-position ghosts. Their exterior-union geometry is reused by an explicit **Bounding boxes** toggle for the current scene, default off, available in development and production. Overlays are children of live furniture groups, so they track previews and committed/draft transforms with no old-position copy. The toggle does not change scene state, undo history, collisions or snapping.

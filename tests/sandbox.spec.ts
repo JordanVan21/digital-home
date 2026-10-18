@@ -64,17 +64,24 @@ test("renders the room and edits, undoes and restores a saved arrangement", asyn
     ),
   );
   expect(saved.objects).toHaveLength(13);
-  // All boxes now support contact, including the rug under the added table.
-  const rug = saved.objects.find(
-    (o: { category: string }) => o.category === "rug",
-  );
-  expect(saved.objects[12].placement).toEqual({
-    support: "object",
-    parentId: rug.id,
+  // Shape-based support can resolve onto an exposed patch or the floor.
+  // Validate the saved geometry rather than requiring the old box-top target.
+  const feasible = await page.evaluate(async () => {
+    const urls = performance.getEntriesByType("resource").map((r) => r.name);
+    const engineUrl = urls.find((url) =>
+      new URL(url).pathname.endsWith("/scene-engine/src/index.ts"),
+    )!;
+    const editorUrl = urls.find(
+      (url) => new URL(url).pathname === "/src/state/editor.ts",
+    )!;
+    const { validateObject } = await import(engineUrl);
+    const { editor, sceneContext } = await import(editorUrl);
+    const scene = editor.scene.getState().scene;
+    return scene.objects.every(
+      (o: unknown) => validateObject(scene, o, sceneContext).ok,
+    );
   });
-  expect(saved.objects[12].transform.position[1]).toBeCloseTo(
-    rug.transform.position[1] + rug.dimensionsM[1] * rug.transform.scale[1],
-  );
+  expect(feasible).toBe(true);
   expect(saved.objects[12].transform.rotation[1]).toBeCloseTo(
     Math.sin(Math.PI / 24),
   );

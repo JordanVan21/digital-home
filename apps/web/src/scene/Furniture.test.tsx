@@ -45,6 +45,7 @@ beforeEach(() => {
     tool: "move",
     movePlane: "floor",
     heightModifier: false,
+    boundingBoxes: false,
     toast: null,
   });
   model.renders = 0;
@@ -86,6 +87,7 @@ describe("actual canvas gesture adapter (without GPU)", () => {
     expect(editor.interaction.getState().dragging).toBe(false);
   });
   it("invalid drops stay where they land as red, conflicted suggestions", async () => {
+    editor.interaction.setState({ boundingBoxes: true });
     const object = editor.scene
       .getState()
       .scene.objects.find((o) => o.id === fixtureId(111))!;
@@ -437,3 +439,189 @@ describe("actual canvas gesture adapter (without GPU)", () => {
     ).toEqual([0.6, expect.closeTo(0.4), 1.75]);
   });
 });
+
+describe("attached item gesture previews", () => {
+  it("clears child previews on cancel and rejects dragging a support with a locked child", async () => {
+    const original = editor
+      .working()
+      .objects.find((o) => o.id === fixtureId(111))!;
+    const parent = {
+      ...original,
+      dimensionsM: [1, 0.6, 1] as [number, number, number],
+      transform: {
+        ...original.transform,
+        position: [0, 0, 0] as [number, number, number],
+      },
+    };
+    const child = {
+      ...original,
+      id: fixtureId(902),
+      dimensionsM: [0.2, 0.2, 0.2] as [number, number, number],
+      placement: { support: "object" as const, parentId: parent.id },
+      transform: {
+        ...parent.transform,
+        position: [0.2, 0.6, 0] as [number, number, number],
+      },
+    };
+    editor.scene.setState({
+      scene: { ...createFixtureScene(), objects: [parent, child] },
+      ready: true,
+    });
+    renderer = await ReactThreeTestRenderer.create(
+      <>
+        <Furniture object={parent} />
+        <Furniture object={child} />
+      </>,
+    );
+    const node = renderer.scene.findByProps({ name: `furniture-${parent.id}` });
+    const attached = renderer.scene.findByProps({
+      name: `furniture-${child.id}`,
+    });
+    await renderer.fireEvent(node, "pointerDown", pointer(0, 0));
+    await renderer.fireEvent(node, "pointerMove", pointer(0.5, 0, 180));
+    await renderer.advanceFrames(1, 0.1);
+    expect((attached.instance as Group).position.x).toBeCloseTo(0.7);
+    await renderer.fireEvent(node, "pointerCancel", pointer(0.5, 0, 180));
+    await renderer.advanceFrames(1, 1);
+    expect((attached.instance as Group).position.x).toBeCloseTo(0.2);
+    expect(editor.motion.transforms.size).toBe(0);
+    expect(editor.draft.getState().undo).toHaveLength(0);
+    await act(async () =>
+      editor.scene.setState({
+        scene: {
+          ...createFixtureScene(),
+          objects: [parent, { ...child, locked: true }],
+        },
+      }),
+    );
+    await renderer.fireEvent(node, "pointerDown", pointer(0, 0));
+    expect(editor.interaction.getState().dragging).toBe(false);
+    expect(editor.interaction.getState().toast).toMatch(/locked/i);
+  });
+
+  it.each(["move", "rotate"] as const)(
+    "previews %s for the whole stack without model rerenders and commits one draft step",
+    async (tool) => {
+      const original = editor
+        .working()
+        .objects.find((o) => o.id === fixtureId(111))!;
+      const parent = {
+        ...original,
+        dimensionsM: [1, 0.6, 1] as [number, number, number],
+        transform: {
+          position: [0, 0, 0] as [number, number, number],
+          rotation: [0, 0, 0, 1] as [number, number, number, number],
+          scale: [1, 1, 1] as [number, number, number],
+        },
+      };
+      const child = {
+        ...original,
+        id: fixtureId(900),
+        dimensionsM: [0.2, 0.2, 0.2] as [number, number, number],
+        placement: { support: "object" as const, parentId: parent.id },
+        transform: {
+          ...parent.transform,
+          position: [0.2, 0.6, 0] as [number, number, number],
+        },
+      };
+      editor.scene.setState({
+        scene: { ...createFixtureScene(), objects: [parent, child] },
+        ready: true,
+      });
+      editor.interaction.setState({ tool });
+      renderer = await ReactThreeTestRenderer.create(
+        <>
+          <Furniture object={parent} />
+          <Furniture object={child} />
+        </>,
+      );
+      const node = renderer.scene.findByProps({
+        name: `furniture-${parent.id}`,
+      });
+      const attached = renderer.scene.findByProps({
+        name: `furniture-${child.id}`,
+      });
+      await renderer.fireEvent(node, "pointerDown", pointer(0, 1));
+      const renders = model.renders;
+      await renderer.fireEvent(
+        node,
+        "pointerMove",
+        tool === "move" ? pointer(0.5, 1, 180) : pointer(1, 0, 180),
+      );
+      await renderer.advanceFrames(1, 0.1);
+      const position = (attached.instance as Group).position;
+      expect(position.x).toBeCloseTo(tool === "move" ? 0.7 : 0);
+      expect(position.z).toBeCloseTo(tool === "move" ? 0 : -0.2);
+      expect(position.y).toBeCloseTo(0.6);
+      expect(model.renders).toBe(renders);
+      expect(editor.draft.getState().undo).toHaveLength(0);
+      await renderer.fireEvent(node, "pointerUp", pointer(1, 0, 180));
+      expect(editor.draft.getState().undo).toHaveLength(1);
+      expect(editor.working().objects[1].transform.position[0]).toBeCloseTo(
+        tool === "move" ? 0.7 : 0,
+      );
+      await act(async () => editor.travel("undo"));
+      expect(editor.working().objects[1].transform).toEqual(child.transform);
+    },
+  );
+});
+
+it("omits debug selection boxes from production furniture", async () => {
+  vi.stubEnv("DEV", false);
+  try {
+    const object = editor
+      .working()
+      .objects.find((o) => o.id === fixtureId(111))!;
+    editor.select(object.id);
+    renderer = await ReactThreeTestRenderer.create(
+      <Furniture object={object} />,
+    );
+    expect(
+      renderer.scene.findAll((n) => n.instance instanceof LineSegments),
+    ).toHaveLength(0);
+  } finally {
+    vi.unstubAllEnvs();
+  }
+});
+
+it.each([false, true])(
+  "toggles current collider overlays and keeps them attached during dragging (DEV=%s)",
+  async (dev) => {
+    vi.stubEnv("DEV", dev);
+    try {
+      const object = editor
+        .working()
+        .objects.find((o) => o.id === fixtureId(111))!;
+      renderer = await ReactThreeTestRenderer.create(
+        <Furniture object={object} />,
+      );
+      const node = renderer.scene.findByProps({
+        name: `furniture-${object.id}`,
+      });
+      expect(
+        renderer.scene.findAllByProps({ name: "collision-outline" }),
+      ).toHaveLength(0);
+      await act(async () =>
+        editor.interaction.setState({ boundingBoxes: true }),
+      );
+      const overlay = renderer.scene.findByProps({ name: "collision-outline" })
+        .instance as Group;
+      expect(editor.hasDraft()).toBe(false);
+      await renderer.fireEvent(node, "pointerDown", pointer(0.2, 1.75));
+      await renderer.fireEvent(node, "pointerMove", pointer(0.6, 1.75, 180));
+      (node.instance as Group).updateMatrixWorld(true);
+      expect(overlay.getWorldPosition(new Vector3()).x).toBeCloseTo(0.6);
+      await renderer.fireEvent(node, "pointerUp", pointer(0.6, 1.75, 180));
+      expect(editor.draft.getState().undo).toHaveLength(1);
+      await act(async () =>
+        editor.interaction.setState({ boundingBoxes: false }),
+      );
+      expect(
+        renderer.scene.findAllByProps({ name: "collision-outline" }),
+      ).toHaveLength(0);
+      expect(editor.draft.getState().undo).toHaveLength(1);
+    } finally {
+      vi.unstubAllEnvs();
+    }
+  },
+);

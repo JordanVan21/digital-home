@@ -126,4 +126,38 @@ Poly Haven imports preserve original PBR materials and meter scale, embed 1K tex
 
 ### Renderer shape outlines
 
-Opaque GLBs use cached compound selection outlines and accelerated mesh picking in the normal editor. Proxies, loading models and alpha/transparent assets retain box fallback. The displayed compound shape is approximate. Collision validation and surface snapping still use conservative whole boxes; these renderer changes do not change accepted scene feasibility or save formats. The geometry lab remains available at `?geometry-lab`.
+Opaque GLBs use cached compound selection outlines and accelerated mesh picking in the normal editor. Proxies, loading models and alpha/transparent assets retain box fallback. The displayed compound shape is approximate. Object-to-object collision validation uses the baked compound volumes described below. Surface snapping now uses exposed compound top faces as described below; these renderer changes do not change accepted scene feasibility or save formats. The geometry lab remains available at `?geometry-lab`.
+
+### Compound collisions
+
+Object collisions use an outer-box broad phase followed by yaw-aware, scaled compound-box overlap. Touching faces are allowed, with a 0.1 mm penetration tolerance and no whole-object clearance halo. Thus overlapping outer boxes can be valid when their occupied sub-blocks do not intersect (for example, furniture partly under a desk). Draft previews and Accept use the same pure engine query. Room boundaries and doorway clearances retain the outer bounds. Floor and furniture contact use the rules below.
+
+`pnpm geometry:bake` regenerates normalized collider profiles from shipped opaque GLBs using the same 4 cm voxel approximation as the outline preview, clipped to model bounds. Profiles are keyed by asset ID and content hash. Missing/stale profiles, alpha-card models and proxies retain full-box collision fallback. Profiles do not change scene saves. The 0.1 mm tolerance is query tolerance, not model accuracy: open/thin meshes and small holes remain approximate.
+
+### Shape snapping and attached items
+
+Floor and furniture snapping uses the same collider profiles as collisions. Furniture targets are exposed top-face patches: covered internal faces are removed, and empty space above a chair seat is no longer a target at backrest height. Lowest occupied bottom faces must contact a patch, the bottom center must remain above the patch (overhang is allowed), and the resulting compound volumes must not intersect. This supports chair seats and interior shelves, including yaw and scale. Alt still bypasses magnetic snapping. Transparent/missing/stale-profile assets retain full-box fallback.
+
+Exact contact records the existing `placement.parentId`. Moving or rotating a support carries all its attached descendants at their local offsets, live during the gesture and in one draft undo step. Moving a child leaves its parent in place; leaving the support detaches it, while that child's own children follow. Nearby pieces are never implicitly grouped. Locked descendants block moving a support. Uniform scale carries children; nonuniform group scaling is rejected because it would require shear.
+
+Accept validates and resolves an edited stack together, preserving contacts even when searching for a nearby fit or reverting. Stack reverts, discard and undo/redo preserve group movement. Saves need no schema change. Existing placements that depended on empty outer-box space must be re-snapped to an actual face. Ceiling and side-face attachment remain future work.
+
+### Collision hierarchy and production outlines
+
+Collision queries use a cached per-asset binary BVH over the existing compound boxes. Conservative transformed node bounds prune whole branches, and only reached leaf pairs use the existing tight-tolerance SAT query. Geometry, snapping, support and save formats are unchanged. Trees are built once per asset in memory and reused across instances; moving a piece does not rebuild them.
+
+Compound and selection-box outlines are development-only (`import.meta.env.DEV`). Production skips compound-outline generation while retaining accelerated opaque-model picking, the model itself, and interactive controls. Draft before-position ghosts and snap guides remain functional UI.
+
+`pnpm exec vitest bench --run packages/scene-engine/src/collision.bench.ts` compares the retained linear reference against the BVH. One warm desk/tucked-chair run reduced leaf comparisons from 6,018 to 284 (169 node pairs), and averaged 0.1116 ms linear versus 0.0432 ms BVH (2.58×). These are a single workload's CPU timings, not frame-rate or worst-case guarantees. Deterministic equivalence tests cover 256 asset/transform pairs in both orders, plus existing containment, contacts, stale profiles, stacking and nesting tests.
+
+Compound sub-box outlines have now been removed from the normal editor in both development and production, including their runtime generation. Compound collision data, BVH acceleration and shape snapping remain active. The isolated geometry lab remains available for inspection.
+
+### Couch body closure and exterior ghosts
+
+Collider baking closes exterior flood-fill access below the model's minimum Y, representing its supporting plane. This fills trapped body voids beneath skirting (including the linen couch) without sealing side-accessible under-desk space or open-top containers. This is a volume approximation, not a sweep/path simulation; saved overlapping placements from before the fix are not silently rearranged.
+
+Dashed previous-position ghosts draw only exterior crease edges of the baked compound union. Coordinate-compressed occupancy removes shared/covered faces and sealed internal cavities; coplanar seams and collinear fragments are removed. Open gaps are preserved. The normalized result is cached per profile and copied/scaled for each changed object's accepted pose. Proxies and stale/missing profiles retain their box fallback.
+
+### Current bounding-box view
+
+Previous-position ghosts have been removed. Use the **Bounding boxes** button in the right-side view controls to toggle collider outlines for the current working scene. It starts off, works in development and production, and does not create edits or affect undo/save history. The overlay follows each furniture group's live transform, including attached items during drag/rotation. It shows the compound union's exterior edges without shared box seams or sealed internal cavities. No old-position or implicit selected-object boxes are drawn. The view preference resets on reload; collision and snapping remain active regardless of visibility.

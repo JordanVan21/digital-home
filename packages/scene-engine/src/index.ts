@@ -4,3 +4,7 @@ export * from "./history";
 export * from "./resolve";
 
 export * from "./support";
+
+export * from "./collision";
+
+export * from "./assembly";

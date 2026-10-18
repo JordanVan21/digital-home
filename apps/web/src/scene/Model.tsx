@@ -1,22 +1,14 @@
-import {
-  Component,
-  Suspense,
-  useEffect,
-  useMemo,
-  type ReactNode,
-  type RefObject,
-} from "react";
+import { Component, Suspense, useEffect, useMemo, type ReactNode } from "react";
 import { Html, useGLTF } from "@react-three/drei";
 import {
   Box3,
   Mesh,
   MeshStandardMaterial,
   Vector3,
-  Group,
   BufferGeometry,
 } from "three";
 import { assetById, type SceneObject } from "@house/contracts";
-import { shapeEdges } from "./modelShape";
+import { supportsMeshPicking } from "./modelShape";
 import { MeshBVH, acceleratedRaycast } from "three-mesh-bvh";
 import { labelLayer } from "./labelLayer";
 export function Proxy({
@@ -71,22 +63,18 @@ class ModelBoundary extends Component<
 const pickingGeometry = new WeakMap<BufferGeometry, BufferGeometry>();
 function GLB({
   object,
-  outlineRef,
-  highlighted,
   onShape,
 }: {
   object: SceneObject;
-  outlineRef?: RefObject<Group | null>;
-  highlighted?: boolean;
   onShape?: (ready: boolean) => void;
 }) {
   const asset = assetById[object.assetId!];
   const { scene } = useGLTF(asset.glbStorageKey, false, true);
-  const edges = useMemo(() => shapeEdges(scene), [scene]);
+  const meshPicking = useMemo(() => supportsMeshPicking(scene), [scene]);
   useEffect(() => {
-    onShape?.(!!edges);
+    onShape?.(meshPicking);
     return () => onShape?.(false);
-  }, [edges, onShape]);
+  }, [meshPicking, onShape]);
   const { clone, scale, offset, materials } = useMemo(() => {
     const clone = scene.clone(true);
     const materials: MeshStandardMaterial[] = [];
@@ -94,7 +82,7 @@ function GLB({
       if (child instanceof Mesh) {
         child.castShadow = object.category !== "rug";
         child.receiveShadow = true;
-        if (!edges) child.raycast = () => null;
+        if (!meshPicking) child.raycast = () => null;
         else {
           let geometry = pickingGeometry.get(child.geometry);
           if (!geometry) {
@@ -137,7 +125,7 @@ function GLB({
     };
   }, [
     scene,
-    edges,
+    meshPicking,
     object.dimensionsM,
     object.materialOverrides,
     object.category,
@@ -146,35 +134,14 @@ function GLB({
   return (
     <group scale={scale}>
       <primitive object={clone} position={offset} />
-      {edges && (
-        <group
-          ref={outlineRef}
-          position={offset}
-          visible={highlighted}
-          name="shape-outline"
-        >
-          <lineSegments geometry={edges} raycast={() => null} dispose={null}>
-            <lineBasicMaterial
-              color="#9187ff"
-              depthTest={false}
-              transparent
-              opacity={0.85}
-            />
-          </lineSegments>
-        </group>
-      )}
     </group>
   );
 }
 export function Model({
   object,
-  outlineRef,
-  highlighted,
   onShape,
 }: {
   object: SceneObject;
-  outlineRef?: RefObject<Group | null>;
-  highlighted?: boolean;
   onShape?: (ready: boolean) => void;
 }) {
   if (!object.assetId || !assetById[object.assetId])
@@ -182,12 +149,7 @@ export function Model({
   return (
     <ModelBoundary key={object.assetId} fallback={<Proxy object={object} />}>
       <Suspense fallback={<Proxy object={object} loading />}>
-        <GLB
-          object={object}
-          outlineRef={outlineRef}
-          highlighted={highlighted}
-          onShape={onShape}
-        />
+        <GLB object={object} onShape={onShape} />
       </Suspense>
     </ModelBoundary>
   );

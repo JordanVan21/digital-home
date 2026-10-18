@@ -12,6 +12,8 @@ import {
 } from "@house/contracts";
 import {
   applyOp,
+  moveAssembly,
+  supportedDescendants,
   createHistory,
   diffScenes,
   record,
@@ -50,6 +52,7 @@ export type Interaction = {
   /** Visual-only view toggles; nothing renders differently yet. */
   planView: boolean;
   measurements: boolean;
+  boundingBoxes: boolean;
 };
 /**
  * Pending suggestions. `scene` is null when there are none. Undo/redo hold the
@@ -145,6 +148,7 @@ export function createEditor(repository?: SceneRepository) {
     lighting: null,
     planView: false,
     measurements: false,
+    boundingBoxes: false,
   }));
   const history = createStore<{ history: History }>(() => ({
     history: createHistory(),
@@ -153,6 +157,18 @@ export function createEditor(repository?: SceneRepository) {
   const draft = createStore<Draft>(emptyDraft);
   /** The scene the user sees and edits: the draft if any, else the accepted room. */
   const working = () => draft.getState().scene ?? scene.getState().scene;
+  // Transient transforms are read by the frame loop; pointer moves never notify React.
+  const motion = { transforms: new Map<string, Transform>() };
+  const clearMotion = () => motion.transforms.clear();
+  const previewMove = (id: string, transform: Transform) => {
+    const before = working();
+    const moved = moveAssembly(before, id, transform);
+    motion.transforms = new Map(
+      moved.objects.flatMap((o, i) =>
+        o === before.objects[i] ? [] : [[o.id, o.transform] as const],
+      ),
+    );
+  };
   const setDraft = (
     next: SceneSpec | null,
     stacks: Pick<Draft, "undo" | "redo">,
@@ -279,11 +295,50 @@ export function createEditor(repository?: SceneRepository) {
     const current = draft.getState().scene;
     if (!current) return;
     const original = scene.getState().scene.objects.find((o) => o.id === id);
-    const objects = original
-      ? current.objects.some((o) => o.id === id)
-        ? current.objects.map((o) => (o.id === id ? original : o))
-        : [...current.objects, original]
-      : current.objects.filter((o) => o.id !== id);
+    let objects: SceneObject[];
+    const root = current.objects.find((o) => o.id === id);
+    if (original && root) {
+      const result = applyOp(
+        current,
+        { type: "move", objectId: id, transform: original.transform },
+        sceneContext,
+        { allowConflicts: true },
+      );
+      if (!result.ok) {
+        notify(result.error.message);
+        return;
+      }
+      const accepted = scene.getState().scene;
+      const projected = moveAssembly(accepted, id, root.transform);
+      objects = result.scene.objects.map((o) => {
+        if (o.id === id) return original;
+        const prev = accepted.objects.find((p) => p.id === o.id);
+        const expected = projected.objects.find((p) => p.id === o.id);
+        const actual = current.objects.find((p) => p.id === o.id);
+        const near = (a: Transform, b: Transform) =>
+          [...a.position, ...a.rotation, ...a.scale].every(
+            (n, i) =>
+              Math.abs(n - [...b.position, ...b.rotation, ...b.scale][i]) <
+              1e-9,
+          );
+        // Restore exact coordinates when a child only followed the parent; retain independent edits.
+        return prev &&
+          expected &&
+          actual &&
+          near(actual.transform, expected.transform)
+          ? { ...o, transform: prev.transform }
+          : o;
+      });
+    } else if (original) objects = [...current.objects, original];
+    else {
+      const ids = supportedDescendants(current, id);
+      ids.add(id);
+      objects = current.objects.flatMap((o) =>
+        !ids.has(o.id)
+          ? [o]
+          : scene.getState().scene.objects.filter((p) => p.id === o.id),
+      );
+    }
     setDraft(
       { ...current, objects, revision: current.revision + 1 },
       { undo: [...draft.getState().undo, current], redo: [] },
@@ -556,6 +611,9 @@ export function createEditor(repository?: SceneRepository) {
     save,
     draft,
     working,
+    motion,
+    previewMove,
+    clearMotion,
     notify,
     commit,
     suggest,
@@ -598,6 +656,16 @@ export class DragSession {
       this.editor.notify(`${o.displayName} is locked. Unlock it first.`);
       return false;
     }
+    const valid = validateOp(
+      this.editor.working(),
+      { type: "move", objectId: id, transform: o.transform },
+      sceneContext,
+      { allowConflicts: true },
+    );
+    if (!valid.ok) {
+      this.editor.notify(valid.error.message);
+      return false;
+    }
     this.id = id;
     this.candidate = structuredClone(o.transform);
     this.editor.interaction.setState({ dragging: true });
@@ -628,6 +696,7 @@ export class DragSession {
     );
   }
   cancel() {
+    this.editor.clearMotion();
     this.id = null;
     this.candidate = null;
     this.editor.interaction.setState({ dragging: false });

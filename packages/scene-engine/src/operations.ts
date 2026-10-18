@@ -1,3 +1,5 @@
+import { moveAssembly, supportedDescendants } from "./assembly";
+import { objectsCollide } from "./collision";
 import { canSupport, supportCycle, topY, withContactSupport } from "./support";
 import {
   SceneObjectSchema,
@@ -111,10 +113,7 @@ export function validateObject(
     );
   if (support === "object") {
     const parent = scene.objects.find((p) => p.id === o.placement?.parentId)!;
-    if (
-      !canSupport(parent, o) ||
-      Math.abs(o.transform.position[1] - topY(parent)) > 1e-5
-    )
+    if (!canSupport(parent, o, ctx.assets))
       return fail(
         "INVALID_SUPPORT",
         "Place the bottom center on its supporting surface.",
@@ -147,7 +146,8 @@ export function validateObject(
         Math.min(topY(o), topY(other)) -
           Math.max(o.transform.position[1], other.transform.position[1]) >
           1e-7 &&
-        overlaps(rect, footprint(other))
+        overlaps(rect, footprint(other)) &&
+        objectsCollide(o, other, ctx.assets)
       )
         return fail(
           "COLLISION",
@@ -205,10 +205,30 @@ export function validateOp(
       options,
     );
   }
-  const next =
-    op.type === "move"
-      ? withContactSupport(scene, { ...obj, transform: op.transform }, ctx.room)
-      : { ...obj, assetId: op.assetId, dimensionsM: op.dimensionsM };
+  if (op.type === "move") {
+    const descendants = supportedDescendants(scene, id);
+    const locked = scene.objects.find((o) => descendants.has(o.id) && o.locked);
+    if (locked)
+      return fail(
+        "OBJECT_LOCKED",
+        `${locked.displayName} is locked. Unlock it before moving its support.`,
+        locked.id,
+      );
+    const ratios = op.transform.scale.map((n, i) => n / obj.transform.scale[i]);
+    if (descendants.size && ratios.some((n) => Math.abs(n - ratios[0]) > 1e-6))
+      return fail("INVALID_TRANSFORM", "Scale a snapped group uniformly.", id);
+    const moved = moveAssembly(scene, id, op.transform);
+    moved.objects = moved.objects.map((o) =>
+      o.id === id ? withContactSupport(moved, o, ctx.room, ctx.assets) : o,
+    );
+    for (const o of moved.objects) {
+      if (o.id !== id && !descendants.has(o.id)) continue;
+      const valid = validateObject(moved, o, ctx, options);
+      if (!valid.ok) return valid;
+    }
+    return { ok: true };
+  }
+  const next = { ...obj, assetId: op.assetId, dimensionsM: op.dimensionsM };
   const validation = validateObject(scene, next, ctx, options);
   if (!validation.ok || options.allowConflicts) return validation;
   const candidateScene = {
@@ -250,16 +270,17 @@ export function applyOp(
         ? { ...structuredClone(op.newObject), replacesObjectId: op.oldObjectId }
         : o,
     );
-  else
+  else if (op.type === "move") {
+    const moved = moveAssembly(scene, op.objectId, op.transform);
+    objects = moved.objects.map((o) =>
+      o.id === op.objectId
+        ? withContactSupport(moved, o, ctx.room, ctx.assets)
+        : o,
+    );
+  } else
     objects = scene.objects.map((o) => {
       if (o.id !== op.objectId) return o;
       switch (op.type) {
-        case "move":
-          return withContactSupport(
-            scene,
-            { ...o, transform: structuredClone(op.transform) },
-            ctx.room,
-          );
         case "replaceAsset":
           return {
             ...o,

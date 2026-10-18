@@ -8,6 +8,28 @@ This file records everything that happened in the Claude Code session after your
 - Product and architecture background lives in `agent_docs/` and is not repeated here.
 - The most detailed record of the latest feature is the spec at `docs/superpowers/specs/2026-10-17-suggestions-phase-design.md`.
 
+## Current viewing behavior: no previous-position ghosts
+
+The user changed the display choice: previous-position ghosts are removed entirely. A `Bounding boxes` toggle in the right-side view controls shows or hides current furniture collider exteriors, off by default. It works in development and production and is view-only (no draft/history/save mutation). Outlines use the exterior-only compound union described below and live inside each furniture transform, so they follow dragging, rotation and carried-stack previews. Old `BeforeOutline` and implicit debug selection boxes are removed. The following ghost notes describe the superseded checkpoint; the union algorithm is now used only by the explicit current-scene toggle.
+
+## Current fixes: couch containment and previous-position ghosts
+
+- Reproduced the walnut coffee table entirely hidden inside the linen couch with a real-model browser screenshot. The previous voxel flood fill could reach the space beneath its skirting from below the model; collider baking now treats the supporting plane at model bottom as closed. The couch body becomes solid (58 merged blocks instead of 138), while side-accessible desk/chair gaps and open-top containers remain open. No category rule or full-object convex hull is used. Rebuild via `pnpm geometry:bake`; generated profiles are checked against the same model hashes.
+- Dashed `BeforeOutline` ghosts now use the baked compound union's exterior crease edges, replacing the single large box. Shared faces, overlaps, coplanar seams, collinear fragments and enclosed internal cavities are removed. Actual open gaps remain visible. Normalized exterior positions are cached per collider profile, with per-object geometry copies for dimensions and dashed distances; accepted transform/scale are preserved. Normal editor small-box selection overlays remain removed.
+- Regression coverage includes couch/table rejection and safe Accept, yaw/scale, support-plane closure versus open gaps, touching/overlapping boxes, L-shaped unions, open holes versus sealed cavities, all catalog profiles, and the GPU-free ghost renderer.
+
+## Latest Codex sandbox update: compound geometry and attached items
+
+This update supersedes older box-support/move-only notes below. Work stays in `/Users/jeffreyg/Projects/digital-home-codex-sandbox` on `feature/3d-sandbox-codex`; no push or main-checkout edits.
+
+- Compound outlines and selection boxes are now development-only; production skips their construction/rendering while keeping opaque model mesh picking. Collision queries use a cached local-space BVH per asset to prune sub-box pairs; geometry and tolerance are unchanged. Warm desk/chair CPU measurements were 6,018 → 284 leaf comparisons and 0.1116 → 0.0432 ms/query (2.58×), with 256 deterministic equivalence cases. `collision.bench.ts` repeats the workload.
+- Opaque models use compound renderer outlines and mesh picking in development. Object collisions use baked, normalized 4 cm compound profiles matched by asset ID/content hash, a box broad phase and sub-block narrow phase with 0.1 mm penetration tolerance. Missing/stale/alpha profiles and proxies fall back to boxes. `pnpm geometry:bake` regenerates numeric data; the scene engine stays independent of Three.js.
+- Snapping/contact now uses exposed compound top patches (including lower chair seats and interior shelves), lowest occupied child bottom faces, the existing supported-center rule, and nonpenetrating contact. Floor contact remains exact; no category whitelist. Internal covered faces and empty outer-box tops are excluded. Guides show the patch. Alt bypass remains. Room/door bounds still use outer boxes.
+- `placement.parentId` defines attachment. `moveAssembly` moves/rotates recursive descendants at local offsets. Moving a child independently leaves its ancestor fixed; its own descendants follow. Locked descendants block support movement; nonuniform group scaling is rejected. Transient `editor.motion` transforms let descendants follow live without pointer-driven React rerenders.
+- Accept searches and reverts edited stacks atomically, instead of resolving each child independently. One pointer gesture is one draft undo step; Accept is one saved checkpoint. Reverting a support carries its descendants back too.
+- New engine tests were first run failing, then implemented: actual chair seat/shelf snapping; no hidden/empty-face contacts; yaw/scale; recursive movement; detachment; locks; carried collisions; group resolver; elevation. Renderer tests cover imperative translation/rotation/cancel and one-step undo. Browser test `compound-snapping-stack.spec.ts` verifies seat snapping, carrying, undo/redo, save and reload. The earlier missing swivel-drag test has also been added.
+- Geometry is still approximate; 0.1 mm query tolerance does not imply 0.1 mm shape fidelity. Legacy placements resting in empty outer-box space need re-snapping. Side/ceiling attachment and real-hardware FPS remain unverified/future work.
+
 ---
 
 ## 1. Where things are
@@ -16,18 +38,18 @@ This file records everything that happened in the Claude Code session after your
 - **Main checkout:** `/Users/jeffreyg/Projects/digital-home` is on `main`. Do not touch it, and do not touch any other branch.
 - **Commits on this branch:** everything is committed; nothing has been pushed.
 
-  | Commit | What it is | Author |
-  |---|---|---|
-  | `30963a8` | Workspace setup | Your original build, committed by Claude |
-  | `80162ee` | Contracts package | Your original build, committed by Claude |
-  | `b63d327` | Scene engine | Your original build, committed by Claude |
-  | `99f63d5` | FurniMesh assets | Your original build, committed by Claude |
-  | `288768b` | Web app, plus two browser-review fixes (see §4) | Your original build, committed by Claude |
-  | `842c6fd` | Glass UI restyle | Claude |
-  | `86046a2` | Suggestions-phase spec | Claude |
-  | `d5bef5f` | Engine: `allowConflicts`, `resolveDraft`, `recordCheckpoint` | Claude |
-  | `74e7b86` | Draft-based editor, 3D draft rendering, swivel ring | Claude |
-  | `22d33a4` | Suggestions bar, rotation input, draft-aware chrome | Claude |
+  | Commit    | What it is                                                   | Author                                   |
+  | --------- | ------------------------------------------------------------ | ---------------------------------------- |
+  | `30963a8` | Workspace setup                                              | Your original build, committed by Claude |
+  | `80162ee` | Contracts package                                            | Your original build, committed by Claude |
+  | `b63d327` | Scene engine                                                 | Your original build, committed by Claude |
+  | `99f63d5` | FurniMesh assets                                             | Your original build, committed by Claude |
+  | `288768b` | Web app, plus two browser-review fixes (see §4)              | Your original build, committed by Claude |
+  | `842c6fd` | Glass UI restyle                                             | Claude                                   |
+  | `86046a2` | Suggestions-phase spec                                       | Claude                                   |
+  | `d5bef5f` | Engine: `allowConflicts`, `resolveDraft`, `recordCheckpoint` | Claude                                   |
+  | `74e7b86` | Draft-based editor, 3D draft rendering, swivel ring          | Claude                                   |
+  | `22d33a4` | Suggestions bar, rotation input, draft-aware chrome          | Claude                                   |
 
 - **Last full verification:** typecheck, lint, 58 unit and integration tests, the build, and the Playwright smoke test all pass.
 
@@ -47,6 +69,7 @@ This file records everything that happened in the Claude Code session after your
   - Lighting-preset switches stall for about 2 s while the environment re-bakes.
 
   These are environment artifacts, not bugs. Screenshots taken right after a UI change can catch elements mid-fade.
+
 - **FPS has never been measured on real hardware.** Use `pnpm dev` and append `?debug` to the URL for the stats overlay.
 - **Dev server:** `pnpm dev --host 127.0.0.1 --port 5173 --strictPort`. The server Claude started stops when its session ends.
 
@@ -94,7 +117,7 @@ This file records everything that happened in the Claude Code session after your
   2. **Every `<Html>` must pass `portal={labelLayer}`.** This is a stable container from `scene/labelLayer.ts`, set to the canvas wrapper div. Without it, `<Html>` re-parents onto `events.connected` after R3F connects events, which tears down its React root mid-render.
   3. **Give every `<Html>` a small `zIndexRange`**, such as `[2, 0]`, or `[5, 0]` for the object toolbar, so labels stay under the UI panels.
 - **Missing favicon (404).** Fixed with an inline SVG favicon in `apps/web/index.html`.
-- **UI read the accepted scene instead of the draft,** so draft-only pieces had no details card. All UI must read the *working* scene:
+- **UI read the accepted scene instead of the draft,** so draft-only pieces had no details card. All UI must read the _working_ scene:
   - in React, use `useWorkingObject(id)` from `state/useWorking.ts`;
   - imperatively, use `editor.working()`.
 
@@ -103,7 +126,7 @@ This file records everything that happened in the Claude Code session after your
 ### 5.1 Scene engine (`packages/scene-engine`)
 
 - **`validateObject`, `validateOp` and `applyOp` take `options: { allowConflicts?: boolean }`.**
-  - When it is set, only the *fixable* checks are skipped: bounds, wall band, doorway and `COLLISION`.
+  - When it is set, only the _fixable_ checks are skipped: bounds, wall band, doorway and `COLLISION`.
   - Locks, unknown objects or assets, duplicate IDs, invalid transforms (including the planar floor rule), support and room mismatch are always enforced.
 - **`resolve.ts`:**
   - `diffScenes(accepted, draft)` returns `{ untouched, changed, added, removed }` as lists of IDs. The `locked` flag is ignored when comparing.
@@ -167,7 +190,7 @@ This file records everything that happened in the Claude Code session after your
 
 ## 6. Open items and known gaps (none are assigned yet; confirm with the user before large work)
 
-- The swivel ring *drag* has no automated test. Rotation via buttons and the input is tested. Hand-testing is pending.
+- The swivel ring _drag_ has no automated test. Rotation via buttons and the input is tested. Hand-testing is pending.
 - FPS on real hardware is unmeasured for drag, swivel, and lighting-preset switches.
 - The visual-only controls in §3.5 have no behaviour yet.
 - The resolver places pieces in draft array order, and a piece's revert target can be taken by an earlier-placed piece. That case is reported as unresolved, which is correct per the spec, but the UX for it is just a toast.
@@ -183,3 +206,5 @@ This file records everything that happened in the Claude Code session after your
 - After changes, run `pnpm format`, `pnpm typecheck`, `pnpm lint`, `pnpm test` and `pnpm build`, plus the browser test if Chrome works in your environment.
 - Do not modify `agent_docs/` or `assets/`.
 - Do not push.
+
+Compound sub-box outlines have now been removed from the normal editor in both development and production, including their runtime generation. Compound collision data, BVH acceleration and shape snapping remain active. The isolated geometry lab remains available for inspection.

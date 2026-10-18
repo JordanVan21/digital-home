@@ -82,7 +82,9 @@ describe("suggestions phase", () => {
     const sofa = e.scene
       .getState()
       .scene.objects.find((o) => o.id === sofaId())!;
-    const [sx, , sz] = sofa.transform.position;
+    const [centerX, , sz] = sofa.transform.position;
+    // The center can now fit in an empty compound region; hit the arm instead.
+    const sx = centerX + 0.95;
     e.suggest(move(smallId, sx, sz));
     expect(e.draft.getState().conflicts[smallId]).toBeTruthy();
     expect(e.accept()).toBe(true);
@@ -143,6 +145,45 @@ describe("suggestions phase", () => {
       e.scene.getState().scene.objects.find((o) => o.id === smallId)?.transform
         .rotation,
     ).toEqual([0, 0, 0, 1]);
+    e.dispose();
+  });
+});
+
+describe("snapped stack history", () => {
+  it("keeps support movement, descendants, Accept, undo and redo in one checkpoint", () => {
+    const e = createEditor();
+    const original = e.working().objects.find((o) => o.id === smallId)!;
+    const parent = {
+      ...original,
+      dimensionsM: [1, 0.6, 1] as [number, number, number],
+      transform: transformAt(0, 0),
+    };
+    const child = {
+      ...original,
+      id: fixtureId(901),
+      dimensionsM: [0.2, 0.2, 0.2] as [number, number, number],
+      placement: { support: "object" as const, parentId: parent.id },
+      transform: transformAt(0.2, 0, 0, 0.6),
+    };
+    const before = { ...e.working(), objects: [parent, child] };
+    e.scene.setState({ scene: before });
+    expect(e.suggest(move(parent.id, 0.5, 0))).toBe(true);
+    expect(e.draft.getState().undo).toHaveLength(1);
+    expect(e.working().objects[1].transform.position).toEqual([0.7, 0.6, 0]);
+    e.travel("undo");
+    expect(e.working().objects).toEqual(before.objects);
+    e.travel("redo");
+    expect(e.working().objects[1].transform.position[0]).toBeCloseTo(0.7);
+    e.revertPiece(parent.id);
+    expect(e.working().objects).toEqual(before.objects);
+    e.travel("undo");
+    expect(e.working().objects[1].transform.position[0]).toBeCloseTo(0.7);
+    expect(e.accept()).toBe(true);
+    expect(e.history.getState().history.undo).toHaveLength(1);
+    e.travel("undo");
+    expect(e.working().objects).toEqual(before.objects);
+    e.travel("redo");
+    expect(e.working().objects[1].transform.position[0]).toBeCloseTo(0.7);
     e.dispose();
   });
 });

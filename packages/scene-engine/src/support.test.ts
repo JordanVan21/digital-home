@@ -83,6 +83,7 @@ describe("surface contact", () => {
         base.objects.find((o) => o.category === category) ?? table;
       const parent: SceneObject = {
         ...fixture,
+        assetId: null,
         category,
         transform: transformAt(0, 0),
       };

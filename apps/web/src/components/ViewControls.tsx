@@ -1,5 +1,5 @@
 import { useStore } from "zustand";
-import { Box, Scan, Sun } from "lucide-react";
+import { Box, Boxes, Scan, Sun } from "lucide-react";
 import { editor } from "../state/editor";
 import { nextPreset, useLighting } from "../theme";
 import { Button } from "./Button";
@@ -7,6 +7,7 @@ import { Button } from "./Button";
 /** Round view buttons on the right edge: lighting preset, plan view, fit view. */
 export function ViewControls() {
   const light = useLighting();
+  const boundingBoxes = useStore(editor.interaction, (s) => s.boundingBoxes);
   const planView = useStore(editor.interaction, (s) => s.planView);
   return (
     <div className="view-controls" aria-label="View">
@@ -20,6 +21,19 @@ export function ViewControls() {
         }}
       >
         <Sun size={19} />
+      </Button>
+      <Button
+        label="Bounding boxes"
+        className="round glass glass-button"
+        active={boundingBoxes}
+        aria-pressed={boundingBoxes}
+        onClick={() =>
+          editor.interaction.setState((s) => ({
+            boundingBoxes: !s.boundingBoxes,
+          }))
+        }
+      >
+        <Boxes size={19} />
       </Button>
       {/* Visual only: plan view rendering is not built yet. */}
       <Button

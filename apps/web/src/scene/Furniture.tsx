@@ -17,7 +17,7 @@ import type { SceneObject, Transform } from "@house/contracts";
 import { snapToSurface, validateOp, yawOf } from "@house/scene-engine";
 import { DragSession, editor, sceneContext } from "../state/editor";
 import { Model } from "./Model";
-import { Selection } from "./Selection";
+import { CollisionOutline } from "./CollisionOutline";
 import { SnapGuide, type SnapGuideHandle } from "./SnapGuide";
 import { SwivelRing } from "./SwivelRing";
 import { labelLayer } from "./labelLayer";
@@ -53,13 +53,13 @@ export const Furniture = memo(function Furniture({
   );
   const movePlane = useStore(editor.interaction, (s) => s.movePlane);
   const tool = useStore(editor.interaction, (s) => s.tool);
+  const boundingBoxes = useStore(editor.interaction, (s) => s.boundingBoxes);
   const conflict = useStore(editor.draft, (s) => !!s.conflicts[object.id]);
   const resolved = useStore(editor.draft, (s) =>
     s.resolved.includes(object.id),
   );
   const { lamps } = useLighting();
   const [hasShape, setHasShape] = useState(false);
-  const shapeOutline = useRef<Group>(null);
   const [swiveling, setSwiveling] = useState(false);
   const [pulse, setPulse] = useState(false);
   const group = useRef<Group>(null),
@@ -100,6 +100,7 @@ export const Furniture = memo(function Furniture({
     const state = drag.current;
     if (state.mode === "move") state.session.cancel();
     if (state.mode === "swivel") {
+      editor.clearMotion();
       editor.interaction.setState({ dragging: false });
       setSwiveling(false);
     }
@@ -122,12 +123,20 @@ export const Furniture = memo(function Furniture({
         interaction.movePlane === "height" || interaction.heightModifier;
     }
     const g = group.current;
-    if (g && !state.mode) {
+    const preview = editor.interaction.getState().dragging
+      ? editor.motion.transforms.get(object.id)
+      : undefined;
+    if (g && !state.mode && preview) {
+      g.position.fromArray(preview.position);
+      g.quaternion.fromArray(preview.rotation);
+      g.scale.fromArray(preview.scale);
+    } else if (g && !state.mode) {
       // Ease toward the piece's transform in the working scene (draft or accepted),
       // so discard, undo and resolver moves glide instead of jumping.
       const live =
         editor.working().objects.find((o) => o.id === object.id) ??
         latest.current;
+      g.scale.fromArray(live.transform.scale);
       target.fromArray(live.transform.position);
       targetQuat.fromArray(live.transform.rotation);
       const k = 1 - Math.exp(-delta * 20);
@@ -143,7 +152,7 @@ export const Furniture = memo(function Furniture({
       outline.current &&
       (selected || hovered || state.mode || conflict || pulse)
     )
-      (hasShape ? shapeOutline.current : outline.current)?.traverse((o) => {
+      outline.current.traverse((o) => {
         const color = invalid
           ? INVALID
           : pulse
@@ -254,6 +263,7 @@ export const Furniture = memo(function Furniture({
       ? { transform: raw }
       : snapToSurface(editor.working(), latest.current, raw, sceneContext.room);
     state.transform = contact.transform;
+    editor.previewMove(object.id, state.transform);
     group.current?.position.fromArray(state.transform.position);
     snapGuide.current?.update(contact.surface, state.transform.position);
     liveCheck(state.transform);
@@ -283,6 +293,20 @@ export const Furniture = memo(function Furniture({
     e.stopPropagation();
     const angle = pointerAngle(e);
     if (angle === null) return;
+    const valid = validateOp(
+      editor.working(),
+      {
+        type: "move",
+        objectId: object.id,
+        transform: latest.current.transform,
+      },
+      sceneContext,
+      { allowConflicts: true },
+    );
+    if (!valid.ok) {
+      editor.notify(valid.error.message);
+      return;
+    }
     const state = drag.current;
     state.mode = "swivel";
     state.valid = !conflict;
@@ -304,6 +328,7 @@ export const Furniture = memo(function Furniture({
     const rotation = yawQuaternion(yaw);
     group.current?.quaternion.fromArray(rotation);
     state.transform = { ...latest.current.transform, rotation };
+    editor.previewMove(object.id, state.transform);
     const degrees = ((((yaw * 180) / Math.PI) % 360) + 360) % 360;
     if (angleLabel.current)
       angleLabel.current.textContent = `${Math.round(degrees)}°`;
@@ -331,6 +356,7 @@ export const Furniture = memo(function Furniture({
     <>
       <group
         ref={group}
+        name={`furniture-${object.id}`}
         position={initial.current.position}
         quaternion={initial.current.rotation}
         scale={object.transform.scale}
@@ -355,12 +381,7 @@ export const Furniture = memo(function Furniture({
           <boxGeometry args={dimensions} />
           <meshBasicMaterial visible={false} />
         </mesh>
-        <Model
-          object={object}
-          outlineRef={shapeOutline}
-          highlighted={selected || hovered || conflict || pulse}
-          onShape={setHasShape}
-        />
+        <Model object={object} onShape={setHasShape} />
         {object.category === "lamp" && lamps > 0 && (
           <pointLight
             position={[0, dimensions[1] * 0.86, 0]}
@@ -370,12 +391,8 @@ export const Furniture = memo(function Furniture({
             color="#ffcd80"
           />
         )}
-        <Selection
-          ref={outline}
-          dimensions={dimensions}
-          selected={selected && !hasShape}
-          hovered={!hasShape && (hovered || conflict || pulse)}
-        />
+        {boundingBoxes && <CollisionOutline ref={outline} object={object} />}
+
         {selected && !object.locked && tool !== "rotate" && (
           <group
             ref={heightGuide}

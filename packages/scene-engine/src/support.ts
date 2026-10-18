@@ -1,20 +1,27 @@
+import { assetById, type AssetSpec } from "@house/contracts";
+import { objectsCollide } from "./collision";
+import { topContactFaces, bottomContactFaces } from "./contactFaces";
 import type {
   RoomShell,
   SceneObject,
   SceneSpec,
   Transform,
 } from "@house/contracts";
-import { footprint, insidePoint, scaledDimensions } from "./geometry";
+import { footprint, insidePoint, scaledDimensions, overlaps } from "./geometry";
 
-// Every object exposes its bounding-box top as a support surface.
+// Outer vertical extent remains useful for room bounds; contact uses exposed compound faces.
 export const topY = (o: SceneObject) =>
   o.transform.position[1] + scaledDimensions(o)[1];
-export function canSupport(parent: SceneObject, child: SceneObject): boolean {
-  if (parent.id === child.id) return false;
-  // Broad plant foliage may overhang; the bottom-face center must be supported.
-  return insidePoint(
-    [child.transform.position[0], child.transform.position[2]],
-    footprint(parent),
+export function canSupport(
+  parent: SceneObject,
+  child: SceneObject,
+  assets: Readonly<Record<string, AssetSpec>> = assetById,
+): boolean {
+  return contactFaces(parent, child, assets).some(
+    (face) =>
+      Math.abs(
+        child.transform.position[1] - (face.heightY - (face.offsetY ?? 0)),
+      ) <= CONTACT_EPS_M,
   );
 }
 export function supportCycle(scene: SceneSpec, o: SceneObject): boolean {
@@ -38,16 +45,61 @@ export type SurfaceFace = {
   key: string;
   face: "top" | "bottom";
   heightY: number;
+  /** Height of the carried model's lowest occupied face above its origin. */
+  offsetY?: number;
   polygonXZ: [number, number][];
   label: string;
   placement: NonNullable<SceneObject["placement"]>;
 };
 export const FACE_SNAP_DISTANCE_M = 0.12;
 const CONTACT_EPS_M = 1e-5;
+function contactFaces(
+  parent: SceneObject,
+  child: SceneObject,
+  assets: Readonly<Record<string, AssetSpec>>,
+): SurfaceFace[] {
+  if (parent.id === child.id || !overlaps(footprint(parent), footprint(child)))
+    return [];
+  const bottom = bottomContactFaces(child, assets);
+  return topContactFaces(parent, assets).flatMap((face) => {
+    // Retain the bottom-center stability rule, while requiring actual occupied contact.
+    if (
+      !insidePoint(
+        [child.transform.position[0], child.transform.position[2]],
+        face.polygonXZ,
+      ) ||
+      !bottom.polygons.some((p) => overlaps(p, face.polygonXZ))
+    )
+      return [];
+    const candidate = {
+      ...child,
+      transform: {
+        ...child.transform,
+        position: [
+          child.transform.position[0],
+          face.heightY - bottom.offsetY,
+          child.transform.position[2],
+        ] as [number, number, number],
+      },
+    };
+    if (objectsCollide(parent, candidate, assets)) return [];
+    return [
+      {
+        key: parent.id,
+        face: "top" as const,
+        ...face,
+        offsetY: bottom.offsetY,
+        label: parent.displayName,
+        placement: { support: "object" as const, parentId: parent.id },
+      },
+    ];
+  });
+}
 function surfaceFaces(
   scene: SceneSpec,
   o: SceneObject,
   room: RoomShell,
+  assets: Readonly<Record<string, AssetSpec>>,
 ): SurfaceFace[] {
   const faces: SurfaceFace[] = [
     {
@@ -60,17 +112,9 @@ function surfaceFaces(
     },
   ];
   for (const parent of scene.objects) {
-    if (!canSupport(parent, o)) continue;
     const placement = { support: "object" as const, parentId: parent.id };
     if (supportCycle(scene, { ...o, placement })) continue;
-    faces.push({
-      key: parent.id,
-      face: "top",
-      heightY: topY(parent),
-      polygonXZ: footprint(parent),
-      label: parent.displayName,
-      placement,
-    });
+    faces.push(...contactFaces(parent, o, assets));
   }
   return faces;
 }
@@ -82,14 +126,19 @@ const atFace = (o: SceneObject, face: SurfaceFace): SceneObject => ({
     position: [
       o.transform.position[0],
       face.face === "top"
-        ? face.heightY
+        ? face.heightY - (face.offsetY ?? 0)
         : face.heightY - scaledDimensions(o)[1],
       o.transform.position[2],
     ],
   },
 });
-function rankedFaces(scene: SceneSpec, o: SceneObject, room: RoomShell) {
-  return surfaceFaces(scene, o, room)
+function rankedFaces(
+  scene: SceneSpec,
+  o: SceneObject,
+  room: RoomShell,
+  assets: Readonly<Record<string, AssetSpec>>,
+) {
+  return surfaceFaces(scene, o, room, assets)
     .map((surface) => ({ surface, object: atFace(o, surface) }))
     .sort(
       (a, b) =>
@@ -104,10 +153,11 @@ export function snapToSurface(
   transform: Transform,
   room: RoomShell,
   distanceM = FACE_SNAP_DISTANCE_M,
+  assets: Readonly<Record<string, AssetSpec>> = assetById,
 ): { transform: Transform; surface?: SurfaceFace } {
   if (o.locked || o.placement?.support === "wall") return { transform };
   const candidate = { ...o, transform };
-  const nearest = rankedFaces(scene, candidate, room)[0];
+  const nearest = rankedFaces(scene, candidate, room, assets)[0];
   if (
     !nearest ||
     Math.abs(nearest.object.transform.position[1] - transform.position[1]) >
@@ -121,9 +171,10 @@ export function withContactSupport(
   scene: SceneSpec,
   o: SceneObject,
   room: RoomShell,
+  assets: Readonly<Record<string, AssetSpec>> = assetById,
 ): SceneObject {
   if (o.placement?.support === "wall") return o;
-  const nearest = rankedFaces(scene, o, room)[0];
+  const nearest = rankedFaces(scene, o, room, assets)[0];
   return nearest &&
     Math.abs(nearest.object.transform.position[1] - o.transform.position[1]) <=
       CONTACT_EPS_M
@@ -135,7 +186,8 @@ export function onNearestSurface(
   scene: SceneSpec,
   o: SceneObject,
   room: RoomShell,
+  assets: Readonly<Record<string, AssetSpec>> = assetById,
 ): SceneObject {
   if (o.placement?.support === "wall") return o;
-  return rankedFaces(scene, o, room)[0].object;
+  return rankedFaces(scene, o, room, assets)[0].object;
 }

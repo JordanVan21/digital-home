@@ -1,3 +1,4 @@
+import { moveAssembly, supportedDescendants } from "./assembly";
 import { onNearestSurface } from "./support";
 import type { SceneObject, SceneSpec } from "@house/contracts";
 import { validateObject, type SceneContext } from "./operations";
@@ -46,26 +47,24 @@ export function diffScenes(accepted: SceneSpec, draft: SceneSpec): SceneDiff {
 const SEARCH_STEP_M = 0.05;
 const SEARCH_RADIUS_M = 1.5;
 
-/** Nearest valid position on rings around the suggestion, keeping its rotation. */
+/** Search the assembly as a unit; children never get separate fallback positions. */
 function nearestFit(
-  placed: SceneSpec,
   o: SceneObject,
-  ctx: SceneContext,
-): SceneObject | null {
+  fitAt: (o: SceneObject) => SceneObject[] | null,
+): SceneObject[] | null {
   const [x, y, z] = o.transform.position;
   for (let r = SEARCH_STEP_M; r <= SEARCH_RADIUS_M + 1e-9; r += SEARCH_STEP_M) {
     const steps = Math.max(8, Math.round((2 * Math.PI * r) / SEARCH_STEP_M));
     for (let i = 0; i < steps; i++) {
       const a = (i / steps) * Math.PI * 2;
-      const candidate: SceneObject = {
+      const fit = fitAt({
         ...o,
         transform: {
           ...o.transform,
           position: [x + Math.cos(a) * r, y, z + Math.sin(a) * r],
         },
-      };
-      const supported = onNearestSurface(placed, candidate, ctx.room);
-      if (validateObject(placed, supported, ctx).ok) return supported;
+      });
+      if (fit) return fit;
     }
   }
   return null;
@@ -73,9 +72,9 @@ function nearestFit(
 
 /**
  * Projects a draft into a valid scene. Untouched pieces are fixed; changed and
- * added pieces are placed in draft order, each validated against everything
- * placed before it. A colliding piece moves to the nearest fit, else a changed
- * piece reverts and an added piece is dropped. Locked pieces are never moved.
+ * added pieces are placed in support order. Edited supports and attached edited
+ * descendants are validated, searched and reverted as one assembly. Added groups
+ * are dropped if they cannot fit. Locked pieces are never moved.
  */
 export function resolveDraft(
   accepted: SceneSpec,
@@ -109,48 +108,74 @@ export function resolveDraft(
     ordered.push(o);
   };
   draft.objects.forEach(visit);
+  const edited = new Set([...diff.changed, ...diff.added]);
+  const handled = new Set<string>();
   for (const o of ordered) {
-    if (fixed.has(o.id)) continue;
+    if (fixed.has(o.id) || handled.has(o.id)) continue;
+    const ids = supportedDescendants(draft, o.id);
+    const members = draft.objects.filter(
+      (p) => p.id === o.id || (ids.has(p.id) && edited.has(p.id)),
+    );
+    members.forEach((p) => handled.add(p.id));
     const scene = placedScene();
-    const supported = o.locked ? o : onNearestSurface(scene, o, ctx.room);
-    if (validateObject(scene, supported, ctx).ok) {
-      final.set(o.id, supported);
-      const distanceM = Math.abs(
-        supported.transform.position[1] - o.transform.position[1],
-      );
-      report.push({
-        objectId: o.id,
-        outcome: distanceM > 1e-5 ? "moved" : "applied",
-        ...(distanceM > 1e-5 ? { distanceM } : {}),
-      });
-      continue;
-    }
-    const fit = o.locked ? null : nearestFit(scene, o, ctx);
+    const fitAt = (candidate: SceneObject): SceneObject[] | null => {
+      const supported = candidate.locked
+        ? candidate
+        : onNearestSurface(scene, candidate, ctx.room, ctx.assets);
+      const moved = moveAssembly(
+        { ...draft, objects: members },
+        o.id,
+        supported.transform,
+      ).objects.map((p) => (p.id === o.id ? supported : p));
+      if (
+        moved.some(
+          (p) =>
+            p.locked &&
+            JSON.stringify(p.transform) !==
+              JSON.stringify(members.find((m) => m.id === p.id)!.transform),
+        )
+      )
+        return null;
+      const complete = { ...scene, objects: [...scene.objects, ...moved] };
+      return moved.every((p) => validateObject(complete, p, ctx).ok)
+        ? moved
+        : null;
+    };
+    const fit =
+      fitAt(o) ?? (members.some((p) => p.locked) ? null : nearestFit(o, fitAt));
     if (fit) {
-      final.set(o.id, fit);
-      const [x0, y0, z0] = o.transform.position;
-      const [x1, y1, z1] = fit.transform.position;
-      report.push({
-        objectId: o.id,
-        outcome: "moved",
-        distanceM: Math.hypot(x1 - x0, y1 - y0, z1 - z0),
-      });
+      for (const p of fit) {
+        final.set(p.id, p);
+        const before = members.find((m) => m.id === p.id)!;
+        const distanceM = Math.hypot(
+          ...p.transform.position.map(
+            (n, i) => n - before.transform.position[i],
+          ),
+        );
+        report.push({
+          objectId: p.id,
+          outcome: distanceM > 1e-5 ? "moved" : "applied",
+          ...(distanceM > 1e-5 ? { distanceM } : {}),
+        });
+      }
       continue;
     }
-    const prev = original.get(o.id);
-    if (!prev) {
-      report.push({ objectId: o.id, outcome: "dropped" });
-      continue;
-    }
-    const reverted = { ...prev, locked: o.locked };
-    if (validateObject(scene, reverted, ctx).ok) {
-      final.set(o.id, reverted);
-      report.push({ objectId: o.id, outcome: "reverted" });
+    const reverted = members.flatMap((p) => {
+      const prev = original.get(p.id);
+      return prev ? [{ ...prev, locked: p.locked }] : [];
+    });
+    const complete = { ...scene, objects: [...scene.objects, ...reverted] };
+    if (reverted.every((p) => validateObject(complete, p, ctx).ok)) {
+      for (const p of members) {
+        const prev = reverted.find((r) => r.id === p.id);
+        if (prev) final.set(p.id, prev);
+        report.push({ objectId: p.id, outcome: prev ? "reverted" : "dropped" });
+      }
       continue;
     }
     unresolved.push({
       objectId: o.id,
-      message: `Couldn't fit ${o.displayName}. Move something to make room.`,
+      message: `Couldn't fit ${o.displayName} and its snapped items. Move something to make room.`,
     });
   }
   // Support changes can invalidate untouched children. Never silently move them.

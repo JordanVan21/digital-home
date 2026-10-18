@@ -14,6 +14,7 @@
     "format": "prettier --write \"apps/web/src/**/*.{ts,tsx,css}\" \"packages/*/src/**/*.ts\" \"scripts/*.mjs\" \"*.{json,js,ts,yaml}\" \"apps/web/*.{json,ts,html,md}\"",
     "assets:preview": "node scripts/preview-assets.mjs",
     "assets:import:polyhaven": "node scripts/import-polyhaven.mjs",
+    "geometry:bake": "node --experimental-strip-types scripts/bake-colliders.mjs",
     "geometry:benchmark": "node --experimental-strip-types scripts/benchmark-geometry.mjs"
   },
   "devDependencies": {
