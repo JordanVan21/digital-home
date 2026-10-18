@@ -8,7 +8,7 @@ import { LocalAssetCatalog } from '../src/catalog/AssetCatalog';
 import { LocalScenePersistence, memoryStorage } from '../src/persistence/ScenePersistence';
 import { startAutosave, type Autosave } from '../src/state/autosave';
 import {
-  addAsset, commit, deleteSelected, duplicateSelected, groupSelected, nudge, objectById, redo, resizeObject, rotateSelectionBy, select, selectMany, setScene, swapAsset, toggleLock, undo, useEditor,
+  addAsset, commit, deleteSelected, duplicateSelected, groupSelected, nudge, objectById, redo, resizeObject, rotateSelectionBy, select, selectMany, setPosition, setScene, swapAsset, toggleCollisions, toggleLock, undo, useEditor,
 } from '../src/state/store';
 
 const catalog = new LocalAssetCatalog(AssetCatalogFileSchema.parse(JSON.parse(readFileSync(join(__dirname, '../public/catalog/catalog.json'), 'utf8'))).assets);
@@ -214,6 +214,37 @@ describe('editor commands', () => {
     expect(vase.placement).toEqual({ support: 'object', parentId: ID.desk });
     expect(vase.transform.position[1]).toBeCloseTo(0.8);
     expect(useEditor.getState().violations[vase.id] ?? []).toEqual([]);
+  });
+});
+
+describe('panel X/Y/Z and the collisions toggle (merge step 2)', () => {
+  it('typing a position slides there but stops against an obstacle; one undo restores it', () => {
+    const before = objectById(ID.chair)!.transform.position;
+    const sofa = objectById(ID.sofa)!.transform.position;
+    setPosition(ID.chair, [sofa[0], 0, sofa[2]]);
+    const after = objectById(ID.chair)!.transform.position;
+    expect(Math.hypot(after[0] - sofa[0], after[2] - sofa[2])).toBeGreaterThan(0.2);
+    expect((useEditor.getState().violations[ID.chair] ?? []).filter((v) => v.rule === 'overlap')).toEqual([]);
+    undo();
+    expect(objectById(ID.chair)!.transform.position).toEqual(before);
+  });
+
+  it('with collisions off the typed spot is reached and the overlap is still flagged', () => {
+    toggleCollisions();
+    expect(useEditor.getState().collisionsOff).toBe(true);
+    const desk = objectById(ID.desk)!.transform.position;
+    setPosition(ID.chair, [desk[0], 0, desk[2]]);
+    const after = objectById(ID.chair)!.transform.position;
+    expect(after[0]).toBeCloseTo(desk[0], 6);
+    expect(after[2]).toBeCloseTo(desk[2], 6);
+    expect((useEditor.getState().violations[ID.chair] ?? []).some((v) => v.rule === 'overlap')).toBe(true);
+    toggleCollisions();
+    expect(useEditor.getState().collisionsOff).toBe(false);
+  });
+
+  it('a typed height is kept (it does not settle back down)', () => {
+    setPosition(ID.chair, [objectById(ID.chair)!.transform.position[0], 0.5, objectById(ID.chair)!.transform.position[2]]);
+    expect(objectById(ID.chair)!.transform.position[1]).toBeCloseTo(0.5, 6);
   });
 });
 

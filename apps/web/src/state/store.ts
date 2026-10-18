@@ -15,7 +15,8 @@ import { EDITOR_POLICY } from '../config/editorPolicy';
 import { bodiesOf, movingSet, obstaclesFor, sweptBounds } from './physics';
 
 export type SceneSource = 'demo-room' | 'demo-scan' | 'test2';
-export type TransformMode = 'select' | 'translate' | 'rotate';
+/** 'move3d' = 3D move: drags slide on a camera-facing plane (sideways + up/down). */
+export type TransformMode = 'select' | 'translate' | 'move3d' | 'rotate';
 export type SaveStatus = 'idle' | 'saving' | 'saved' | 'error' | 'conflict';
 export type CameraPreset = 'top' | 'iso' | 'eye' | 'reset' | 'match';
 export type CameraRequest =
@@ -54,6 +55,8 @@ export type EditorState = {
   mode: TransformMode;
   dragging: boolean;
   snapping: boolean;
+  /** Collisions off (toolbar / C): nothing blocks, but violations are still computed and shown. */
+  collisionsOff: boolean;
   walkMode: boolean;
   wallMode: WallMode;
   // ---- history (editor-local; never a timeline)
@@ -85,6 +88,7 @@ const initial: EditorState = {
   mode: 'translate',
   dragging: false,
   snapping: false,
+  collisionsOff: false,
   walkMode: false,
   wallMode: 'cutaway',
   history: emptyHistory(EDITOR_POLICY.historyCap),
@@ -256,6 +260,15 @@ export const hover = (id: string | null) => {
 };
 export const setMode = (mode: TransformMode) => set({ mode });
 
+export function toggleCollisions() {
+  const off = !get().collisionsOff;
+  set({ collisionsOff: off });
+  toast(off ? 'Collisions off — things can overlap (still flagged in red).' : 'Collisions on.', 'info', 2200);
+}
+
+/** True when collisions are ignored for an edit: the toggle is off, or Ctrl/Cmd is held. */
+export const ignoringCollisions = (held = false) => held || get().collisionsOff;
+
 let camNonce = 0;
 export const requestCamera = (preset: CameraPreset) => set({ cameraRequest: { type: 'preset', preset, nonce: ++camNonce } });
 export const frameCamera = (target: 'selection' | 'room') => set({ cameraRequest: { type: 'frame', target, nonce: ++camNonce } });
@@ -380,7 +393,7 @@ export function addAsset(assetId: string, point: Vec2, surfaceParentId?: string 
 // ---------------------------------------------------------------- transform commands (keys / panel)
 
 /** Move the selection horizontally by `delta` with block-and-slide, then settle. */
-export function nudge(delta: Vec2, ignoreCollisions = false) {
+export function nudge(delta: Vec2, ignoreCollisions = ignoringCollisions()) {
   const c = ctxOrNull();
   if (!c || !c.s.selectedIds.length) return;
   const roots = rootsOf(c.scene, c.s.selectedIds).filter((o) => !o.locked);
@@ -414,7 +427,7 @@ export function nudgeVertical(dy: number) {
 }
 
 /** Rotate the selection by `dYaw` about its centre (one object: about itself), respecting collisions. */
-export function rotateSelectionBy(dYaw: number, ignoreCollisions = false) {
+export function rotateSelectionBy(dYaw: number, ignoreCollisions = ignoringCollisions()) {
   const c = ctxOrNull();
   if (!c) return;
   const roots = rootsOf(c.scene, c.s.selectedIds).filter((o) => !o.locked && classOf(c.ctx, o) !== 'wall');
@@ -439,6 +452,34 @@ export function setYaw(id: string, yaw: number) {
   const cur = yawFromQuat(o.transform.rotation);
   set({ selectedIds: [id], selectedId: id });
   rotateSelectionBy(normalizeAngle(yaw - cur));
+}
+
+/**
+ * Panel X/Y/Z entry. The piece travels horizontally from where it is toward the typed spot with
+ * block-and-slide (unless collisions are off) and stops at the first obstacle. A typed height is kept
+ * (the piece stays where you put it); otherwise it settles onto whatever is below. One undo entry.
+ */
+export function setPosition(id: string, target: Vec3) {
+  const c = ctxOrNull();
+  const o = objectById(id);
+  if (!c || !o) return;
+  if (o.locked) return toast(`${o.displayName} is locked.`, 'warning');
+  const [ox, oy, oz] = o.transform.position;
+  const desired: Vec2 = [target[0] - ox, target[2] - oz];
+  let offset = desired;
+  let blocker: string | null = null;
+  if (!ignoringCollisions() && EDITOR_POLICY.collision === 'block-and-slide' && Math.hypot(desired[0], desired[1]) > 1e-6) {
+    const moving = bodiesOf(c.ctx, c.scene, movingSet(c.scene, [id]));
+    const obstacles = obstaclesFor(c.ctx, c.scene, [id], { bounds: sweptBounds(moving, desired[0], desired[1]) });
+    const res = resolveTranslation(moving, obstacles, [0, 0], desired);
+    offset = res.offset;
+    if (Math.hypot(offset[0] - desired[0], offset[1] - desired[1]) > 0.01) blocker = res.blockers[0]?.label ?? 'something';
+  }
+  const raised = Math.abs(target[1] - oy) > 1e-4;
+  const y = raised ? Math.max(c.ctx.shell.floor.elevationY, target[1]) : oy;
+  const transform = { ...o.transform, position: [ox + offset[0], y, oz + offset[1]] as Vec3 };
+  const r = commit('Move', moveWithSupport(c.ctx, c.scene, id, transform, { settle: !raised }));
+  if (r.ok && blocker) toast(`Stopped short — it hits ${blocker}.`, 'info', 2200);
 }
 
 export function setFloat(id: string, float: boolean) {

@@ -10,7 +10,7 @@ import { useEditor } from '../state/store';
  * download from a CDN). One shadow-casting directional "sun" whose shadow camera is fitted to the
  * room; for 'golden' the sun comes in low through the room's largest glazed opening.
  */
-export type LightingPreset = 'day' | 'golden' | 'evening';
+export type LightingPreset = 'day' | 'golden' | 'evening' | 'overcast';
 
 const PRESETS: Record<LightingPreset, {
   hdr: string; envIntensity: number; background: boolean; blur: number; bgIntensity: number;
@@ -18,14 +18,16 @@ const PRESETS: Record<LightingPreset, {
 }> = {
   day: { hdr: '/hdr/warm-interior.hdr', envIntensity: 0.6, background: false, blur: 0, bgIntensity: 1, sun: { color: '#ffe8cc', intensity: 2.4, elevationDeg: 48 }, hemi: 0.35, bg: '#1d1e22' },
   golden: { hdr: '/hdr/golden-garden.hdr', envIntensity: 0.5, background: false, blur: 0, bgIntensity: 1, sun: { color: '#ffa95c', intensity: 4.6, elevationDeg: 20 }, hemi: 0.32, bg: '#cdbca1' },
+  // Overcast (from the codex sandbox): soft, cool, almost shadowless daylight.
+  overcast: { hdr: '/hdr/warm-interior.hdr', envIntensity: 0.75, background: false, blur: 0, bgIntensity: 1, sun: { color: '#dfe8f5', intensity: 1.1, elevationDeg: 65 }, hemi: 0.6, bg: '#c9ced4' },
   evening: { hdr: '/hdr/warm-interior.hdr', envIntensity: 0.12, background: false, blur: 0, bgIntensity: 1, sun: { color: '#8fa4c8', intensity: 0.25, elevationDeg: 30 }, hemi: 0.06, bg: '#121318' },
 };
 
 /** Ground tone outside the room per preset. */
-export const GROUND_COLOR: Record<LightingPreset, string> = { day: '#2a2a2c', golden: '#c2ae90', evening: '#18191d' };
+export const GROUND_COLOR: Record<LightingPreset, string> = { day: '#2a2a2c', golden: '#c2ae90', evening: '#18191d', overcast: '#b8bfc6' };
 
 export const presetOf = (name: string | undefined): LightingPreset =>
-  name === 'golden' || name === 'evening' ? name : 'day';
+  name === 'golden' || name === 'evening' || name === 'overcast' ? name : 'day';
 
 export function Lighting({ shell }: { shell: RoomShell }) {
   const preset = presetOf(useEditor((s) => s.workingScene?.lightingPreset));
@@ -80,7 +82,7 @@ export function Lighting({ shell }: { shell: RoomShell }) {
         backgroundBlurriness={p.blur}
         backgroundIntensity={p.bgIntensity}
       />
-      <hemisphereLight args={[preset === 'golden' ? '#ffd2a0' : '#fff1dd', '#4a3626', p.hemi]} />
+      <hemisphereLight args={[preset === 'golden' ? '#ffd2a0' : preset === 'overcast' ? '#e8eef6' : '#fff1dd', preset === 'overcast' ? '#8a8f96' : '#4a3626', p.hemi]} />
       <directionalLight
         ref={sun}
         position={sunPos as unknown as [number, number, number]}

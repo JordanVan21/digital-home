@@ -3,7 +3,7 @@ import { EDITOR_POLICY } from '../config/editorPolicy';
 import { cameraAxisXZ } from '../scene/canvasBridge';
 import {
   deleteSelected, duplicateSelected, frameCamera, groupSelected, nudge, nudgeVertical, redo, rotateSelectionBy, select,
-  setMode, toggleLock, undo, ungroupSelected, useEditor,
+  setMode, toggleCollisions, toggleLock, undo, ungroupSelected, useEditor,
 } from '../state/store';
 
 function isTyping(target: EventTarget | null): boolean {
@@ -16,11 +16,11 @@ function isTyping(target: EventTarget | null): boolean {
 const DEG = Math.PI / 180;
 
 /**
- * V select · G/T move · R rotate · Q/E turn 15° (Shift 90°) · arrows nudge 1 cm (Shift 10 cm,
+ * V select · G/T move · M 3D move · R rotate · C collisions on/off · Q/E turn 15° (Shift 90°) · arrows nudge 1 cm (Shift 10 cm,
  * camera-relative) · PageUp/PageDown raise/lower · F frame selection · Home frame room ·
  * P walk mode · Esc deselect / exit walk · Delete/Backspace delete · L lock · Ctrl/Cmd+D duplicate ·
  * Ctrl/Cmd+G group (Shift: ungroup) · Ctrl/Cmd+Z undo · Shift+Ctrl/Cmd+Z or Ctrl+Y redo ·
- * hold Shift for 15° / 5 cm gizmo snaps. Ignored while typing; walk mode owns WASD/arrows.
+ * Ignored while typing; walk mode owns WASD/arrows.
  */
 export function useKeyboardShortcuts() {
   useEffect(() => {
@@ -56,7 +56,9 @@ export function useKeyboardShortcuts() {
         case 'v': setMode('select'); break;
         case 'g':
         case 't': setMode('translate'); break;
+        case 'm': setMode('move3d'); break;
         case 'r': setMode('rotate'); break;
+        case 'c': toggleCollisions(); break;
         case 'q': rotateSelectionBy((e.shiftKey ? 90 : 15) * DEG); break;
         case 'e': rotateSelectionBy(-(e.shiftKey ? 90 : 15) * DEG); break;
         case 'f': frameCamera('selection'); break;

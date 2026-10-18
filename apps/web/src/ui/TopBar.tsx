@@ -10,6 +10,7 @@ export type DevActions = {
   failNextSave: () => void;
   simulateConflict: () => void;
   resetRoom: () => void;
+  reloadRoom: () => void;
   loadSource: (s: SceneSource) => void;
 };
 
@@ -67,6 +68,7 @@ export function TopBar({ actions }: { actions: DevActions }) {
           <div className="menu panel" onMouseLeave={() => setDevOpen(false)} onClick={() => setDevOpen(false)}>
             <button onClick={actions.failNextSave}>Simulate next save failing</button>
             <button onClick={actions.simulateConflict}>Simulate edit from another session</button>
+            <button onClick={actions.reloadRoom}>Reload saved room</button>
             <button onClick={actions.resetRoom}>Reset this room to its fixture</button>
             <a href="?perf">Show frame stats</a>
           </div>

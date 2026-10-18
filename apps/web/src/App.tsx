@@ -99,6 +99,11 @@ export function App() {
       if (roomId) persistence.reset(roomId);
       void load(useEditor.getState().source);
     },
+    // Reload the last saved copy of this room (from the codex sandbox). Unsaved edits are saved first.
+    reloadRoom: () => {
+      const s = useEditor.getState().source;
+      void (autosave.current?.flushNow() ?? Promise.resolve()).then(() => load(s)).then(() => toast('Reloaded the saved room.'));
+    },
     loadSource: (s) => {
       const { save } = useEditor.getState();
       if (save.pending.length && save.status !== 'saved') {

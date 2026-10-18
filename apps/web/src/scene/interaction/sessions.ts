@@ -9,7 +9,7 @@ import {
 import { EDITOR_POLICY } from '../../config/editorPolicy';
 import { applyObjectTransform } from '../../lib/convert';
 import { bodiesOf, liftBodies, movingSet, obstacleQuery, obstaclesFor, sweptBounds } from '../../state/physics';
-import { commit, objectById, opContext, toast, useEditor } from '../../state/store';
+import { commit, ignoringCollisions, objectById, opContext, toast, useEditor } from '../../state/store';
 import { dragFeedback } from '../dragFeedback';
 import { interaction, registry } from '../registry';
 import { smartSnap } from './snaps';
@@ -189,7 +189,7 @@ export class MoveSession implements DragSession {
   private tick(e: PointerEvent) {
     const r = setRay(this.host, e);
     const shift = e.shiftKey;
-    const ctrl = e.ctrlKey || e.metaKey || this.mods.ctrl;
+    const ctrl = ignoringCollisions(e.ctrlKey || e.metaKey || this.mods.ctrl);
     const floorY = this.ctx.shell.floor.elevationY;
     const [px, py, pz] = this.primary.transform.position;
 
@@ -310,7 +310,7 @@ export class MoveSession implements DragSession {
         return validateObject(this.ctx, index, cand, near).filter((v) => v.rule === 'overlap' || v.severity === 'error');
       });
     } else violations = [];
-    dragFeedback.set({ objectId: this.primary.id, blockers, violations, guides, height: null, note: ctrl ? 'Collisions off (Ctrl)' : null });
+    dragFeedback.set({ objectId: this.primary.id, blockers, violations, guides, height: null, note: ctrl ? 'Collisions off' : null });
   }
 
   private readout(pos: Vec3) {
@@ -419,7 +419,7 @@ export class RotateSession implements DragSession {
     if (!h) return;
     this.dial.update(bearing(this.pivot, [h.x, h.z]));
     const dYaw = this.dial.yaw(e.shiftKey ? EDITOR_POLICY.snap.rotateRad : undefined);
-    const ctrl = e.ctrlKey || e.metaKey || this.mods.ctrl;
+    const ctrl = ignoringCollisions(e.ctrlKey || e.metaKey || this.mods.ctrl);
     let offset: Vec2 = [0, 0];
     let blockers: Blocker[] = [];
     if (!ctrl && EDITOR_POLICY.collision === 'block-and-slide') {

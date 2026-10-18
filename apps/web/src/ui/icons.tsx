@@ -26,4 +26,10 @@ export const Icon = {
   walk: () => <Svg><circle cx="13" cy="4" r="2" /><path d="M10 22l2-7 3 3v6M9 12l3-4 4 2 2 4M8 13l-2 3" /></Svg>,
   frame: () => <Svg><path d="M4 9V5a1 1 0 0 1 1-1h4M15 4h4a1 1 0 0 1 1 1v4M20 15v4a1 1 0 0 1-1 1h-4M9 20H5a1 1 0 0 1-1-1v-4" /></Svg>,
   swap: () => <Svg><path d="M7 4L3 8l4 4M3 8h14M17 20l4-4-4-4M21 16H7" /></Svg>,
+  /** 3D move: a box with up and sideways arrows. */
+  move3d: () => <Svg><path d="M12 2v8M9 5l3-3 3 3" /><path d="M4 12l8 4 8-4-8-4z" /><path d="M4 12v5l8 4 8-4v-5" /></Svg>,
+  /** Collisions on: two blocks touching. */
+  collide: () => <Svg><rect x="3" y="8" width="8" height="8" rx="1.5" /><rect x="13" y="8" width="8" height="8" rx="1.5" /><path d="M12 5v14" /></Svg>,
+  /** Collisions off: overlapping blocks. */
+  collideOff: () => <Svg><rect x="3" y="6" width="10" height="10" rx="1.5" /><rect x="10" y="9" width="10" height="10" rx="1.5" strokeDasharray="2.5 2" /><path d="M3 21L21 3" /></Svg>,
 };

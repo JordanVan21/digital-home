@@ -1,5 +1,5 @@
 import type { ReactNode } from 'react';
-import { deleteSelected, duplicateSelected, frameCamera, redo, requestCamera, setMode, toggleLock, undo, useEditor } from '../state/store';
+import { deleteSelected, duplicateSelected, frameCamera, redo, requestCamera, setMode, toggleCollisions, toggleLock, undo, useEditor } from '../state/store';
 import { Icon } from './icons';
 
 function ToolButton({ label, keys, onClick, active, disabled, children }: {
@@ -19,11 +19,13 @@ export function FloatingToolbar() {
   const canRedo = useEditor((s) => s.history.future.length > 0);
   const libraryOpen = useEditor((s) => s.libraryOpen);
   const walk = useEditor((s) => s.walkMode);
+  const collisionsOff = useEditor((s) => s.collisionsOff);
   const locked = !!selected?.locked;
   return (
     <nav className="toolbar panel" aria-label="Editor tools">
       <ToolButton label="Select" keys="V" active={mode === 'select'} onClick={() => setMode('select')}><Icon.select /></ToolButton>
       <ToolButton label="Move" keys="G" active={mode === 'translate'} onClick={() => setMode('translate')}><Icon.move /></ToolButton>
+      <ToolButton label="3D move: drag sideways and up/down" keys="M" active={mode === 'move3d'} onClick={() => setMode('move3d')}><Icon.move3d /></ToolButton>
       <ToolButton label="Rotate" keys="R" active={mode === 'rotate'} onClick={() => setMode('rotate')}><Icon.rotate /></ToolButton>
       <div className="sep" />
       <ToolButton label="Add furniture" active={libraryOpen} onClick={() => useEditor.setState({ libraryOpen: !libraryOpen })}><Icon.add /></ToolButton>
@@ -31,6 +33,9 @@ export function FloatingToolbar() {
       <ToolButton label="Delete" keys="Del" disabled={!selected || locked} onClick={deleteSelected}><Icon.trash /></ToolButton>
       <ToolButton label={locked ? 'Unlock' : 'Lock'} keys="L" active={locked} disabled={!selected} onClick={() => toggleLock()}>
         {locked ? <Icon.lock /> : <Icon.unlock />}
+      </ToolButton>
+      <ToolButton label={collisionsOff ? 'Collisions are off (click to turn on)' : 'Collisions are on (click to turn off)'} keys="C" active={collisionsOff} onClick={toggleCollisions}>
+        {collisionsOff ? <Icon.collideOff /> : <Icon.collide />}
       </ToolButton>
       <div className="sep" />
       <ToolButton label="Undo" keys="Ctrl+Z" disabled={!canUndo} onClick={undo}><Icon.undo /></ToolButton>

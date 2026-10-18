@@ -3,7 +3,7 @@ import type { AssetSpec, RenovationDecision, SceneObject, Tilt, Vec3 } from '@ho
 import { areaXZ, classOf, isTiltable, lockedAspect, rankByDimensionFit, yawFromQuat } from '@house/scene-engine';
 import {
   deleteSelected, duplicateSelected, groupSelected, opContext, resizeObject, rotateSelectionBy, selectedObjects, setDecision,
-  setFloat, setSceneSettings, setTilt, setVariant, setYaw, swapAsset, toggleLight, toggleLock, ungroupSelected, useEditor,
+  setPosition, setSceneSettings, setTilt, setVariant, setYaw, swapAsset, toggleLight, toggleLock, ungroupSelected, useEditor,
   type WallMode,
 } from '../state/store';
 import { humanCategory } from '../scene/categoryColors';
@@ -72,8 +72,8 @@ function SwapPicker({ obj, onClose }: { obj: SceneObject; onClose: () => void })
 }
 
 /** Numeric input that commits on Enter / blur (never per keystroke). */
-function NumField({ value, onCommit, step = 1, suffix, disabled, label }: {
-  value: number; onCommit: (v: number) => void; step?: number; suffix?: string; disabled?: boolean; label: string;
+function NumField({ value, onCommit, step = 1, prefix, suffix, disabled, label }: {
+  value: number; onCommit: (v: number) => void; step?: number; prefix?: string; suffix?: string; disabled?: boolean; label: string;
 }) {
   const [text, setText] = useState(String(value));
   useEffect(() => setText(String(value)), [value]);
@@ -84,6 +84,7 @@ function NumField({ value, onCommit, step = 1, suffix, disabled, label }: {
   };
   return (
     <label className="toggle" title={label}>
+      {prefix && <span className="axis">{prefix}</span>}
       <input className="num" type="number" step={step} value={text} disabled={disabled} aria-label={label}
         onChange={(e) => setText(e.target.value)} onBlur={commit} onKeyDown={(e) => { if (e.key === 'Enter') commit(); }} />
       {suffix}
@@ -96,23 +97,27 @@ function TransformSection({ obj }: { obj: SceneObject }) {
   const cls = ctx ? classOf(ctx, obj) : 'floor';
   const yawDeg = Math.round(yawFromQuat(obj.transform.rotation) / DEG);
   const [x, y, z] = obj.transform.position;
+  const floorY = ctx?.shell.floor.elevationY ?? 0;
   const parentName = useEditor((s) => (obj.placement?.parentId ? s.workingScene?.objects.find((o) => o.id === obj.placement!.parentId)?.displayName : undefined));
+  const r2 = (n: number) => Math.round(n * 100) / 100;
+  const at = (axis: 0 | 1 | 2, v: number) => setPosition(obj.id, obj.transform.position.map((p, i) => (i === axis ? v : p)) as Vec3);
+  const resting = parentName ? `Resting on ${parentName}` : cls === 'wall' ? 'On the wall' : y - floorY < 0.005 ? 'On the floor' : `${Math.round((y - floorY) * 100)} cm above the floor`;
   return (
     <div className="field">
       <div className="field-label">Position & rotation</div>
-      <div className="hint">{x.toFixed(2)}, {z.toFixed(2)} m · {Math.round(y * 100)} cm above floor{parentName ? ` · on ${parentName}` : ''}</div>
+      <div className="row xyz">
+        <NumField label="X position (m)" prefix="X" step={0.01} value={r2(x)} disabled={obj.locked} onCommit={(v) => at(0, v)} />
+        <NumField label="Y position: height (m)" prefix="Y" step={0.01} value={r2(y)} disabled={obj.locked || cls === 'wall'} onCommit={(v) => at(1, v)} />
+        <NumField label="Z position (m)" prefix="Z" step={0.01} value={r2(z)} disabled={obj.locked} onCommit={(v) => at(2, v)} />
+        <span className="unit">m</span>
+      </div>
+      <div className="hint">{resting}</div>
       {cls !== 'wall' && (
         <div className="row">
           <button className="btn small" disabled={obj.locked} onClick={() => rotateSelectionBy(15 * DEG)} title="Rotate left (Q)">⟲ 15°</button>
           <NumField label="Yaw (degrees)" value={yawDeg} suffix="°" disabled={obj.locked} onCommit={(v) => setYaw(obj.id, v * DEG)} />
           <button className="btn small" disabled={obj.locked} onClick={() => rotateSelectionBy(-15 * DEG)} title="Rotate right (E)">15° ⟳</button>
         </div>
-      )}
-      {cls !== 'wall' && cls !== 'ceiling' && (
-        <label className="toggle">
-          <input type="checkbox" checked={!!obj.placement?.float} disabled={obj.locked} onChange={(e) => setFloat(obj.id, e.target.checked)} />
-          Float (don’t settle onto the surface below)
-        </label>
       )}
     </div>
   );
@@ -238,7 +243,7 @@ function SelectedObject({ obj }: { obj: SceneObject }) {
         <button className="btn" onClick={duplicateSelected}><Icon.duplicate /> Duplicate</button>
         <button className="btn danger" disabled={obj.locked} onClick={deleteSelected}><Icon.trash /> Delete</button>
       </div>
-      <div className="hint">Drag to move · <span className="kbd">Alt</span>+drag to lift · drag the ring to turn · <span className="kbd">Ctrl</span> ignores collisions · <span className="kbd">Shift</span> disables snaps</div>
+      <div className="hint">Drag to move · <span className="kbd">Alt</span>+drag to lift · drag the ring to turn · <span className="kbd">Ctrl</span> or <span className="kbd">C</span> ignores collisions · <span className="kbd">Shift</span> disables snaps</div>
     </>
   );
 }
@@ -291,7 +296,7 @@ function RoomInfo() {
       <div className="field">
         <div className="field-label">Lighting</div>
         <div className="segmented small">
-          {(['day', 'golden', 'evening'] as const).map((p) => (
+          {(['day', 'golden', 'evening', 'overcast'] as const).map((p) => (
             <button key={p} className={preset === p ? 'on' : ''} onClick={() => setSceneSettings({ lightingPreset: p })}>{p === 'golden' ? 'Golden hour' : p[0]!.toUpperCase() + p.slice(1)}</button>
           ))}
         </div>

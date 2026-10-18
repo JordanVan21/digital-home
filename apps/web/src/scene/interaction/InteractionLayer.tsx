@@ -9,7 +9,6 @@ import { EDITOR_POLICY } from '../../config/editorPolicy';
 import { focusCamera, objectById, opContext, select, selectMany, useEditor } from '../../state/store';
 import { dragFeedback } from '../dragFeedback';
 import { interaction, registry } from '../registry';
-import { gizmo } from '../TransformControlsWrapper';
 import { boxSelect } from './boxSelect';
 import { hitPlaneY, modsOf, MoveSession, RotateSession, setRay, type DragSession, type Host } from './sessions';
 
@@ -28,7 +27,7 @@ function objectAt(r: Raycaster, root: Object3D | undefined): string | null {
 
 /**
  * Pointer routing for the canvas. A capture-phase listener runs before the camera controls see the
- * event, so a press on furniture, the rotation ring or the gizmo turns orbiting off for that drag:
+ * event, so a press on furniture or the rotation ring turns orbiting off for that drag:
  * - press + drag on an unlocked object → move it (Alt = lift; Ctrl/Cmd = ignore collisions);
  * - press + drag on the ring → turn it; Shift+drag on empty space → box select;
  * - click (< 4 px) → select (Shift adds, Alt picks one member of a group); empty click deselects;
@@ -109,10 +108,6 @@ export function InteractionLayer() {
 
     const onDown = (e: PointerEvent) => {
       if (e.button !== 0 || useEditor.getState().walkMode || press) return;
-      if ((gizmo.current as unknown as { axis: string | null } | null)?.axis) {
-        setControls(false); // TransformControls takes this drag
-        return;
-      }
       const r = setRay(host, e);
       if (ring.current?.visible && r.intersectObject(ring.current, false).length) {
         const s = new RotateSession(host, e, modsOf(e));
