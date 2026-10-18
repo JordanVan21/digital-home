@@ -12,7 +12,6 @@ import {
 } from "@house/contracts";
 import {
   onNearestSurface,
-  onWall,
   resolveDraft,
   validateObject,
   type SceneContext,
@@ -97,7 +96,7 @@ const cloudShells = new Map<string, RoomShell>();
 
 /**
  * Makes a scanned arrangement valid before it is edited: pieces scanned well above
- * the floor next to a wall (upper cabinets, shelves) hang on that wall, and pieces
+ * the floor (upper cabinets, a sink in a counter) become lifted pieces, and pieces
  * that still overlap a wall or each other are moved to the nearest valid spot by the
  * sandbox's own resolver. Valid pieces are left exactly where they were scanned.
  */
@@ -106,19 +105,17 @@ export function settleImportedScene(scene: SceneSpec, shell: RoomShell): SceneSp
   const objects = scene.objects.map((o) => {
     if (o.locked || (o.placement?.support ?? "floor") !== "floor") return o;
     if (o.transform.position[1] < 0.35) return o;
-    // Resting on the furniture right below (sink on a counter) beats hanging on a wall.
+    // A raised piece becomes a normal lifted piece (what Space-lifting produces), so it
+    // keeps planar dragging, vertical sliding and snapping. If it was scanned sunk a
+    // little into the furniture below (a sink in a counter), it rests on that top.
     const rested = onNearestSurface(scene, o, shell, assetById);
-    if (
-      rested.placement?.support === "object" &&
-      Math.abs(rested.transform.position[1] - o.transform.position[1]) < 0.4
-    )
-      return rested;
-    const mounted = onWall(shell, { ...o, placement: { support: "wall" } });
-    const shift = Math.hypot(
-      mounted.transform.position[0] - o.transform.position[0],
-      mounted.transform.position[2] - o.transform.position[2],
-    );
-    return shift <= 0.35 ? mounted : o;
+    const dy = rested.transform.position[1] - o.transform.position[1];
+    const onTop = rested.placement?.support === "object" && dy > -0.05 && dy < 0.35;
+    return {
+      ...o,
+      transform: onTop ? rested.transform : o.transform,
+      placement: { support: "floor" as const, float: true },
+    };
   });
   const draft: SceneSpec = { ...scene, objects };
   const invalid = new Set(
