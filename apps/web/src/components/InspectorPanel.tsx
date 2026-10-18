@@ -8,7 +8,7 @@ import {
   Trash2,
   Box,
 } from "lucide-react";
-import { assetById, roomShell } from "@house/contracts";
+import { assetById } from "@house/contracts";
 import { yawOf } from "@house/scene-engine";
 import { editor } from "../state/editor";
 import { useWorkingObject } from "../state/useWorking";
@@ -139,7 +139,7 @@ export function InspectorPanel() {
                   ...object.transform,
                   position: [
                     object.transform.position[0],
-                    roomShell.floor.elevationY,
+                    editor.context().room.floor.elevationY,
                     object.transform.position[2],
                   ],
                 },

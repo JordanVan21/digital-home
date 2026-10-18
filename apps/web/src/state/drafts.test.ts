@@ -1,8 +1,13 @@
 // @vitest-environment jsdom
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { createFixtureScene, fixtureId, transformAt } from "@house/contracts";
+import {
+  createFixtureScene,
+  fixtureId,
+  livingRoom,
+  transformAt,
+} from "@house/contracts";
 import { validateObject } from "@house/scene-engine";
-import { createEditor, sceneContext } from "./editor";
+import { contextFor, createEditor } from "./editor";
 import { LocalStorageSceneRepository } from "./repository";
 
 const smallId = fixtureId(111);
@@ -23,7 +28,9 @@ const move = (id: string, x: number, z: number, yaw = 0) => ({
 });
 const allValid = (e: ReturnType<typeof createEditor>) => {
   const s = e.scene.getState().scene;
-  return s.objects.every((o) => validateObject(s, o, sceneContext).ok);
+  return s.objects.every(
+    (o) => validateObject(s, o, contextFor(livingRoom)).ok,
+  );
 };
 
 beforeEach(() => vi.useFakeTimers());

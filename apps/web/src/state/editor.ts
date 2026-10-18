@@ -1,9 +1,10 @@
 import { createStore } from "zustand/vanilla";
 import {
   assetById,
-  createFixtureScene,
-  roomShell,
+  livingRoom,
   type AssetSpec,
+  type RoomDefinition,
+  type RoomShell,
   type SceneObject,
   type SceneOp,
   type SceneSpec,
@@ -83,7 +84,11 @@ const emptyDraft = (): Draft => ({
   conflicts: {},
   resolved: [],
 });
-function conflictsOf(accepted: SceneSpec, draft: SceneSpec | null) {
+function conflictsOf(
+  accepted: SceneSpec,
+  draft: SceneSpec | null,
+  sceneContext: SceneContext,
+) {
   const conflicts: Record<string, string> = {};
   if (!draft) return conflicts;
   const diff = diffScenes(accepted, draft);
@@ -123,14 +128,31 @@ function summarize(
   }
   return parts.join(" · ");
 }
-export const sceneContext: SceneContext = {
-  room: roomShell,
+export const contextFor = (room: RoomDefinition): SceneContext => ({
+  room: room.shell,
   assets: assetById,
-  roomId: createFixtureScene().roomId,
-};
-export function createEditor(repository?: SceneRepository) {
+  roomId: room.roomId,
+});
+/** Middle of the floor's bounds, where new pieces start their free-space search. */
+function floorCenter(shell: RoomShell): [number, number] {
+  const xs = shell.floor.polygonXZ.map((p) => p[0]),
+    zs = shell.floor.polygonXZ.map((p) => p[1]);
+  return [
+    (Math.min(...xs) + Math.max(...xs)) / 2,
+    (Math.min(...zs) + Math.max(...zs)) / 2,
+  ];
+}
+export function createEditor(
+  repository?: SceneRepository,
+  initialRoom: RoomDefinition = livingRoom,
+) {
+  const room = createStore<{ room: RoomDefinition }>(() => ({
+    room: initialRoom,
+  }));
+  const sceneContext = contextFor(initialRoom);
+  const context = () => sceneContext;
   const scene = createStore<{ scene: SceneSpec; ready: boolean }>(() => ({
-    scene: createFixtureScene(),
+    scene: initialRoom.createScene(),
     ready: !repository,
   }));
   const interaction = createStore<Interaction>(() => ({
@@ -182,7 +204,7 @@ export function createEditor(repository?: SceneRepository) {
     draft.setState({
       scene: value,
       ...stacks,
-      conflicts: conflictsOf(accepted, value),
+      conflicts: conflictsOf(accepted, value, sceneContext),
     });
   };
   /** Copies accepted lock state onto a draft snapshot; locks are never suggestions. */
@@ -486,7 +508,7 @@ export function createEditor(repository?: SceneRepository) {
       source: "catalog",
       placement: { support: "floor" },
       transform: {
-        position: [0, roomShell.floor.elevationY, 0],
+        position: [0, sceneContext.room.floor.elevationY, 0],
         rotation: [0, 0, 0, 1],
         scale: [1, 1, 1],
       },
@@ -498,14 +520,15 @@ export function createEditor(repository?: SceneRepository) {
     const [w, h, d] = a.dimensionsM;
     const diagonal = Math.hypot(w, d);
     const footprints: Vec3[] = [[diagonal, h, diagonal], a.dimensionsM];
+    const [cx, cz] = floorCenter(sceneContext.room);
     for (const dimensionsM of footprints)
       for (let ring = 0; ring <= 24; ring++)
         for (let step = 0; step < (ring === 0 ? 1 : ring * 12); step++) {
           const angle = (step / (ring * 12 || 1)) * Math.PI * 2;
           candidate.transform.position = [
-            Math.cos(angle) * ring * 0.14,
-            roomShell.floor.elevationY,
-            Math.sin(angle) * ring * 0.14,
+            cx + Math.cos(angle) * ring * 0.14,
+            sceneContext.room.floor.elevationY,
+            cz + Math.sin(angle) * ring * 0.14,
           ];
           if (
             validateOp(
@@ -538,7 +561,7 @@ export function createEditor(repository?: SceneRepository) {
       const baseRevision =
         autosave?.acknowledgedRevision() ?? scene.getState().scene.revision;
       try {
-        const restored = await repository.reset(createFixtureScene().roomId);
+        const restored = await repository.reset(room.getState().room.roomId);
         scene.setState({ scene: restored, ready: true });
         autosave = new Autosave(
           repository,
@@ -571,7 +594,10 @@ export function createEditor(repository?: SceneRepository) {
     }
     const current = scene.getState().scene;
     scene.setState({
-      scene: { ...createFixtureScene(), revision: current.revision + 1 },
+      scene: {
+        ...room.getState().room.createScene(),
+        revision: current.revision + 1,
+      },
       ready: true,
     });
     history.setState({ history: createHistory() });
@@ -583,7 +609,7 @@ export function createEditor(repository?: SceneRepository) {
   const load = async () => {
     if (!repository) return;
     try {
-      const loaded = await repository.load(createFixtureScene().roomId);
+      const loaded = await repository.load(room.getState().room.roomId);
       scene.setState({ scene: loaded, ready: true });
       history.setState({ history: createHistory() });
       draft.setState(emptyDraft());
@@ -605,6 +631,8 @@ export function createEditor(repository?: SceneRepository) {
     }
   };
   return {
+    room,
+    context,
     scene,
     interaction,
     history,
@@ -659,7 +687,7 @@ export class DragSession {
     const valid = validateOp(
       this.editor.working(),
       { type: "move", objectId: id, transform: o.transform },
-      sceneContext,
+      this.editor.context(),
       { allowConflicts: true },
     );
     if (!valid.ok) {
@@ -678,7 +706,7 @@ export class DragSession {
     return validateOp(
       this.editor.working(),
       { type: "move", objectId: this.id, transform },
-      sceneContext,
+      this.editor.context(),
     );
   }
   release(): boolean {

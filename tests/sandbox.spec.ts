@@ -75,10 +75,10 @@ test("renders the room and edits, undoes and restores a saved arrangement", asyn
       (url) => new URL(url).pathname === "/src/state/editor.ts",
     )!;
     const { validateObject } = await import(engineUrl);
-    const { editor, sceneContext } = await import(editorUrl);
+    const { editor } = await import(editorUrl);
     const scene = editor.scene.getState().scene;
     return scene.objects.every(
-      (o: unknown) => validateObject(scene, o, sceneContext).ok,
+      (o: unknown) => validateObject(scene, o, editor.context()).ok,
     );
   });
   expect(feasible).toBe(true);

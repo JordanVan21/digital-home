@@ -15,7 +15,7 @@ import {
 } from "three";
 import type { SceneObject, Transform } from "@house/contracts";
 import { snapToSurface, validateOp, yawOf } from "@house/scene-engine";
-import { DragSession, editor, sceneContext } from "../state/editor";
+import { DragSession, editor } from "../state/editor";
 import { Model } from "./Model";
 import { CollisionOutline } from "./CollisionOutline";
 import { SnapGuide, type SnapGuideHandle } from "./SnapGuide";
@@ -176,7 +176,7 @@ export const Furniture = memo(function Furniture({
       state.valid = validateOp(
         editor.working(),
         { type: "move", objectId: object.id, transform },
-        sceneContext,
+        editor.context(),
       ).ok;
       state.lastValidation = now;
     }
@@ -261,7 +261,12 @@ export const Furniture = memo(function Furniture({
     const raw = { ...current, position };
     const contact = e.altKey
       ? { transform: raw }
-      : snapToSurface(editor.working(), latest.current, raw, sceneContext.room);
+      : snapToSurface(
+          editor.working(),
+          latest.current,
+          raw,
+          editor.context().room,
+        );
     state.transform = contact.transform;
     editor.previewMove(object.id, state.transform);
     group.current?.position.fromArray(state.transform.position);
@@ -300,7 +305,7 @@ export const Furniture = memo(function Furniture({
         objectId: object.id,
         transform: latest.current.transform,
       },
-      sceneContext,
+      editor.context(),
       { allowConflicts: true },
     );
     if (!valid.ok) {

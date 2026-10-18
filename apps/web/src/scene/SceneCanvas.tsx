@@ -53,10 +53,14 @@ function Camera() {
         const orbit = controls.current;
         if (!orbit) return;
         const { x, y, z } = orbit.target;
+        // Keep the orbit target over the room's floor, inset slightly from the walls.
+        const floor = editor.context().room.floor.polygonXZ;
+        const xs = floor.map((p) => p[0]),
+          zs = floor.map((p) => p[1]);
         orbit.target.set(
-          MathUtils.clamp(x, -1.8, 1.8),
+          MathUtils.clamp(x, Math.min(...xs) + 0.8, Math.max(...xs) - 0.8),
           MathUtils.clamp(y, 0.25, 1.4),
-          MathUtils.clamp(z, -1.5, 1.5),
+          MathUtils.clamp(z, Math.min(...zs) + 0.7, Math.max(...zs) - 0.7),
         );
         camera.position.x += orbit.target.x - x;
         camera.position.y += orbit.target.y - y;

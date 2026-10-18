@@ -1,6 +1,8 @@
 import { useMemo, useRef } from "react";
 import { useFrame } from "@react-three/fiber";
-import { roomShell, type Wall } from "@house/contracts";
+import { useStore } from "zustand";
+import { type RoomShell, type Wall } from "@house/contracts";
+import { editor } from "../state/editor";
 import { insidePoint } from "@house/scene-engine";
 import {
   DoubleSide,
@@ -34,7 +36,7 @@ function Block({
     </mesh>
   );
 }
-function RoomWall({ wall }: { wall: Wall }) {
+function RoomWall({ wall, shell }: { wall: Wall; shell: RoomShell }) {
   const full = useRef<Group>(null),
     low = useRef<Group>(null);
   const dx = wall.toXZ[0] - wall.fromXZ[0],
@@ -46,12 +48,12 @@ function RoomWall({ wall }: { wall: Wall }) {
   ];
   const sign = insidePoint(
     [center[0] - (dz / len) * 0.03, center[1] + (dx / len) * 0.03],
-    roomShell.floor.polygonXZ,
+    shell.floor.polygonXZ,
   )
     ? 1
     : -1;
   const outward = [(dz / len) * sign, (-dx / len) * sign];
-  const openings = roomShell.openings
+  const openings = shell.openings
     .filter((o) => o.wallId === wall.id)
     .sort((a, b) => a.offsetM - b.offsetM);
   const spans: { x: number; w: number }[] = [];
@@ -74,7 +76,7 @@ function RoomWall({ wall }: { wall: Wall }) {
   });
   return (
     <group
-      position={[center[0], roomShell.floor.elevationY, center[1]]}
+      position={[center[0], shell.floor.elevationY, center[1]]}
       rotation={[0, -Math.atan2(dz, dx), 0]}
     >
       <group ref={full}>
@@ -210,9 +212,10 @@ function RoomWall({ wall }: { wall: Wall }) {
   );
 }
 export function Room() {
+  const shell = useStore(editor.room, (s) => s.room.shell);
   const { floor, slab } = useMemo(() => {
     const shape = new Shape();
-    roomShell.floor.polygonXZ.forEach(([x, z], i) =>
+    shell.floor.polygonXZ.forEach(([x, z], i) =>
       i === 0 ? shape.moveTo(x, -z) : shape.lineTo(x, -z),
     );
     shape.closePath();
@@ -220,7 +223,7 @@ export function Room() {
       floor: new ShapeGeometry(shape),
       slab: new ExtrudeGeometry(shape, { depth: 0.16, bevelEnabled: false }),
     };
-  }, []);
+  }, [shell]);
   return (
     <group>
       <mesh
@@ -239,8 +242,8 @@ export function Room() {
       >
         <meshStandardMaterial map={oakTexture()} roughness={0.77} />
       </mesh>
-      {roomShell.walls.map((w) => (
-        <RoomWall key={w.id} wall={w} />
+      {shell.walls.map((w) => (
+        <RoomWall key={w.id} wall={w} shell={shell} />
       ))}
     </group>
   );

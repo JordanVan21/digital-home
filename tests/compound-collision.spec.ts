@@ -144,14 +144,14 @@ test("rejects a coffee table hidden in the couch and toggles current bounding bo
   }, url);
   await page.getByRole("button", { name: /^Accept suggestions/ }).click();
   await page.evaluate(async (u) => {
-    const { editor, sceneContext } = await import(u);
+    const { editor } = await import(u);
     const engineUrl = performance
       .getEntriesByType("resource")
       .map((r) => r.name)
       .find((u) => new URL(u).pathname.endsWith("/scene-engine/src/index.ts"))!;
     const { objectsCollide } = await import(engineUrl);
     const [sofa, table] = editor.working().objects;
-    if (objectsCollide(sofa, table, sceneContext.assets))
+    if (objectsCollide(sofa, table, editor.context().assets))
       throw new Error("Accept retained the contained table");
   }, url);
   expect(errors).toEqual([]);

@@ -1,6 +1,7 @@
 import {
   SceneSpecSchema,
-  createFixtureScene,
+  roomById,
+  type RoomDefinition,
   type SceneSpec,
 } from "@house/contracts";
 export interface SceneRepository {
@@ -21,14 +22,24 @@ export class RepositoryError extends Error {
 type StoragePort = Pick<Storage, "getItem" | "setItem">;
 export class LocalStorageSceneRepository implements SceneRepository {
   // Resolve browser storage lazily: disabled storage must produce an editor error, not an import-time crash.
-  constructor(private providedStorage?: StoragePort) {}
+  constructor(
+    private providedStorage?: StoragePort,
+    private rooms: (roomId: string) => RoomDefinition | undefined = roomById,
+  ) {}
   private get storage(): StoragePort {
     return this.providedStorage ?? window.localStorage;
   }
   private key(id: string) {
     return `house.scene.v1.${id}`;
   }
+  private room(roomId: string): RoomDefinition {
+    const room = this.rooms(roomId);
+    if (!room)
+      throw new RepositoryError("CORRUPT_DATA", "This room is unavailable.");
+    return room;
+  }
   private read(roomId: string): SceneSpec {
+    const room = this.room(roomId);
     let raw: string | null;
     try {
       raw = this.storage.getItem(this.key(roomId));
@@ -38,15 +49,10 @@ export class LocalStorageSceneRepository implements SceneRepository {
         "Local storage is unavailable.",
       );
     }
-    if (!raw) {
-      const fixture = createFixtureScene();
-      if (fixture.roomId !== roomId)
-        throw new RepositoryError("CORRUPT_DATA", "This room is unavailable.");
-      return fixture;
-    }
+    if (!raw) return room.createScene();
     try {
       const scene = SceneSpecSchema.parse(JSON.parse(raw));
-      const fixture = createFixtureScene();
+      const fixture = room.createScene();
       if (
         scene.roomId !== roomId ||
         scene.shellId !== fixture.shellId ||
@@ -112,7 +118,7 @@ export class LocalStorageSceneRepository implements SceneRepository {
         )
           throw error;
       }
-      const next = { ...createFixtureScene(), revision };
+      const next = { ...this.room(roomId).createScene(), revision };
       this.write(next);
       return next;
     });
