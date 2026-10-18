@@ -14,7 +14,12 @@ import {
   type SceneSpec,
 } from "@house/contracts";
 import { roomById } from "./rooms";
-import { cloudRoomIds, fetchCloudScene, pushCloudScene } from "./cloud";
+import {
+  cloudRoomIds,
+  fetchCloudScene,
+  pushCloudScene,
+  settleCloudScene,
+} from "./cloud";
 export interface SceneRepository {
   load(roomId: string): Promise<SceneSpec>;
   save(scene: SceneSpec, baseRevision: number): Promise<{ revision: number }>;
@@ -358,7 +363,7 @@ export class CloudSceneRepository extends LocalStorageSceneRepository {
           local.id !== remote.id ||
           local.shellId !== remote.shellId
         )
-          this.write(remote);
+          this.write(settleCloudScene(remote));
       }
     }
     return super.load(roomId);

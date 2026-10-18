@@ -9,6 +9,7 @@ import {
   MeshStandardMaterial,
   Vector3,
   BufferGeometry,
+  Object3D,
 } from "three";
 import { assetById, type SceneObject } from "@house/contracts";
 import { supportsMeshPicking } from "./modelShape";
@@ -142,6 +143,7 @@ function GLB({
       }
     });
     clone.updateMatrixWorld(true);
+    if (asset.source === "generated") biasFlushParts(clone);
     const box = new Box3().setFromObject(clone),
       size = box.getSize(new Vector3()),
       center = box.getCenter(new Vector3());
@@ -231,4 +233,29 @@ export function Model({
       </ModelBoundary>
     </TiltFrame>
   );
+}
+
+/**
+ * Agent-built (Blender) models often place doors, panels and knobs exactly flush
+ * with the body they sit on, and coplanar faces z-fight into a checkerboard.
+ * Draw smaller parts slightly in front of larger ones (depth bias only; the
+ * geometry and its size are unchanged).
+ */
+function biasFlushParts(root: Object3D) {
+  const parts: { mesh: Mesh; volume: number }[] = [];
+  root.traverse((child) => {
+    if (!(child instanceof Mesh)) return;
+    const size = new Box3().setFromObject(child).getSize(new Vector3());
+    parts.push({ mesh: child, volume: size.x * size.y * size.z });
+  });
+  parts
+    .sort((a, b) => b.volume - a.volume)
+    .forEach(({ mesh }, rank) => {
+      if (rank === 0) return;
+      for (const material of Array.isArray(mesh.material) ? mesh.material : [mesh.material]) {
+        material.polygonOffset = true;
+        material.polygonOffsetFactor = -1;
+        material.polygonOffsetUnits = -4 * Math.min(rank, 16);
+      }
+    });
 }

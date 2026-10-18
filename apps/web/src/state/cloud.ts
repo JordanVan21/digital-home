@@ -6,8 +6,16 @@ import {
   assetById,
   catalog,
   type RoomDefinition,
+  type RoomShell,
   type SceneSpec,
 } from "@house/contracts";
+import {
+  onNearestSurface,
+  onWall,
+  resolveDraft,
+  validateObject,
+  type SceneContext,
+} from "@house/scene-engine";
 import { rooms } from "./rooms";
 import { SUPABASE_ANON_KEY, SUPABASE_URL } from "./cloudConfig";
 
@@ -69,15 +77,62 @@ export async function loadCloudRooms(): Promise<string[]> {
       roomId: row.id,
       name: `Scan · ${row.name}`,
       shell: shell.data,
-      createScene: () => structuredClone(scene.data),
+      createScene: () => settleImportedScene(structuredClone(scene.data), shell.data),
     };
     const index = rooms.findIndex((r) => r.roomId === row.id);
     if (index >= 0) rooms[index] = definition;
     else rooms.push(definition);
     cloudRoomIds.add(row.id);
+    cloudShells.set(row.id, shell.data);
     ids.push(row.id);
   }
   return ids;
+}
+
+/** Scanned rooms' shells, so a newer saved copy can be settled when it is adopted. */
+const cloudShells = new Map<string, RoomShell>();
+
+/**
+ * Makes a scanned arrangement valid before it is edited: pieces scanned well above
+ * the floor next to a wall (upper cabinets, shelves) hang on that wall, and pieces
+ * that still overlap a wall or each other are moved to the nearest valid spot by the
+ * sandbox's own resolver. Valid pieces are left exactly where they were scanned.
+ */
+export function settleImportedScene(scene: SceneSpec, shell: RoomShell): SceneSpec {
+  const ctx: SceneContext = { room: shell, assets: assetById, roomId: scene.roomId };
+  const objects = scene.objects.map((o) => {
+    if (o.locked || (o.placement?.support ?? "floor") !== "floor") return o;
+    if (o.transform.position[1] < 0.35) return o;
+    // Resting on the furniture right below (sink on a counter) beats hanging on a wall.
+    const rested = onNearestSurface(scene, o, shell, assetById);
+    if (
+      rested.placement?.support === "object" &&
+      Math.abs(rested.transform.position[1] - o.transform.position[1]) < 0.4
+    )
+      return rested;
+    const mounted = onWall(shell, { ...o, placement: { support: "wall" } });
+    const shift = Math.hypot(
+      mounted.transform.position[0] - o.transform.position[0],
+      mounted.transform.position[2] - o.transform.position[2],
+    );
+    return shift <= 0.35 ? mounted : o;
+  });
+  const draft: SceneSpec = { ...scene, objects };
+  const invalid = new Set(
+    objects.filter((o) => !validateObject(draft, o, ctx).ok).map((o) => o.id),
+  );
+  if (!invalid.size) return draft;
+  const accepted = { ...draft, objects: objects.filter((o) => !invalid.has(o.id)) };
+  const result = resolveDraft(accepted, draft, ctx);
+  if (!result.ok) return draft;
+  const placed = new Map(result.scene.objects.map((o) => [o.id, o]));
+  // Anything the resolver could not place keeps its scanned position.
+  return { ...draft, objects: draft.objects.map((o) => placed.get(o.id) ?? o) };
+}
+
+export function settleCloudScene(scene: SceneSpec): SceneSpec {
+  const shell = cloudShells.get(scene.roomId);
+  return shell ? settleImportedScene(scene, shell) : scene;
 }
 
 /** Signs out and drops the scanned rooms from the list. */
