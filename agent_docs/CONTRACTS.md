@@ -270,3 +270,36 @@ Model calls only happen inside trusted `apps/worker`. The orchestrator sequences
 
 ### Source of truth for shared modules
 `packages/scene-engine`: pure deterministic TS operations, geometry and collision policies, no React/Three/Supabase imports. `apps/web` uses it for immediate preview and interaction commits; `apps/api` uses it for trusted validation and versioned persistence; `apps/worker` uses it for proposal construction. Swift uploads raw RoomPlan data/normalized scan metadata via documented signed APIs; do not reimplement independent scene operation semantics in Swift.
+
+
+## 10. Sandbox amendments (2026-10-17, from Feature 2 — see `SANDBOX_NOTES.md`)
+Additive changes implemented in `packages/contracts` and marked `CONTRACT-TBD` in code. **Approved** items are binding; **proposed** items need team sign-off before other components depend on them.
+
+**Approved**
+- `Opening.kind` adds `'opening'` (RoomPlan's doorless passage); optional `Opening.swing: 'left'|'right'|'none'`.
+- All `SceneObject.transform`s are room (world) coordinates, including nested objects. `move` on a parent rigidly carries its descendants; `delete` on a parent deletes its descendants (rejected if any is locked).
+- `transform.scale` must be `[1,1,1]`; `dimensionsM` (`[w, h, d]`) is the only size. Rotations are yaw-only quaternions.
+- Validation severities: errors (reject) = shell mutation, locked edits, unknown/duplicate ids, non-finite/invalid transforms, non-verified assets, footprint outside the floor polygon; everything else (overlap, wall/door clearance, support, nesting allow-list) = warnings.
+
+**Proposed**
+- `Opening.offsetM` = distance along the wall from `fromXZ` to the opening's near edge. Walls lie on the floor-polygon boundary; `thicknessM` extrudes outward. Polygons are wound counter-clockwise viewed from +Y.
+- `replaceAsset.assetId` may be `null` (so swapping a placeholder for a model has an expressible inverse).
+- New op `{ type: 'setRenovationDecision', objectId, decision: 'keep'|'replace'|'remove'|null }`, allowed on locked objects; exclude from agent tools pending a decision.
+- `SceneObject.scanMatch?: { roomPlanCategory, scanDimensionsM, score }`.
+- `AssetSpec.placementClass?: 'floor'|'flat'|'surface'|'wall'`, `AssetSpec.frontAxis?: '+Z'|'-Z'|'+X'|'-X'` (catalog GLBs are baked to `+Z` at ingest), `AssetSpec.license?: string`.
+- Fixture bundles `RoomFixture` / `ScanFixture` / `ScanObject` (see `packages/contracts/src/index.ts`).
+
+### 10.2 Test2-round amendments (proposed, CONTRACT-TBD in `packages/contracts`)
+- `placement.support` adds `'ceiling'`; `placement.float?: boolean` (skip gravity settling).
+- `SceneObject.tilt?: { x: 0..3, z: 0..3 }`: quarter turns for small decor, applied before yaw. `transform.rotation` stays yaw-only. Geometry uses the effective (tilted) size.
+- `SceneObject.groupId?: UUID` (persistent editor groups); `SceneObject.lightOn?: boolean`.
+- `SceneSpec.appearance?: { wallColor?, trimColor?, floorMaterial? }`. Paint and finish only, stored on the scene, never on the immutable `RoomShell`. `lightingPreset` values: `day` / `golden` / `evening`.
+- `Opening.glazing?: { panels, frameColor? }` (rendering only).
+- `AssetSpec` adds:
+  - `collision?`: kind `solid` / `table` / `chair` / `open` / `flat` / `soft` / `none`, with optional size-normalized compound boxes, slab thickness and board heights;
+  - `supports?` (normalized surfaces, optional max item height);
+  - `light?`, `variants?` (applied via the existing `materialOverrides`), `castShadow?`, `tiltable?`;
+  - `placementClass` adds `ceiling`.
+- New ops: `setPlacement`, `resize`, `setTilt`, `setGroup`, `setLight`, `setSceneSettings`. Locked objects reject the first three; `setGroup` and `setLight` are allowed on locked objects (organization and a lamp switch, not edits).
+- Fixture-only: `RoomFixture.photoCamera` and `RoomFixture.referenceImage`.
+- Semantics: deleting an object (editor command `deleteWithSettle`) settles whatever rested on it onto the next support below, in one patch. The contract `delete` op itself still cascades, so patches stay explicit.

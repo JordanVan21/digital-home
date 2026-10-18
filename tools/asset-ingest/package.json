@@ -1,0 +1,19 @@
+{
+  "name": "@house/asset-ingest",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Downloads, normalizes and packs catalog GLBs into apps/web/public/catalog (dev tool; not shipped).",
+  "scripts": {
+    "ingest": "node ingest.mjs"
+  },
+  "dependencies": {
+    "@gltf-transform/core": "4.1.1",
+    "@gltf-transform/extensions": "4.1.1",
+    "@gltf-transform/functions": "4.1.1",
+    "@house/contracts": "workspace:*",
+    "meshoptimizer": "0.22.0",
+    "sharp": "0.33.5",
+    "three": "0.170.0"
+  }
+}

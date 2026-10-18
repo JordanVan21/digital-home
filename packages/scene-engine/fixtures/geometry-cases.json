@@ -1,0 +1,1309 @@
+{
+  "description": "Geometry-rule fixtures (shared with the backend). Expand shells/objects with expandCaseShell/expandCaseObject (objects may carry tilt {x,z} quarter turns, float, support). `expect` is the exact set of violations as \"rule:objectId\" (collisions as \"overlap:objectId:otherId\", ids in object order).",
+  "shells": {
+    "room6": {
+      "polygonXZ": [
+        [
+          -3,
+          -3
+        ],
+        [
+          -3,
+          3
+        ],
+        [
+          3,
+          3
+        ],
+        [
+          3,
+          -3
+        ]
+      ],
+      "openings": [
+        {
+          "id": "door",
+          "wallId": "w1",
+          "kind": "door",
+          "offsetM": 1,
+          "widthM": 0.9,
+          "bottomM": 0,
+          "heightM": 2.05
+        },
+        {
+          "id": "win",
+          "wallId": "w3",
+          "kind": "window",
+          "offsetM": 2,
+          "widthM": 1.2,
+          "bottomM": 0.9,
+          "heightM": 1.2
+        }
+      ]
+    },
+    "lroom": {
+      "polygonXZ": [
+        [
+          0,
+          0
+        ],
+        [
+          0,
+          4
+        ],
+        [
+          4,
+          4
+        ],
+        [
+          4,
+          2
+        ],
+        [
+          2,
+          2
+        ],
+        [
+          2,
+          0
+        ]
+      ]
+    },
+    "lroom_cw": {
+      "polygonXZ": [
+        [
+          2,
+          0
+        ],
+        [
+          2,
+          2
+        ],
+        [
+          4,
+          2
+        ],
+        [
+          4,
+          4
+        ],
+        [
+          0,
+          4
+        ],
+        [
+          0,
+          0
+        ]
+      ]
+    }
+  },
+  "cases": [
+    {
+      "name": "concave: object in the inner arm is inside",
+      "shell": "lroom",
+      "objects": [
+        {
+          "id": "t",
+          "category": "table",
+          "pos": [
+            1,
+            0,
+            1
+          ],
+          "dims": [
+            1,
+            0.75,
+            1
+          ]
+        }
+      ],
+      "expect": []
+    },
+    {
+      "name": "concave: object poking into the notch is outside",
+      "shell": "lroom",
+      "objects": [
+        {
+          "id": "s",
+          "category": "sofa",
+          "pos": [
+            3,
+            0,
+            2.2
+          ],
+          "dims": [
+            1.5,
+            0.8,
+            0.8
+          ]
+        }
+      ],
+      "expect": [
+        "inside_room:s"
+      ]
+    },
+    {
+      "name": "concave: all corners inside but spanning the reflex corner is outside",
+      "shell": "lroom",
+      "objects": [
+        {
+          "id": "bar",
+          "category": "table",
+          "pos": [
+            2.25,
+            0,
+            1.75
+          ],
+          "yawDeg": -45,
+          "dims": [
+            2,
+            0.9,
+            0.1
+          ]
+        }
+      ],
+      "expect": [
+        "inside_room:bar"
+      ]
+    },
+    {
+      "name": "concave: clockwise input polygon gives the same result after normalization",
+      "shell": "lroom_cw",
+      "normalize": true,
+      "objects": [
+        {
+          "id": "bar",
+          "category": "table",
+          "pos": [
+            2.25,
+            0,
+            1.75
+          ],
+          "yawDeg": -45,
+          "dims": [
+            2,
+            0.9,
+            0.1
+          ]
+        }
+      ],
+      "expect": [
+        "inside_room:bar"
+      ]
+    },
+    {
+      "name": "rotated OBB penetrates axis-aligned box",
+      "shell": "room6",
+      "objects": [
+        {
+          "id": "a",
+          "category": "table",
+          "pos": [
+            0,
+            0,
+            0
+          ],
+          "yawDeg": 45,
+          "dims": [
+            1,
+            0.75,
+            1
+          ]
+        },
+        {
+          "id": "b",
+          "category": "table",
+          "pos": [
+            1.15,
+            0,
+            0
+          ],
+          "dims": [
+            1,
+            0.75,
+            1
+          ]
+        }
+      ],
+      "expect": [
+        "overlap:a:b"
+      ]
+    },
+    {
+      "name": "rotated OBB: AABBs overlap but OBBs are separated",
+      "shell": "room6",
+      "objects": [
+        {
+          "id": "a",
+          "category": "table",
+          "pos": [
+            0,
+            0,
+            0
+          ],
+          "yawDeg": 45,
+          "dims": [
+            1,
+            0.75,
+            1
+          ]
+        },
+        {
+          "id": "b",
+          "category": "table",
+          "pos": [
+            1.1,
+            0,
+            1.1
+          ],
+          "dims": [
+            1,
+            0.75,
+            1
+          ]
+        }
+      ],
+      "expect": []
+    },
+    {
+      "name": "touching edges are not an overlap",
+      "shell": "room6",
+      "objects": [
+        {
+          "id": "a",
+          "category": "table",
+          "pos": [
+            0,
+            0,
+            0
+          ],
+          "dims": [
+            1,
+            0.75,
+            1
+          ]
+        },
+        {
+          "id": "b",
+          "category": "table",
+          "pos": [
+            1,
+            0,
+            0
+          ],
+          "dims": [
+            1,
+            0.75,
+            1
+          ]
+        }
+      ],
+      "expect": []
+    },
+    {
+      "name": "1 cm penetration is an overlap",
+      "shell": "room6",
+      "objects": [
+        {
+          "id": "a",
+          "category": "table",
+          "pos": [
+            0,
+            0,
+            0
+          ],
+          "dims": [
+            1,
+            0.75,
+            1
+          ]
+        },
+        {
+          "id": "b",
+          "category": "table",
+          "pos": [
+            0.99,
+            0,
+            0
+          ],
+          "dims": [
+            1,
+            0.75,
+            1
+          ]
+        }
+      ],
+      "expect": [
+        "overlap:a:b"
+      ]
+    },
+    {
+      "name": "vertically separated boxes don't overlap",
+      "shell": "room6",
+      "objects": [
+        {
+          "id": "a",
+          "category": "table",
+          "pos": [
+            0,
+            0,
+            0
+          ],
+          "dims": [
+            1,
+            0.5,
+            1
+          ]
+        },
+        {
+          "id": "b",
+          "category": "table",
+          "pos": [
+            0,
+            0.5,
+            0
+          ],
+          "dims": [
+            1,
+            0.5,
+            1
+          ]
+        }
+      ],
+      "expect": [
+        "support:b"
+      ]
+    },
+    {
+      "name": "rug under sofa and coffee table is exempt",
+      "shell": "room6",
+      "objects": [
+        {
+          "id": "rug",
+          "category": "rug",
+          "pos": [
+            0,
+            0,
+            0
+          ],
+          "dims": [
+            2.4,
+            0.01,
+            1.7
+          ]
+        },
+        {
+          "id": "sofa",
+          "category": "sofa",
+          "pos": [
+            0,
+            0,
+            0.3
+          ],
+          "dims": [
+            2,
+            0.85,
+            0.9
+          ]
+        },
+        {
+          "id": "ct",
+          "category": "coffee_table",
+          "pos": [
+            0,
+            0,
+            -0.5
+          ],
+          "dims": [
+            1,
+            0.42,
+            0.5
+          ]
+        }
+      ],
+      "expect": []
+    },
+    {
+      "name": "lamp nested on desk is valid",
+      "shell": "room6",
+      "objects": [
+        {
+          "id": "desk",
+          "category": "desk",
+          "pos": [
+            0,
+            0,
+            0
+          ],
+          "dims": [
+            1.2,
+            0.75,
+            0.6
+          ]
+        },
+        {
+          "id": "lamp",
+          "category": "lamp",
+          "pos": [
+            0.4,
+            0.75,
+            0
+          ],
+          "dims": [
+            0.25,
+            0.45,
+            0.25
+          ],
+          "parentId": "desk"
+        }
+      ],
+      "expect": []
+    },
+    {
+      "name": "lamp hanging off the desk edge",
+      "shell": "room6",
+      "objects": [
+        {
+          "id": "desk",
+          "category": "desk",
+          "pos": [
+            0,
+            0,
+            0
+          ],
+          "dims": [
+            1.2,
+            0.75,
+            0.6
+          ]
+        },
+        {
+          "id": "lamp",
+          "category": "lamp",
+          "pos": [
+            0.6,
+            0.75,
+            0
+          ],
+          "dims": [
+            0.25,
+            0.45,
+            0.25
+          ],
+          "parentId": "desk"
+        }
+      ],
+      "expect": [
+        "support:lamp"
+      ]
+    },
+    {
+      "name": "lamp floating above the desk",
+      "shell": "room6",
+      "objects": [
+        {
+          "id": "desk",
+          "category": "desk",
+          "pos": [
+            0,
+            0,
+            0
+          ],
+          "dims": [
+            1.2,
+            0.75,
+            0.6
+          ]
+        },
+        {
+          "id": "lamp",
+          "category": "lamp",
+          "pos": [
+            0,
+            0.9,
+            0
+          ],
+          "dims": [
+            0.25,
+            0.45,
+            0.25
+          ],
+          "parentId": "desk"
+        }
+      ],
+      "expect": [
+        "support:lamp"
+      ]
+    },
+    {
+      "name": "lamp on a sofa is not on the nesting allow-list",
+      "shell": "room6",
+      "objects": [
+        {
+          "id": "sofa",
+          "category": "sofa",
+          "pos": [
+            0,
+            0,
+            0
+          ],
+          "dims": [
+            2,
+            0.85,
+            0.9
+          ]
+        },
+        {
+          "id": "lamp",
+          "category": "lamp",
+          "pos": [
+            0,
+            0.85,
+            0
+          ],
+          "dims": [
+            0.25,
+            0.45,
+            0.25
+          ],
+          "parentId": "sofa"
+        }
+      ],
+      "expect": [
+        "nesting:lamp"
+      ]
+    },
+    {
+      "name": "missing parent is an error",
+      "shell": "room6",
+      "objects": [
+        {
+          "id": "lamp",
+          "category": "lamp",
+          "pos": [
+            0,
+            0.75,
+            0
+          ],
+          "dims": [
+            0.25,
+            0.45,
+            0.25
+          ],
+          "parentId": "ghost"
+        }
+      ],
+      "expect": [
+        "nesting:lamp"
+      ]
+    },
+    {
+      "name": "wall art mounted and aligned (no floor-support check)",
+      "shell": "room6",
+      "objects": [
+        {
+          "id": "art",
+          "category": "wall_art",
+          "support": "wall",
+          "pos": [
+            -2,
+            1.3,
+            -2.98
+          ],
+          "dims": [
+            0.9,
+            0.6,
+            0.04
+          ]
+        }
+      ],
+      "expect": []
+    },
+    {
+      "name": "wall art not aligned with its wall",
+      "shell": "room6",
+      "objects": [
+        {
+          "id": "art",
+          "category": "wall_art",
+          "support": "wall",
+          "pos": [
+            -2,
+            1.3,
+            -2.955
+          ],
+          "yawDeg": 3,
+          "dims": [
+            0.9,
+            0.6,
+            0.04
+          ]
+        }
+      ],
+      "expect": [
+        "wall_mount:art"
+      ]
+    },
+    {
+      "name": "wall art floating in the room",
+      "shell": "room6",
+      "objects": [
+        {
+          "id": "art",
+          "category": "wall_art",
+          "support": "wall",
+          "pos": [
+            0,
+            1.3,
+            0
+          ],
+          "dims": [
+            0.9,
+            0.6,
+            0.04
+          ]
+        }
+      ],
+      "expect": [
+        "wall_mount:art"
+      ]
+    },
+    {
+      "name": "wall art covering a window",
+      "shell": "room6",
+      "objects": [
+        {
+          "id": "art",
+          "category": "wall_art",
+          "support": "wall",
+          "pos": [
+            0.4,
+            1.2,
+            -2.98
+          ],
+          "dims": [
+            0.9,
+            0.6,
+            0.04
+          ]
+        }
+      ],
+      "expect": [
+        "opening_overlap:art"
+      ]
+    },
+    {
+      "name": "wall art on the east wall faces west (yaw -90)",
+      "shell": "room6",
+      "objects": [
+        {
+          "id": "art",
+          "category": "wall_art",
+          "support": "wall",
+          "pos": [
+            2.98,
+            1.3,
+            0
+          ],
+          "yawDeg": -90,
+          "dims": [
+            0.9,
+            0.6,
+            0.04
+          ]
+        }
+      ],
+      "expect": []
+    },
+    {
+      "name": "chair in the door approach zone",
+      "shell": "room6",
+      "objects": [
+        {
+          "id": "chair",
+          "category": "chair",
+          "pos": [
+            -1.5,
+            0,
+            2.6
+          ],
+          "dims": [
+            0.5,
+            0.9,
+            0.5
+          ]
+        }
+      ],
+      "expect": [
+        "door_clearance:chair"
+      ]
+    },
+    {
+      "name": "rug in the door approach zone is exempt by default",
+      "shell": "room6",
+      "objects": [
+        {
+          "id": "mat",
+          "category": "mat",
+          "pos": [
+            -1.5,
+            0,
+            2.6
+          ],
+          "dims": [
+            0.8,
+            0.01,
+            0.5
+          ]
+        }
+      ],
+      "expect": []
+    },
+    {
+      "name": "chair beside the door zone is fine",
+      "shell": "room6",
+      "objects": [
+        {
+          "id": "chair",
+          "category": "chair",
+          "pos": [
+            -0.6,
+            0,
+            2.6
+          ],
+          "dims": [
+            0.5,
+            0.9,
+            0.5
+          ]
+        }
+      ],
+      "expect": []
+    },
+    {
+      "name": "shelf 5 mm from a wall is fine (contact tolerance)",
+      "shell": "room6",
+      "objects": [
+        {
+          "id": "shelf",
+          "category": "shelf",
+          "pos": [
+            0,
+            0,
+            2.82
+          ],
+          "dims": [
+            0.8,
+            1.8,
+            0.35
+          ]
+        }
+      ],
+      "expect": []
+    },
+    {
+      "name": "shelf flush against a wall is fine",
+      "shell": "room6",
+      "objects": [
+        {
+          "id": "shelf",
+          "category": "shelf",
+          "pos": [
+            0,
+            0,
+            2.825
+          ],
+          "dims": [
+            0.8,
+            1.8,
+            0.35
+          ]
+        }
+      ],
+      "expect": []
+    },
+    {
+      "name": "floating floor item",
+      "shell": "room6",
+      "objects": [
+        {
+          "id": "t",
+          "category": "table",
+          "pos": [
+            0,
+            0.2,
+            0
+          ],
+          "dims": [
+            1,
+            0.75,
+            1
+          ]
+        }
+      ],
+      "expect": [
+        "support:t"
+      ]
+    },
+    {
+      "name": "object fully outside the room",
+      "shell": "room6",
+      "objects": [
+        {
+          "id": "t",
+          "category": "table",
+          "pos": [
+            5,
+            0,
+            0
+          ],
+          "dims": [
+            1,
+            0.75,
+            1
+          ]
+        }
+      ],
+      "expect": [
+        "inside_room:t"
+      ]
+    },
+    {
+      "name": "chair tucked under a desk is valid (seat under the top, back clear of it)",
+      "shell": "room6",
+      "objects": [
+        {
+          "id": "desk",
+          "category": "desk",
+          "pos": [
+            0,
+            0,
+            0
+          ],
+          "dims": [
+            1.2,
+            0.75,
+            0.7
+          ]
+        },
+        {
+          "id": "chair",
+          "category": "chair",
+          "pos": [
+            0,
+            0,
+            0.25
+          ],
+          "yawDeg": 180,
+          "dims": [
+            0.45,
+            0.95,
+            0.5
+          ]
+        }
+      ],
+      "expect": []
+    },
+    {
+      "name": "chair pushed into a desk leg collides",
+      "shell": "room6",
+      "objects": [
+        {
+          "id": "desk",
+          "category": "desk",
+          "pos": [
+            0,
+            0,
+            0
+          ],
+          "dims": [
+            1.2,
+            0.75,
+            0.7
+          ]
+        },
+        {
+          "id": "chair",
+          "category": "chair",
+          "pos": [
+            0.55,
+            0,
+            0.25
+          ],
+          "yawDeg": 180,
+          "dims": [
+            0.45,
+            0.95,
+            0.5
+          ]
+        }
+      ],
+      "expect": [
+        "overlap:desk:chair"
+      ]
+    },
+    {
+      "name": "chair pushed too far under: its back hits the desk top",
+      "shell": "room6",
+      "objects": [
+        {
+          "id": "desk",
+          "category": "desk",
+          "pos": [
+            0,
+            0,
+            0
+          ],
+          "dims": [
+            1.2,
+            0.75,
+            0.7
+          ]
+        },
+        {
+          "id": "chair",
+          "category": "chair",
+          "pos": [
+            0,
+            0,
+            0.05
+          ],
+          "yawDeg": 180,
+          "dims": [
+            0.45,
+            0.95,
+            0.5
+          ]
+        }
+      ],
+      "expect": [
+        "overlap:desk:chair"
+      ]
+    },
+    {
+      "name": "soft pillows may overlap each other slightly",
+      "shell": "room6",
+      "objects": [
+        {
+          "id": "p1",
+          "category": "pillow",
+          "pos": [
+            0,
+            0,
+            0
+          ],
+          "dims": [
+            0.45,
+            0.45,
+            0.15
+          ]
+        },
+        {
+          "id": "p2",
+          "category": "pillow",
+          "pos": [
+            0.42,
+            0,
+            0
+          ],
+          "dims": [
+            0.45,
+            0.45,
+            0.15
+          ]
+        }
+      ],
+      "expect": []
+    },
+    {
+      "name": "a pillow still collides with solid furniture",
+      "shell": "room6",
+      "objects": [
+        {
+          "id": "box",
+          "category": "cabinet",
+          "pos": [
+            0,
+            0,
+            0
+          ],
+          "dims": [
+            1,
+            0.8,
+            0.5
+          ]
+        },
+        {
+          "id": "p1",
+          "category": "pillow",
+          "pos": [
+            0.6,
+            0,
+            0
+          ],
+          "dims": [
+            0.45,
+            0.45,
+            0.15
+          ]
+        }
+      ],
+      "expect": [
+        "overlap:box:p1"
+      ]
+    },
+    {
+      "name": "vase on a table never collides with it but does with another vase on it",
+      "shell": "room6",
+      "objects": [
+        {
+          "id": "table",
+          "category": "coffee_table",
+          "pos": [
+            0,
+            0,
+            0
+          ],
+          "dims": [
+            1,
+            0.45,
+            0.6
+          ]
+        },
+        {
+          "id": "a",
+          "category": "vase",
+          "pos": [
+            0,
+            0.45,
+            0
+          ],
+          "dims": [
+            0.15,
+            0.3,
+            0.15
+          ],
+          "parentId": "table"
+        },
+        {
+          "id": "b",
+          "category": "vase",
+          "pos": [
+            0.1,
+            0.45,
+            0
+          ],
+          "dims": [
+            0.15,
+            0.3,
+            0.15
+          ],
+          "parentId": "table"
+        }
+      ],
+      "expect": [
+        "overlap:a:b"
+      ]
+    },
+    {
+      "name": "vase hovering above its table is not resting on it",
+      "shell": "room6",
+      "objects": [
+        {
+          "id": "table",
+          "category": "coffee_table",
+          "pos": [
+            0,
+            0,
+            0
+          ],
+          "dims": [
+            1,
+            0.45,
+            0.6
+          ]
+        },
+        {
+          "id": "a",
+          "category": "vase",
+          "pos": [
+            0,
+            0.6,
+            0
+          ],
+          "dims": [
+            0.15,
+            0.3,
+            0.15
+          ],
+          "parentId": "table"
+        }
+      ],
+      "expect": [
+        "support:a"
+      ]
+    },
+    {
+      "name": "a book lying flat on a table holds a bowl",
+      "shell": "room6",
+      "objects": [
+        {
+          "id": "table",
+          "category": "coffee_table",
+          "pos": [
+            0,
+            0,
+            0
+          ],
+          "dims": [
+            1,
+            0.45,
+            0.6
+          ]
+        },
+        {
+          "id": "book",
+          "category": "book",
+          "pos": [
+            0,
+            0.45,
+            0
+          ],
+          "tilt": {
+            "x": 1,
+            "z": 0
+          },
+          "dims": [
+            0.16,
+            0.24,
+            0.03
+          ],
+          "parentId": "table"
+        },
+        {
+          "id": "bowl",
+          "category": "bowl",
+          "pos": [
+            0,
+            0.48,
+            0
+          ],
+          "dims": [
+            0.12,
+            0.05,
+            0.12
+          ],
+          "parentId": "book"
+        }
+      ],
+      "expect": []
+    },
+    {
+      "name": "large furniture may not rest on another object",
+      "shell": "room6",
+      "objects": [
+        {
+          "id": "table",
+          "category": "coffee_table",
+          "pos": [
+            0,
+            0,
+            0
+          ],
+          "dims": [
+            2,
+            0.45,
+            1.2
+          ]
+        },
+        {
+          "id": "chair",
+          "category": "armchair",
+          "pos": [
+            0,
+            0.45,
+            0
+          ],
+          "dims": [
+            0.8,
+            0.8,
+            0.8
+          ],
+          "parentId": "table"
+        }
+      ],
+      "expect": [
+        "nesting:chair"
+      ]
+    },
+    {
+      "name": "pendant hanging at a sensible height",
+      "shell": "room6",
+      "objects": [
+        {
+          "id": "pend",
+          "category": "pendant",
+          "support": "ceiling",
+          "pos": [
+            0,
+            1.9,
+            0
+          ],
+          "dims": [
+            0.4,
+            0.5,
+            0.4
+          ]
+        }
+      ],
+      "expect": []
+    },
+    {
+      "name": "pendant hanging too low",
+      "shell": "room6",
+      "objects": [
+        {
+          "id": "pend",
+          "category": "pendant",
+          "support": "ceiling",
+          "pos": [
+            0,
+            0.3,
+            0
+          ],
+          "dims": [
+            0.4,
+            0.5,
+            0.4
+          ]
+        }
+      ],
+      "expect": [
+        "ceiling_mount:pend"
+      ]
+    },
+    {
+      "name": "floating item with Float on is fine",
+      "shell": "room6",
+      "objects": [
+        {
+          "id": "t",
+          "category": "decor",
+          "pos": [
+            0,
+            1.2,
+            0
+          ],
+          "dims": [
+            0.2,
+            0.2,
+            0.2
+          ],
+          "float": true
+        }
+      ],
+      "expect": []
+    }
+  ]
+}
