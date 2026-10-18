@@ -338,7 +338,7 @@ This avoids accidental mutation of historical milestones.
 
 ## 4.1 Scan import feature
 ### User story
-As a user, I want to scan a room on iPhone and open it on desktop without manually rebuilding it.
+As a user, I want to scan a room — or walk through my whole house — on iPhone and open it on desktop without manually rebuilding it.
 
 ### UX states
 - uploading
@@ -574,3 +574,11 @@ Bottom slider displays ordered cumulative stages with per-stage purchases, subto
 
 ### User-facing copy
 Prefer `Your design`, `Preview changes`, `Keep this`, `Replace this`, `Estimated purchase cost`, `Transformation stages`, `Projected month (assuming savings)`; do not expose `ScenePatch`, Git SHA, SQL table names or tool orchestration in consumer UI.
+
+## 13. House scanning (2026-10-17)
+**Change note.** Adds whole-house scans (PRD §12); single-room flows are unchanged.
+- **iPhone:** start screen *Scan a room* / *Scan a house*. Between rooms: room count, name field (prefilled from detected type), *Scan next room*, *Finish house*; coaching to walk straight to the next room with the camera up and not lock the phone. Merge-failure sheet: retry merge, rescan last room, save rooms separately.
+- **My Scans:** badge *Room* or *House · N rooms*; rooms listed under a house; import warnings visible. Opening a house opens Dollhouse view; opening a room opens it directly.
+- **Workspace views for houses** (switcher overlay, animated transitions): *Dollhouse* (default; current level, walls facing the camera faded or cut), *Room focus* (pick from the room list or double-click a floor; other rooms dim and become non-interactive), *Floor plan* (top-down orthographic with room names, areas and furniture footprints), *Walk* (first person, through open doors and openings). A *level selector* appears only for multi-story houses.
+- **Room list overlay:** name, type label, area, object count; click to focus; rename (stored on the scene, not the immutable structure).
+- Single-room scans show none of the house controls (room list collapsed, no level selector).

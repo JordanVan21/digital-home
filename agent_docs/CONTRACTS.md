@@ -303,3 +303,45 @@ Additive changes implemented in `packages/contracts` and marked `CONTRACT-TBD` i
 - New ops: `setPlacement`, `resize`, `setTilt`, `setGroup`, `setLight`, `setSceneSettings`. Locked objects reject the first three; `setGroup` and `setLight` are allowed on locked objects (organization and a lamp switch, not edits).
 - Fixture-only: `RoomFixture.photoCamera` and `RoomFixture.referenceImage`.
 - Semantics: deleting an object (editor command `deleteWithSettle`) settles whatever rested on it onto the next support below, in one patch. The contract `delete` op itself still cascades, so patches stay explicit.
+
+## 11. House scanning (2026-10-17) — PROPOSED, pending decisions D1–D2 in `HOUSE_SCAN_NOTES.md`
+**Change note.** Whole-house scans are in scope (PRD §12). Nothing in this section is binding until D1 (what `roomId` means) and D2 (where the structure lives) are decided. The proposal below is the recommended option for each, which keeps every existing `roomId` usage in redesign, budget and timeline unchanged.
+
+```ts
+// Scan export (Swift → storage → importer). Raw RoomPlan values, meters, column-major 4×4.
+type ScanSurface = { id: UUID; parentId: UUID | null; category: 'wall'|'door'|'window'|'opening'|'floor';
+  isOpen: boolean | null; transform: number[16]; dimensions: Vec3; polygonCorners: Vec3[];
+  curve: Record<string, unknown> | null; completedEdges: ('top'|'bottom'|'left'|'right')[];
+  confidence: 'low'|'medium'|'high'; story: number };
+type ScanObject = { id: UUID; parentId: UUID | null; category: string /* RoomPlan category or 'unknown' */;
+  attributes: string[]; transform: number[16]; dimensions: Vec3; confidence: 'low'|'medium'|'high'; story: number };
+type ScanRoomData = { walls: ScanSurface[]; doors: ScanSurface[]; windows: ScanSurface[]; openings: ScanSurface[];
+  floors: ScanSurface[]; objects: ScanObject[]; sections: { label: string; center: Vec3; story: number }[] };
+type StructureScanExport = { schemaVersion: 'structurescan/1'; kind: 'room'|'house'; scanId: UUID; capturedAt: string;
+  device: { model: string; osVersion: string }; roomPlanVersion: number; units: 'meters';
+  coordinateSystem: { handedness: 'right'; up: '+Y'; matrixLayout: 'column-major' };
+  rooms: (ScanRoomData & { roomId: UUID; name: string | null; story: number })[];
+  merged: ScanRoomData | null };
+// 'roomscan/1' (single room, ROOMPLAN_PROMPT) is upcast to { kind: 'room', rooms: [it], merged: null }.
+
+// Shell (D2 recommended: stays a separate immutable record referenced by SceneSpec.shellId).
+type StructureShell = {
+  id: UUID; sourceScanId: UUID; coordinateVersion: 2; kind: 'room'|'house';
+  levels: { story: number; elevationM: number }[];                 // story 0 floor at y = 0
+  rooms: { id: UUID; name: string; typeLabel?: string; story: number;
+           floor: FloorPlan /* CCW from +Y */; ceilingHeightM: number }[];
+  walls: (Wall & { story: number; centered: true /* thickness centred on from→to */;
+           heightProfile?: { s: number; heightM: number }[]; curve?: Record<string, unknown>;
+           roomIds: [UUID] | [UUID, UUID] })[];
+  openings: (Opening & { isOpen?: boolean; connects: [UUID, UUID | null] })[];
+  importTransform: number[16];
+};
+// RoomShell (coordinateVersion 1) is upcast to a one-room StructureShell.
+
+// Scene additions (D1 recommended: `roomId` keeps meaning "the scanned space" — a room or a house).
+type SceneObjectHouseFields = { structureRoomId?: UUID; story?: number };   // added to SceneObject
+type SceneSpecHouseFields = { roomLabels?: Record<UUID, string> };           // renames; never touches the shell
+type SceneOpHouse = { type: 'setStructureRoom'; objectId: UUID; structureRoomId: UUID };  // carried with a move
+```
+**Invariant changes (proposed):** §1 "All objects belong to one room" becomes "all objects belong to one scanned space (`roomId`) and to exactly one structure room (`structureRoomId`) on one story". §3.1: a re-import that adds rooms to a house creates a new shell ID for the *same* `roomId`, plus a new SceneVersion; furniture edits carry over by object ID, and conflicts are reported.
+**New APIs (proposed):** `createScanUpload` makes `projectId` optional (the server resolves the user's default project). The manifest lists `{ name, bytes, sha256 }`. `completeScan` enqueues a `scan.import` job; status is read through `getMyScans` / `getJob`.

@@ -38,9 +38,9 @@ Primary: renter, homeowner, or student who wants to visualize changes to an actu
 ## 5. Functional product requirements
 | ID | Requirement | Priority | Acceptance |
 |---|---|---|---|
-| P-01 | iOS RoomPlan scanning and signed-in upload | P0 | Scan appears in same user's My Scans and opens in desktop viewer. |
-| P-02 | Accurate-enough immutable room shell | P0 | Dimensions, wall polygon, doors/windows retain scan geometry; redesign cannot change shell. |
-| P-03 | Approximate initial furniture | P0 | Classified furniture appears near detected coordinates at plausible size; unmatched types have explicit fallback. |
+| P-01 | iOS RoomPlan scanning (one room **or a whole house**) and signed-in upload | P0 | Scan appears in same user's My Scans and opens in desktop viewer; a house scan opens as one navigable house. |
+| P-02 | Accurate-enough immutable shell (room or house structure) | P0 | Dimensions, wall polygons, doors/windows retain scan geometry; in a house, rooms keep their relative positions (±10 cm), shared walls appear once and interior doors connect rooms; redesign cannot change the shell. |
+| P-03 | Approximate initial furniture | P0 | Classified furniture appears near detected coordinates at plausible size, in the correct room of a house; unmatched types have explicit fallback. |
 | P-04 | Desktop interactive 3D editor | P0 | Orbit/pan/zoom, select, move, rotate; smooth local manipulation, no round trip per frame. |
 | P-05 | Locked objects | P0 | UI toggles lock; all human/AI mutation APIs reject disallowed updates. |
 | P-06 | Autosave and undo/redo | P0 | Debounced persistence; local reversible operation history; errors visible. |
@@ -76,14 +76,14 @@ Targets are provisional and must be validated on the actual demo laptop/network:
 - Handle import failures, missing asset URIs, offline/degraded network and save conflicts without discarding local changes silently.
 
 ## 8. Scope boundaries / assumptions
-**In scope:** single-room scans, approximate existing belongings, furniture/decor edits, retrieval-heavy one-proposal AI redesign, catalog-based price estimates, purchase-time roadmap, scene diff, basic undo/redo, sign-in and project/scan listing.
+**In scope:** single-room scans and multi-room house scans (RoomPlan MultiRoom, iOS 17; one story is the P0 target, multiple stories supported where scanned), approximate existing belongings, furniture/decor edits, retrieval-heavy one-proposal AI redesign, catalog-based price estimates, purchase-time roadmap, scene diff, basic undo/redo, sign-in and project/scan listing.
 
-**Out of scope MVP:** wall/door/window remodeling; exact photorealistic digital twins; real manufacturer product guarantees, precise market pricing, labor/construction budgets, complete-house scan merging, mobile editing, collaboration, multiple initial alternatives, partial AI diff acceptance, git-style merge, GPU cluster or obligatory Blender, dynamic public scraping of FurniMesh at redesign time.
+**Out of scope MVP:** wall/door/window remodeling; exact photorealistic digital twins; real manufacturer product guarantees, precise market pricing, labor/construction budgets, mobile editing, collaboration, multiple initial alternatives, partial AI diff acceptance, git-style merge, GPU cluster or obligatory Blender, dynamic public scraping of FurniMesh at redesign time.
 
 **Asset provenance:** FurniMesh is a proposed primary sourcing candidate. Confirm actual export compatibility, individual asset licenses, distribution/hosting permissions, attribution and commercial terms before placing assets into shared Supabase storage. Do not assume all models are redistribution-safe. Alternative sources or self-authored GLBs are allowed.
 
 ## 9. Metrics and launch gate
-Demo is successful if a signed-in user completes: scan/upload → desktop open → camera navigation and one object edit → lock → submit aesthetic → view AI diff → accept → view 3+ budget milestones, without hand-edited database records.
+Demo is successful if a signed-in user completes: scan/upload (a room or a house) → desktop open → camera navigation and one object edit → lock → submit aesthetic → view AI diff → accept → view 3+ budget milestones, without hand-edited database records.
 
 Observe: scan import success, first load time, median local edit FPS, AI proposal completion/validation rate, cache hit rate, user-visible save failures, milestone schedule feasibility. Demo assets and fallback proposals must be ready before presentation.
 
@@ -122,3 +122,6 @@ These decisions override conflicting legacy language above. **Primary pitch:** "
 - User can submit a PNG/JPEG inspiration picture and receive an interpreted DesignBrief that influences an actual catalog-grounded proposal; also works with questionnaire only or both combined.
 - A proposed AI patch is previewable without mutating the accepted scene; accepting performs server-side validation and an atomic versioned commit.
 - Purchase ledger distinguishes retained, newly purchased and physically replaced items and exposes per-item price provenance and funding shortfalls.
+
+## 12. House scanning (2026-10-17)
+**Change note.** Reverses the earlier exclusion of "complete-house scan merging". A user can scan **one room** (unchanged) **or a whole house** on the iPhone: rooms captured in one continuous RoomPlan session are merged on device (`StructureBuilder`) and open on desktop as one navigable, editable 3D house with rooms in their relative positions, shared walls, interior doors, room names and (where scanned) multiple stories. Edits made: §5 P-01/P-02/P-03 wording, §8 scope (in scope / out of scope), §9 launch gate wording. Redesign, budget and timeline behavior for houses is **not** changed yet; open questions are recorded in `HOUSE_SCAN_NOTES.md`. Still out of scope: editing on iPhone, room photo reconstruction.

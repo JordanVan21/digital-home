@@ -62,7 +62,7 @@ Approved catalog assets are the main runtime content source. Asset generation is
 ### Responsibilities
 - sign in user
 - check device support and permissions
-- capture room using Apple RoomPlan
+- capture one room, or several rooms in one continuous session and merge them into a house (RoomPlan MultiRoom: shared `ARSession`, `StructureBuilder`)
 - export raw scan data and metadata
 - upload through authenticated/signed flow
 - show upload and processing state
@@ -84,7 +84,7 @@ Approved catalog assets are the main runtime content source. Asset generation is
 - validate uploaded scan artifacts
 - parse RoomPlan output
 - normalize units, coordinates, shell geometry, openings, object classes
-- create `RoomShell`
+- create the immutable shell (`RoomShell`, generalized to a multi-room structure for houses)
 - create approximate initial `SceneSpec`
 - map detected objects to plausible catalog assets where possible
 - create fallback proxies for unmatched objects
@@ -698,3 +698,10 @@ Distinguish `locked` edit protection from renovation `Keep|Replace|Remove`. Main
 
 ### Required integration smoke test
 Given a fixture RoomShell, real GLB catalog items and one inspiration image: produce one validated proposal; preview without changing accepted version; reject preserves scene; accept creates exactly one immutable SceneVersion; budget planner uses owned inventory to generate cumulative priced milestones without double-counting; browser toggles milestones without reloading unchanged assets.
+
+## 17. House scanning (2026-10-17)
+**Change note.** Whole-house scans are in scope (PRD §12).
+- **iOS (`apps/ios/HouseScanner`, Swift):** room mode unchanged; house mode = one `ARSession` for all rooms, per-room `CapturedRoom` + merged `CapturedStructure` (`StructureBuilder`); exports `structurescan/1` (raw RoomPlan values, column-major matrices) plus Apple raw JSON archives. Optional P1: saved `ARWorldMap` to relocalize and add rooms later.
+- **Storage:** private scans bucket; server-generated keys `{ownerId}/{scanId}/export.json`, `capturedroom-<n>.json`, `capturedstructure.json`, optional `structure.usdz`, `worldmap.bin`.
+- **Import (`scan.import` job → `importStructureScan` in `packages/scene-engine`):** one structure shell + one scene per scan; dedupes shared walls, doors and objects; assigns objects to rooms; one `importTransform` per structure; `roomscan/1` upcast. Re-imports ("add rooms") create a new shell and a new scene version, carrying furniture edits over by object ID with conflicts reported.
+- **Sandbox:** structure-aware renderer (levels, per-room groups, views), room-membership rules on move, per-room asset loading and culling; targets 60 FPS dragging in Room focus, ≥45 FPS orbiting Dollhouse on the 3-room fixture.

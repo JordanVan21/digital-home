@@ -3,7 +3,7 @@
 **Version:** 1.1 | **Date:** 2026-10-17 | **Cross-component types:** `CONTRACTS.md`
 
 ## 1. Scope and behavior model
-Single-user, single-room-at-a-time app: iOS RoomPlan scan → authenticated sync → desktop 3D editing → AI design proposal → review and commit → budget roadmap and spending-stage playback (optional projected dates). All scene inputs/outputs conform to shared versioned schemas. MVP works entirely from pre-curated GLBs and can run without Blender or generated models.
+Single-user app, one scanned space (a room or a whole house) at a time: iOS RoomPlan scan → authenticated sync → desktop 3D editing → AI design proposal → review and commit → budget roadmap and spending-stage playback (optional projected dates). All scene inputs/outputs conform to shared versioned schemas. MVP works entirely from pre-curated GLBs and can run without Blender or generated models.
 
 ## 2. Accounts, projects, scanning and import
 - User signs in with Supabase Auth. `projects` contains owned `rooms`; each room references a scan and immutable shell.
@@ -77,7 +77,7 @@ Single-user, single-room-at-a-time app: iOS RoomPlan scan → authenticated sync
 ## 10. Acceptance test matrix
 | Test | Preconditions | Expected result |
 |---|---|---|
-| F-01 Scan roundtrip | supported scanner and auth | Import yields recognizable room shell in My Scans. |
+| F-01 Scan roundtrip | supported scanner and auth | Import yields recognizable room shell (or house structure) in My Scans. |
 | F-02 Object edit | loaded scene | 3D moves instantly, autosaves one final transform, persists after reload. |
 | F-03 Lock invariant | locked desk | UI and simulated AI delete/replace both denied. |
 | F-04 Patch preview | valid proposal | After scene visible before commit; accepted DB version unchanged. |
@@ -126,3 +126,11 @@ Phase A: contracts, fixtures, Supabase auth/storage/DB/RLS. Phase B: R3F scene r
 | F-18 | Monthly spending cap, no savings data | Spending stages shown with no invented dates |
 | F-19 | Insufficient budget | Funded partial stage and unfunded target remain separately accessible |
 | F-20 | AI tries to unlock item | Tool input denied before proposal commit |
+
+## 13. House scanning (2026-10-17)
+**Change note.** Multi-room house scans are in scope alongside single rooms (PRD §12). Behavior added; earlier sections apply unless overridden here.
+- **Scanner:** start screen offers *Scan a room* or *Scan a house*. House mode keeps one `ARSession` across rooms (`stop(pauseARSession: false)` between rooms), names each room (prefilled from the detected room type), and merges with `StructureBuilder` at the end. Every captured room is kept; a failed merge or lost tracking offers retry merge / rescan last room / save rooms as separate single-room scans — captured rooms are never lost.
+- **Export & upload:** one scan = one room or one house; export schema `structurescan/1` (`kind: room | house`, per-room data plus merged structure), Apple raw JSON archives per room and for the structure; same signed, checksummed, idempotent upload; larger size limits for houses.
+- **Import:** the import worker produces one immutable structure shell (levels, rooms with floor polygons and names, walls with the rooms on each side, openings with the rooms they connect) and one scene. Shared walls and doors seen from two rooms are deduplicated; objects are assigned to the room containing them; merge-failed houses import as disconnected rooms with a warning. Old single-room exports are upcast.
+- **Desktop:** houses open in a dollhouse view with a room list, room focus, floor plan, walk mode (through doors/openings) and a level selector for multi-story houses; single-room scans show no house UI. Objects can be moved between rooms through doorways; on release the footprint must sit inside one room (else snap back); door clearance applies on both sides of interior doors.
+- **Added tests:** F-21 house scan roundtrip (≥3 rooms, relative positions ±10 cm, shared walls once, interior doors connect rooms, rooms named); F-22 merge failure keeps rooms; F-23 move object between rooms through a doorway (room membership updates, undo restores); F-24 single-room scans unchanged.
