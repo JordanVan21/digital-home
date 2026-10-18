@@ -1,0 +1,32 @@
+# XcodeGen spec (brew install xcodegen && xcodegen generate). Open HouseScanner.xcodeproj,
+# set your signing team, and run on a LiDAR iPhone (RoomPlan does not run in the Simulator).
+name: HouseScanner
+options:
+  bundleIdPrefix: dev.house
+  deploymentTarget:
+    iOS: "17.0"
+packages:
+  RoomScanKit:
+    path: .
+targets:
+  HouseScanner:
+    type: application
+    platform: iOS
+    sources: [App]
+    dependencies:
+      - package: RoomScanKit
+    info:
+      path: App/Info.plist
+      properties:
+        CFBundleDisplayName: House
+        NSCameraUsageDescription: House uses the camera and LiDAR to measure and capture your room.
+        UIRequiredDeviceCapabilities: [arkit]
+        UILaunchScreen: {}
+        UISupportedInterfaceOrientations: [UIInterfaceOrientationPortrait]
+        # Dev upload to a LAN machine over http; remove once the API is served over https.
+        NSAppTransportSecurity:
+          NSAllowsLocalNetworking: true
+    settings:
+      SWIFT_VERSION: "5.9"
+      TARGETED_DEVICE_FAMILY: "1"
+      CODE_SIGN_STYLE: Automatic

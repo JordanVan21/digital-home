@@ -1,0 +1,51 @@
+[
+  {
+    "assetId": "dining_chair_02",
+    "slug": "polyhaven-dining-chair",
+    "title": "Poly Haven leather dining chair",
+    "category": "chair",
+    "catalogId": "00000000-0000-4000-8000-000000002000",
+    "price": 24900,
+    "styles": [
+      "modern"
+    ],
+    "materials": [
+      "leather",
+      "wood"
+    ],
+    "yaw": 0
+  },
+  {
+    "assetId": "potted_plant_04",
+    "slug": "polyhaven-potted-succulent",
+    "title": "Poly Haven potted succulent",
+    "category": "plant",
+    "catalogId": "00000000-0000-4000-8000-000000002001",
+    "price": 2500,
+    "styles": [
+      "natural",
+      "minimal"
+    ],
+    "materials": [
+      "foliage",
+      "ceramic"
+    ],
+    "yaw": 0
+  },
+  {
+    "assetId": "ceramic_vase_01",
+    "slug": "polyhaven-ceramic-vase",
+    "title": "Poly Haven ceramic vase",
+    "category": "decor",
+    "catalogId": "00000000-0000-4000-8000-000000002002",
+    "price": 3000,
+    "styles": [
+      "modern",
+      "minimal"
+    ],
+    "materials": [
+      "ceramic"
+    ],
+    "yaw": 0
+  }
+]

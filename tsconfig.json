@@ -1,0 +1,12 @@
+{
+  "extends": "./tsconfig.base.json",
+  "include": [
+    "apps/web/src",
+    "packages/contracts/src",
+    "packages/scene-engine/src",
+    "vitest.config.ts",
+    "playwright.config.ts",
+    "apps/web/vite.config.ts",
+    "tests"
+  ]
+}

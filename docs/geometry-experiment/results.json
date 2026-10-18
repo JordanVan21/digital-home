@@ -1,0 +1,273 @@
+{
+  "baselineCommit": "e5140ce",
+  "branch": "experiment/shape-aware-geometry",
+  "runtime": "v25.2.1",
+  "note": "CPU query microbenchmarks, not FPS measurements. Mesh-surface contact and triangle intersection do not establish solid containment or stable support. Compound voxels can fill small holes or leak through open meshes. No editor geometry behavior is changed.",
+  "models": [
+    {
+      "assetId": "00000000-0000-4000-8000-000000001002",
+      "contentHash": "acc0099e440009f7bd94cc5802ea4d40fb3500ddb58dc08c2d40f8fc5c35657c",
+      "title": "Sculptural walnut coffee table",
+      "triangles": 27000,
+      "compoundBoxes": 68,
+      "cellSizeM": 0.04,
+      "surfaceCells": 1299,
+      "interiorCells": 137,
+      "alphaMaskedMaterials": 0,
+      "buildMs": 28.630792000000014,
+      "bvhBuildMs": 17.087083000000007,
+      "compoundBuildMs": 11.541540999999995,
+      "samples": 300,
+      "probeRadiusM": 0.025,
+      "methods": {
+        "box": {
+          "p50Ms": 0.00041699999999877946,
+          "p95Ms": 0.0004999999999881766,
+          "maxMs": 0.010625000000004547,
+          "hits": 300
+        },
+        "compound": {
+          "p50Ms": 0.0027500000000202363,
+          "p95Ms": 0.008834000000007336,
+          "maxMs": 0.03849999999999909,
+          "hits": 191
+        },
+        "surface": {
+          "p50Ms": 0.0041250000000161435,
+          "p95Ms": 0.031166000000013128,
+          "maxMs": 0.09350000000000591,
+          "hits": 112
+        }
+      },
+      "meshPairSurfaceIntersections": [
+        {
+          "offsetFactor": 1.2,
+          "intersects": false,
+          "ms": 0.20949999999999136
+        },
+        {
+          "offsetFactor": 0.8,
+          "intersects": true,
+          "ms": 3.796416999999991
+        },
+        {
+          "offsetFactor": 0.5,
+          "intersects": true,
+          "ms": 1.624083000000013
+        }
+      ]
+    },
+    {
+      "assetId": "00000000-0000-4000-8000-000000001009",
+      "contentHash": "954b9171563d934715924707c32ec9511b8b3d4bbf7cff9b8aeaed1fdff454d4",
+      "title": "Cream desk chair",
+      "triangles": 122742,
+      "compoundBoxes": 102,
+      "cellSizeM": 0.04,
+      "surfaceCells": 862,
+      "interiorCells": 0,
+      "alphaMaskedMaterials": 0,
+      "buildMs": 54.833624999999984,
+      "bvhBuildMs": 37.32379199999997,
+      "compoundBuildMs": 17.50720799999999,
+      "samples": 300,
+      "probeRadiusM": 0.025,
+      "methods": {
+        "box": {
+          "p50Ms": 0.00012499999996862243,
+          "p95Ms": 0.00016699999997626946,
+          "maxMs": 0.0031250000000113687,
+          "hits": 300
+        },
+        "compound": {
+          "p50Ms": 0.0014999999999645297,
+          "p95Ms": 0.005125000000020918,
+          "maxMs": 0.027999999999963165,
+          "hits": 117
+        },
+        "surface": {
+          "p50Ms": 0.0018749999999840838,
+          "p95Ms": 0.02591699999999264,
+          "maxMs": 0.13562500000000455,
+          "hits": 69
+        }
+      },
+      "meshPairSurfaceIntersections": [
+        {
+          "offsetFactor": 1.2,
+          "intersects": false,
+          "ms": 0.017416999999966265
+        },
+        {
+          "offsetFactor": 0.8,
+          "intersects": true,
+          "ms": 2.418875000000014
+        },
+        {
+          "offsetFactor": 0.5,
+          "intersects": true,
+          "ms": 0.18079099999999926
+        }
+      ]
+    },
+    {
+      "assetId": "00000000-0000-4000-8000-000000001000",
+      "contentHash": "06e7f273144eb55fe176674ef218d682ab3d99a75efddd717e2710e26067020f",
+      "title": "Linen sofa",
+      "triangles": 27000,
+      "compoundBoxes": 138,
+      "cellSizeM": 0.04,
+      "surfaceCells": 6731,
+      "interiorCells": 495,
+      "alphaMaskedMaterials": 0,
+      "buildMs": 14.99512500000003,
+      "bvhBuildMs": 7.005291999999997,
+      "compoundBuildMs": 7.9877500000000055,
+      "samples": 300,
+      "probeRadiusM": 0.025,
+      "methods": {
+        "box": {
+          "p50Ms": 0.00008300000001781882,
+          "p95Ms": 0.00008400000001529406,
+          "maxMs": 0.0009160000000179025,
+          "hits": 300
+        },
+        "compound": {
+          "p50Ms": 0.0011660000000119908,
+          "p95Ms": 0.0013749999999959073,
+          "maxMs": 0.022833000000048287,
+          "hits": 110
+        },
+        "surface": {
+          "p50Ms": 0.002166999999985819,
+          "p95Ms": 0.01679100000001199,
+          "maxMs": 0.04187500000000455,
+          "hits": 64
+        }
+      },
+      "meshPairSurfaceIntersections": [
+        {
+          "offsetFactor": 1.2,
+          "intersects": false,
+          "ms": 0.04262499999998681
+        },
+        {
+          "offsetFactor": 0.8,
+          "intersects": true,
+          "ms": 0.08362499999998363
+        },
+        {
+          "offsetFactor": 0.5,
+          "intersects": true,
+          "ms": 0.03687499999995225
+        }
+      ]
+    },
+    {
+      "assetId": "00000000-0000-4000-8000-000000001007",
+      "contentHash": "46a7f30c2d0f72e71583975ab689ac17edfb4744a2f444e0d34896d9fe3d0975",
+      "title": "Olive tree",
+      "triangles": 26999,
+      "compoundBoxes": 14,
+      "cellSizeM": 0.04,
+      "surfaceCells": 2980,
+      "interiorCells": 6957,
+      "alphaMaskedMaterials": 1,
+      "buildMs": 11.083750000000009,
+      "bvhBuildMs": 7.4950000000000045,
+      "compoundBuildMs": 3.587249999999983,
+      "samples": 300,
+      "probeRadiusM": 0.025,
+      "methods": {
+        "box": {
+          "p50Ms": 0.00008300000001781882,
+          "p95Ms": 0.00008400000001529406,
+          "maxMs": 0.0007080000000314612,
+          "hits": 300
+        },
+        "compound": {
+          "p50Ms": 0.00008400000001529406,
+          "p95Ms": 0.00012500000002546585,
+          "maxMs": 0.0002920000000017353,
+          "hits": 300
+        },
+        "surface": {
+          "p50Ms": 0.0021670000000426626,
+          "p95Ms": 0.006500000000016826,
+          "maxMs": 0.028333000000031916,
+          "hits": 57
+        }
+      },
+      "meshPairSurfaceIntersections": [
+        {
+          "offsetFactor": 1.2,
+          "intersects": false,
+          "ms": 0.019957999999974163
+        },
+        {
+          "offsetFactor": 0.8,
+          "intersects": true,
+          "ms": 0.08979099999999107
+        },
+        {
+          "offsetFactor": 0.5,
+          "intersects": true,
+          "ms": 0.09799999999995634
+        }
+      ]
+    },
+    {
+      "assetId": "00000000-0000-4000-8000-000000002002",
+      "contentHash": "b28bb075978b81b2ab792094029d019662f15bdf744ce202ac3af4c4aea4e7a7",
+      "title": "Poly Haven ceramic vase",
+      "triangles": 10296,
+      "compoundBoxes": 16,
+      "cellSizeM": 0.04,
+      "surfaceCells": 170,
+      "interiorCells": 20,
+      "alphaMaskedMaterials": 0,
+      "buildMs": 6.931167000000016,
+      "bvhBuildMs": 3.4749590000000126,
+      "compoundBuildMs": 3.45474999999999,
+      "samples": 300,
+      "probeRadiusM": 0.025,
+      "methods": {
+        "box": {
+          "p50Ms": 0.00008300000001781882,
+          "p95Ms": 0.00008400000001529406,
+          "maxMs": 0.001209000000017113,
+          "hits": 300
+        },
+        "compound": {
+          "p50Ms": 0.00012500000002546585,
+          "p95Ms": 0.0002499999999940883,
+          "maxMs": 0.036166999999977634,
+          "hits": 246
+        },
+        "surface": {
+          "p50Ms": 0.0009590000000230248,
+          "p95Ms": 0.008250000000032287,
+          "maxMs": 0.019249999999999545,
+          "hits": 145
+        }
+      },
+      "meshPairSurfaceIntersections": [
+        {
+          "offsetFactor": 1.2,
+          "intersects": false,
+          "ms": 0.03283299999998235
+        },
+        {
+          "offsetFactor": 0.8,
+          "intersects": true,
+          "ms": 0.24729200000001583
+        },
+        {
+          "offsetFactor": 0.5,
+          "intersects": true,
+          "ms": 0.6461659999999938
+        }
+      ]
+    }
+  ]
+}

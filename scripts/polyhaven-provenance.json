@@ -1,0 +1,3815 @@
+[
+  {
+    "assetId": "dining_chair_02",
+    "catalogId": "00000000-0000-4000-8000-000000002000",
+    "sourceUrl": "https://polyhaven.com/a/dining_chair_02",
+    "author": "James Ray Cock",
+    "license": "CC0-1.0",
+    "licenseUrl": "https://polyhaven.com/license",
+    "downloadDate": "2026-10-17",
+    "downloads": [
+      {
+        "file": "dining_chair_02.gltf",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Models/gltf/1k/dining_chair_02/dining_chair_02_1k.gltf",
+        "bytes": 2723,
+        "md5": "5aff75016e0943e84161de89dcc3ceb8",
+        "sha256": "88352a44a17319846f61fe03ce75c79fb1849aa508b6a262366c149c1bbd06b8"
+      },
+      {
+        "file": "dining_chair_02.bin",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Models/gltf/8k/dining_chair_02/dining_chair_02.bin",
+        "bytes": 544592,
+        "md5": "b7f8a91c0a5249d02de7885f3b242c4e",
+        "sha256": "c7f1ef858f73815176d2ab304472a69ccf6097e971e5258eb924a75f841d4af5"
+      },
+      {
+        "file": "textures/dining_chair_02_nor_gl_1k.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/dining_chair_02/dining_chair_02_nor_gl_1k.jpg",
+        "bytes": 119612,
+        "md5": "9c0e1003f9c8859a2e5c2c7f92a8f238",
+        "sha256": "348703512ca1215f8389e9108419c2d1a46537663db25f423c3ef900d20cfe61"
+      },
+      {
+        "file": "textures/dining_chair_02_diff_1k.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/dining_chair_02/dining_chair_02_diff_1k.jpg",
+        "bytes": 91518,
+        "md5": "6b7b8e4ac0a3aad9ecdf314a97b0ef75",
+        "sha256": "343990f764790da1149485a422dee2bc6797945a6af06a37d02d7a7de041acf5"
+      },
+      {
+        "file": "textures/dining_chair_02_arm_1k.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/dining_chair_02/dining_chair_02_arm_1k.jpg",
+        "bytes": 162630,
+        "md5": "2b16c9ddb3ea83d200b02de54a4fdcb8",
+        "sha256": "0a81c0c886baa1e65d94fb6fb90ab4751bee319888ecf1c428ae62042d8a5b15"
+      }
+    ],
+    "normalizedSha256": "5865af56a8b0906d04857c1ce32bb38a49c0e916562ec54d52aee3d0528e490b",
+    "dimensionsM": [
+      0.43362,
+      0.97338,
+      0.57648
+    ],
+    "priceNote": "Curated physical-item estimate in USD cents, not a source or retailer quotation."
+  },
+  {
+    "assetId": "potted_plant_04",
+    "catalogId": "00000000-0000-4000-8000-000000002001",
+    "sourceUrl": "https://polyhaven.com/a/potted_plant_04",
+    "author": "James Ray Cock",
+    "license": "CC0-1.0",
+    "licenseUrl": "https://polyhaven.com/license",
+    "downloadDate": "2026-10-17",
+    "downloads": [
+      {
+        "file": "potted_plant_04.gltf",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Models/gltf/1k/potted_plant_04/potted_plant_04_1k.gltf",
+        "bytes": 7081,
+        "md5": "077d481764145f6e5e256593aab427bb",
+        "sha256": "b3a3bc3e97da75844999c4da07b7104b6c023f729a7c045979929b9504184339"
+      },
+      {
+        "file": "potted_plant_04.bin",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Models/gltf/8k/potted_plant_04/potted_plant_04.bin",
+        "bytes": 241800,
+        "md5": "03774ca8e28e2aa30fb26cb68d5e0093",
+        "sha256": "158c1d27503d4845eb3573f00c01ae3f4f77f1d6ca8754c67bf1762745946f7f"
+      },
+      {
+        "file": "textures/potted_plant_04_nor_gl_1k.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/potted_plant_04/potted_plant_04_nor_gl_1k.jpg",
+        "bytes": 817786,
+        "md5": "1c0b87906fd92c7b7ce5508110976474",
+        "sha256": "66e4627f6691a2d8104a6c53a39b41daddbd5bad8103e73f372c39166a3dcb07"
+      },
+      {
+        "file": "textures/potted_plant_04_arm_1k.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/potted_plant_04/potted_plant_04_arm_1k.jpg",
+        "bytes": 478413,
+        "md5": "ed0030c6085bba45b6f63f3043b0b237",
+        "sha256": "7f3288345570ef700c851ea382ed267490ffc8c901ccc31f2ec5507e4d098e48"
+      },
+      {
+        "file": "textures/potted_plant_04_diff_1k.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/potted_plant_04/potted_plant_04_diff_1k.jpg",
+        "bytes": 577545,
+        "md5": "4a72fb3667fd3686ca4014f6676f59c4",
+        "sha256": "8693a971557fbafb12a24a2e23c1a04ab6b04ecdc4d26808c5ad3516a4971f24"
+      }
+    ],
+    "normalizedSha256": "1ee9b3f5f090cf68248f382f04d89933576ef5e45b4f56e0c256d0c63ee33281",
+    "dimensionsM": [
+      0.16789,
+      0.26746,
+      0.18475
+    ],
+    "priceNote": "Curated physical-item estimate in USD cents, not a source or retailer quotation."
+  },
+  {
+    "assetId": "ceramic_vase_01",
+    "catalogId": "00000000-0000-4000-8000-000000002002",
+    "sourceUrl": "https://polyhaven.com/a/ceramic_vase_01",
+    "author": "James Ray Cock",
+    "license": "CC0-1.0",
+    "licenseUrl": "https://polyhaven.com/license",
+    "downloadDate": "2026-10-17",
+    "downloads": [
+      {
+        "file": "ceramic_vase_01.gltf",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Models/gltf/1k/ceramic_vase_01/ceramic_vase_01_1k.gltf",
+        "bytes": 2706,
+        "md5": "8f11b5472424578c2c505dee271a0868",
+        "sha256": "4e2c69eb5bbccf86e9fbf92af438464669d804c1f0eae041ee28651a5b57d91e"
+      },
+      {
+        "file": "textures/ceramic_vase_01_nor_gl_1k.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/ceramic_vase_01/ceramic_vase_01_nor_gl_1k.jpg",
+        "bytes": 36504,
+        "md5": "46081f52a4e9bb58d706477318627a22",
+        "sha256": "c35b59d15e0f08db44b0bc8a5870bc65ae781819e5abf0447996d0faf05b7722"
+      },
+      {
+        "file": "textures/ceramic_vase_01_diff_1k.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/ceramic_vase_01/ceramic_vase_01_diff_1k.jpg",
+        "bytes": 32351,
+        "md5": "52337c4fedc46490476d46a8950e1d6b",
+        "sha256": "5f7d22178b74a59fe92aa0ccc958b897e2fb80df514eb28b97000097c0e71beb"
+      },
+      {
+        "file": "textures/ceramic_vase_01_arm_1k.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/ceramic_vase_01/ceramic_vase_01_arm_1k.jpg",
+        "bytes": 74240,
+        "md5": "14e56f6d0f810525ddcf9305fa09f495",
+        "sha256": "121469880a7900513717685e9035dfc1b04613f85c778ab4e9dba98c1675d660"
+      },
+      {
+        "file": "ceramic_vase_01.bin",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Models/gltf/8k/ceramic_vase_01/ceramic_vase_01.bin",
+        "bytes": 272656,
+        "md5": "73f8a0f911f2d377e3b925b0ae9c7d4c",
+        "sha256": "56ffadcafff3f56538d04b0b43c06c9704baeec2ac3ec286ef01c313c82906f0"
+      }
+    ],
+    "normalizedSha256": "b28bb075978b81b2ab792094029d019662f15bdf744ce202ac3af4c4aea4e7a7",
+    "dimensionsM": [
+      0.20363,
+      0.40027,
+      0.20363
+    ],
+    "priceNote": "Curated physical-item estimate in USD cents, not a source or retailer quotation."
+  },
+  {
+    "assetId": "antique_ceramic_vase_01",
+    "catalogId": "00000000-0000-4000-8000-000000002100",
+    "sourceUrl": "https://polyhaven.com/a/antique_ceramic_vase_01",
+    "author": "James Ray Cock",
+    "license": "CC0-1.0",
+    "licenseUrl": "https://polyhaven.com/license",
+    "downloadDate": "2026-10-18",
+    "downloads": [
+      {
+        "file": "antique_ceramic_vase_01.gltf",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Models/gltf/1k/antique_ceramic_vase_01/antique_ceramic_vase_01_1k.gltf",
+        "bytes": 2789,
+        "md5": "b5a82c883c3a29b54eccd2f8400bd479",
+        "sha256": "c99f063c1ba4e649e87218265b5ca34f89e3c288ff6560c76b7d9d2dd46aa8cd"
+      },
+      {
+        "file": "textures/antique_ceramic_vase_01_nor_gl_1k.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/antique_ceramic_vase_01/antique_ceramic_vase_01_nor_gl_1k.jpg",
+        "bytes": 33062,
+        "md5": "07fef9d384b8e73d1b03604103ed0b65",
+        "sha256": "98cf0dceb4a95b73f41cb63f26ad6c26cf84ff6ff642bd216f4ce5343cb66cf7"
+      },
+      {
+        "file": "antique_ceramic_vase_01.bin",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Models/gltf/8k/antique_ceramic_vase_01/antique_ceramic_vase_01.bin",
+        "bytes": 217216,
+        "md5": "0758bc04ce9826b1ae61c931aed19715",
+        "sha256": "ff3224b67b0a20e5033e651c405382fbfcc26ceb034f8dc59065ea0e0b6b708e"
+      },
+      {
+        "file": "textures/antique_ceramic_vase_01_diff_1k.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/antique_ceramic_vase_01/antique_ceramic_vase_01_diff_1k.jpg",
+        "bytes": 192337,
+        "md5": "a3de8212967f9e230364c5948e1581a5",
+        "sha256": "8ee51247bf13d76d3d4da3b99ca7d58bc9b14476250800d98385718887dd58de"
+      },
+      {
+        "file": "textures/antique_ceramic_vase_01_arm_1k.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/antique_ceramic_vase_01/antique_ceramic_vase_01_arm_1k.jpg",
+        "bytes": 80537,
+        "md5": "ca1d7269913774a351bdf10058d7f06f",
+        "sha256": "d4315346ead607ee6dada9e8e3710c0d804f47942056a2548e083133c0f8b5ce"
+      }
+    ],
+    "normalizedSha256": "94556941da73050f6c6aa57dc36d0bec675cff0174a242b9c4c4024b4905c464",
+    "dimensionsM": [
+      0.25501,
+      0.43955,
+      0.25501
+    ],
+    "priceNote": "Curated physical-item estimate in USD cents, not a source or retailer quotation."
+  },
+  {
+    "assetId": "ArmChair_01",
+    "catalogId": "00000000-0000-4000-8000-000000002101",
+    "sourceUrl": "https://polyhaven.com/a/ArmChair_01",
+    "author": "Kirill Sannikov",
+    "license": "CC0-1.0",
+    "licenseUrl": "https://polyhaven.com/license",
+    "downloadDate": "2026-10-18",
+    "downloads": [
+      {
+        "file": "ArmChair_01.gltf",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Models/gltf/1k/ArmChair_01/ArmChair_01_1k.gltf",
+        "bytes": 2643,
+        "md5": "39d1e4b0ffdde688c98335c9621e3aae",
+        "sha256": "91e39d5b35f36c8074b7b6432f6fd77f5f1a257c4d6af3924c0b263eb674286b"
+      },
+      {
+        "file": "textures/Armchair_01_diff_1k.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/ArmChair_01/Armchair_01_diff_1k.jpg",
+        "bytes": 184246,
+        "md5": "9166f2c24f2114a5fa5513950ed9b9ae",
+        "sha256": "db30fc9ab61ac50c91ab7573583d2855a2910df1ecade02b89e3e8ab8d4e4c2d"
+      },
+      {
+        "file": "ArmChair_01.bin",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Models/gltf/4k/ArmChair_01/ArmChair_01.bin",
+        "bytes": 154012,
+        "md5": "fbd842795fdec75d94f1335c28acfc0e",
+        "sha256": "42a4206ea8bb3f7c3c1500ca3e408e084e8687cd3cc9cbf095b3344e215e0db6"
+      },
+      {
+        "file": "textures/Armchair_01_nor_gl_1k.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/ArmChair_01/Armchair_01_nor_gl_1k.jpg",
+        "bytes": 289916,
+        "md5": "8541821edd6dcb319b7f9841d849fbbe",
+        "sha256": "f5e4a43a12e79537e53e27c2bd4c5296b3e191cd6b301afce9fafd9d38238dde"
+      },
+      {
+        "file": "textures/Armchair_01_arm_1k.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/ArmChair_01/Armchair_01_arm_1k.jpg",
+        "bytes": 138327,
+        "md5": "2ea528244dd6fc0deb2af1a555c0a312",
+        "sha256": "d272c68e8180f2a381314ac0cef5a9165d15d951a0558cb40a17af71cf6a51c6"
+      }
+    ],
+    "normalizedSha256": "7782fe35b5016467b1c071a968e92596aa337d598bb34ee893c7d5bfe6b1250b",
+    "dimensionsM": [
+      0.84848,
+      1.06509,
+      0.76575
+    ],
+    "priceNote": "Curated physical-item estimate in USD cents, not a source or retailer quotation."
+  },
+  {
+    "assetId": "bar_chair_round_01",
+    "catalogId": "00000000-0000-4000-8000-000000002102",
+    "sourceUrl": "https://polyhaven.com/a/bar_chair_round_01",
+    "author": "Dairon Sanchez",
+    "license": "CC0-1.0",
+    "licenseUrl": "https://polyhaven.com/license",
+    "downloadDate": "2026-10-18",
+    "downloads": [
+      {
+        "file": "bar_chair_round_01.gltf",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Models/gltf/1k/bar_chair_round_01/bar_chair_round_01_1k.gltf",
+        "bytes": 2833,
+        "md5": "86fccd0ffcf70b942d1b2ff70445c2b9",
+        "sha256": "6a8f92123245268cbb69fc96f305ee710b32a7a06761b143d3049eaabfcbdd32"
+      },
+      {
+        "file": "textures/bar_chair_round_01_arm_1k.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/bar_chair_round_01/bar_chair_round_01_arm_1k.jpg",
+        "bytes": 751149,
+        "md5": "48228bfd8b20bf805fd78b1198d5a67f",
+        "sha256": "9f34b279bdd1527ec19fc3a3bb0ce374f0c0ba2dc05dfbd58f561bc317bd36c7"
+      },
+      {
+        "file": "bar_chair_round_01.bin",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Models/gltf/4k/bar_chair_round_01/bar_chair_round_01.bin",
+        "bytes": 1017152,
+        "md5": "3b9777a403670ddbde5cda533a5359ae",
+        "sha256": "2bda85d89beb91097998b25293f10e72686b972aecffd2c14d1b5412cc1da276"
+      },
+      {
+        "file": "textures/bar_chair_round_01_diff_1k.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/bar_chair_round_01/bar_chair_round_01_diff_1k.jpg",
+        "bytes": 599006,
+        "md5": "f2f927c0536c4570fddb3825da824f36",
+        "sha256": "1b3912fe1102b4082d7421aeb2e2717d3ebe914d261700f8710c0fdb7d7463bb"
+      },
+      {
+        "file": "textures/bar_chair_round_01_nor_gl_1k.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/bar_chair_round_01/bar_chair_round_01_nor_gl_1k.jpg",
+        "bytes": 442193,
+        "md5": "6c93ccdb5df8cf731f52be5a4e0317bb",
+        "sha256": "91e4310863002228003d100be83e0524832e532d05f27ef8ed62675b116f0bd1"
+      }
+    ],
+    "normalizedSha256": "413bd6f830c0096b9969cca700ddcca3465046c697d5b8bc27598bc54c02cafa",
+    "dimensionsM": [
+      0.48317,
+      0.75055,
+      0.48601
+    ],
+    "priceNote": "Curated physical-item estimate in USD cents, not a source or retailer quotation."
+  },
+  {
+    "assetId": "brass_candleholders",
+    "catalogId": "00000000-0000-4000-8000-000000002103",
+    "sourceUrl": "https://polyhaven.com/a/brass_candleholders",
+    "author": "Tina",
+    "license": "CC0-1.0",
+    "licenseUrl": "https://polyhaven.com/license",
+    "downloadDate": "2026-10-18",
+    "downloads": [
+      {
+        "file": "brass_candleholders.gltf",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Models/gltf/1k/brass_candleholders/brass_candleholders_1k.gltf",
+        "bytes": 14865,
+        "md5": "c813a8f9856bcab38f87da3ca8aef74d",
+        "sha256": "a1de928d1c7d2241f0727dbad2c9b52d49c3245e1f7dd0c45a9a6482bc5c9101"
+      },
+      {
+        "file": "textures/brass_candleholders_03_arm_1k.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/brass_candleholders/brass_candleholders_03_arm_1k.jpg",
+        "bytes": 866977,
+        "md5": "679498824b44b9745329c07a33a72445",
+        "sha256": "943b1e42d92ac9ed67f24c8c49d55172829ca35fcb98f8289cf266bae854f7a0"
+      },
+      {
+        "file": "textures/brass_candleholders_03_nor_gl_1k.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/brass_candleholders/brass_candleholders_03_nor_gl_1k.jpg",
+        "bytes": 773357,
+        "md5": "93384d7e37ff13a50b4cf6ec108bc6d9",
+        "sha256": "6213bf43d69f3344091262608d90729e182bfc6c558fd7bd58fec2f3942c3f13"
+      },
+      {
+        "file": "textures/brass_candleholders_flame_diff_1k.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/brass_candleholders/brass_candleholders_flame_diff_1k.jpg",
+        "bytes": 88579,
+        "md5": "e03f12b1e6cb00ebbcf72dbe68370d34",
+        "sha256": "72b1ef8a6ef2b37148cd9fceb9a239748a87b6866a833c9ae3ac98e1ca81f024"
+      },
+      {
+        "file": "textures/brass_candleholders_candles_nor_gl_1k.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/brass_candleholders/brass_candleholders_candles_nor_gl_1k.jpg",
+        "bytes": 175178,
+        "md5": "5245cfc43c3e9ac52990b65d7c9e2d2f",
+        "sha256": "4655772521d11f205be8101293be6d8ab07177c6eb00a745a2eb8f5760781e9d"
+      },
+      {
+        "file": "textures/brass_candleholders_candles_arm_1k.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/brass_candleholders/brass_candleholders_candles_arm_1k.jpg",
+        "bytes": 288769,
+        "md5": "7cfc5157dec680365b92b45ae4d1340a",
+        "sha256": "c2d4f750067b56cb0cef19b8899e9194e9fc59ebafb7c5e6ae86712baa9da78a"
+      },
+      {
+        "file": "textures/brass_candleholders_02_arm_1k.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/brass_candleholders/brass_candleholders_02_arm_1k.jpg",
+        "bytes": 753959,
+        "md5": "7f9e6b7d4e7c2f1debfbbc9a062f5dce",
+        "sha256": "dce7d69149c18c148b9fccc37708d498e8c087e838653ee8745e6d627c005d0b"
+      },
+      {
+        "file": "textures/brass_candleholders_01_diff_1k.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/brass_candleholders/brass_candleholders_01_diff_1k.jpg",
+        "bytes": 942661,
+        "md5": "27a666093ce421d4200c1dab13356436",
+        "sha256": "f6d8ae2f8d565cddcdab836bf4d7c6210abd7fbd1a6896381dc182a926e9e9a4"
+      },
+      {
+        "file": "textures/brass_candleholders_03_diff_1k.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/brass_candleholders/brass_candleholders_03_diff_1k.jpg",
+        "bytes": 945596,
+        "md5": "f78d864f46a832d39c06303ca8aa5da9",
+        "sha256": "e30b198ae61e8620aec45faf9181dc19d3ef1b852a52170d9e9fc5d8151aee1a"
+      },
+      {
+        "file": "textures/brass_candleholders_01_nor_gl_1k.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/brass_candleholders/brass_candleholders_01_nor_gl_1k.jpg",
+        "bytes": 627197,
+        "md5": "8631362fee28487f801c851b7a9254dc",
+        "sha256": "57639408a3f29aae15381f605210b89cef60d3e69b2577252abd23e0a44e6488"
+      },
+      {
+        "file": "textures/brass_candleholders_02_nor_gl_1k.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/brass_candleholders/brass_candleholders_02_nor_gl_1k.jpg",
+        "bytes": 672717,
+        "md5": "5747f3304a49c81ccf1191224f56f4cb",
+        "sha256": "fbf36bfcc4c75d54f4b3b3603682dda8efee299604b5c1daec25bdad7a032c8e"
+      },
+      {
+        "file": "textures/brass_candleholders_02_diff_1k.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/brass_candleholders/brass_candleholders_02_diff_1k.jpg",
+        "bytes": 983525,
+        "md5": "8cff396b57f26ae7e54e99c5547162f3",
+        "sha256": "3a8a7b81af977141549ed032b6a2d0a919d0478f225f4dbcd39ddb640cac1203"
+      },
+      {
+        "file": "textures/brass_candleholders_candles_diff_1k.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/brass_candleholders/brass_candleholders_candles_diff_1k.jpg",
+        "bytes": 271273,
+        "md5": "0945ff49048efed6df37564563012a7a",
+        "sha256": "4a044a1c4b79173edd19dbd2b0c503f1d5a3cb9431801f89aaaf00c41b5a43bd"
+      },
+      {
+        "file": "textures/brass_candleholders_01_arm_1k.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/brass_candleholders/brass_candleholders_01_arm_1k.jpg",
+        "bytes": 908699,
+        "md5": "8c97455ce6143e39d8185d7096f8b17b",
+        "sha256": "32e6de735b85ae2e1e800dac0b25e31a89bb37adff28303929ca90c40357352d"
+      },
+      {
+        "file": "brass_candleholders.bin",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Models/gltf/4k/brass_candleholders/brass_candleholders.bin",
+        "bytes": 1189088,
+        "md5": "ea4f625bd0ef542c0026bbcf61370b71",
+        "sha256": "a2f406ea19e6e606ba6b618958cb496b2c18a41fa580409512afd6e644878d51"
+      }
+    ],
+    "normalizedSha256": "844303f24871d50bae17a986062006225fe1f6ce5ca62b135fa47b18da426226",
+    "dimensionsM": [
+      1.05295,
+      0.83526,
+      0.36465
+    ],
+    "priceNote": "Curated physical-item estimate in USD cents, not a source or retailer quotation."
+  },
+  {
+    "assetId": "brass_vase_01",
+    "catalogId": "00000000-0000-4000-8000-000000002104",
+    "sourceUrl": "https://polyhaven.com/a/brass_vase_01",
+    "author": "Rico Cilliers",
+    "license": "CC0-1.0",
+    "licenseUrl": "https://polyhaven.com/license",
+    "downloadDate": "2026-10-18",
+    "downloads": [
+      {
+        "file": "brass_vase_01.gltf",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Models/gltf/1k/brass_vase_01/brass_vase_01_1k.gltf",
+        "bytes": 2693,
+        "md5": "bb1233b0ac5dcb45fdb6f813cca6c3e7",
+        "sha256": "becf6d52678c63d7321c8ab51fb1a03a80d8dd61feb183977867069cdd470f9d"
+      },
+      {
+        "file": "brass_vase_01.bin",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Models/gltf/8k/brass_vase_01/brass_vase_01.bin",
+        "bytes": 498240,
+        "md5": "e90e1aea42c064d2f9574873b00b835c",
+        "sha256": "acc32719ee7c42c5b5fd07507a3dd7779e95445754759876bdbc133cebefa8ff"
+      },
+      {
+        "file": "textures/brass_vase_01_arm_1k.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/brass_vase_01/brass_vase_01_arm_1k.jpg",
+        "bytes": 112273,
+        "md5": "c84710a58f8f95b9d47b9e2438e34e80",
+        "sha256": "b17e947af6e5d2b1f62a3e4953f075ddd6a48f1c11596811fb55ff6b3aab2855"
+      },
+      {
+        "file": "textures/brass_vase_01_diff_1k.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/brass_vase_01/brass_vase_01_diff_1k.jpg",
+        "bytes": 150797,
+        "md5": "f3ccfba161602d7f6c67ff00c43f0bd3",
+        "sha256": "346bb95aeb7aaac89ff368c050e511f2e444d7636d1e135f8433a012423474dd"
+      },
+      {
+        "file": "textures/brass_vase_01_nor_gl_1k.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/brass_vase_01/brass_vase_01_nor_gl_1k.jpg",
+        "bytes": 78223,
+        "md5": "d4bf9fa05adb698c8b04dbd46932a52b",
+        "sha256": "dac5267183a708234e2640f89cde45df76c3927bbd5d2b280cb61fd7a4bd63ea"
+      }
+    ],
+    "normalizedSha256": "2afc9adbc5893b6e18c0f8855d5435337f92354ad1eab868d204e034ef54c3de",
+    "dimensionsM": [
+      0.22733,
+      0.69247,
+      0.22733
+    ],
+    "priceNote": "Curated physical-item estimate in USD cents, not a source or retailer quotation."
+  },
+  {
+    "assetId": "brass_vase_02",
+    "catalogId": "00000000-0000-4000-8000-000000002105",
+    "sourceUrl": "https://polyhaven.com/a/brass_vase_02",
+    "author": "Rico Cilliers",
+    "license": "CC0-1.0",
+    "licenseUrl": "https://polyhaven.com/license",
+    "downloadDate": "2026-10-18",
+    "downloads": [
+      {
+        "file": "brass_vase_02.gltf",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Models/gltf/1k/brass_vase_02/brass_vase_02_1k.gltf",
+        "bytes": 2672,
+        "md5": "2746518f965d4ec6e0e4437e38a0beea",
+        "sha256": "4680277fd44664e1d60b1cf5f26965c8837d9912f776a083187a35eb883fb3a1"
+      },
+      {
+        "file": "brass_vase_02.bin",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Models/gltf/8k/brass_vase_02/brass_vase_02.bin",
+        "bytes": 164508,
+        "md5": "081d4638f8ee5538d790afa92a2c0a4f",
+        "sha256": "9b922c73a5bc3012f904f6236fecf99ac5e9c71e0645dab0fdad5943cdf2ae35"
+      },
+      {
+        "file": "textures/brass_vase_02_diff_1k.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/brass_vase_02/brass_vase_02_diff_1k.jpg",
+        "bytes": 648176,
+        "md5": "e4cbd0185398372ff6c555fa181899b4",
+        "sha256": "d8f9edad2915c3988d6c2d094d581f3b9c72f4f81b81678038d52c856515041e"
+      },
+      {
+        "file": "textures/brass_vase_02_nor_gl_1k.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/brass_vase_02/brass_vase_02_nor_gl_1k.jpg",
+        "bytes": 464575,
+        "md5": "8aa568f1245cdb3eb68e9d4a42a5afde",
+        "sha256": "5961c39266636828c0917e518cac001e6b0fd4c5d73bceb142d062b8e60b21a3"
+      },
+      {
+        "file": "textures/brass_vase_02_arm_1k.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/brass_vase_02/brass_vase_02_arm_1k.jpg",
+        "bytes": 550785,
+        "md5": "3b07ad2b1b6ab0fb474020e7f39d4b81",
+        "sha256": "c510b5b2a114d0f46ab525004450c195b52c45aeff01c7989b32fe4960053a9a"
+      }
+    ],
+    "normalizedSha256": "171de6a5159f311cb2e06d4654be3704b10a47247ade7821edc3c4eff25389e3",
+    "dimensionsM": [
+      0.21027,
+      0.52864,
+      0.21027
+    ],
+    "priceNote": "Curated physical-item estimate in USD cents, not a source or retailer quotation."
+  },
+  {
+    "assetId": "Chandelier_01",
+    "catalogId": "00000000-0000-4000-8000-000000002106",
+    "sourceUrl": "https://polyhaven.com/a/Chandelier_01",
+    "author": "Kirill Sannikov",
+    "license": "CC0-1.0",
+    "licenseUrl": "https://polyhaven.com/license",
+    "downloadDate": "2026-10-18",
+    "downloads": [
+      {
+        "file": "Chandelier_01.gltf",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Models/gltf/1k/Chandelier_01/Chandelier_01_1k.gltf",
+        "bytes": 4438,
+        "md5": "4750f709fd968452ffefd3315e13818f",
+        "sha256": "19a63453965dde6ace3159e2059c30adee81905e95a6beaf62b7f47d9283e724"
+      },
+      {
+        "file": "textures/Chandelier_01_nor_gl_1k.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/Chandelier_01/Chandelier_01_nor_gl_1k.jpg",
+        "bytes": 171686,
+        "md5": "47c244d75230b364e8de93ceca7a7a7e",
+        "sha256": "0830646c51d8d7a8af90b716768052aba973f9b2e43ac40fdaf7e5aeacbe0244"
+      },
+      {
+        "file": "Chandelier_01.bin",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Models/gltf/4k/Chandelier_01/Chandelier_01.bin",
+        "bytes": 892104,
+        "md5": "bb72e9fd9d5c2b25c307130807598dc8",
+        "sha256": "f476cc0c0eed8ccc31c49fc797e00ac6a0c8666c345aa933a9accd5762c06cd1"
+      },
+      {
+        "file": "textures/Chandelier_01_arm_1k.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/Chandelier_01/Chandelier_01_arm_1k.jpg",
+        "bytes": 151301,
+        "md5": "631b971946bbfbbb420104eb86dc9082",
+        "sha256": "f557f4872ed9a586728df285b5ee7d1e4a48aef81d8040d1e423a7fc02602e4e"
+      },
+      {
+        "file": "textures/Chandelier_01_diff_1k.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/Chandelier_01/Chandelier_01_diff_1k.jpg",
+        "bytes": 86766,
+        "md5": "361990948d40e7dc4f252ffc66702c6f",
+        "sha256": "b52eaa35e990d61842006ee8c4a24e08c82e36d87e9ff7a751a6400547a0eba2"
+      }
+    ],
+    "normalizedSha256": "ac8d4c173b9686a712e04b5ca6e8c1107c469d9a30b59b4b79a2718ac91e90aa",
+    "dimensionsM": [
+      0.74646,
+      0.79823,
+      0.81555
+    ],
+    "priceNote": "Curated physical-item estimate in USD cents, not a source or retailer quotation."
+  },
+  {
+    "assetId": "Chandelier_02",
+    "catalogId": "00000000-0000-4000-8000-000000002107",
+    "sourceUrl": "https://polyhaven.com/a/Chandelier_02",
+    "author": "Kirill Sannikov",
+    "license": "CC0-1.0",
+    "licenseUrl": "https://polyhaven.com/license",
+    "downloadDate": "2026-10-18",
+    "downloads": [
+      {
+        "file": "Chandelier_02.gltf",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Models/gltf/1k/Chandelier_02/Chandelier_02_1k.gltf",
+        "bytes": 4206,
+        "md5": "6a03851c1ca7211f64fd461b71f83b15",
+        "sha256": "d52ea299a0831a6851d50901d6719367454ffc61c1fed871cdcfc7db6b775dfd"
+      },
+      {
+        "file": "Chandelier_02.bin",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Models/gltf/4k/Chandelier_02/Chandelier_02.bin",
+        "bytes": 611964,
+        "md5": "6ce2faad38996422637d46daf4ed6a1c",
+        "sha256": "54190a815836aa2c9883c607372b37400ba8a6ef8449634973eeb370a511e4d9"
+      },
+      {
+        "file": "textures/Chandelier_02_nor_gl_1k.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/Chandelier_02/Chandelier_02_nor_gl_1k.jpg",
+        "bytes": 213758,
+        "md5": "be75f18fe549734a71f5e9e2745355be",
+        "sha256": "cf33462f36f9abbbcf3d9962bbae6a72f6e21faa4d12e358feffab1e88cdcd7f"
+      },
+      {
+        "file": "textures/Chandelier_02_diff_1k.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/Chandelier_02/Chandelier_02_diff_1k.jpg",
+        "bytes": 164633,
+        "md5": "b87d921112a524ffcab302260d26889d",
+        "sha256": "c9db61618859d9ff3ae34a2dfa66ff781981fed75f6b485add075395533ca791"
+      },
+      {
+        "file": "textures/Chandelier_02_arm_1k.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/Chandelier_02/Chandelier_02_arm_1k.jpg",
+        "bytes": 187493,
+        "md5": "8d81bc3862530c82c4f037e5134e4fb8",
+        "sha256": "77236142800bba6203fca273ff6164d6bfc5548470883c33e043ab97589eb515"
+      }
+    ],
+    "normalizedSha256": "66adac0bfab3e3a98d5bec3b276fa6598fb41a2dd260d775c0153614e86a9e27",
+    "dimensionsM": [
+      0.67901,
+      0.84807,
+      0.61904
+    ],
+    "priceNote": "Curated physical-item estimate in USD cents, not a source or retailer quotation."
+  },
+  {
+    "assetId": "Chandelier_03",
+    "catalogId": "00000000-0000-4000-8000-000000002108",
+    "sourceUrl": "https://polyhaven.com/a/Chandelier_03",
+    "author": "Kirill Sannikov",
+    "license": "CC0-1.0",
+    "licenseUrl": "https://polyhaven.com/license",
+    "downloadDate": "2026-10-18",
+    "downloads": [
+      {
+        "file": "Chandelier_03.gltf",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Models/gltf/1k/Chandelier_03/Chandelier_03_1k.gltf",
+        "bytes": 4876,
+        "md5": "5f1a46f925d3c5059814af36a1ae4b1c",
+        "sha256": "ab3c57ada6a22e472778b4c7f7e7d5e9b3b10fe91d4566de95e89497f282e00f"
+      },
+      {
+        "file": "textures/Chandelier_03_diff_1k.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/Chandelier_03/Chandelier_03_diff_1k.jpg",
+        "bytes": 125237,
+        "md5": "f7c43731de6aeefb34874a9218dc5dae",
+        "sha256": "fbedb3f4c3273fccf3a697d0a002e2d60677cb76a33e5a19797bc7ca69b6bb1e"
+      },
+      {
+        "file": "Chandelier_03.bin",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Models/gltf/4k/Chandelier_03/Chandelier_03.bin",
+        "bytes": 817280,
+        "md5": "6515aaafa8f678ccd1fc56ae7a21420c",
+        "sha256": "b7085e20c530331e71a6934604f77ba90acef175e78b75a28ded775a28d1a26e"
+      },
+      {
+        "file": "textures/Chandelier_03_nor_gl_1k.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/Chandelier_03/Chandelier_03_nor_gl_1k.jpg",
+        "bytes": 187141,
+        "md5": "9287dcaa472c12cc8df3f32b79a52eb7",
+        "sha256": "35bf7ca66786a9368064801853191e9d4cf24bcdfb07f84647f86bb498a9d5ec"
+      },
+      {
+        "file": "textures/Chandelier_03_arm_1k.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/Chandelier_03/Chandelier_03_arm_1k.jpg",
+        "bytes": 207964,
+        "md5": "7f4416a5f6d2840313e4c28e73968774",
+        "sha256": "9db2d632be31dbf86b17d4722f495f6e44231a94c0540c015d07539056476f9e"
+      },
+      {
+        "file": "textures/Chandelier_03_opacity_1k.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/Chandelier_03/Chandelier_03_opacity_1k.jpg",
+        "bytes": 21515,
+        "md5": "af8e2a1dbd1aa7e2c5917d4bdb630240",
+        "sha256": "708ec4bb612ef2086f93c203b40d05e9e40c441178d000d02a52ffdf524ccbc9"
+      }
+    ],
+    "normalizedSha256": "1d48cee5eede5627b61f7a5638b8fea594728681907177ceb70c22afcdaf991b",
+    "dimensionsM": [
+      0.78044,
+      1.04065,
+      0.78543
+    ],
+    "priceNote": "Curated physical-item estimate in USD cents, not a source or retailer quotation."
+  },
+  {
+    "assetId": "chinese_armchair",
+    "catalogId": "00000000-0000-4000-8000-000000002109",
+    "sourceUrl": "https://polyhaven.com/a/chinese_armchair",
+    "author": "Kirill Sannikov",
+    "license": "CC0-1.0",
+    "licenseUrl": "https://polyhaven.com/license",
+    "downloadDate": "2026-10-18",
+    "downloads": [
+      {
+        "file": "chinese_armchair.gltf",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Models/gltf/1k/chinese_armchair/chinese_armchair_1k.gltf",
+        "bytes": 2816,
+        "md5": "ecad26c95dbf2c7e631f848711700678",
+        "sha256": "e0649ac9e63135627b824035e9a45a7c06411062589b971e633e5ab5f9e17f04"
+      },
+      {
+        "file": "textures/chinese_armchair_arm_1k.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/chinese_armchair/chinese_armchair_arm_1k.jpg",
+        "bytes": 618850,
+        "md5": "ed3bece412754abf3aa2c5f6bc6aa9de",
+        "sha256": "5daef0846dd4f4a32a50106ee12930e547c8a577d60687e6e88b370f0ed84d28"
+      },
+      {
+        "file": "textures/chinese_armchair_nor_gl_1k.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/chinese_armchair/chinese_armchair_nor_gl_1k.jpg",
+        "bytes": 483304,
+        "md5": "ba905cf32062cf2869ec39f7adbb95b8",
+        "sha256": "8599f79dcd01b20ba4916a959a2e0dcf4beaa21597356acc6abe0c13cb330eff"
+      },
+      {
+        "file": "chinese_armchair.bin",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Models/gltf/8k/chinese_armchair/chinese_armchair.bin",
+        "bytes": 81428,
+        "md5": "7575b1f0e7de094e7c1cbebf610e5da0",
+        "sha256": "7e72b5360513057bdc453d6c03d5a837d32a8c9a2e6185f1b016c1bc62dc5b27"
+      },
+      {
+        "file": "textures/chinese_armchair_diff_1k.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/chinese_armchair/chinese_armchair_diff_1k.jpg",
+        "bytes": 516908,
+        "md5": "5ae99f09fe8a767d4ecd49c86539d46d",
+        "sha256": "41332d6df2c5abad15ba227382bda160e55e9c75f2b4ecc079f8171aecd8d689"
+      }
+    ],
+    "normalizedSha256": "cf60228683d49162d2d3ad2d49a43a9450679efac418ab786992b955203f32d8",
+    "dimensionsM": [
+      0.84832,
+      1.58748,
+      0.78858
+    ],
+    "priceNote": "Curated physical-item estimate in USD cents, not a source or retailer quotation."
+  },
+  {
+    "assetId": "chinese_chandelier",
+    "catalogId": "00000000-0000-4000-8000-000000002111",
+    "sourceUrl": "https://polyhaven.com/a/chinese_chandelier",
+    "author": "Kirill Sannikov",
+    "license": "CC0-1.0",
+    "licenseUrl": "https://polyhaven.com/license",
+    "downloadDate": "2026-10-18",
+    "downloads": [
+      {
+        "file": "chinese_chandelier.gltf",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Models/gltf/1k/chinese_chandelier/chinese_chandelier_1k.gltf",
+        "bytes": 2824,
+        "md5": "c7e2ba009f318a55d56831c4c7d3adf2",
+        "sha256": "0300d412628b0faffccf05e8ac7caad0e3e9b3b15bbbb0c14ce6f5c9e4e4eff8"
+      },
+      {
+        "file": "textures/chinese_chandelier_arm_1k.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/chinese_chandelier/chinese_chandelier_arm_1k.jpg",
+        "bytes": 610608,
+        "md5": "95b8a35eade01967c372d110e07e5be1",
+        "sha256": "8d4cbdbe1d69e8d2ed6c81315e1551acf33078c7f2f4b8126f49c0d2b4208b36"
+      },
+      {
+        "file": "chinese_chandelier.bin",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Models/gltf/8k/chinese_chandelier/chinese_chandelier.bin",
+        "bytes": 293368,
+        "md5": "bcc8236d67568f8c8a320bf986503df3",
+        "sha256": "e0212905755edbe70777747ff3fd0bae9aec591a775e6ad505c239c713e57467"
+      },
+      {
+        "file": "textures/chinese_chandelier_nor_gl_1k.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/chinese_chandelier/chinese_chandelier_nor_gl_1k.jpg",
+        "bytes": 717746,
+        "md5": "92945c99d1079cdece6d39c4184c1de3",
+        "sha256": "d0560b3f50cefff904759cc75a47ea31c15f7c4e2ec97a98b37960178629b779"
+      },
+      {
+        "file": "textures/chinese_chandelier_diff_1k.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/chinese_chandelier/chinese_chandelier_diff_1k.jpg",
+        "bytes": 534740,
+        "md5": "266a8032eda876ee3e6e2ea5132b47e0",
+        "sha256": "439a768d90e36e5d64701d50da1152da4da06df9593cf2c7ce44b1a57c3859a0"
+      }
+    ],
+    "normalizedSha256": "869047214bb8b92045e546768329dbd720931f4d094baee4389a21e307573d8c",
+    "dimensionsM": [
+      0.87839,
+      0.74827,
+      0.87871
+    ],
+    "priceNote": "Curated physical-item estimate in USD cents, not a source or retailer quotation."
+  },
+  {
+    "assetId": "chinese_console_table",
+    "catalogId": "00000000-0000-4000-8000-000000002113",
+    "sourceUrl": "https://polyhaven.com/a/chinese_console_table",
+    "author": "Kirill Sannikov",
+    "license": "CC0-1.0",
+    "licenseUrl": "https://polyhaven.com/license",
+    "downloadDate": "2026-10-18",
+    "downloads": [
+      {
+        "file": "chinese_console_table.gltf",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Models/gltf/1k/chinese_console_table/chinese_console_table_1k.gltf",
+        "bytes": 2861,
+        "md5": "7afbbc2473741124afb17b8b7a92f1dd",
+        "sha256": "d028085b14277ce3772445d5991572c95e8c80630bcb401f90129d3c972c5425"
+      },
+      {
+        "file": "textures/chinese_console_table_arm_1k.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/chinese_console_table/chinese_console_table_arm_1k.jpg",
+        "bytes": 851730,
+        "md5": "3aa4e460645083b231b20846b4d01df0",
+        "sha256": "c819a43214165b1241392a599f5f3076263569e1aaad54ef92a57ba52e34e47e"
+      },
+      {
+        "file": "textures/chinese_console_table_diff_1k.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/chinese_console_table/chinese_console_table_diff_1k.jpg",
+        "bytes": 731482,
+        "md5": "1b6e339d5610bff8fd018ad8cbd7022c",
+        "sha256": "82ecf04fa7793ffa6a5b11993944bf9a8f9a7179777ffaa63ef70295b044d4a4"
+      },
+      {
+        "file": "textures/chinese_console_table_nor_gl_1k.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/chinese_console_table/chinese_console_table_nor_gl_1k.jpg",
+        "bytes": 700938,
+        "md5": "ae12146cca5c94fd82b9de395e46b994",
+        "sha256": "d07e9efc41896c4a77bc91f003341c4e0a64be05320862bf2457817220c3f86b"
+      },
+      {
+        "file": "chinese_console_table.bin",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Models/gltf/8k/chinese_console_table/chinese_console_table.bin",
+        "bytes": 505184,
+        "md5": "08e53d44d181263d5d4e731f7cd713c3",
+        "sha256": "70be61585b2b44f8496116cb3665a0f2d121dd2dddac6778aec1c01d2ca9d338"
+      }
+    ],
+    "normalizedSha256": "b7cd39a406e4ad20d35426145c7dd855d84ff5cd33719ce86407de2b82ed27ab",
+    "dimensionsM": [
+      1.71962,
+      0.66068,
+      0.33881
+    ],
+    "priceNote": "Curated physical-item estimate in USD cents, not a source or retailer quotation."
+  },
+  {
+    "assetId": "chinese_sofa",
+    "catalogId": "00000000-0000-4000-8000-000000002114",
+    "sourceUrl": "https://polyhaven.com/a/chinese_sofa",
+    "author": "Kirill Sannikov",
+    "license": "CC0-1.0",
+    "licenseUrl": "https://polyhaven.com/license",
+    "downloadDate": "2026-10-18",
+    "downloads": [
+      {
+        "file": "chinese_sofa.gltf",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Models/gltf/1k/chinese_sofa/chinese_sofa_1k.gltf",
+        "bytes": 2759,
+        "md5": "6ccb6fbfbedbb2a5c3ded708448d0784",
+        "sha256": "33f9f1bf014bea843f24944ed5ed2b0de0ba0ba1728ddac85fc79eb5aa2e6dce"
+      },
+      {
+        "file": "textures/chinese_sofa_diff_1k.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/chinese_sofa/chinese_sofa_diff_1k.jpg",
+        "bytes": 511164,
+        "md5": "6c7f09885790b40d7b21df59ec2e9952",
+        "sha256": "fb512b25971ff1fa17d8049e9687fb232195b73fcf98ebf55e277df2d2d6bca3"
+      },
+      {
+        "file": "textures/chinese_sofa_arm_1k.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/chinese_sofa/chinese_sofa_arm_1k.jpg",
+        "bytes": 555922,
+        "md5": "dcd64dc00367f4dbfabd0d94eb18b5b0",
+        "sha256": "d0aabd7f28848c3f1189f768a50a29bc32ccdef2f557f91160080a47890be0f7"
+      },
+      {
+        "file": "chinese_sofa.bin",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Models/gltf/8k/chinese_sofa/chinese_sofa.bin",
+        "bytes": 29824,
+        "md5": "6d5166585d031df7e90cb264780ec5b8",
+        "sha256": "5e91e3bc0d8bed2c7260501feca7d24eb355f2477a3ad2ca5e782351616cca4f"
+      },
+      {
+        "file": "textures/chinese_sofa_nor_gl_1k.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/chinese_sofa/chinese_sofa_nor_gl_1k.jpg",
+        "bytes": 472388,
+        "md5": "83753c91cce4ee813ef24a8863053d24",
+        "sha256": "6c7b73f4c1b38d8e26d35df1deb8f38af2f74fd08597a3a52645a41c6a417735"
+      }
+    ],
+    "normalizedSha256": "63cad2939fa6e20829896383c51208ecf0d88686d3e09f57a814fa3942c60f61",
+    "dimensionsM": [
+      2.28543,
+      0.85992,
+      0.96873
+    ],
+    "priceNote": "Curated physical-item estimate in USD cents, not a source or retailer quotation."
+  },
+  {
+    "assetId": "chinese_stool",
+    "catalogId": "00000000-0000-4000-8000-000000002115",
+    "sourceUrl": "https://polyhaven.com/a/chinese_stool",
+    "author": "Kirill Sannikov",
+    "license": "CC0-1.0",
+    "licenseUrl": "https://polyhaven.com/license",
+    "downloadDate": "2026-10-18",
+    "downloads": [
+      {
+        "file": "chinese_stool.gltf",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Models/gltf/1k/chinese_stool/chinese_stool_1k.gltf",
+        "bytes": 2883,
+        "md5": "260547e2e492af393aedd6a6a460c3a1",
+        "sha256": "6db83b16076496830f956780890480d3cb1e34c80359b5ea8cb0e7afd42572c6"
+      },
+      {
+        "file": "textures/chinese_stool_diff_1k.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/chinese_stool/chinese_stool_diff_1k.jpg",
+        "bytes": 542758,
+        "md5": "10519c09d42b36c461540f3e727df211",
+        "sha256": "a7f84ff302df80b079b47a268ecaea6e9f072b51d7e5dcebdeb7ee6278595e85"
+      },
+      {
+        "file": "textures/chinese_stool_arm_1k.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/chinese_stool/chinese_stool_arm_1k.jpg",
+        "bytes": 578268,
+        "md5": "d73e325e36b12467d98283648bf98c10",
+        "sha256": "59fb42eb0c3c1684905d94bbf11fd640921325e19dfe8b46cae04ac5b7be36d5"
+      },
+      {
+        "file": "chinese_stool.bin",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Models/gltf/8k/chinese_stool/chinese_stool.bin",
+        "bytes": 40172,
+        "md5": "a2951579ea0f4421b754331fb748d6f2",
+        "sha256": "e35c9440fc0751aa9346e6edbfe0bf948f0f7dd1b40be2ef57d0b6debec5b8af"
+      },
+      {
+        "file": "textures/chinese_stool_nor_gl_1k.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/chinese_stool/chinese_stool_nor_gl_1k.jpg",
+        "bytes": 629035,
+        "md5": "8b15a90085107867de316844cf03b3d7",
+        "sha256": "a44344f2d8ea289ec7642272de42d449059f2f2b175cf64d5db5d2447c56f7aa"
+      }
+    ],
+    "normalizedSha256": "c84508b81995cf06778514748577836f95dbaadb0477e6b3fc637a19123df04e",
+    "dimensionsM": [
+      0.599,
+      0.63056,
+      0.5064
+    ],
+    "priceNote": "Curated physical-item estimate in USD cents, not a source or retailer quotation."
+  },
+  {
+    "assetId": "chinese_tea_table",
+    "catalogId": "00000000-0000-4000-8000-000000002116",
+    "sourceUrl": "https://polyhaven.com/a/chinese_tea_table",
+    "author": "Kirill Sannikov",
+    "license": "CC0-1.0",
+    "licenseUrl": "https://polyhaven.com/license",
+    "downloadDate": "2026-10-18",
+    "downloads": [
+      {
+        "file": "chinese_tea_table.gltf",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Models/gltf/1k/chinese_tea_table/chinese_tea_table_1k.gltf",
+        "bytes": 2793,
+        "md5": "742112f24cdcf8c357aacc8f255664e5",
+        "sha256": "4c1987aa1978c4fe1dfd0f5f10739df399346fc4c9373315d8d4b0cc798d8b01"
+      },
+      {
+        "file": "textures/chinese_tea_table_arm_1k.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/chinese_tea_table/chinese_tea_table_arm_1k.jpg",
+        "bytes": 504125,
+        "md5": "c87805fa83058c7d08056446b0589f7e",
+        "sha256": "5d93474de9d0560d8a9a46a498fc6f64fb030f9cec6e6eb8f95c36dfc8e09e94"
+      },
+      {
+        "file": "chinese_tea_table.bin",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Models/gltf/8k/chinese_tea_table/chinese_tea_table.bin",
+        "bytes": 78792,
+        "md5": "8dcb405bff1e509e3c846278ce2f3ad9",
+        "sha256": "e584dbcf8d654c662ef849ef6111b11dc9f87e9a7ea8dc98c7d32dbfe10b7e52"
+      },
+      {
+        "file": "textures/chinese_tea_table_nor_gl_1k.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/chinese_tea_table/chinese_tea_table_nor_gl_1k.jpg",
+        "bytes": 548449,
+        "md5": "f3398ab803461ee8247b05ad9b9992ba",
+        "sha256": "4b6eea9bbf344912313a1046fd3e5183970a907b6dbd55d1ef465e27dd2d0859"
+      },
+      {
+        "file": "textures/chinese_tea_table_diff_1k.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/chinese_tea_table/chinese_tea_table_diff_1k.jpg",
+        "bytes": 447131,
+        "md5": "eec9f6e3d2c3f7335abd4760e3a30ba2",
+        "sha256": "beaff8984d8fd498b7cfecc2e5decd4db3ba6c87583acc41d18767326cb3ae3c"
+      }
+    ],
+    "normalizedSha256": "35a741280f8c725cb8ebab8ac01c4e78a9e35f6c2b8db23d83d0f41a5e436ca2",
+    "dimensionsM": [
+      0.84131,
+      0.49867,
+      0.83567
+    ],
+    "priceNote": "Curated physical-item estimate in USD cents, not a source or retailer quotation."
+  },
+  {
+    "assetId": "ClassicConsole_01",
+    "catalogId": "00000000-0000-4000-8000-000000002117",
+    "sourceUrl": "https://polyhaven.com/a/ClassicConsole_01",
+    "author": "Kirill Sannikov",
+    "license": "CC0-1.0",
+    "licenseUrl": "https://polyhaven.com/license",
+    "downloadDate": "2026-10-18",
+    "downloads": [
+      {
+        "file": "ClassicConsole_01.gltf",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Models/gltf/1k/ClassicConsole_01/ClassicConsole_01_1k.gltf",
+        "bytes": 2729,
+        "md5": "654dc8fdce43f534ffd3e6bdb5b988c3",
+        "sha256": "6c7f79026ad7c388c5d40c56a0988f2a28dc0fc6e489e110332d06792ecd5833"
+      },
+      {
+        "file": "textures/ClassicConsole_01_nor_gl_1k.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/ClassicConsole_01/ClassicConsole_01_nor_gl_1k.jpg",
+        "bytes": 212243,
+        "md5": "7c8db7cbf3f4626b2db3f9621c0a5856",
+        "sha256": "b8619f83d22c8b050f66fe696e0422bd7e6d8b868295b2dd9708a60352539391"
+      },
+      {
+        "file": "textures/ClassicConsole_01_arm_1k.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/ClassicConsole_01/ClassicConsole_01_arm_1k.jpg",
+        "bytes": 157280,
+        "md5": "6484a53aed790a1f96a880cb24ce3575",
+        "sha256": "39cd3bd935a13a09a694e5877f528f6d026395da7a4509fd4514d88c1d8dfd36"
+      },
+      {
+        "file": "ClassicConsole_01.bin",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Models/gltf/4k/ClassicConsole_01/ClassicConsole_01.bin",
+        "bytes": 221588,
+        "md5": "e42b6689e5036e1f2aa0008461094297",
+        "sha256": "f1781fbd65be7ea34a653ed1eaf06a47a4ee3e98dcc5a5627f5479019d87b025"
+      },
+      {
+        "file": "textures/ClassicConsole_01_diff_1k.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/ClassicConsole_01/ClassicConsole_01_diff_1k.jpg",
+        "bytes": 146853,
+        "md5": "48662180e8a827a6124a259c14a94495",
+        "sha256": "cf288157e8d8cfe70eef2d355a5d13076b9a1664ff1f5e6cb07f1970de6a2125"
+      }
+    ],
+    "normalizedSha256": "dcf7837e9f0822a0b91c48ef3cfaf028a432381ac67f9069bf7d6f7e4c0f1cab",
+    "dimensionsM": [
+      1.54302,
+      0.94907,
+      0.58925
+    ],
+    "priceNote": "Curated physical-item estimate in USD cents, not a source or retailer quotation."
+  },
+  {
+    "assetId": "ClassicNightstand_01",
+    "catalogId": "00000000-0000-4000-8000-000000002118",
+    "sourceUrl": "https://polyhaven.com/a/ClassicNightstand_01",
+    "author": "Kirill Sannikov",
+    "license": "CC0-1.0",
+    "licenseUrl": "https://polyhaven.com/license",
+    "downloadDate": "2026-10-18",
+    "downloads": [
+      {
+        "file": "ClassicNightstand_01.gltf",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Models/gltf/1k/ClassicNightstand_01/ClassicNightstand_01_1k.gltf",
+        "bytes": 2754,
+        "md5": "8c2c91db450dd05773d052450e5b5816",
+        "sha256": "e8218ceead6c07d2641a0bd54974a67b13dd7ebc110e07e9738e17c206c7b892"
+      },
+      {
+        "file": "textures/ClassicNightstand_01_arm_1k.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/ClassicNightstand_01/ClassicNightstand_01_arm_1k.jpg",
+        "bytes": 111670,
+        "md5": "c935951f5c188a202957753dd42b2e70",
+        "sha256": "2a2ba3094e6baedebdddc1660684f42aa8556e405ef8e540f08ffa5a083adbf3"
+      },
+      {
+        "file": "ClassicNightstand_01.bin",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Models/gltf/4k/ClassicNightstand_01/ClassicNightstand_01.bin",
+        "bytes": 68684,
+        "md5": "a97360812af4796a6abf592b4f893b51",
+        "sha256": "1ac0f3065df040e5a85c3807fa07947de7185ad40ed064f3399fa9fc93387a7f"
+      },
+      {
+        "file": "textures/ClassicNightstand_01_nor_gl_1k.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/ClassicNightstand_01/ClassicNightstand_01_nor_gl_1k.jpg",
+        "bytes": 154306,
+        "md5": "2238bf1c92152c6650cc3e45263e8b3d",
+        "sha256": "42692b8c2645559db4803135c9e3b1e1f11bd8b2022bbe0b750f4c3e5d65c225"
+      },
+      {
+        "file": "textures/ClassicNightstand_01_diff_1k.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/ClassicNightstand_01/ClassicNightstand_01_diff_1k.jpg",
+        "bytes": 107526,
+        "md5": "5c4482658007e18e9c73666e44b955b7",
+        "sha256": "aa841a5dcea9154bb1a26eb1be37d6b69fc8b2777f3dfcc3f7c7880c7048a5c6"
+      }
+    ],
+    "normalizedSha256": "055a49b541e0fee17479a3c7ff850184dff4a70b2ee05606d47023c286b5f1d7",
+    "dimensionsM": [
+      0.56778,
+      0.69996,
+      0.4242
+    ],
+    "priceNote": "Curated physical-item estimate in USD cents, not a source or retailer quotation."
+  },
+  {
+    "assetId": "CoffeeTable_01",
+    "catalogId": "00000000-0000-4000-8000-000000002119",
+    "sourceUrl": "https://polyhaven.com/a/CoffeeTable_01",
+    "author": "Fernando Quinn",
+    "license": "CC0-1.0",
+    "licenseUrl": "https://polyhaven.com/license",
+    "downloadDate": "2026-10-18",
+    "downloads": [
+      {
+        "file": "CoffeeTable_01.gltf",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Models/gltf/1k/CoffeeTable_01/CoffeeTable_01_1k.gltf",
+        "bytes": 3182,
+        "md5": "5a981114987ebd1d7033dee542803988",
+        "sha256": "c0b7ce378fc13886c220236941b4d258389d252e337297dc89505b80e43617fb"
+      },
+      {
+        "file": "textures/CoffeeTable_01_nor_gl_1k.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/CoffeeTable_01/CoffeeTable_01_nor_gl_1k.jpg",
+        "bytes": 168414,
+        "md5": "40c14c4e129b068fa1b4987a7dbbbf9d",
+        "sha256": "0aa55f510be698c7c0e2c0c2deff2a4e892a9343da98bb901daa84e104883de7"
+      },
+      {
+        "file": "textures/CoffeeTable_01_diff_1k.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/CoffeeTable_01/CoffeeTable_01_diff_1k.jpg",
+        "bytes": 196775,
+        "md5": "9c52acf206cb7912f9c7fd74edcd5b48",
+        "sha256": "170967df5c50342bb5f0273d1fb99f22cef80a0e7f50264e16dec75d1b2830ba"
+      },
+      {
+        "file": "textures/CoffeeTable_01_arm_1k.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/CoffeeTable_01/CoffeeTable_01_arm_1k.jpg",
+        "bytes": 194521,
+        "md5": "78551ee723828bb20937897745c58ff5",
+        "sha256": "b8d7dfe15a11ba361919840f00f360d1133f985ff4321b2e891cf941eb5b51c0"
+      },
+      {
+        "file": "CoffeeTable_01.bin",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Models/gltf/4k/CoffeeTable_01/CoffeeTable_01.bin",
+        "bytes": 394920,
+        "md5": "a8815aecc367e1efd401cd644d679899",
+        "sha256": "1b047e37723ad62b6a204465b22b9fd40936957cee255f20ee65312db227fb11"
+      }
+    ],
+    "normalizedSha256": "83070bf4b49c2dbade04a94e2da2381fac9834cb4d26be53f952d9b355640149",
+    "dimensionsM": [
+      1.54001,
+      0.52324,
+      0.97278
+    ],
+    "priceNote": "Curated physical-item estimate in USD cents, not a source or retailer quotation."
+  },
+  {
+    "assetId": "drawer_cabinet",
+    "catalogId": "00000000-0000-4000-8000-000000002120",
+    "sourceUrl": "https://polyhaven.com/a/drawer_cabinet",
+    "author": "Ulan Cabanilla",
+    "license": "CC0-1.0",
+    "licenseUrl": "https://polyhaven.com/license",
+    "downloadDate": "2026-10-18",
+    "downloads": [
+      {
+        "file": "drawer_cabinet.gltf",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Models/gltf/1k/drawer_cabinet/drawer_cabinet_1k.gltf",
+        "bytes": 8031,
+        "md5": "4ee75e02d0a2c383c61950c614d78cf8",
+        "sha256": "899581e6a041644139a138f909c6ba001684cc55b5d1702e08f01094e20d0617"
+      },
+      {
+        "file": "textures/drawer_cabinet_arm_1k.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/drawer_cabinet/drawer_cabinet_arm_1k.jpg",
+        "bytes": 124942,
+        "md5": "ce7a177bd99d4aa87a95f84dab5eb7a6",
+        "sha256": "8f8eefaaadcee247204c5658c2f4d9cac598222336918b01eb48e4190317788c"
+      },
+      {
+        "file": "textures/drawer_cabinet_nor_gl_1k.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/drawer_cabinet/drawer_cabinet_nor_gl_1k.jpg",
+        "bytes": 61593,
+        "md5": "151891cdd9db147046f951525f849f7f",
+        "sha256": "26d0904ad341353e095ef619d157a5f416be014500475976f1144827cc849faa"
+      },
+      {
+        "file": "textures/drawer_cabinet_diff_1k.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/drawer_cabinet/drawer_cabinet_diff_1k.jpg",
+        "bytes": 150011,
+        "md5": "bb0311ae77d1779bc5b37396a029f6f3",
+        "sha256": "0fe270409b54a5609662dda14afaa94af4bd3267dcd83dd824e05fa880d96efb"
+      },
+      {
+        "file": "drawer_cabinet.bin",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Models/gltf/4k/drawer_cabinet/drawer_cabinet.bin",
+        "bytes": 798852,
+        "md5": "1f0d93118e12628d0b79c7dd8d11b80e",
+        "sha256": "3460b9fe00ffbe779b7f7f2de3b159c214cfec275c06194add0eebd951ee14e9"
+      }
+    ],
+    "normalizedSha256": "90c0c529e33a55a01cc82872e5465d612994d451fc360b0ae7e45e443d079e41",
+    "dimensionsM": [
+      1.14103,
+      1.88125,
+      0.48808
+    ],
+    "priceNote": "Curated physical-item estimate in USD cents, not a source or retailer quotation."
+  },
+  {
+    "assetId": "electric_stove",
+    "catalogId": "00000000-0000-4000-8000-000000002121",
+    "sourceUrl": "https://polyhaven.com/a/electric_stove",
+    "author": "Kuutti Siitonen",
+    "license": "CC0-1.0",
+    "licenseUrl": "https://polyhaven.com/license",
+    "downloadDate": "2026-10-18",
+    "downloads": [
+      {
+        "file": "electric_stove.gltf",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Models/gltf/1k/electric_stove/electric_stove_1k.gltf",
+        "bytes": 31234,
+        "md5": "1ec96abe416e022f792ace742d33947a",
+        "sha256": "3be4d1b9ec0ead3c41ea8ef09d61e3b7611b69cbeea26a40ea87355acb0b3c55"
+      },
+      {
+        "file": "electric_stove.bin",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Models/gltf/8k/electric_stove/electric_stove.bin",
+        "bytes": 462956,
+        "md5": "9846b43c4af868f79a95635fb9bd354d",
+        "sha256": "66f210539346b8f339b7519664ad6fa9b74d0932d8445b6b7e40eabcb40cd4f9"
+      },
+      {
+        "file": "textures/electric_stove_nor_gl_1k.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/electric_stove/electric_stove_nor_gl_1k.jpg",
+        "bytes": 427043,
+        "md5": "611bcfac2fc0eb84c8727bee1d2bfc15",
+        "sha256": "66a2f47cd0f218dc4650927e11c169b438251521b4efc556f031aa3a3b57c4f6"
+      },
+      {
+        "file": "textures/electric_stove_arm_1k.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/electric_stove/electric_stove_arm_1k.jpg",
+        "bytes": 677547,
+        "md5": "f6dd650e669f6cb8f767265a3cf80f95",
+        "sha256": "8ca9f3f56a8e4ba6f67b6748af09aed2b02bf76c451a71ee962374e52e0b4aa2"
+      },
+      {
+        "file": "textures/electric_stove_diff_1k.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/electric_stove/electric_stove_diff_1k.jpg",
+        "bytes": 446916,
+        "md5": "dd6ba5a62587e4172853321ec58388fe",
+        "sha256": "61bc269714bf37f2bf057c113c17664e224c998c78ea50f1ed85b5d2e6f2e938"
+      }
+    ],
+    "normalizedSha256": "7625079cad6391e82427b4c249cae6e79c0d2cee6c675c9db2f02f42a47463f0",
+    "dimensionsM": [
+      0.50259,
+      0.8587,
+      0.6476
+    ],
+    "priceNote": "Curated physical-item estimate in USD cents, not a source or retailer quotation."
+  },
+  {
+    "assetId": "fancy_picture_frame_02",
+    "catalogId": "00000000-0000-4000-8000-000000002122",
+    "sourceUrl": "https://polyhaven.com/a/fancy_picture_frame_02",
+    "author": "Rob Tuytel, Rico Cilliers",
+    "license": "CC0-1.0",
+    "licenseUrl": "https://polyhaven.com/license",
+    "downloadDate": "2026-10-18",
+    "downloads": [
+      {
+        "file": "fancy_picture_frame_02.gltf",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Models/gltf/1k/fancy_picture_frame_02/fancy_picture_frame_02_1k.gltf",
+        "bytes": 5085,
+        "md5": "07f596515503229724f68ee70971fef3",
+        "sha256": "1f8362b3118ffa82881657e0db9aec60aa76d6644b8030f9cd299b90415d1ef6"
+      },
+      {
+        "file": "textures/fancy_picture_frame_02_diff_1k.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/fancy_picture_frame_02/fancy_picture_frame_02_diff_1k.jpg",
+        "bytes": 216324,
+        "md5": "8f7ffb96ac8e673720bcebd7a12f9793",
+        "sha256": "7a2cccf33387518b10081dba5ec885888550322dee44f4f4db7ef322a629a1e5"
+      },
+      {
+        "file": "fancy_picture_frame_02.bin",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Models/gltf/8k/fancy_picture_frame_02/fancy_picture_frame_02.bin",
+        "bytes": 825908,
+        "md5": "352cff9f333720063a5948aaffc9d0f3",
+        "sha256": "cc94201d75e5934dce90f3adfe7ab19e63f163bd22e22bf8e594ca8f29ef459e"
+      },
+      {
+        "file": "textures/fancy_picture_frame_02_canvas_nor_gl_1k.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/fancy_picture_frame_02/fancy_picture_frame_02_canvas_nor_gl_1k.jpg",
+        "bytes": 51705,
+        "md5": "bd8da1137ef30894d06d29430eb257a8",
+        "sha256": "1c988a47da1ab126fa2487e5be62c9a763878d82987cf648e179ff46906525db"
+      },
+      {
+        "file": "textures/fancy_picture_frame_02_canvas_diff_1k.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/fancy_picture_frame_02/fancy_picture_frame_02_canvas_diff_1k.jpg",
+        "bytes": 136007,
+        "md5": "3af550bb5e86d52a7215b0b9e15ed3b4",
+        "sha256": "eca52b5f9ed8308fadf3bfda7725cde4df6a062ff2994fa4e4fcfe7ee84f9036"
+      },
+      {
+        "file": "textures/fancy_picture_frame_02_rough_1k.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/fancy_picture_frame_02/fancy_picture_frame_02_rough_1k.jpg",
+        "bytes": 165509,
+        "md5": "f89e09f8c7c56c04215f90076c25c4f6",
+        "sha256": "94e06290ae2d906485bebb9a0a870de9629824f60c307cdcfd50c5d7ff246a0b"
+      },
+      {
+        "file": "textures/fancy_picture_frame_02_nor_gl_1k.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/fancy_picture_frame_02/fancy_picture_frame_02_nor_gl_1k.jpg",
+        "bytes": 229904,
+        "md5": "53c4575296a4c54843625d72c261d223",
+        "sha256": "567bc0dc71445abc890dbf6bc50795144a8785300cea0f0cc851cc1c05d45133"
+      },
+      {
+        "file": "textures/fancy_picture_frame_02_canvas_rough_1k.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/fancy_picture_frame_02/fancy_picture_frame_02_canvas_rough_1k.jpg",
+        "bytes": 97678,
+        "md5": "697c1a6ca6331fe383e2b0ec6fc34f19",
+        "sha256": "82ca7d94a19bb51afd3c11be69a8a08fadaea901c0f770dd87f64c93b39ae57a"
+      }
+    ],
+    "normalizedSha256": "513355a3022d70747c5b4a4b6e3e551b01ab235c64a64977f9396a4d1e1ae4d4",
+    "dimensionsM": [
+      0.66054,
+      0.77105,
+      0.08904
+    ],
+    "priceNote": "Curated physical-item estimate in USD cents, not a source or retailer quotation."
+  },
+  {
+    "assetId": "folding_wooden_stool",
+    "catalogId": "00000000-0000-4000-8000-000000002123",
+    "sourceUrl": "https://polyhaven.com/a/folding_wooden_stool",
+    "author": "Ulan Cabanilla",
+    "license": "CC0-1.0",
+    "licenseUrl": "https://polyhaven.com/license",
+    "downloadDate": "2026-10-18",
+    "downloads": [
+      {
+        "file": "folding_wooden_stool.gltf",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Models/gltf/1k/folding_wooden_stool/folding_wooden_stool_1k.gltf",
+        "bytes": 2842,
+        "md5": "a19174156f8a643c4f2cb14345beb204",
+        "sha256": "c8ae926ce28737ca8b8f2ef928094fe114d7c71ca32e1040bace53337290a819"
+      },
+      {
+        "file": "textures/folding_wooden_stool_nor_gl_1k.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/folding_wooden_stool/folding_wooden_stool_nor_gl_1k.jpg",
+        "bytes": 726559,
+        "md5": "599b7f28e1f37de954e103deb03bca88",
+        "sha256": "f1c2220760d244a846cf2f0281597f18052b2d96ebb84b5eef473a72c7fd4586"
+      },
+      {
+        "file": "folding_wooden_stool.bin",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Models/gltf/4k/folding_wooden_stool/folding_wooden_stool.bin",
+        "bytes": 193016,
+        "md5": "d80f2c158986ebd3f343e19156d691fb",
+        "sha256": "84fcfeea3355ff011b9e821691fca04110705cfddba8b8617db868b4c33864fa"
+      },
+      {
+        "file": "textures/folding_wooden_stool_diff_1k.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/folding_wooden_stool/folding_wooden_stool_diff_1k.jpg",
+        "bytes": 661939,
+        "md5": "d3810ba0c43af48a0fb0039a52f28ca8",
+        "sha256": "e5927deb2ce44e6204cfd39a05960f4811cf752bacb2b687d96e04af12a4d3ad"
+      },
+      {
+        "file": "textures/folding_wooden_stool_arm_1k.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/folding_wooden_stool/folding_wooden_stool_arm_1k.jpg",
+        "bytes": 683576,
+        "md5": "2251302db3afb4b81293e593f1feb4ae",
+        "sha256": "1133c852e5ba6b1b05fe643926847d8a9b710e8ba869d825076c3d94cafa700b"
+      }
+    ],
+    "normalizedSha256": "562bc279d963aae9c4bb16ffd7d3579e5c8d4c057afe26f1da4e18a9e1febb4a",
+    "dimensionsM": [
+      0.52785,
+      0.44196,
+      0.54708
+    ],
+    "priceNote": "Curated physical-item estimate in USD cents, not a source or retailer quotation."
+  },
+  {
+    "assetId": "gallinera_chair",
+    "catalogId": "00000000-0000-4000-8000-000000002124",
+    "sourceUrl": "https://polyhaven.com/a/gallinera_chair",
+    "author": "Ulan Cabanilla",
+    "license": "CC0-1.0",
+    "licenseUrl": "https://polyhaven.com/license",
+    "downloadDate": "2026-10-18",
+    "downloads": [
+      {
+        "file": "gallinera_chair.gltf",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Models/gltf/1k/gallinera_chair/gallinera_chair_1k.gltf",
+        "bytes": 2805,
+        "md5": "60a61e7a479b8e9f9a0ec1ba5fef26bd",
+        "sha256": "0fd80d1f770fb6ce0be9ff1e07f925e18e582c8a55358d3c77d6e0fdb3f13536"
+      },
+      {
+        "file": "textures/gallinera_chair_nor_gl_1k.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/gallinera_chair/gallinera_chair_nor_gl_1k.jpg",
+        "bytes": 798335,
+        "md5": "5bb34558c38df109f61b890144757349",
+        "sha256": "6ebe996c33689b39c92a5ec14e86cfdce6e3364e1a62d8bd5fb4f9323b2d5be3"
+      },
+      {
+        "file": "textures/gallinera_chair_diff_1k.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/gallinera_chair/gallinera_chair_diff_1k.jpg",
+        "bytes": 535971,
+        "md5": "2a1254d88dcf9ff1cd2a2baf800be6aa",
+        "sha256": "5ef6f2564539bfe252583f4e8a979d6a6dd3f4b33f3fdff63af3c6885c2dcbe0"
+      },
+      {
+        "file": "textures/gallinera_chair_arm_1k.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/gallinera_chair/gallinera_chair_arm_1k.jpg",
+        "bytes": 667863,
+        "md5": "73a530b8a58e477e2e18381bc9b9f6bc",
+        "sha256": "2c19d3a3adc7260ddd9eec76bd0beef45148459740e2dd2fb7ac7d7035a96768"
+      },
+      {
+        "file": "gallinera_chair.bin",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Models/gltf/4k/gallinera_chair/gallinera_chair.bin",
+        "bytes": 353776,
+        "md5": "6d859113c6157ee9f8153fbc50260a05",
+        "sha256": "9e1b03d6aa8207f042e5ea47fc24ac6bb3c9d43df5bbe205731d9ea176040742"
+      }
+    ],
+    "normalizedSha256": "9bc6aad433f45fc52060037edf317650f4e3a9b622f6bbf16a94b9866eac698c",
+    "dimensionsM": [
+      0.58077,
+      1.03369,
+      0.60387
+    ],
+    "priceNote": "Curated physical-item estimate in USD cents, not a source or retailer quotation."
+  },
+  {
+    "assetId": "gallinera_table",
+    "catalogId": "00000000-0000-4000-8000-000000002125",
+    "sourceUrl": "https://polyhaven.com/a/gallinera_table",
+    "author": "Ulan Cabanilla",
+    "license": "CC0-1.0",
+    "licenseUrl": "https://polyhaven.com/license",
+    "downloadDate": "2026-10-18",
+    "downloads": [
+      {
+        "file": "gallinera_table.gltf",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Models/gltf/1k/gallinera_table/gallinera_table_1k.gltf",
+        "bytes": 5632,
+        "md5": "1eaaadfdefe54461f1bd5cbc00ea2eab",
+        "sha256": "6254d8b51b9fbccc86a4978796ee5d3cb7d46a78cbf2b3090ec12d8c68176a67"
+      },
+      {
+        "file": "textures/gallinera_table_diff_1k.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/gallinera_table/gallinera_table_diff_1k.jpg",
+        "bytes": 463239,
+        "md5": "27b6f5cbc368e95208d20abb00e6765c",
+        "sha256": "c052ce237c9f5cc77b523ebd9a35b69b16017305c7b3bb919a31069519b873e5"
+      },
+      {
+        "file": "textures/gallinera_table_nor_gl_1k.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/gallinera_table/gallinera_table_nor_gl_1k.jpg",
+        "bytes": 612683,
+        "md5": "b9a47910678cff4dcb9ad45c9e6a252c",
+        "sha256": "2cf4c803bf5be25c71dcf132dbfa48a479f06a07e93fe7ab75896ff28d34ce1e"
+      },
+      {
+        "file": "textures/gallinera_table_arm_1k.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/gallinera_table/gallinera_table_arm_1k.jpg",
+        "bytes": 566556,
+        "md5": "a6602d77630739efa5873959f5f18e19",
+        "sha256": "7a23e58c0aa26fa69f4e17dc9626b8fd90a1845a4b63186407417d2ad3f720c3"
+      },
+      {
+        "file": "gallinera_table.bin",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Models/gltf/4k/gallinera_table/gallinera_table.bin",
+        "bytes": 190608,
+        "md5": "a9819f97fb9124dd2b0745bdab88bbff",
+        "sha256": "ba3f5e6f1b7ffcf82450f2b012f39055a8987485ce6c0227238adeec065c1a36"
+      }
+    ],
+    "normalizedSha256": "7b39d236ff9a3ac5f4a679cc3390d318c6f11628e2394908a47787d0715c538a",
+    "dimensionsM": [
+      0.83008,
+      0.48776,
+      0.51826
+    ],
+    "priceNote": "Curated physical-item estimate in USD cents, not a source or retailer quotation."
+  },
+  {
+    "assetId": "gothic_coffee_table",
+    "catalogId": "00000000-0000-4000-8000-000000002126",
+    "sourceUrl": "https://polyhaven.com/a/gothic_coffee_table",
+    "author": "Ulan Cabanilla",
+    "license": "CC0-1.0",
+    "licenseUrl": "https://polyhaven.com/license",
+    "downloadDate": "2026-10-18",
+    "downloads": [
+      {
+        "file": "gothic_coffee_table.gltf",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Models/gltf/1k/gothic_coffee_table/gothic_coffee_table_1k.gltf",
+        "bytes": 2842,
+        "md5": "feca9bfb96010e34e735627fe158b201",
+        "sha256": "4368fa0a0d81cd8651bfcc8a6b48bf43576e1549770c1057eea71eea3d99d54b"
+      },
+      {
+        "file": "textures/gothic_coffee_table_nor_gl_1k.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/gothic_coffee_table/gothic_coffee_table_nor_gl_1k.jpg",
+        "bytes": 836624,
+        "md5": "9dc3073a3b210554be58db913116ffdb",
+        "sha256": "9c066c887be6cb5ccf78979a631e48a5b6f58adbde5b1395481055f20b98d2a0"
+      },
+      {
+        "file": "textures/gothic_coffee_table_diff_1k.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/gothic_coffee_table/gothic_coffee_table_diff_1k.jpg",
+        "bytes": 618166,
+        "md5": "b21f338ebdfe546f17d2d5dd16150725",
+        "sha256": "d3e2f091c0010da1f5e5e974ee09c2639674a78231a8b920b2f95098be8a588d"
+      },
+      {
+        "file": "textures/gothic_coffee_table_arm_1k.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/gothic_coffee_table/gothic_coffee_table_arm_1k.jpg",
+        "bytes": 965587,
+        "md5": "c950595ab24ec4ad0aafe24c08aec004",
+        "sha256": "da1f1a69554aa5b5fd571f32ac54a9fe2e9cafc235a00a901e887537ce0174dc"
+      },
+      {
+        "file": "gothic_coffee_table.bin",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Models/gltf/8k/gothic_coffee_table/gothic_coffee_table.bin",
+        "bytes": 843496,
+        "md5": "d8c45735d6effb7fc383dba30c35012d",
+        "sha256": "6f138d3da02e5d70b2cd0932b015d72a306b9f91acbbc8e6abdb2f4982eddb40"
+      }
+    ],
+    "normalizedSha256": "53c5ede58f8e004092334f2e6a697a9432839b1b368b075b3658d3b012b0e4f0",
+    "dimensionsM": [
+      1.44309,
+      0.55884,
+      1.44309
+    ],
+    "priceNote": "Curated physical-item estimate in USD cents, not a source or retailer quotation."
+  },
+  {
+    "assetId": "GothicBed_01",
+    "catalogId": "00000000-0000-4000-8000-000000002127",
+    "sourceUrl": "https://polyhaven.com/a/GothicBed_01",
+    "author": "Kirill Sannikov",
+    "license": "CC0-1.0",
+    "licenseUrl": "https://polyhaven.com/license",
+    "downloadDate": "2026-10-18",
+    "downloads": [
+      {
+        "file": "GothicBed_01.gltf",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Models/gltf/1k/GothicBed_01/GothicBed_01_1k.gltf",
+        "bytes": 2683,
+        "md5": "0635fcafb5d406ed9b10655a91f1eabb",
+        "sha256": "67df189dd3a645936827f3cc123fb9e97ca9d2201d1e4090762bf477cab82fc0"
+      },
+      {
+        "file": "textures/GothicBed_01_diff_1k.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/GothicBed_01/GothicBed_01_diff_1k.jpg",
+        "bytes": 116672,
+        "md5": "d716199b889debf74c6fb2a8435f3625",
+        "sha256": "f7e8611a731a87a42a35d92e59f78b848ac20475827b79cb8aa34df0dd5bcbd5"
+      },
+      {
+        "file": "textures/GothicBed_01_nor_gl_1k.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/GothicBed_01/GothicBed_01_nor_gl_1k.jpg",
+        "bytes": 196568,
+        "md5": "053bdd651a8cfe4e271c59976bd7c646",
+        "sha256": "27533a33617689035cf9880803ed19af45550864442734ee9898697933b7319f"
+      },
+      {
+        "file": "GothicBed_01.bin",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Models/gltf/4k/GothicBed_01/GothicBed_01.bin",
+        "bytes": 658648,
+        "md5": "6311b36b274a2062e20083631acddd18",
+        "sha256": "2276e86480c49dfb63a4671a9637621f88727708cf83342156c157a1d89f747b"
+      },
+      {
+        "file": "textures/GothicBed_01_arm_1k.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/GothicBed_01/GothicBed_01_arm_1k.jpg",
+        "bytes": 180642,
+        "md5": "a4e48dc5745de68a3ae2d68ba7a48f97",
+        "sha256": "049014a0bb54fd3da3b555d90966b63cad7e35feb5470b578524a7b1cec8506a"
+      }
+    ],
+    "normalizedSha256": "7c01598d176f33b03a0c8dc8fee81cae71ff28680e2a151d94bc4bf4d8833b78",
+    "dimensionsM": [
+      1.49381,
+      1.53397,
+      2.04
+    ],
+    "priceNote": "Curated physical-item estimate in USD cents, not a source or retailer quotation."
+  },
+  {
+    "assetId": "GothicCabinet_01",
+    "catalogId": "00000000-0000-4000-8000-000000002128",
+    "sourceUrl": "https://polyhaven.com/a/GothicCabinet_01",
+    "author": "Kirill Sannikov",
+    "license": "CC0-1.0",
+    "licenseUrl": "https://polyhaven.com/license",
+    "downloadDate": "2026-10-18",
+    "downloads": [
+      {
+        "file": "GothicCabinet_01.gltf",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Models/gltf/1k/GothicCabinet_01/GothicCabinet_01_1k.gltf",
+        "bytes": 8968,
+        "md5": "d6ec468ab981336f76f35f10d566e460",
+        "sha256": "1b3506f78e263c66e90d4a84b9efa883fe0bb02a13ff8ead2b3a265024e045ce"
+      },
+      {
+        "file": "GothicCabinet_01.bin",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Models/gltf/4k/GothicCabinet_01/GothicCabinet_01.bin",
+        "bytes": 486532,
+        "md5": "4c2f20b4b5fbf8c33b86b04dcf805c5f",
+        "sha256": "f1019b130872cad82d5bf5e27528a980fabbd69a9128340e5eb7530ea2d7c17b"
+      },
+      {
+        "file": "textures/GothicCabinet_01_nor_gl_1k.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/GothicCabinet_01/GothicCabinet_01_nor_gl_1k.jpg",
+        "bytes": 169970,
+        "md5": "a2912d1111ac0a4877af75280e539763",
+        "sha256": "8c413ff4acbc3b4c7b58cb08e9a921f1781817a24533e0e9af6880ef40bfd68c"
+      },
+      {
+        "file": "textures/GothicCabinet_01_diff_1k.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/GothicCabinet_01/GothicCabinet_01_diff_1k.jpg",
+        "bytes": 136344,
+        "md5": "67ce3b2ce0a43cd209114084d49de35c",
+        "sha256": "9b9586d9a840045d3f27ea4237ec56d713212fb877aceb2d0fc1cb75c7d59b98"
+      },
+      {
+        "file": "textures/GothicCabinet_01_arm_1k.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/GothicCabinet_01/GothicCabinet_01_arm_1k.jpg",
+        "bytes": 213632,
+        "md5": "8f88a6ca9bde9970644ba65086a33f39",
+        "sha256": "46b4a66b23836d37d5771ec024abfdc935c7b2bb17d73e2d802abca37edb6994"
+      }
+    ],
+    "normalizedSha256": "6db38e2128735db7ae278cd7a8fe5ae86ac3b845b50e60d586e1ca17c9153701",
+    "dimensionsM": [
+      1.719,
+      2.3609,
+      1.11647
+    ],
+    "priceNote": "Curated physical-item estimate in USD cents, not a source or retailer quotation."
+  },
+  {
+    "assetId": "GothicCommode_01",
+    "catalogId": "00000000-0000-4000-8000-000000002129",
+    "sourceUrl": "https://polyhaven.com/a/GothicCommode_01",
+    "author": "Kirill Sannikov",
+    "license": "CC0-1.0",
+    "licenseUrl": "https://polyhaven.com/license",
+    "downloadDate": "2026-10-18",
+    "downloads": [
+      {
+        "file": "GothicCommode_01.gltf",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Models/gltf/1k/GothicCommode_01/GothicCommode_01_1k.gltf",
+        "bytes": 7054,
+        "md5": "491a4bb1c267ecd9f6592c55308a5286",
+        "sha256": "290602a9d999ddff0073288758e162fbfbb69834c0cd93e83f6691996e94d775"
+      },
+      {
+        "file": "textures/GothicCommode_01_arm_1k.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/GothicCommode_01/GothicCommode_01_arm_1k.jpg",
+        "bytes": 173750,
+        "md5": "b4eacccbd3add26eb3c714ea8585a90d",
+        "sha256": "c0a23a8775c8714d5f6cea62af044480b71b935e56eab675ee9b3f0330e5dce5"
+      },
+      {
+        "file": "textures/GothicCommode_01_nor_gl_1k.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/GothicCommode_01/GothicCommode_01_nor_gl_1k.jpg",
+        "bytes": 148711,
+        "md5": "98f49cd397fc5ee4e95e7c33eef140f9",
+        "sha256": "bafa9433cc98fc52687958989015d7f1b9c4048ac930cb2e1174edef8bd34d8e"
+      },
+      {
+        "file": "GothicCommode_01.bin",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Models/gltf/4k/GothicCommode_01/GothicCommode_01.bin",
+        "bytes": 135224,
+        "md5": "4f691c34556ea46dd5bc59833e2d5ae9",
+        "sha256": "1a1d7b7840d7357a21a4825a10df00b7957355c21babced7864592593bd97293"
+      },
+      {
+        "file": "textures/GothicCommode_01_diff_1k.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/GothicCommode_01/GothicCommode_01_diff_1k.jpg",
+        "bytes": 139422,
+        "md5": "f4a5fb099986a9627f675efe1b77ae10",
+        "sha256": "096ec1663936b25f773fd3070c89a732cf3e856187404e9715fa2c8311325800"
+      }
+    ],
+    "normalizedSha256": "7126c1814afade42103d3b0c7c09bfe92876a6a0d995bc94d1404a119d37c7fa",
+    "dimensionsM": [
+      1.20139,
+      1.21204,
+      0.58063
+    ],
+    "priceNote": "Curated physical-item estimate in USD cents, not a source or retailer quotation."
+  },
+  {
+    "assetId": "GreenChair_01",
+    "catalogId": "00000000-0000-4000-8000-000000002130",
+    "sourceUrl": "https://polyhaven.com/a/GreenChair_01",
+    "author": "Kirill Sannikov",
+    "license": "CC0-1.0",
+    "licenseUrl": "https://polyhaven.com/license",
+    "downloadDate": "2026-10-18",
+    "downloads": [
+      {
+        "file": "GreenChair_01.gltf",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Models/gltf/1k/GreenChair_01/GreenChair_01_1k.gltf",
+        "bytes": 2695,
+        "md5": "a891e84c1aa77d8f163609b347c1b421",
+        "sha256": "d1e4946ac99ab9e64c82d802fe5cd49d962750e34b8d284762b3fe2b00ba8a45"
+      },
+      {
+        "file": "textures/GreenChair_01_arm_1k.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/GreenChair_01/GreenChair_01_arm_1k.jpg",
+        "bytes": 140947,
+        "md5": "b986c428c4db443ed08f7925a08531f1",
+        "sha256": "d522e08441f3d54977e085b9e54de125efea7e963d3f433a5bd74cad031d2178"
+      },
+      {
+        "file": "textures/GreenChair_01_nor_gl_1k.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/GreenChair_01/GreenChair_01_nor_gl_1k.jpg",
+        "bytes": 213507,
+        "md5": "19a8e67d3bf9153e9f68a28f1507aaee",
+        "sha256": "008b49786f8395301b15b398856f56bd04357096ce542da76f1a3dcad8c28fc8"
+      },
+      {
+        "file": "textures/GreenChair_01_diff_1k.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/GreenChair_01/GreenChair_01_diff_1k.jpg",
+        "bytes": 131727,
+        "md5": "7304f991bdcd2c534243bc7e86c62c43",
+        "sha256": "fb7ec456b37dc95fb73d0b08bfa2802c304a40263517d05e674657ad356cfac4"
+      },
+      {
+        "file": "GreenChair_01.bin",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Models/gltf/4k/GreenChair_01/GreenChair_01.bin",
+        "bytes": 119168,
+        "md5": "9c84856d32c4d61b87fb5eba1f8339a3",
+        "sha256": "9070a41bcf38005997fe71a49e50b942b427ec05938413c9dc204df0b781e410"
+      }
+    ],
+    "normalizedSha256": "fbf1f30b1a1cc316b53190a20402c53d48d1d652d7d1c987b243debd03f45d3e",
+    "dimensionsM": [
+      0.67315,
+      1.05851,
+      0.66437
+    ],
+    "priceNote": "Curated physical-item estimate in USD cents, not a source or retailer quotation."
+  },
+  {
+    "assetId": "hanging_industrial_lamp",
+    "catalogId": "00000000-0000-4000-8000-000000002131",
+    "sourceUrl": "https://polyhaven.com/a/hanging_industrial_lamp",
+    "author": "Kuutti Siitonen",
+    "license": "CC0-1.0",
+    "licenseUrl": "https://polyhaven.com/license",
+    "downloadDate": "2026-10-18",
+    "downloads": [
+      {
+        "file": "hanging_industrial_lamp.gltf",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Models/gltf/1k/hanging_industrial_lamp/hanging_industrial_lamp_1k.gltf",
+        "bytes": 5436,
+        "md5": "59baa7ef17a7696ac26bc5bd70fbb3df",
+        "sha256": "97e31aac7c350bc40294e78f39f66d5aa998ac2703be1d09b5dab9ae7027876f"
+      },
+      {
+        "file": "textures/hanging_industrial_lamp_emissive_1k.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/hanging_industrial_lamp/hanging_industrial_lamp_emissive_1k.jpg",
+        "bytes": 40173,
+        "md5": "a9e170515931ba022ec6436e188d360b",
+        "sha256": "ebf7fed3b0c1d6104d91b77195c7eb0e3da6927562ec4a612700b8afd7574099"
+      },
+      {
+        "file": "textures/hanging_industrial_lamp_nor_gl_1k.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/hanging_industrial_lamp/hanging_industrial_lamp_nor_gl_1k.jpg",
+        "bytes": 753861,
+        "md5": "6820f01127e747636024838f0bde0494",
+        "sha256": "ef524876a1a4c5b6d7fb4c652d21e55474ee85b50b8896537fd60e82b288b5f0"
+      },
+      {
+        "file": "textures/hanging_industrial_lamp_diff_1k.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/hanging_industrial_lamp/hanging_industrial_lamp_diff_1k.jpg",
+        "bytes": 708934,
+        "md5": "9931801f2ff2533c891105c7a41af39d",
+        "sha256": "22cafeccd4421495c860f8c522bb9e45eaa19fda6ec3a2365dcb5b1db66aad96"
+      },
+      {
+        "file": "textures/hanging_industrial_lamp_arm_1k.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/hanging_industrial_lamp/hanging_industrial_lamp_arm_1k.jpg",
+        "bytes": 835394,
+        "md5": "077f309d4ed9d38b19be1aa75462771e",
+        "sha256": "888d78437900b43874af5195694c7b867568c9a96ef528846ad7d001f9e096ae"
+      },
+      {
+        "file": "textures/hanging_industrial_lamp_glass_nor_gl_1k.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/hanging_industrial_lamp/hanging_industrial_lamp_glass_nor_gl_1k.jpg",
+        "bytes": 555604,
+        "md5": "2e64e3e249137658baaa7cde64ad4def",
+        "sha256": "5393af7d78e85689cba7c7b198fafddcee540d3125ebd133799d56f19945d8bf"
+      },
+      {
+        "file": "hanging_industrial_lamp.bin",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Models/gltf/4k/hanging_industrial_lamp/hanging_industrial_lamp.bin",
+        "bytes": 344252,
+        "md5": "7148574f0db05abe68f7e51565abe2ce",
+        "sha256": "12e8293535e816f1e8bebc94e95da092599909d3c1b9b6cc7384d90307db06ca"
+      }
+    ],
+    "normalizedSha256": "669b13a526d5ca710ffa57fdb8b6a37bb8343011f7a2613d7544aa4f714a6e3e",
+    "dimensionsM": [
+      0.54968,
+      1.35535,
+      0.54968
+    ],
+    "priceNote": "Curated physical-item estimate in USD cents, not a source or retailer quotation."
+  },
+  {
+    "assetId": "hanging_picture_frame_01",
+    "catalogId": "00000000-0000-4000-8000-000000002132",
+    "sourceUrl": "https://polyhaven.com/a/hanging_picture_frame_01",
+    "author": "James Ray Cock",
+    "license": "CC0-1.0",
+    "licenseUrl": "https://polyhaven.com/license",
+    "downloadDate": "2026-10-18",
+    "downloads": [
+      {
+        "file": "hanging_picture_frame_01.gltf",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Models/gltf/1k/hanging_picture_frame_01/hanging_picture_frame_01_1k.gltf",
+        "bytes": 6495,
+        "md5": "54726d9c81e19d8745b3d26d18b89c89",
+        "sha256": "00aaeab14751485287443b4c5cc2ee5673136510595daa6a2948519c116ad47b"
+      },
+      {
+        "file": "textures/hanging_picture_frame_01_artwork_roughness_1k.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/hanging_picture_frame_01/hanging_picture_frame_01_artwork_roughness_1k.jpg",
+        "bytes": 12684,
+        "md5": "b8e5b8431b0c53b20d83ec0bcff51747",
+        "sha256": "62d875e9427f5d71f1bb4d9dc9569e34465bfd3067b8b13f5644b73e23a09fa3"
+      },
+      {
+        "file": "hanging_picture_frame_01.bin",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Models/gltf/8k/hanging_picture_frame_01/hanging_picture_frame_01.bin",
+        "bytes": 86448,
+        "md5": "ed2c512ea5e3dcdcfc70c53b4de24099",
+        "sha256": "27ec66baf3b227d004d2d325e18c77df6b7a1a7f74afd7d5dbd4f950bc2f5ca6"
+      },
+      {
+        "file": "textures/hanging_picture_frame_01_artwork_diff_1k.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/hanging_picture_frame_01/hanging_picture_frame_01_artwork_diff_1k.jpg",
+        "bytes": 44185,
+        "md5": "bf926c376e335ac3272564924f9d4e52",
+        "sha256": "2e177d2061d2204efc2a1285dc0a30220148b41134d331ed93fd21ae8b15f6a0"
+      },
+      {
+        "file": "textures/hanging_picture_frame_01_artwork_nor_gl_1k.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/hanging_picture_frame_01/hanging_picture_frame_01_artwork_nor_gl_1k.jpg",
+        "bytes": 17259,
+        "md5": "6c3858a15263cfd9621d88c2eabe9d71",
+        "sha256": "f91caa0cacbefa2c30dff935f0aee41e5f7493f6ba881e5a5021b8a220084195"
+      },
+      {
+        "file": "textures/hanging_picture_frame_01_arm_1k.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/hanging_picture_frame_01/hanging_picture_frame_01_arm_1k.jpg",
+        "bytes": 101751,
+        "md5": "8d9dd625ec0705f3ac0a2ec2b402844e",
+        "sha256": "aec54462e91d53610f46b2bb760cbdf453e7b87c5193efa24f995cd5bb0253bc"
+      },
+      {
+        "file": "textures/hanging_picture_frame_01_nor_gl_1k.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/hanging_picture_frame_01/hanging_picture_frame_01_nor_gl_1k.jpg",
+        "bytes": 40281,
+        "md5": "2ff7cca9a9b2918b5476d39c13592214",
+        "sha256": "6f16f93ee6fcffb27dbd5ebf3de8fda71c77c7e1abd61ae9261715029be4d43e"
+      },
+      {
+        "file": "textures/hanging_picture_frame_01_diff_1k.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/hanging_picture_frame_01/hanging_picture_frame_01_diff_1k.jpg",
+        "bytes": 88363,
+        "md5": "4311cd03620cafa59976f9e8b7b26f88",
+        "sha256": "a6aa51141299ff7366b6e1ac1496dee2d8bd2d6fe775ea7d1fbbb299b2afb5e8"
+      }
+    ],
+    "normalizedSha256": "a975a9309f29f3cc8d86ce41952520294aa505d97ff3670d344f775b87f12ef3",
+    "dimensionsM": [
+      0.59396,
+      0.841,
+      0.01571
+    ],
+    "priceNote": "Curated physical-item estimate in USD cents, not a source or retailer quotation."
+  },
+  {
+    "assetId": "hanging_picture_frame_03",
+    "catalogId": "00000000-0000-4000-8000-000000002133",
+    "sourceUrl": "https://polyhaven.com/a/hanging_picture_frame_03",
+    "author": "James Ray Cock",
+    "license": "CC0-1.0",
+    "licenseUrl": "https://polyhaven.com/license",
+    "downloadDate": "2026-10-18",
+    "downloads": [
+      {
+        "file": "hanging_picture_frame_03.gltf",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Models/gltf/1k/hanging_picture_frame_03/hanging_picture_frame_03_1k.gltf",
+        "bytes": 7644,
+        "md5": "e34b163b57cb61523094326c6b6a34ea",
+        "sha256": "39223fc47a8714cdf4db3b4d68042a02207db5ec3947bf021e47203540e21ddd"
+      },
+      {
+        "file": "textures/hanging_picture_frame_03_nor_gl_1k.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/hanging_picture_frame_03/hanging_picture_frame_03_nor_gl_1k.jpg",
+        "bytes": 110456,
+        "md5": "ad1e74410eeaeadd7bdbf0d24bdcba06",
+        "sha256": "09d7ac399afbcecbef406b72242bde538a0533bc0f509da40bbcafeb9e050137"
+      },
+      {
+        "file": "textures/hanging_picture_frame_03_diff_1k.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/hanging_picture_frame_03/hanging_picture_frame_03_diff_1k.jpg",
+        "bytes": 108895,
+        "md5": "eb74af517920a3e3a585caa7738dc21f",
+        "sha256": "a75f9cd4535bbdbf46d8be686b9a6c1edc5db6fd00ae373c7469f349665f52bd"
+      },
+      {
+        "file": "textures/hanging_picture_frame_03_artwork_rough_1k.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/hanging_picture_frame_03/hanging_picture_frame_03_artwork_rough_1k.jpg",
+        "bytes": 12683,
+        "md5": "b2bfc5fe0d642f36c18be10ebc3b195a",
+        "sha256": "5d64b06ca0862436e3836b6bfe021565a30126d89ec0bb820a918d9fc4a86559"
+      },
+      {
+        "file": "textures/hanging_picture_frame_03_arm_1k.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/hanging_picture_frame_03/hanging_picture_frame_03_arm_1k.jpg",
+        "bytes": 110215,
+        "md5": "9434e6624b7ab475038e004c33399490",
+        "sha256": "f2fe1ad0978bc9a7fcdbd55158e481fcb1519c62d6fc850603433b3eb9a7c080"
+      },
+      {
+        "file": "textures/hanging_picture_frame_03_rough_1k.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/hanging_picture_frame_03/hanging_picture_frame_03_rough_1k.jpg",
+        "bytes": 120448,
+        "md5": "649e8b433b885c71556f03fb541fcfba",
+        "sha256": "acbb5cfb61e68c5fd966768624fc1851f60feae06ae50aa96affaabc8d05be7b"
+      },
+      {
+        "file": "textures/hanging_picture_frame_03_artwork_nor_gl_1k.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/hanging_picture_frame_03/hanging_picture_frame_03_artwork_nor_gl_1k.jpg",
+        "bytes": 17121,
+        "md5": "47a973b5d523c23ccafaa60113ca1d45",
+        "sha256": "9dccb54616b192a1c56b52891de27d1a047da9dfee0fa4b2bff540e89220a8b5"
+      },
+      {
+        "file": "textures/hanging_picture_frame_03_artwork_diff_1k.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/hanging_picture_frame_03/hanging_picture_frame_03_artwork_diff_1k.jpg",
+        "bytes": 131410,
+        "md5": "181540c5304ae5cd0e024e1d57a888a4",
+        "sha256": "1f6c82a48a0ea02d7a66956282d734ee39860ac5ca98afb4dd81f6a496f2176e"
+      },
+      {
+        "file": "hanging_picture_frame_03.bin",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Models/gltf/8k/hanging_picture_frame_03/hanging_picture_frame_03.bin",
+        "bytes": 643304,
+        "md5": "01220ffd91ddb834804c2df336915f1e",
+        "sha256": "e96c6046c6e5b6c8174a53d5956b6147eeec16cb426aa2a8d761216381b75561"
+      }
+    ],
+    "normalizedSha256": "aa9a9187ffd25a22110dac021e0237b563befbcdbfcfc53f1e8c902bfa229420",
+    "dimensionsM": [
+      0.38501,
+      0.5024,
+      0.03175
+    ],
+    "priceNote": "Curated physical-item estimate in USD cents, not a source or retailer quotation."
+  },
+  {
+    "assetId": "industrial_coffee_table",
+    "catalogId": "00000000-0000-4000-8000-000000002134",
+    "sourceUrl": "https://polyhaven.com/a/industrial_coffee_table",
+    "author": "Ulan Cabanilla",
+    "license": "CC0-1.0",
+    "licenseUrl": "https://polyhaven.com/license",
+    "downloadDate": "2026-10-18",
+    "downloads": [
+      {
+        "file": "industrial_coffee_table.gltf",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Models/gltf/1k/industrial_coffee_table/industrial_coffee_table_1k.gltf",
+        "bytes": 2993,
+        "md5": "d6ca679d734d048126e431841052259d",
+        "sha256": "e692c26fa4c9179ee2f3f9caa95900e271de4f549e3eabf2b4a3aa1217eaae78"
+      },
+      {
+        "file": "textures/industrial_coffee_table_nor_gl_1k.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/industrial_coffee_table/industrial_coffee_table_nor_gl_1k.jpg",
+        "bytes": 531606,
+        "md5": "1687add9668f8d58742a0067b065c2d7",
+        "sha256": "a18b3b4509827c84cfa30df0e0d9c207dd09c71d52fc54e34a6d6898d17af968"
+      },
+      {
+        "file": "textures/industrial_coffee_table_diff_1k.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/industrial_coffee_table/industrial_coffee_table_diff_1k.jpg",
+        "bytes": 574858,
+        "md5": "166f1baae88b779ea5b4bc2be1a54d60",
+        "sha256": "964a1b580877e607ee8facef0be6fe963db847e160676e28942b2f28c3a8b5b7"
+      },
+      {
+        "file": "textures/industrial_coffee_table_arm_1k.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/industrial_coffee_table/industrial_coffee_table_arm_1k.jpg",
+        "bytes": 800264,
+        "md5": "4af902436180f17a44dae2fb5dee58f6",
+        "sha256": "6a10ab1b6bb62907654966e39cf53d95a31f93a9cf4c9e0d408cbca1f175ef2c"
+      },
+      {
+        "file": "industrial_coffee_table.bin",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Models/gltf/8k/industrial_coffee_table/industrial_coffee_table.bin",
+        "bytes": 1335000,
+        "md5": "e6cc0b48e09c9b4aea5bd477ebda08a7",
+        "sha256": "a38f03b1a036deb7c959abca531ae2b22c3392de66cba8e9dab2f6a59ab05eca"
+      }
+    ],
+    "normalizedSha256": "0aa23e610ccaf24ddad6509a832f488e7721c28291e693cc5d0f1b1c1f8d08a6",
+    "dimensionsM": [
+      0.77826,
+      0.63842,
+      0.75793
+    ],
+    "priceNote": "Curated physical-item estimate in USD cents, not a source or retailer quotation."
+  },
+  {
+    "assetId": "industrial_wall_lamp",
+    "catalogId": "00000000-0000-4000-8000-000000002135",
+    "sourceUrl": "https://polyhaven.com/a/industrial_wall_lamp",
+    "author": "Kuutti Siitonen",
+    "license": "CC0-1.0",
+    "licenseUrl": "https://polyhaven.com/license",
+    "downloadDate": "2026-10-18",
+    "downloads": [
+      {
+        "file": "industrial_wall_lamp.gltf",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Models/gltf/1k/industrial_wall_lamp/industrial_wall_lamp_1k.gltf",
+        "bytes": 5800,
+        "md5": "3e6245e63698d5b7aef862280ec77d74",
+        "sha256": "5a2c0d8bdb52fe168727f4200818ac0c2adbded32f0b9dc09cfe224249f9e266"
+      },
+      {
+        "file": "textures/industrial_wall_lamp_emissive_1k.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/industrial_wall_lamp/industrial_wall_lamp_emissive_1k.jpg",
+        "bytes": 62349,
+        "md5": "32a123a424debe690c0bde4dc0ddeab0",
+        "sha256": "cf80eeeb6fec87499fb8444f554eae62e471ad79f8906d6fd693d7fde53b012f"
+      },
+      {
+        "file": "textures/industrial_wall_lamp_nor_gl_1k.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/industrial_wall_lamp/industrial_wall_lamp_nor_gl_1k.jpg",
+        "bytes": 673018,
+        "md5": "e1b1f9f223e26c4631418a338f1fe08f",
+        "sha256": "427bafa2f14d9f81a5949507d5d6915bfb4b70a8e5e5076a3a18c7de49b3d78b"
+      },
+      {
+        "file": "textures/industrial_wall_lamp_diff_1k.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/industrial_wall_lamp/industrial_wall_lamp_diff_1k.jpg",
+        "bytes": 669629,
+        "md5": "fec1b0755dccb02b19b6a386169460cc",
+        "sha256": "e0f824b7e639fceb7ca5b7b7f67a8168bc53db184b818770126167d16d424b2e"
+      },
+      {
+        "file": "textures/industrial_wall_lamp_arm_1k.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/industrial_wall_lamp/industrial_wall_lamp_arm_1k.jpg",
+        "bytes": 753080,
+        "md5": "10de18cfac3070f42bc4fcd79d3993f4",
+        "sha256": "70adef2921bfcf985f951f9f85fca8dbfb63dc84535613c3872684fea65ab025"
+      },
+      {
+        "file": "textures/industrial_wall_lamp_glass_nor_gl_1k.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/industrial_wall_lamp/industrial_wall_lamp_glass_nor_gl_1k.jpg",
+        "bytes": 585913,
+        "md5": "05d60c2d147a240b347023e01df7129f",
+        "sha256": "73ce4f34d90aee29db9a5e301934c0642bf89136353d7e400f63db1c2f99f345"
+      },
+      {
+        "file": "textures/industrial_wall_lamp_glass_diff_1k.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/industrial_wall_lamp/industrial_wall_lamp_glass_diff_1k.jpg",
+        "bytes": 316099,
+        "md5": "3b92d16c0f316b2648e2c4dbd0ed4776",
+        "sha256": "215457a5d41ae5d999e94f4ea0f424ff769940e71e1449ce712f35687e33af67"
+      },
+      {
+        "file": "textures/industrial_wall_lamp_glass_arm_1k.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/industrial_wall_lamp/industrial_wall_lamp_glass_arm_1k.jpg",
+        "bytes": 570850,
+        "md5": "8e7922054b07fcf58beb8009f88db049",
+        "sha256": "a3ba7f76ff395ada04a804b94f4f2f506bc994336189916d2a414173e2360069"
+      },
+      {
+        "file": "industrial_wall_lamp.bin",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Models/gltf/4k/industrial_wall_lamp/industrial_wall_lamp.bin",
+        "bytes": 141492,
+        "md5": "86407c4250e46ad39c5a86e1dc1034f9",
+        "sha256": "d0a6a08b5e2e83ff8d6eb61bb5daa74654b4ff8d9c634348c87f83dbda4837a2"
+      }
+    ],
+    "normalizedSha256": "44b2e76cafb654363d9c110bf9aed8dbfcbb993664efc32012c4e8da034bf8dd",
+    "dimensionsM": [
+      0.27345,
+      0.42991,
+      0.1404
+    ],
+    "priceNote": "Curated physical-item estimate in USD cents, not a source or retailer quotation."
+  },
+  {
+    "assetId": "lantern_chandelier_01",
+    "catalogId": "00000000-0000-4000-8000-000000002136",
+    "sourceUrl": "https://polyhaven.com/a/lantern_chandelier_01",
+    "author": "Kirill Sannikov",
+    "license": "CC0-1.0",
+    "licenseUrl": "https://polyhaven.com/license",
+    "downloadDate": "2026-10-18",
+    "downloads": [
+      {
+        "file": "lantern_chandelier_01.gltf",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Models/gltf/1k/lantern_chandelier_01/lantern_chandelier_01_1k.gltf",
+        "bytes": 7774,
+        "md5": "1692aed50765a13f631d65cb64bf9a4f",
+        "sha256": "dc5480e03b82d12521fc46bdb73d4a0291641cfa0d4e4c0fe21f3a087bc69468"
+      },
+      {
+        "file": "textures/lantern_chandelier_01_glass_arm_1k.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/lantern_chandelier_01/lantern_chandelier_01_glass_arm_1k.jpg",
+        "bytes": 23669,
+        "md5": "034728b008419f7e58c3100519d42c77",
+        "sha256": "0946fcf83e9839caaa91e978d851cebcdb080f5e58e41cb912a967efdda8eca2"
+      },
+      {
+        "file": "textures/lantern_chandelier_01_glass_nor_gl_1k.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/lantern_chandelier_01/lantern_chandelier_01_glass_nor_gl_1k.jpg",
+        "bytes": 504041,
+        "md5": "ae5f7fddd9b158f308e092216fcce457",
+        "sha256": "b2b71d166f9f42ac916c3d3139652cd2bbb8158ba69003777ecb9ec326ecfdc7"
+      },
+      {
+        "file": "textures/lantern_chandelier_01_arm_1k.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/lantern_chandelier_01/lantern_chandelier_01_arm_1k.jpg",
+        "bytes": 307956,
+        "md5": "c3f81f516235c19f5529db8eeed82967",
+        "sha256": "759c5d302fb6b6443677d221b16010395f70018d0f5eb83913c4c9ebad5efb0e"
+      },
+      {
+        "file": "textures/lantern_chandelier_01_diff_1k.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/lantern_chandelier_01/lantern_chandelier_01_diff_1k.jpg",
+        "bytes": 166693,
+        "md5": "37d15a3440e919c20a6dfb4f8a9e68c9",
+        "sha256": "72b46da4e813c1e3ef27a9ddc4cc849a4c6de313ac2925b189c58a8813233313"
+      },
+      {
+        "file": "textures/lantern_chandelier_01_glass_diff_1k.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/lantern_chandelier_01/lantern_chandelier_01_glass_diff_1k.jpg",
+        "bytes": 22100,
+        "md5": "3d1c653ffd71bad4cd59ac3c7b323faa",
+        "sha256": "b7f9a93f77db82980c2e5f5e5667e1e073118e881bd500e9e1a45e5de5551103"
+      },
+      {
+        "file": "textures/lantern_chandelier_01_glass_alpha_1k.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/lantern_chandelier_01/lantern_chandelier_01_glass_alpha_1k.jpg",
+        "bytes": 19893,
+        "md5": "4baa22e6d91bdfc1784828914bb99410",
+        "sha256": "facc4b2c8b0530175cb669c3230ad42c001402d6125d7954aa6506a76f7a423f"
+      },
+      {
+        "file": "textures/lantern_chandelier_01_nor_gl_1k.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/lantern_chandelier_01/lantern_chandelier_01_nor_gl_1k.jpg",
+        "bytes": 163651,
+        "md5": "dc586af8f1abf9950241eac67e5a6ba5",
+        "sha256": "c09551358d2f95467e3af5ec5b2cd9338f84a23980c1536157e9291e01c3d94d"
+      },
+      {
+        "file": "lantern_chandelier_01.bin",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Models/gltf/8k/lantern_chandelier_01/lantern_chandelier_01.bin",
+        "bytes": 264348,
+        "md5": "5a341ffae56b0f2defcad4c3f37bb35d",
+        "sha256": "2431ab40b0c336600ba58c3144b6cb257370245a5096938363aa4b796aaa5cee"
+      }
+    ],
+    "normalizedSha256": "bae37f6300fbb0bdefaff6a8068413af6d38a56759b597af5a77138a44191c12",
+    "dimensionsM": [
+      0.5792,
+      0.87759,
+      0.5746
+    ],
+    "priceNote": "Curated physical-item estimate in USD cents, not a source or retailer quotation."
+  },
+  {
+    "assetId": "mantel_clock_01",
+    "catalogId": "00000000-0000-4000-8000-000000002137",
+    "sourceUrl": "https://polyhaven.com/a/mantel_clock_01",
+    "author": "Yann Kervran, Rico Cilliers",
+    "license": "CC0-1.0",
+    "licenseUrl": "https://polyhaven.com/license",
+    "downloadDate": "2026-10-18",
+    "downloads": [
+      {
+        "file": "mantel_clock_01.gltf",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Models/gltf/1k/mantel_clock_01/mantel_clock_01_1k.gltf",
+        "bytes": 5628,
+        "md5": "768ccf9a56c73b0ef542c93922fdb5db",
+        "sha256": "e4c4f264175626fa14f12409ee5d687cf7f0d68fd1881cb7eb927c5f112de6ab"
+      },
+      {
+        "file": "textures/mantel_clock_01_diff_1k.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/mantel_clock_01/mantel_clock_01_diff_1k.jpg",
+        "bytes": 542895,
+        "md5": "a012d80ace15cc37f75e8679702bb92f",
+        "sha256": "278062fa68c0f763ecd55d59ed31873bfb7fb004a83ec7a3e5e26b31d3d1e23f"
+      },
+      {
+        "file": "textures/mantel_clock_01_arm_1k.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/mantel_clock_01/mantel_clock_01_arm_1k.jpg",
+        "bytes": 700545,
+        "md5": "a52929305a9a0f5cbe6c840f9ee9fc6c",
+        "sha256": "08dea26547315f6a081bfe0763da8eb987430833cd82f65bd472de165aaa6ba7"
+      },
+      {
+        "file": "textures/mantel_clock_01_nor_gl_1k.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/mantel_clock_01/mantel_clock_01_nor_gl_1k.jpg",
+        "bytes": 536272,
+        "md5": "ebc20f1198b1972c10d71c5960280f97",
+        "sha256": "faa4e33a64fee23010abc03fff82f277ed1b1f115ab0651259e9c7df0aca6d5f"
+      },
+      {
+        "file": "mantel_clock_01.bin",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Models/gltf/8k/mantel_clock_01/mantel_clock_01.bin",
+        "bytes": 641880,
+        "md5": "200740e20c08d0c370b608af6a17e9f9",
+        "sha256": "95e2b4820daaea592aa3e354bb06aa78c2e747fb89939b54eaf51140294d40c7"
+      }
+    ],
+    "normalizedSha256": "16752b38b916526ec9518b98d319e29736939f776f489879f1c561e7c141340b",
+    "dimensionsM": [
+      0.34234,
+      0.16049,
+      0.12618
+    ],
+    "priceNote": "Curated physical-item estimate in USD cents, not a source or retailer quotation."
+  },
+  {
+    "assetId": "mid_century_lounge_chair",
+    "catalogId": "00000000-0000-4000-8000-000000002138",
+    "sourceUrl": "https://polyhaven.com/a/mid_century_lounge_chair",
+    "author": "Kuutti Siitonen",
+    "license": "CC0-1.0",
+    "licenseUrl": "https://polyhaven.com/license",
+    "downloadDate": "2026-10-18",
+    "downloads": [
+      {
+        "file": "mid_century_lounge_chair.gltf",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Models/gltf/1k/mid_century_lounge_chair/mid_century_lounge_chair_1k.gltf",
+        "bytes": 2884,
+        "md5": "474bed17d25e794f39e60d1748dafcc6",
+        "sha256": "47c5769ee4dfa350e2506a6a76d8ef58a1e1060344acda35c503ddff46645d26"
+      },
+      {
+        "file": "textures/mid_century_lounge_chair_nor_gl_1k.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/mid_century_lounge_chair/mid_century_lounge_chair_nor_gl_1k.jpg",
+        "bytes": 648960,
+        "md5": "2caa258ba4e50a6be6533ac9ff96587e",
+        "sha256": "4bb4b325e4478f5d9063e4e061cf34bc6ccc3067abda608c1548c4a367f50397"
+      },
+      {
+        "file": "textures/mid_century_lounge_chair_diff_1k.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/mid_century_lounge_chair/mid_century_lounge_chair_diff_1k.jpg",
+        "bytes": 627298,
+        "md5": "7ab2bc1b5ac85a7664a82eedf6c85dde",
+        "sha256": "ae1f80e964426b49f70b402403c444a655bdaa363d8d43fee5b57fcb3b492c54"
+      },
+      {
+        "file": "textures/mid_century_lounge_chair_arm_1k.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/mid_century_lounge_chair/mid_century_lounge_chair_arm_1k.jpg",
+        "bytes": 636493,
+        "md5": "a0a839c4ae18eb06a5ececc72c0e066f",
+        "sha256": "9fa5fa4af5306576a3a27886767feec5431f41d94df9119f2ccced8f0b024f1a"
+      },
+      {
+        "file": "mid_century_lounge_chair.bin",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Models/gltf/8k/mid_century_lounge_chair/mid_century_lounge_chair.bin",
+        "bytes": 171384,
+        "md5": "bded2f717792aefe222dca07633b94ce",
+        "sha256": "26346cdc548ad74b1b6db5734c8c231c3c740656b012de2cc3bbc2b3b975200c"
+      }
+    ],
+    "normalizedSha256": "cfdf3340279a13bd2585bd34292e80b70d6226af889a489991fca3c3ef11645b",
+    "dimensionsM": [
+      1.00868,
+      1.1691,
+      1.19031
+    ],
+    "priceNote": "Curated physical-item estimate in USD cents, not a source or retailer quotation."
+  },
+  {
+    "assetId": "modern_coffee_table_02",
+    "catalogId": "00000000-0000-4000-8000-000000002139",
+    "sourceUrl": "https://polyhaven.com/a/modern_coffee_table_02",
+    "author": "Amin",
+    "license": "CC0-1.0",
+    "licenseUrl": "https://polyhaven.com/license",
+    "downloadDate": "2026-10-18",
+    "downloads": [
+      {
+        "file": "modern_coffee_table_02.gltf",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Models/gltf/1k/modern_coffee_table_02/modern_coffee_table_02_1k.gltf",
+        "bytes": 4979,
+        "md5": "6840f431aa9f2b9096b32416a5b198f3",
+        "sha256": "59acb8abec936a74d52d83f9208aa0314accc4363586b5b94f89ab2d8b85ad76"
+      },
+      {
+        "file": "textures/modern_coffee_table_02_base_nor_gl_1k.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/modern_coffee_table_02/modern_coffee_table_02_base_nor_gl_1k.jpg",
+        "bytes": 119341,
+        "md5": "02cffd400d675f77bb326fd9752b87c9",
+        "sha256": "ade042c3569e7f6bc43b80b2ebf99959a60628f64cec5712c402c01fcee78bfd"
+      },
+      {
+        "file": "textures/modern_coffee_table_02_wood_nor_gl_1k.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/modern_coffee_table_02/modern_coffee_table_02_wood_nor_gl_1k.jpg",
+        "bytes": 340139,
+        "md5": "b11514f206d8821dbcd0f2456aa58599",
+        "sha256": "99f6ceeb329280464f27bd246a926021df9ab3ce33512d70eb2f6c7a55a4963f"
+      },
+      {
+        "file": "textures/modern_coffee_table_02_base_rough_1k.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/modern_coffee_table_02/modern_coffee_table_02_base_rough_1k.jpg",
+        "bytes": 220354,
+        "md5": "f75772d1830611aee991d33eaaa1205d",
+        "sha256": "2f9b6626c474b8a6205bdd49f0312a914e3dd2eadba4e94d5273cd0c29750ea7"
+      },
+      {
+        "file": "modern_coffee_table_02.bin",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Models/gltf/8k/modern_coffee_table_02/modern_coffee_table_02.bin",
+        "bytes": 882992,
+        "md5": "f75c0faa37dfa96b99cee9639a36e0a5",
+        "sha256": "548427547069b51ef667ef34278d767fe529f383c1b62dbfb1cff97697bd974c"
+      },
+      {
+        "file": "textures/modern_coffee_table_02_wood_diff_1k.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/modern_coffee_table_02/modern_coffee_table_02_wood_diff_1k.jpg",
+        "bytes": 710960,
+        "md5": "7cce41236a1d4240d9ce3498dcad9776",
+        "sha256": "305e52392c98f226e5a5c543258c45052061a1caf154a47d5fe21c9e4c69b216"
+      },
+      {
+        "file": "textures/modern_coffee_table_02_base_diff_1k.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/modern_coffee_table_02/modern_coffee_table_02_base_diff_1k.jpg",
+        "bytes": 153120,
+        "md5": "338b60530424c187a35be09d9022cc39",
+        "sha256": "51a59d991f668466126e43abae9f8572e907df55ac6de3ce36ce0580aebb92d4"
+      },
+      {
+        "file": "textures/modern_coffee_table_02_wood_rough_1k.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/modern_coffee_table_02/modern_coffee_table_02_wood_rough_1k.jpg",
+        "bytes": 523840,
+        "md5": "3c2a2064d34cc7aa1e6629fef9879364",
+        "sha256": "11de733bd4e7564aeec8e9d5c65fd878fe0e82add127fd358ecc6b0bf02b3ba3"
+      }
+    ],
+    "normalizedSha256": "a86f5e155d06a4ffe58bdbedd38fabd7ce1dc0400700d10031c1b7165c3dc2c7",
+    "dimensionsM": [
+      1.19907,
+      0.36923,
+      1.19966
+    ],
+    "priceNote": "Curated physical-item estimate in USD cents, not a source or retailer quotation."
+  },
+  {
+    "assetId": "ornate_mirror_01",
+    "catalogId": "00000000-0000-4000-8000-000000002140",
+    "sourceUrl": "https://polyhaven.com/a/ornate_mirror_01",
+    "author": "James Ray Cock",
+    "license": "CC0-1.0",
+    "licenseUrl": "https://polyhaven.com/license",
+    "downloadDate": "2026-10-18",
+    "downloads": [
+      {
+        "file": "ornate_mirror_01.gltf",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Models/gltf/1k/ornate_mirror_01/ornate_mirror_01_1k.gltf",
+        "bytes": 2697,
+        "md5": "834501c79f6045083367606fd8f30c9f",
+        "sha256": "2d9bb949df65d6470395959fb7976af6fcc1b3ad7d85084918ad543ee71850f6"
+      },
+      {
+        "file": "textures/ornate_mirror_01_arm_1k.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/ornate_mirror_01/ornate_mirror_01_arm_1k.jpg",
+        "bytes": 126947,
+        "md5": "0e7d993bec7cc5913bf73f51821b09ad",
+        "sha256": "0efbcf5ffae8afbcea89c3fdd7f82951f03067abe6236388303713273ea44752"
+      },
+      {
+        "file": "ornate_mirror_01.bin",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Models/gltf/8k/ornate_mirror_01/ornate_mirror_01.bin",
+        "bytes": 372772,
+        "md5": "0be4cf0dda17d51c4a279ce4912b1b3f",
+        "sha256": "31ce7eadeb57ffa0d302ea36e4d5de64db91f9a823f1ede8158b45d9ec863a4a"
+      },
+      {
+        "file": "textures/ornate_mirror_01_diff_1k.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/ornate_mirror_01/ornate_mirror_01_diff_1k.jpg",
+        "bytes": 115752,
+        "md5": "d2103c8f1e72c86d7911a06da6161cd1",
+        "sha256": "7b131a08fcf21cb823d7c4914829c2c35215612cdadb241387c20657d6b25a62"
+      },
+      {
+        "file": "textures/ornate_mirror_01_nor_gl_1k.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/ornate_mirror_01/ornate_mirror_01_nor_gl_1k.jpg",
+        "bytes": 59073,
+        "md5": "bea34985dd1cc0d3dd20478df6b1e7b3",
+        "sha256": "bfa3a35070f0c5f4fa8e7127ffe536001cc6f65c3896e377d7a2a38f9358d3be"
+      }
+    ],
+    "normalizedSha256": "9dbe5d9b4d5a25debfa728cb9c8d8d0d97c87a5f9c5e5d666b53a55abff1df60",
+    "dimensionsM": [
+      0.4865,
+      0.74416,
+      0.02598
+    ],
+    "priceNote": "Curated physical-item estimate in USD cents, not a source or retailer quotation."
+  },
+  {
+    "assetId": "Ottoman_01",
+    "catalogId": "00000000-0000-4000-8000-000000002141",
+    "sourceUrl": "https://polyhaven.com/a/Ottoman_01",
+    "author": "Caspian Fortune",
+    "license": "CC0-1.0",
+    "licenseUrl": "https://polyhaven.com/license",
+    "downloadDate": "2026-10-18",
+    "downloads": [
+      {
+        "file": "Ottoman_01.gltf",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Models/gltf/1k/Ottoman_01/Ottoman_01_1k.gltf",
+        "bytes": 2656,
+        "md5": "48acca9b9feae8092e95e291b9e8107b",
+        "sha256": "cb515553924d7ca85b94807aba7d7d5110fafa0fedf7132573b105ac8b900584"
+      },
+      {
+        "file": "textures/Ottoman_01_arm_1k.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/Ottoman_01/Ottoman_01_arm_1k.jpg",
+        "bytes": 155704,
+        "md5": "79da86b6af7c611f753821fc35bafa54",
+        "sha256": "e894458d15a90e22e4290198929c8fb76e872526fe1f0bdf6d395a91d438bc7c"
+      },
+      {
+        "file": "Ottoman_01.bin",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Models/gltf/4k/Ottoman_01/Ottoman_01.bin",
+        "bytes": 115200,
+        "md5": "7acac7b0744e80e7988c531677d6d57b",
+        "sha256": "ca62a1ee87a30c69142ff15f1bca216842448f57d5b3d64de1d627014b347117"
+      },
+      {
+        "file": "textures/Ottoman_01_diff_1k.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/Ottoman_01/Ottoman_01_diff_1k.jpg",
+        "bytes": 141622,
+        "md5": "20121319f4f9346481bce2abfcb1d2b0",
+        "sha256": "03f05a4a2e54ea1e6829a7d1b43dcfad5d2873078bd72534dc46e692c01f97a5"
+      },
+      {
+        "file": "textures/Ottoman_01_nor_gl_1k.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/Ottoman_01/Ottoman_01_nor_gl_1k.jpg",
+        "bytes": 236930,
+        "md5": "1e9fd1ac43f716b9e6e97a656517a275",
+        "sha256": "3220215de4173c81c4128619a0000ce5368a3d125409f5e7d64e1269e258d923"
+      }
+    ],
+    "normalizedSha256": "b91a99f236db442e291241adf72afb196a478830152115469411d76c0131a855",
+    "dimensionsM": [
+      0.88456,
+      0.6243,
+      0.62116
+    ],
+    "priceNote": "Curated physical-item estimate in USD cents, not a source or retailer quotation."
+  },
+  {
+    "assetId": "painted_wooden_bench",
+    "catalogId": "00000000-0000-4000-8000-000000002142",
+    "sourceUrl": "https://polyhaven.com/a/painted_wooden_bench",
+    "author": "Kirill Sannikov",
+    "license": "CC0-1.0",
+    "licenseUrl": "https://polyhaven.com/license",
+    "downloadDate": "2026-10-18",
+    "downloads": [
+      {
+        "file": "painted_wooden_bench.gltf",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Models/gltf/1k/painted_wooden_bench/painted_wooden_bench_1k.gltf",
+        "bytes": 2835,
+        "md5": "784a49250144aa5299a93c1f3b6968d7",
+        "sha256": "2289ab82f3fe3045bf18f7b9541743d2c65b9f071cb34bbe424d2bc998f3e507"
+      },
+      {
+        "file": "textures/painted_wooden_bench_diff_1k.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/painted_wooden_bench/painted_wooden_bench_diff_1k.jpg",
+        "bytes": 545216,
+        "md5": "60c7d0f34f52b1003345d318e35f468d",
+        "sha256": "9bc533313091ee71eaca5fa6334b71d27935d9d75311f64df6a53c28a67c435c"
+      },
+      {
+        "file": "textures/painted_wooden_bench_nor_gl_1k.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/painted_wooden_bench/painted_wooden_bench_nor_gl_1k.jpg",
+        "bytes": 830104,
+        "md5": "08b74bebcff262c14beae35a4f7b3405",
+        "sha256": "a0f53740d77fc61aac01de0b7e1ae6109445d1756839f739ae31fdf10c9911f2"
+      },
+      {
+        "file": "textures/painted_wooden_bench_arm_1k.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/painted_wooden_bench/painted_wooden_bench_arm_1k.jpg",
+        "bytes": 586040,
+        "md5": "754ecc7f47b1e5d032e45e22334954f1",
+        "sha256": "878785565eeff706b8f1e4db7e3d794a544e9cf0e56cee424d9a271ab4ead47e"
+      },
+      {
+        "file": "painted_wooden_bench.bin",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Models/gltf/4k/painted_wooden_bench/painted_wooden_bench.bin",
+        "bytes": 25444,
+        "md5": "ed331b50f955852f007313c1a75c2e2d",
+        "sha256": "5799bcb20924105cccd6424de8cdb8e67eb57fddc19c395befeac634a7b2e013"
+      }
+    ],
+    "normalizedSha256": "85d9b6369fb0dafaf9ac586029c76e60686e1fc35f86d8be4e6f58b5ff139cd1",
+    "dimensionsM": [
+      1.16494,
+      0.88934,
+      0.49649
+    ],
+    "priceNote": "Curated physical-item estimate in USD cents, not a source or retailer quotation."
+  },
+  {
+    "assetId": "painted_wooden_cabinet",
+    "catalogId": "00000000-0000-4000-8000-000000002143",
+    "sourceUrl": "https://polyhaven.com/a/painted_wooden_cabinet",
+    "author": "Kirill Sannikov",
+    "license": "CC0-1.0",
+    "licenseUrl": "https://polyhaven.com/license",
+    "downloadDate": "2026-10-18",
+    "downloads": [
+      {
+        "file": "painted_wooden_cabinet.gltf",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Models/gltf/1k/painted_wooden_cabinet/painted_wooden_cabinet_1k.gltf",
+        "bytes": 9253,
+        "md5": "43f7a37a61773dadbafd46ab51b97c9e",
+        "sha256": "ce04543cdb10e05fe9c2cc08e9c118b16c1c717a07bcbfac9b99859465c8d1ed"
+      },
+      {
+        "file": "textures/painted_wooden_cabinet_diff_1k.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/painted_wooden_cabinet/painted_wooden_cabinet_diff_1k.jpg",
+        "bytes": 688654,
+        "md5": "cab7d6088249cb2687e0c79b2cdf62c5",
+        "sha256": "2dbed9f9ec8e49fc2e87de8cd86e2029a80e9001b5102b4e47c7dfa913f34d89"
+      },
+      {
+        "file": "textures/painted_wooden_cabinet_arm_1k.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/painted_wooden_cabinet/painted_wooden_cabinet_arm_1k.jpg",
+        "bytes": 622122,
+        "md5": "616ce8f1c545087c463b79e7bea952a6",
+        "sha256": "34e0bcb00a62704d85161d41e844e798d4f894e416e7769079d50a21d561d171"
+      },
+      {
+        "file": "textures/painted_wooden_cabinet_nor_gl_1k.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/painted_wooden_cabinet/painted_wooden_cabinet_nor_gl_1k.jpg",
+        "bytes": 463678,
+        "md5": "e39fdc39e2fce036fd7a904ea3862671",
+        "sha256": "e94edf68faeaf68016c28da9b9f299bb38c57463acd94130ecf98dcaef790016"
+      },
+      {
+        "file": "painted_wooden_cabinet.bin",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Models/gltf/4k/painted_wooden_cabinet/painted_wooden_cabinet.bin",
+        "bytes": 78072,
+        "md5": "c86f9e483a0da1d5a9f68b08099a4166",
+        "sha256": "1023d773d84c42f2709ec297247d90b0e2833e37241fbe852e2f33b41ae10cda"
+      }
+    ],
+    "normalizedSha256": "7e5ca24b532efd8e20dd028819146f127fc1d3756456b21c8e0b74e9b6a1928a",
+    "dimensionsM": [
+      1.19467,
+      1.18184,
+      0.61663
+    ],
+    "priceNote": "Curated physical-item estimate in USD cents, not a source or retailer quotation."
+  },
+  {
+    "assetId": "painted_wooden_chair_02",
+    "catalogId": "00000000-0000-4000-8000-000000002145",
+    "sourceUrl": "https://polyhaven.com/a/painted_wooden_chair_02",
+    "author": "Kirill Sannikov",
+    "license": "CC0-1.0",
+    "licenseUrl": "https://polyhaven.com/license",
+    "downloadDate": "2026-10-18",
+    "downloads": [
+      {
+        "file": "painted_wooden_chair_02.gltf",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Models/gltf/1k/painted_wooden_chair_02/painted_wooden_chair_02_1k.gltf",
+        "bytes": 2972,
+        "md5": "dde7a74f645ed9d71dbdee8d75984da9",
+        "sha256": "e69f4558d236e0fcc9d31a85ab75117e75d224d21e04836aa438821ccf1fd2c1"
+      },
+      {
+        "file": "textures/painted_wooden_chair_02_nor_gl_1k.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/painted_wooden_chair_02/painted_wooden_chair_02_nor_gl_1k.jpg",
+        "bytes": 973745,
+        "md5": "0e5264fe0c722d667222fca3c5f54fb9",
+        "sha256": "2c2c2f92e4aebadf06c7c675a3c903c1a647dde6f875ac55aa4945d47e053d9a"
+      },
+      {
+        "file": "textures/painted_wooden_chair_02_diff_1k.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/painted_wooden_chair_02/painted_wooden_chair_02_diff_1k.jpg",
+        "bytes": 662120,
+        "md5": "79fd20a344e8f5ddfa9142e9dfb0fd8a",
+        "sha256": "bc944fc83f440198658199080d761b19c3e2f42daa793062aa283563683a732b"
+      },
+      {
+        "file": "textures/painted_wooden_chair_02_arm_1k.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/painted_wooden_chair_02/painted_wooden_chair_02_arm_1k.jpg",
+        "bytes": 718531,
+        "md5": "f3f2482f1674556ba1541cc478d5d30b",
+        "sha256": "7b0b2254ab2ea3dae685207b8b591bbb10cca47d0157ce8e515f03ff61ccb5d9"
+      },
+      {
+        "file": "painted_wooden_chair_02.bin",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Models/gltf/4k/painted_wooden_chair_02/painted_wooden_chair_02.bin",
+        "bytes": 39028,
+        "md5": "4902f84dc60b9515a0cfde6a0b860a0e",
+        "sha256": "6125c4ac10e1b53803bf468eb21769fd43a3669564bfc8885a9346c8302e121f"
+      }
+    ],
+    "normalizedSha256": "a7c1693071b149b7993c124838e1a4a39d6d019906fb4473abf99cd0c7a0106c",
+    "dimensionsM": [
+      0.63939,
+      1.26377,
+      0.66207
+    ],
+    "priceNote": "Curated physical-item estimate in USD cents, not a source or retailer quotation."
+  },
+  {
+    "assetId": "painted_wooden_nightstand",
+    "catalogId": "00000000-0000-4000-8000-000000002146",
+    "sourceUrl": "https://polyhaven.com/a/painted_wooden_nightstand",
+    "author": "Kirill Sannikov",
+    "license": "CC0-1.0",
+    "licenseUrl": "https://polyhaven.com/license",
+    "downloadDate": "2026-10-18",
+    "downloads": [
+      {
+        "file": "painted_wooden_nightstand.gltf",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Models/gltf/1k/painted_wooden_nightstand/painted_wooden_nightstand_1k.gltf",
+        "bytes": 4427,
+        "md5": "eff35aa15d8408d030156df43c8c9bb3",
+        "sha256": "fbdc51ee41f2ee2dc7c455cd6f8321ff14e80c7a7d1e7736b194ca0b3e48b304"
+      },
+      {
+        "file": "textures/painted_wooden_nightstand_nor_gl_1k.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/painted_wooden_nightstand/painted_wooden_nightstand_nor_gl_1k.jpg",
+        "bytes": 751707,
+        "md5": "4598a8c32374362f3a3e18fac2b0decc",
+        "sha256": "2d7574ce96c1202bc37ad49fd219a2f918028e102a6d1743714bc90032295c15"
+      },
+      {
+        "file": "painted_wooden_nightstand.bin",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Models/gltf/4k/painted_wooden_nightstand/painted_wooden_nightstand.bin",
+        "bytes": 18916,
+        "md5": "7643d3fb660b2416d38c2e7964ba816d",
+        "sha256": "67b0834c6d0337bd144a1f72045bfe4de029618766b344fa9ffc4c3fc3ee8865"
+      },
+      {
+        "file": "textures/painted_wooden_nightstand_arm_1k.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/painted_wooden_nightstand/painted_wooden_nightstand_arm_1k.jpg",
+        "bytes": 773123,
+        "md5": "d4ef49fba68617442d8366c635167aaf",
+        "sha256": "c3724c444d74f5b0e65904de0633bfe99db76f8c9b9211703aeeab62b02031ef"
+      },
+      {
+        "file": "textures/painted_wooden_nightstand_diff_1k.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/painted_wooden_nightstand/painted_wooden_nightstand_diff_1k.jpg",
+        "bytes": 603334,
+        "md5": "7ca7bf109ce5eea128b8c2b478795858",
+        "sha256": "bf7447441b2f78c847d7c4cda8b80e604853e2b559ffe03b41c0e4b3bff8ed9f"
+      }
+    ],
+    "normalizedSha256": "4ec4bf233132a97372e0d83b5fb839a0e1001dc156a926f1691abbc8fd3f7ac9",
+    "dimensionsM": [
+      0.50454,
+      0.61552,
+      0.50872
+    ],
+    "priceNote": "Curated physical-item estimate in USD cents, not a source or retailer quotation."
+  },
+  {
+    "assetId": "painted_wooden_shelves",
+    "catalogId": "00000000-0000-4000-8000-000000002147",
+    "sourceUrl": "https://polyhaven.com/a/painted_wooden_shelves",
+    "author": "Kirill Sannikov",
+    "license": "CC0-1.0",
+    "licenseUrl": "https://polyhaven.com/license",
+    "downloadDate": "2026-10-18",
+    "downloads": [
+      {
+        "file": "painted_wooden_shelves.gltf",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Models/gltf/1k/painted_wooden_shelves/painted_wooden_shelves_1k.gltf",
+        "bytes": 2858,
+        "md5": "00af5933b9b5abbc4cad88eede28225c",
+        "sha256": "f4d9ffc04ad1e9ce3155522ac962c336bf1fa74b4a27b8a5fd4c8bdb81c2e8f6"
+      },
+      {
+        "file": "textures/painted_wooden_shelves_nor_gl_1k.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/painted_wooden_shelves/painted_wooden_shelves_nor_gl_1k.jpg",
+        "bytes": 843073,
+        "md5": "2a1f2f0dd9fd556ca8809fd7a133bf3d",
+        "sha256": "9dcd7e3783da2a2cd44cd4f7a78ac976d2866e02d8dd0799d180d0ab746ae239"
+      },
+      {
+        "file": "painted_wooden_shelves.bin",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Models/gltf/4k/painted_wooden_shelves/painted_wooden_shelves.bin",
+        "bytes": 20680,
+        "md5": "964b327c4effc165624d160cdf2ee96c",
+        "sha256": "894c032cda1c5668014c87b15ddcc42bccaede15e369e59f628d5219d38edf5f"
+      },
+      {
+        "file": "textures/painted_wooden_shelves_arm_1k.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/painted_wooden_shelves/painted_wooden_shelves_arm_1k.jpg",
+        "bytes": 734506,
+        "md5": "e97521e691aa2c5c15fa5634e7bdef8a",
+        "sha256": "256c99e04dc99961ad08e085b01adc03641e861f66d4b325b1acb0f822d1e9a9"
+      },
+      {
+        "file": "textures/painted_wooden_shelves_diff_1k.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/painted_wooden_shelves/painted_wooden_shelves_diff_1k.jpg",
+        "bytes": 509573,
+        "md5": "42dc5354c0626a2e13619f8df6fc260f",
+        "sha256": "430aef90494d0aa16c354bb4d39fc1a768dd822a0da7e6b746f1891a0cb7cf3a"
+      }
+    ],
+    "normalizedSha256": "beb4ef380d9b34454e5fb4896ed9b09d11a9733f9cf652e7f041aa9eda1b6b45",
+    "dimensionsM": [
+      0.51108,
+      1.12507,
+      0.36715
+    ],
+    "priceNote": "Curated physical-item estimate in USD cents, not a source or retailer quotation."
+  },
+  {
+    "assetId": "painted_wooden_sofa",
+    "catalogId": "00000000-0000-4000-8000-000000002148",
+    "sourceUrl": "https://polyhaven.com/a/painted_wooden_sofa",
+    "author": "Kirill Sannikov",
+    "license": "CC0-1.0",
+    "licenseUrl": "https://polyhaven.com/license",
+    "downloadDate": "2026-10-18",
+    "downloads": [
+      {
+        "file": "painted_wooden_sofa.gltf",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Models/gltf/1k/painted_wooden_sofa/painted_wooden_sofa_1k.gltf",
+        "bytes": 2816,
+        "md5": "2648c458e6639629c5dcb67fcbf07e6c",
+        "sha256": "6c164f83190b71473ceca47d857c504b972fabf22c8de329747fbefb3a95b070"
+      },
+      {
+        "file": "textures/painted_wooden_sofa_nor_gl_1k.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/painted_wooden_sofa/painted_wooden_sofa_nor_gl_1k.jpg",
+        "bytes": 618152,
+        "md5": "d63b547e22137b1cb1bdd2d02ebc1a24",
+        "sha256": "bbe3726de2ecfc07180262d310906ed7a35d2757f21de3669436daec2424502a"
+      },
+      {
+        "file": "textures/painted_wooden_sofa_diff_1k.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/painted_wooden_sofa/painted_wooden_sofa_diff_1k.jpg",
+        "bytes": 618261,
+        "md5": "cfd6c30bb84de70eac4762a2cce0b85e",
+        "sha256": "b00059b1a037120881f26d5fbffca55892e5e4a2df56be28a4c9fdfdcbbf99aa"
+      },
+      {
+        "file": "painted_wooden_sofa.bin",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Models/gltf/4k/painted_wooden_sofa/painted_wooden_sofa.bin",
+        "bytes": 186956,
+        "md5": "2f100a29d9fad10d59edf90e5ce0ef03",
+        "sha256": "e1889d4b622f1063ab4f09ee458b7c5a1c80b7284c693eae012d093c66465838"
+      },
+      {
+        "file": "textures/painted_wooden_sofa_arm_1k.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/painted_wooden_sofa/painted_wooden_sofa_arm_1k.jpg",
+        "bytes": 674221,
+        "md5": "039a05b49390d6851a8eac18a30a8fca",
+        "sha256": "60ff6f84d6729574d99dd29e2aaacafdf8cac5244672cb5b29b94bcb218eda3a"
+      }
+    ],
+    "normalizedSha256": "93532f2f134bf71ba229f6df66b91a80189cab2384dcf0330e7c2c4b46b427e7",
+    "dimensionsM": [
+      2.45171,
+      1.28111,
+      0.78721
+    ],
+    "priceNote": "Curated physical-item estimate in USD cents, not a source or retailer quotation."
+  },
+  {
+    "assetId": "painted_wooden_stool",
+    "catalogId": "00000000-0000-4000-8000-000000002149",
+    "sourceUrl": "https://polyhaven.com/a/painted_wooden_stool",
+    "author": "Kirill Sannikov",
+    "license": "CC0-1.0",
+    "licenseUrl": "https://polyhaven.com/license",
+    "downloadDate": "2026-10-18",
+    "downloads": [
+      {
+        "file": "painted_wooden_stool.gltf",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Models/gltf/1k/painted_wooden_stool/painted_wooden_stool_1k.gltf",
+        "bytes": 2848,
+        "md5": "d234ba7a3ce1cc2a68847cea4e405b34",
+        "sha256": "f9a9a4a7c38b3421c30dac35d91c41c8864452d6dbb398911494b8324d312ef9"
+      },
+      {
+        "file": "textures/painted_wooden_stool_nor_gl_1k.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/painted_wooden_stool/painted_wooden_stool_nor_gl_1k.jpg",
+        "bytes": 489911,
+        "md5": "4518ff0d1d7dbf0c5cc2d06777e92a97",
+        "sha256": "39fed6e0a14b464bf5b9555d4ac02df0f85b0bfc89d383e4b8e00c343598384e"
+      },
+      {
+        "file": "textures/painted_wooden_stool_arm_1k.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/painted_wooden_stool/painted_wooden_stool_arm_1k.jpg",
+        "bytes": 751171,
+        "md5": "9ffee9bb29a95f4ef24efb415b14f0b6",
+        "sha256": "2088f99a25050d6666348388d279b65993fdd50ad8c14d3419a64f1caea6472d"
+      },
+      {
+        "file": "textures/painted_wooden_stool_diff_1k.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/painted_wooden_stool/painted_wooden_stool_diff_1k.jpg",
+        "bytes": 607519,
+        "md5": "3118c86c770a6907d0347276deebd96c",
+        "sha256": "db0322de5e3c588465d0894515a7c1bdacde9e2a469a9ac154206bfe96746d3f"
+      },
+      {
+        "file": "painted_wooden_stool.bin",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Models/gltf/4k/painted_wooden_stool/painted_wooden_stool.bin",
+        "bytes": 23384,
+        "md5": "cf312e0df28055cbbf174584a01943c5",
+        "sha256": "d336c1eb8832e4441f69bb5618e2289703a7ca71d3884a9087d658051eee0b66"
+      }
+    ],
+    "normalizedSha256": "f73da446194c6d728e124f84cc99eafc2a642b219b5726bff7102ceff289f09d",
+    "dimensionsM": [
+      0.38484,
+      0.57892,
+      0.40604
+    ],
+    "priceNote": "Curated physical-item estimate in USD cents, not a source or retailer quotation."
+  },
+  {
+    "assetId": "painted_wooden_table",
+    "catalogId": "00000000-0000-4000-8000-000000002150",
+    "sourceUrl": "https://polyhaven.com/a/painted_wooden_table",
+    "author": "Kirill Sannikov",
+    "license": "CC0-1.0",
+    "licenseUrl": "https://polyhaven.com/license",
+    "downloadDate": "2026-10-18",
+    "downloads": [
+      {
+        "file": "painted_wooden_table.gltf",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Models/gltf/1k/painted_wooden_table/painted_wooden_table_1k.gltf",
+        "bytes": 2830,
+        "md5": "081543cfe302f198aaf2e49f80ab6e31",
+        "sha256": "7e1ba86ae2c570e3464c42556e4e6cc09186a99127b86eaf54e7dbecb2fbafc3"
+      },
+      {
+        "file": "textures/painted_wooden_table_nor_gl_1k.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/painted_wooden_table/painted_wooden_table_nor_gl_1k.jpg",
+        "bytes": 603760,
+        "md5": "d1474ded60a288e50e884eaa2356046f",
+        "sha256": "0fe881c3f0c2ef0e4e67fa05280355f9b852adc6447af71a61cc3b15fff66338"
+      },
+      {
+        "file": "textures/painted_wooden_table_diff_1k.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/painted_wooden_table/painted_wooden_table_diff_1k.jpg",
+        "bytes": 497417,
+        "md5": "3a253099ecc035aa80f3ae633e55e561",
+        "sha256": "826738d2efab2c5786e498c39dd58edd6479e08c0503619727a2b9b6b2e796dc"
+      },
+      {
+        "file": "painted_wooden_table.bin",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Models/gltf/4k/painted_wooden_table/painted_wooden_table.bin",
+        "bytes": 25552,
+        "md5": "c16d1a074ea0c6c3261b0deceef852f7",
+        "sha256": "aac5e2e7411a319b8fdf6915cdb452a3b490179c354c75785a22f560e8413059"
+      },
+      {
+        "file": "textures/painted_wooden_table_arm_1k.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/painted_wooden_table/painted_wooden_table_arm_1k.jpg",
+        "bytes": 649934,
+        "md5": "37ccff67b9d7a02199124d784995e89b",
+        "sha256": "670863aece034184ac1643ebe3de1254c3565a10b01ce3f9e8ba3a67980b4bb3"
+      }
+    ],
+    "normalizedSha256": "92235c85d109faaa32a36d1214c9d6e79c562e46027b314234f411adbfdc8aeb",
+    "dimensionsM": [
+      2.4056,
+      0.95859,
+      1.13684
+    ],
+    "priceNote": "Curated physical-item estimate in USD cents, not a source or retailer quotation."
+  },
+  {
+    "assetId": "Rockingchair_01",
+    "catalogId": "00000000-0000-4000-8000-000000002151",
+    "sourceUrl": "https://polyhaven.com/a/Rockingchair_01",
+    "author": "Jorge Camacho",
+    "license": "CC0-1.0",
+    "licenseUrl": "https://polyhaven.com/license",
+    "downloadDate": "2026-10-18",
+    "downloads": [
+      {
+        "file": "Rockingchair_01.gltf",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Models/gltf/1k/Rockingchair_01/Rockingchair_01_1k.gltf",
+        "bytes": 2712,
+        "md5": "be16c0788ccab5a881425e8b2857439d",
+        "sha256": "eb8c3a8f9c2c1bd6ca6d76804b8361dd0fd779498249d554536e5683e08f565b"
+      },
+      {
+        "file": "textures/Rockingchair_01_diff_1k.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/Rockingchair_01/Rockingchair_01_diff_1k.jpg",
+        "bytes": 138197,
+        "md5": "39a5b09e0349f2dc6892d4c827c1cc45",
+        "sha256": "d42426fe153296909d45abcbc4e91a3410b90d5a9cd58f01b1fa9af93a712ef0"
+      },
+      {
+        "file": "textures/Rockingchair_01_nor_gl_1k.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/Rockingchair_01/Rockingchair_01_nor_gl_1k.jpg",
+        "bytes": 146964,
+        "md5": "35bb8e3e3395cd6e189110b1c04caf59",
+        "sha256": "225008fcb16b3ee3b16372b4085d60e20dd660ab30b6a489b77b7e25a874b391"
+      },
+      {
+        "file": "textures/Rockingchair_01_arm_1k.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/Rockingchair_01/Rockingchair_01_arm_1k.jpg",
+        "bytes": 125152,
+        "md5": "a3c5ee77580f0d833d643394baa00716",
+        "sha256": "21c6a462d6865a6e839b7dfe966f845df885a6dfe3ad64b3a87438db1598cf5d"
+      },
+      {
+        "file": "Rockingchair_01.bin",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Models/gltf/4k/Rockingchair_01/Rockingchair_01.bin",
+        "bytes": 391740,
+        "md5": "cd7cd396a8acd87802321d51cbe79725",
+        "sha256": "6c7c3c32a033a3697d9adf3e8c9d966265cf11b519717d92c1eb5a9cffe736e2"
+      }
+    ],
+    "normalizedSha256": "60bb09f42ce3e1734c69ba08d1c68923aee7273af7e7679733ca04edeea6ff35",
+    "dimensionsM": [
+      0.70814,
+      0.99493,
+      0.83351
+    ],
+    "priceNote": "Curated physical-item estimate in USD cents, not a source or retailer quotation."
+  },
+  {
+    "assetId": "round_wooden_table_01",
+    "catalogId": "00000000-0000-4000-8000-000000002152",
+    "sourceUrl": "https://polyhaven.com/a/round_wooden_table_01",
+    "author": "Ulan Cabanilla",
+    "license": "CC0-1.0",
+    "licenseUrl": "https://polyhaven.com/license",
+    "downloadDate": "2026-10-18",
+    "downloads": [
+      {
+        "file": "round_wooden_table_01.gltf",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Models/gltf/1k/round_wooden_table_01/round_wooden_table_01_1k.gltf",
+        "bytes": 4089,
+        "md5": "9a2ad4a55a88ee7493a842026d944abc",
+        "sha256": "dd09c1663b10d15a1fda12ba4f53743e8b8379b17254a78be22100d584738b48"
+      },
+      {
+        "file": "textures/round_wooden_table_01_nor_gl_1k.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/round_wooden_table_01/round_wooden_table_01_nor_gl_1k.jpg",
+        "bytes": 50832,
+        "md5": "3d0f124a495db5eeca16db53c188729d",
+        "sha256": "5f80ed76e2eccaea8ab7c0cc9c85d29cc9b164aabfa2403304e1ec79dc47150c"
+      },
+      {
+        "file": "textures/round_wooden_table_01_arm_1k.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/round_wooden_table_01/round_wooden_table_01_arm_1k.jpg",
+        "bytes": 134854,
+        "md5": "2dc3f86e564b407141c6c216760d8bb6",
+        "sha256": "32b5056dc36e3081987c20cd03f15e73298266c1aff3e573b832e9dd0f8145b9"
+      },
+      {
+        "file": "textures/round_wooden_table_01_diff_1k.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/round_wooden_table_01/round_wooden_table_01_diff_1k.jpg",
+        "bytes": 117911,
+        "md5": "4be9c5bc6b73f42541fb461c19169c56",
+        "sha256": "d83659d8d584bbadf160760b825f990c6264901e33051643d19fcd389b0d19ae"
+      },
+      {
+        "file": "round_wooden_table_01.bin",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Models/gltf/8k/round_wooden_table_01/round_wooden_table_01.bin",
+        "bytes": 242688,
+        "md5": "b907851fab9d7552cef8a12858acc869",
+        "sha256": "c2635368bc86239a73fafdd8bce20b4261155ce7241e95e809a753ed4693f157"
+      }
+    ],
+    "normalizedSha256": "af6f846bcef0a04e21f893cd7b7c546fa4069d58c10ad04c1efe3ca74cf6f352",
+    "dimensionsM": [
+      1.39935,
+      1.00504,
+      1.39935
+    ],
+    "priceNote": "Curated physical-item estimate in USD cents, not a source or retailer quotation."
+  },
+  {
+    "assetId": "round_wooden_table_02",
+    "catalogId": "00000000-0000-4000-8000-000000002153",
+    "sourceUrl": "https://polyhaven.com/a/round_wooden_table_02",
+    "author": "Ulan Cabanilla",
+    "license": "CC0-1.0",
+    "licenseUrl": "https://polyhaven.com/license",
+    "downloadDate": "2026-10-18",
+    "downloads": [
+      {
+        "file": "round_wooden_table_02.gltf",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Models/gltf/1k/round_wooden_table_02/round_wooden_table_02_1k.gltf",
+        "bytes": 2851,
+        "md5": "d0d30c21d878a5f1f36a96b33458aba0",
+        "sha256": "df65c35148280a06efcc06bfa75432bb13f29318e869597fc94f364ce2b55974"
+      },
+      {
+        "file": "textures/round_wooden_table_02_nor_gl_1k.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/round_wooden_table_02/round_wooden_table_02_nor_gl_1k.jpg",
+        "bytes": 635637,
+        "md5": "0f04a60c2f59f09808b26eb594732eed",
+        "sha256": "34989b9a15753b964a4d9d6b2673c048ff2c14feedbe4e6adbeb4bf32be8bc8c"
+      },
+      {
+        "file": "textures/round_wooden_table_02_diff_1k.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/round_wooden_table_02/round_wooden_table_02_diff_1k.jpg",
+        "bytes": 470007,
+        "md5": "2f16277bfd0ff661de3245c11d0b556e",
+        "sha256": "9872acedc6be92ef232c581c8e9ce435e4aa0d8f5c4b75e4ce445995a3ef8c28"
+      },
+      {
+        "file": "textures/round_wooden_table_02_arm_1k.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/round_wooden_table_02/round_wooden_table_02_arm_1k.jpg",
+        "bytes": 677385,
+        "md5": "bd5ba146734d7aa0acdfcae0c66b727f",
+        "sha256": "613d051b4c4e093c5e65eec37d39f6f48ac5476e2cb1b59c4b034f308ef1a7ee"
+      },
+      {
+        "file": "round_wooden_table_02.bin",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Models/gltf/4k/round_wooden_table_02/round_wooden_table_02.bin",
+        "bytes": 135412,
+        "md5": "026ad1fd824b6eb38a4a260565471243",
+        "sha256": "fa9a0ed80be31d9160207913762cedc5de21d1cb37b01a5ae6caa23ce7a741b6"
+      }
+    ],
+    "normalizedSha256": "9a8fa08db5e98f509c606d4cb4aa94663e1ffe892fa762c4f83b01f202c62c62",
+    "dimensionsM": [
+      0.79618,
+      0.74603,
+      0.79618
+    ],
+    "priceNote": "Curated physical-item estimate in USD cents, not a source or retailer quotation."
+  },
+  {
+    "assetId": "scandinavian_masonry_heater",
+    "catalogId": "00000000-0000-4000-8000-000000002154",
+    "sourceUrl": "https://polyhaven.com/a/scandinavian_masonry_heater",
+    "author": "Kuutti Siitonen",
+    "license": "CC0-1.0",
+    "licenseUrl": "https://polyhaven.com/license",
+    "downloadDate": "2026-10-18",
+    "downloads": [
+      {
+        "file": "scandinavian_masonry_heater.gltf",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Models/gltf/1k/scandinavian_masonry_heater/scandinavian_masonry_heater_1k.gltf",
+        "bytes": 3451,
+        "md5": "4536c2353acebadfa04ea4b7508dc8cd",
+        "sha256": "9ee8c41258be5a6825462a1cfc0cb4d03c571ddae7ed7d6d173332e8c454ef29"
+      },
+      {
+        "file": "textures/scandinavian_masonry_heater_nor_gl_1k.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/scandinavian_masonry_heater/scandinavian_masonry_heater_nor_gl_1k.jpg",
+        "bytes": 704619,
+        "md5": "240af26d7fef992b427afdd06f7b38f3",
+        "sha256": "2a927547b5afea05445ad9552f39a01376b21e593f6cd40f702ad6e42c1facbc"
+      },
+      {
+        "file": "textures/scandinavian_masonry_heater_diff_1k.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/scandinavian_masonry_heater/scandinavian_masonry_heater_diff_1k.jpg",
+        "bytes": 723330,
+        "md5": "71076427e565b5d0a5e95ac5b70afabb",
+        "sha256": "fa1040bb96fbe105316f6594b524633f3959ba0af76cd0f71bbcdd24a465d383"
+      },
+      {
+        "file": "textures/scandinavian_masonry_heater_arm_1k.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/scandinavian_masonry_heater/scandinavian_masonry_heater_arm_1k.jpg",
+        "bytes": 634630,
+        "md5": "25d9c0d87442d71f71a491f8408c7a53",
+        "sha256": "bc5ee9751331549d9ce8d22f1c58c7b5f932ddddbd8a731d4ee161f22a2316f9"
+      },
+      {
+        "file": "scandinavian_masonry_heater.bin",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Models/gltf/8k/scandinavian_masonry_heater/scandinavian_masonry_heater.bin",
+        "bytes": 394416,
+        "md5": "e6f9c4f58ccf736e794ae0cde6cdf531",
+        "sha256": "12eecdcc11e4894227bffc7fa8b444204e4cccd92788d86eb4f144909e91a0ec"
+      }
+    ],
+    "normalizedSha256": "948bc079c68a5ccec142aa6e16c988ba35266e4708de328a5d3ec171be34f120",
+    "dimensionsM": [
+      1.16767,
+      2.36048,
+      1.33516
+    ],
+    "priceNote": "Curated physical-item estimate in USD cents, not a source or retailer quotation."
+  },
+  {
+    "assetId": "SchoolChair_01",
+    "catalogId": "00000000-0000-4000-8000-000000002155",
+    "sourceUrl": "https://polyhaven.com/a/SchoolChair_01",
+    "author": "Ethan Place",
+    "license": "CC0-1.0",
+    "licenseUrl": "https://polyhaven.com/license",
+    "downloadDate": "2026-10-18",
+    "downloads": [
+      {
+        "file": "SchoolChair_01.gltf",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Models/gltf/1k/SchoolChair_01/SchoolChair_01_1k.gltf",
+        "bytes": 2695,
+        "md5": "dea922d55d029fb99085b50196d1eec0",
+        "sha256": "1db6aca4bf379c2d568b2068492dcfcda15d764c0c3d98a970055af25b46281e"
+      },
+      {
+        "file": "textures/SchoolChair_01_nor_gl_1k.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/SchoolChair_01/SchoolChair_01_nor_gl_1k.jpg",
+        "bytes": 189532,
+        "md5": "223a0e5d115fb86cf1ae675fe73dc04a",
+        "sha256": "4ee930562ad26e8c98af75e8aa6577d01cb56f6d22628f4e95c385e5364f0623"
+      },
+      {
+        "file": "textures/SchoolChair_01_diff_1k.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/SchoolChair_01/SchoolChair_01_diff_1k.jpg",
+        "bytes": 52590,
+        "md5": "2d5c9c77d97ba2edd5084a9d72b5dd63",
+        "sha256": "f10ae4dbddfb056ef716770ebd96e0eff0aa6f0b5ad0f263ff51c5cade6e1d8f"
+      },
+      {
+        "file": "textures/SchoolChair_01_arm_1k.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/SchoolChair_01/SchoolChair_01_arm_1k.jpg",
+        "bytes": 104994,
+        "md5": "559daea007902aae5b5d5623a34b3a13",
+        "sha256": "ff773eb01c9d59130dc3cc0274951ac626d73fa1b2f7eee519af4ca80835568b"
+      },
+      {
+        "file": "SchoolChair_01.bin",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Models/gltf/4k/SchoolChair_01/SchoolChair_01.bin",
+        "bytes": 134912,
+        "md5": "d1f13f71f9f9979cde18c798e25dd9d3",
+        "sha256": "7d64d556ba88d3962778085b9a190f1adb0d84e667bca8ef032c0ae34b31a9fe"
+      }
+    ],
+    "normalizedSha256": "804f43c2dd6a86a967708f4ab8b3d795b825fe0b35683c1b21015cb0572ad0e0",
+    "dimensionsM": [
+      0.56585,
+      1.00604,
+      0.67528
+    ],
+    "priceNote": "Curated physical-item estimate in USD cents, not a source or retailer quotation."
+  },
+  {
+    "assetId": "SchoolDesk_01",
+    "catalogId": "00000000-0000-4000-8000-000000002156",
+    "sourceUrl": "https://polyhaven.com/a/SchoolDesk_01",
+    "author": "Ethan Place",
+    "license": "CC0-1.0",
+    "licenseUrl": "https://polyhaven.com/license",
+    "downloadDate": "2026-10-18",
+    "downloads": [
+      {
+        "file": "SchoolDesk_01.gltf",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Models/gltf/1k/SchoolDesk_01/SchoolDesk_01_1k.gltf",
+        "bytes": 2686,
+        "md5": "f327b010a117ab6af3dec7538cdf23ee",
+        "sha256": "9d840b58a9e66ce9dc3d8d5396fb97cf954b12dc27adaf41b8cc78ae1a6404eb"
+      },
+      {
+        "file": "textures/SchoolDesk_01_diff_1k.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/SchoolDesk_01/SchoolDesk_01_diff_1k.jpg",
+        "bytes": 71566,
+        "md5": "f6be3e2428c88c86c1a328798b592e5e",
+        "sha256": "4fed6d98265c6be27b9e6c9b010a5bba55a9aca4edfcc3fae9a12309ca6a5b94"
+      },
+      {
+        "file": "textures/SchoolDesk_01_nor_gl_1k.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/SchoolDesk_01/SchoolDesk_01_nor_gl_1k.jpg",
+        "bytes": 85765,
+        "md5": "b79a0c557ecea2c7d79433ac70547a43",
+        "sha256": "64de8791fec46894945136190504127d194c1fc8d999e15c639dc94d053581be"
+      },
+      {
+        "file": "textures/SchoolDesk_01_arm_1k.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/SchoolDesk_01/SchoolDesk_01_arm_1k.jpg",
+        "bytes": 134042,
+        "md5": "34b3a4444d2a2b0266e3bf3a6dfc9b2c",
+        "sha256": "ee1e2ea17ca21471b8a4822400ddc6bd3a4d441822a7eb429bef8cb1ab6dd43d"
+      },
+      {
+        "file": "SchoolDesk_01.bin",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Models/gltf/4k/SchoolDesk_01/SchoolDesk_01.bin",
+        "bytes": 127564,
+        "md5": "af08b1337236d6b951ea9805032abd32",
+        "sha256": "80d0ece097fde9b1efe15a9babfb6bb1573d228bab6e02e3806cb5eca39c2c0c"
+      }
+    ],
+    "normalizedSha256": "6c03f395eef665b24778e3150f5ce8cea2466377c0de2016ae99e4c3af8dae07",
+    "dimensionsM": [
+      0.71174,
+      0.88263,
+      0.546
+    ],
+    "priceNote": "Curated physical-item estimate in USD cents, not a source or retailer quotation."
+  },
+  {
+    "assetId": "Shelf_01",
+    "catalogId": "00000000-0000-4000-8000-000000002157",
+    "sourceUrl": "https://polyhaven.com/a/Shelf_01",
+    "author": "Gabriel Radi\u0107",
+    "license": "CC0-1.0",
+    "licenseUrl": "https://polyhaven.com/license",
+    "downloadDate": "2026-10-18",
+    "downloads": [
+      {
+        "file": "Shelf_01.gltf",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Models/gltf/1k/Shelf_01/Shelf_01_1k.gltf",
+        "bytes": 2617,
+        "md5": "9e852782eeae96108206c888d2b68df1",
+        "sha256": "715bce6ff1886eccdd43d558f5cf9242a24396e0eb9e8ae391905186bb339e52"
+      },
+      {
+        "file": "textures/Shelf_01_diff_1k.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/Shelf_01/Shelf_01_diff_1k.jpg",
+        "bytes": 153220,
+        "md5": "965ce260ce114308026fe98260cd482a",
+        "sha256": "875bb8110dec4f409d9127cba95f7c0ead02bdfeef6dd47232df939e4de35a5c"
+      },
+      {
+        "file": "Shelf_01.bin",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Models/gltf/4k/Shelf_01/Shelf_01.bin",
+        "bytes": 12676,
+        "md5": "bf2ff8bef60025c079565fd1926b8476",
+        "sha256": "21ee76dda6320ba423e76d192cfd38885e334ae394c03978d092f96b508f175b"
+      },
+      {
+        "file": "textures/Shelf_01_nor_gl_1k.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/Shelf_01/Shelf_01_nor_gl_1k.jpg",
+        "bytes": 231393,
+        "md5": "3ccf77ba277b06f29e3e68233a83bae7",
+        "sha256": "c817d7966974be2da13e4b0a57918e8e142edc50eb41d438229c3bad70df0f91"
+      },
+      {
+        "file": "textures/Shelf_01_arm_1k.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/Shelf_01/Shelf_01_arm_1k.jpg",
+        "bytes": 205542,
+        "md5": "b0044e2cc568cd2a7f906ca56f473542",
+        "sha256": "d5d180b15c48ed6ab7b27a663de8f399f813ed0c32ff2706520d677a1e387cdc"
+      }
+    ],
+    "normalizedSha256": "ff27c42aa944fda3de76298869005b5d170f96b66b9ad7e2f57da1550bc60a95",
+    "dimensionsM": [
+      1.00343,
+      2.08031,
+      0.257
+    ],
+    "priceNote": "Curated physical-item estimate in USD cents, not a source or retailer quotation."
+  },
+  {
+    "assetId": "small_wooden_table_01",
+    "catalogId": "00000000-0000-4000-8000-000000002159",
+    "sourceUrl": "https://polyhaven.com/a/small_wooden_table_01",
+    "author": "Ulan Cabanilla",
+    "license": "CC0-1.0",
+    "licenseUrl": "https://polyhaven.com/license",
+    "downloadDate": "2026-10-18",
+    "downloads": [
+      {
+        "file": "small_wooden_table_01.gltf",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Models/gltf/1k/small_wooden_table_01/small_wooden_table_01_1k.gltf",
+        "bytes": 2764,
+        "md5": "716b66952dc473d09a3ac5f48ef50a68",
+        "sha256": "2a33fb09785a9553c3cd4d0c5f8b874bb0fb9f26c8ef2613b65607524411f352"
+      },
+      {
+        "file": "textures/small_wooden_table_01_arm_1k.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/small_wooden_table_01/small_wooden_table_01_arm_1k.jpg",
+        "bytes": 154335,
+        "md5": "a208088048520cc6d774316c3b49cd53",
+        "sha256": "e1d01aaf54338b61f224e8b08c5b9e9879126ae3908a92cb8ad161bf54078c34"
+      },
+      {
+        "file": "small_wooden_table_01.bin",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Models/gltf/4k/small_wooden_table_01/small_wooden_table_01.bin",
+        "bytes": 92428,
+        "md5": "d4384b662a532853084edd70adb16ed5",
+        "sha256": "f0ca88dac6cf094e1ba260ee1bc21756a84a27b5456bcf45bda2227819458d84"
+      },
+      {
+        "file": "textures/small_wooden_table_01_diff_1k.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/small_wooden_table_01/small_wooden_table_01_diff_1k.jpg",
+        "bytes": 138301,
+        "md5": "cc2a3aad1992a1cb09dd407def42d102",
+        "sha256": "ef587bffaf9f65ec81e0777fa6f25d835ed354cef055669c8a783086fd45b9dd"
+      },
+      {
+        "file": "textures/small_wooden_table_01_nor_gl_1k.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/small_wooden_table_01/small_wooden_table_01_nor_gl_1k.jpg",
+        "bytes": 26935,
+        "md5": "f0165b5497307f371746815d7bd5d526",
+        "sha256": "7f675805966ce02cd7678687c4fc86c0dfe4b20106486bb0c772143ea8ca3b4b"
+      }
+    ],
+    "normalizedSha256": "1b4aca98aaa5e759dd2c7f7d531bb21a9f013bc2cf5a52e1c62c6f3d488c270d",
+    "dimensionsM": [
+      0.91619,
+      0.5331,
+      0.43991
+    ],
+    "priceNote": "Curated physical-item estimate in USD cents, not a source or retailer quotation."
+  },
+  {
+    "assetId": "sofa_03",
+    "catalogId": "00000000-0000-4000-8000-000000002160",
+    "sourceUrl": "https://polyhaven.com/a/sofa_03",
+    "author": "Fran Calvente",
+    "license": "CC0-1.0",
+    "licenseUrl": "https://polyhaven.com/license",
+    "downloadDate": "2026-10-18",
+    "downloads": [
+      {
+        "file": "sofa_03.gltf",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Models/gltf/1k/sofa_03/sofa_03_1k.gltf",
+        "bytes": 4465,
+        "md5": "27f31e0500c2dd83a21fd3339ade7821",
+        "sha256": "123f491bef4e9bda153bda770a5d12810bfc9b87ce56aa5973aed041ea17fd92"
+      },
+      {
+        "file": "textures/sofa_03_rough_1k.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/sofa_03/sofa_03_rough_1k.jpg",
+        "bytes": 170206,
+        "md5": "c3fe733eb2cef0424d5530e067518d60",
+        "sha256": "b03b45c92365cddf787db158d7499915d6ba0d67ec51947453f6598f51361e47"
+      },
+      {
+        "file": "sofa_03.bin",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Models/gltf/8k/sofa_03/sofa_03.bin",
+        "bytes": 228984,
+        "md5": "aeebfb9aed3b40300b0fb73f0e27830e",
+        "sha256": "e524350933d3d2a84c28f13bc042888a4768adeef88d630111015caede1c2e98"
+      },
+      {
+        "file": "textures/sofa_03_diff_1k.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/sofa_03/sofa_03_diff_1k.jpg",
+        "bytes": 151815,
+        "md5": "1f33a1431d98e1560a04b661e786b45b",
+        "sha256": "c0bc221e4cacc3de75aff7744dab1600d008bcf70b5c67fb10ad6847b695a84e"
+      },
+      {
+        "file": "textures/sofa_03_nor_gl_1k.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/sofa_03/sofa_03_nor_gl_1k.jpg",
+        "bytes": 112563,
+        "md5": "dec3ec9d5d1ad2abf260e58b67e5cd0e",
+        "sha256": "b961f9e9f38233bd58cdc5275614d3a1b37d5304f5ab86fd19d110657d386025"
+      }
+    ],
+    "normalizedSha256": "fd050a2a68f35d5dfcc60a54cbf7a6e93c28fea88757bb1bb3e23baa15a03784",
+    "dimensionsM": [
+      2.73118,
+      1.11833,
+      0.92495
+    ],
+    "priceNote": "Curated physical-item estimate in USD cents, not a source or retailer quotation."
+  },
+  {
+    "assetId": "steel_frame_shelves_03",
+    "catalogId": "00000000-0000-4000-8000-000000002161",
+    "sourceUrl": "https://polyhaven.com/a/steel_frame_shelves_03",
+    "author": "Ulan Cabanilla",
+    "license": "CC0-1.0",
+    "licenseUrl": "https://polyhaven.com/license",
+    "downloadDate": "2026-10-18",
+    "downloads": [
+      {
+        "file": "steel_frame_shelves_03.gltf",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Models/gltf/1k/steel_frame_shelves_03/steel_frame_shelves_03_1k.gltf",
+        "bytes": 9767,
+        "md5": "e389462d732290668ee1e33475afcd8d",
+        "sha256": "5778bc40d135c7c02a62acdaa4be11fa856fe462c574cbc09033e78a269833d8"
+      },
+      {
+        "file": "textures/steel_frame_shelves_03_drawers_arm_1k.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/steel_frame_shelves_03/steel_frame_shelves_03_drawers_arm_1k.jpg",
+        "bytes": 543122,
+        "md5": "7316de210ab4f9b762e0aced9fe6ba20",
+        "sha256": "cfa78c59c402b8aa26e200a9993ffd260cebbb1b7768cc9a6f8c5c0c0b28ca6e"
+      },
+      {
+        "file": "textures/steel_frame_shelves_03_diff_1k.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/steel_frame_shelves_03/steel_frame_shelves_03_diff_1k.jpg",
+        "bytes": 375274,
+        "md5": "b3618cb3cb90a8c1539604b45941f2cb",
+        "sha256": "1bbaf63d2905ddfa94a83c9aa1fe01ec8d867c0b073308cc02821ae624e31b9a"
+      },
+      {
+        "file": "steel_frame_shelves_03.bin",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Models/gltf/4k/steel_frame_shelves_03/steel_frame_shelves_03.bin",
+        "bytes": 259368,
+        "md5": "2e253fa77e783e48fe1b09fb0e371a8f",
+        "sha256": "6e299e00e277642eb1a1ac67776a8c43bd9c9dbad9a12b768bf3df274afde66f"
+      },
+      {
+        "file": "textures/steel_frame_shelves_03_drawers_nor_gl_1k.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/steel_frame_shelves_03/steel_frame_shelves_03_drawers_nor_gl_1k.jpg",
+        "bytes": 487786,
+        "md5": "912c158eb332ed3d59c2727c083978d1",
+        "sha256": "e686d0d595eca83cc6ef2186cd199c2d2dde5729788f607e2b1f996d133415af"
+      },
+      {
+        "file": "textures/steel_frame_shelves_03_arm_1k.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/steel_frame_shelves_03/steel_frame_shelves_03_arm_1k.jpg",
+        "bytes": 719712,
+        "md5": "960ad4572f3f43ed5a8783c06a70164f",
+        "sha256": "9cbeebb818f340837554f59a46cd482e4a7ed6bf3fb7eb0a4707fe775473ad32"
+      },
+      {
+        "file": "textures/steel_frame_shelves_03_drawers_diff_1k.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/steel_frame_shelves_03/steel_frame_shelves_03_drawers_diff_1k.jpg",
+        "bytes": 663476,
+        "md5": "0e132ec1c91856326b0e286d4c5b307d",
+        "sha256": "5128e44871e33eebe494fe93fba2c572b9a7970d37864ae294c6d25fc59064eb"
+      },
+      {
+        "file": "textures/steel_frame_shelves_03_nor_gl_1k.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/steel_frame_shelves_03/steel_frame_shelves_03_nor_gl_1k.jpg",
+        "bytes": 504726,
+        "md5": "e1f11e6173107c6d2046f233b94da2e0",
+        "sha256": "0e069fedd3573fe09096d766ca950e79903e8f971baaf6078ac7326d3c3dcfc8"
+      }
+    ],
+    "normalizedSha256": "c8e23e72be37afe0fbea7a3472cc00e6e620bc2c9f888a1cccd5d209b3d0fe57",
+    "dimensionsM": [
+      2.35108,
+      2.31176,
+      0.72125
+    ],
+    "priceNote": "Curated physical-item estimate in USD cents, not a source or retailer quotation."
+  },
+  {
+    "assetId": "vintage_cabinet_01",
+    "catalogId": "00000000-0000-4000-8000-000000002162",
+    "sourceUrl": "https://polyhaven.com/a/vintage_cabinet_01",
+    "author": "Rico Cilliers",
+    "license": "CC0-1.0",
+    "licenseUrl": "https://polyhaven.com/license",
+    "downloadDate": "2026-10-18",
+    "downloads": [
+      {
+        "file": "vintage_cabinet_01.gltf",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Models/gltf/1k/vintage_cabinet_01/vintage_cabinet_01_1k.gltf",
+        "bytes": 22562,
+        "md5": "754cfb6f79559dbd0eb3c1ccbf364e3b",
+        "sha256": "ce66c642cb13ba11bf7cde72bb58ad465dce1909dbef8a22dd55b28d857c1848"
+      },
+      {
+        "file": "textures/vintage_cabinet_01_a_rough_1k.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/vintage_cabinet_01/vintage_cabinet_01_a_rough_1k.jpg",
+        "bytes": 133697,
+        "md5": "183215e644cd0f74b426121b49e9a411",
+        "sha256": "a641d1ac6b43ca25eb1b26e631057b79c3f2ab1b39a3460a5894b5c3dd22b420"
+      },
+      {
+        "file": "textures/vintage_cabinet_01_a_arm_1k.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/vintage_cabinet_01/vintage_cabinet_01_a_arm_1k.jpg",
+        "bytes": 157915,
+        "md5": "9b4581b935f69907fc1bc93d5bc07ed6",
+        "sha256": "0f5970977780b6dbb202f1371777b7b616dee9da7e01760eee306c2202ffeb17"
+      },
+      {
+        "file": "textures/vintage_cabinet_01_a_nor_gl_1k.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/vintage_cabinet_01/vintage_cabinet_01_a_nor_gl_1k.jpg",
+        "bytes": 109236,
+        "md5": "5f0f1319da94f89c1111f6484839d266",
+        "sha256": "08d64582202f32c8f2250ee2061dc870678ac694206f9b4edf2acd11e33323a4"
+      },
+      {
+        "file": "textures/vintage_cabinet_01_b_rough_1k.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/vintage_cabinet_01/vintage_cabinet_01_b_rough_1k.jpg",
+        "bytes": 155539,
+        "md5": "e858bf92185d817f993dafcf21b9be18",
+        "sha256": "1f11ec7fdea1b6a9ce7ea8a3d2110f944860aeb72dce4d017b8d2880582dfb20"
+      },
+      {
+        "file": "vintage_cabinet_01.bin",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Models/gltf/8k/vintage_cabinet_01/vintage_cabinet_01.bin",
+        "bytes": 1995776,
+        "md5": "9048b5c9e35ab9d2e2732cf738b7fcb8",
+        "sha256": "407c58be2c5efb1d41d549fcff6a57d18d025033803dcb241e57349dd65bcf60"
+      },
+      {
+        "file": "textures/vintage_cabinet_01_b_nor_gl_1k.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/vintage_cabinet_01/vintage_cabinet_01_b_nor_gl_1k.jpg",
+        "bytes": 52162,
+        "md5": "492c300d382219c0cd696cf11c6dbc26",
+        "sha256": "c9580fbf1f69d7bc23817216e2954c713c87aceb5c4f04b9b1a5233c2cf2ce7b"
+      },
+      {
+        "file": "textures/vintage_cabinet_01_a_diff_1k.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/vintage_cabinet_01/vintage_cabinet_01_a_diff_1k.jpg",
+        "bytes": 119782,
+        "md5": "fdb450df01c024a7f86f0719c23b63de",
+        "sha256": "06453bb3e2811147a7558914437c20042f3f5c21b9c4f1d3488bdfe94f25f03f"
+      },
+      {
+        "file": "textures/vintage_cabinet_01_b_diff_1k.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/vintage_cabinet_01/vintage_cabinet_01_b_diff_1k.jpg",
+        "bytes": 124307,
+        "md5": "7bd4316d7c8997626de05fe9e149e4d5",
+        "sha256": "81967dbb387b205b2aa6f253165c8c44f60cdf5e57d9ceebf230fef21569b33a"
+      }
+    ],
+    "normalizedSha256": "c9815413544d247d7386f6284acb97489975c6a491f52b77bef5b112026d3cd1",
+    "dimensionsM": [
+      2.02169,
+      2.23505,
+      0.66984
+    ],
+    "priceNote": "Curated physical-item estimate in USD cents, not a source or retailer quotation."
+  },
+  {
+    "assetId": "vintage_oil_lamp",
+    "catalogId": "00000000-0000-4000-8000-000000002164",
+    "sourceUrl": "https://polyhaven.com/a/vintage_oil_lamp",
+    "author": "Monsta3D",
+    "license": "CC0-1.0",
+    "licenseUrl": "https://polyhaven.com/license",
+    "downloadDate": "2026-10-18",
+    "downloads": [
+      {
+        "file": "vintage_oil_lamp.gltf",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Models/gltf/1k/vintage_oil_lamp/vintage_oil_lamp_1k.gltf",
+        "bytes": 7786,
+        "md5": "95aefcb2ccfad1f5e10dd69522ec09ed",
+        "sha256": "ae570b98ea30b0337f62d8e7f551c03a05de00b238f3fac8f1ca5a1f1dbd1add"
+      },
+      {
+        "file": "textures/vintage_oil_lamp_glass_diff_1k.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/vintage_oil_lamp/vintage_oil_lamp_glass_diff_1k.jpg",
+        "bytes": 39058,
+        "md5": "3f2ed8af86381524fb7c02a023950309",
+        "sha256": "dbe33017c012a00c74419bb8f05b16a2eeee5e06e2ceab49a80462d25c7a7c0a"
+      },
+      {
+        "file": "textures/vintage_oil_lamp_nor_gl_1k.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/vintage_oil_lamp/vintage_oil_lamp_nor_gl_1k.jpg",
+        "bytes": 227296,
+        "md5": "09ac342783f48e29152415890215c3b7",
+        "sha256": "54db7efff64c4117782e25851544a0eb4881e5e28a13a06917a16d15ce26b1db"
+      },
+      {
+        "file": "textures/vintage_oil_lamp_flame_diff_1k.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/vintage_oil_lamp/vintage_oil_lamp_flame_diff_1k.jpg",
+        "bytes": 92425,
+        "md5": "b37858e7969def84f786a54f8e952904",
+        "sha256": "827c6a4fa9274141636cee9415f416a32937f2f257901bbe8488b22b862509f1"
+      },
+      {
+        "file": "textures/vintage_oil_lamp_diff_1k.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/vintage_oil_lamp/vintage_oil_lamp_diff_1k.jpg",
+        "bytes": 536650,
+        "md5": "fd73c81fc05f116ca4f908badb5b8974",
+        "sha256": "a96cc1383fb056618eca80a0cf4ae192286c8752f8e83cb52f9fec02ca94a471"
+      },
+      {
+        "file": "vintage_oil_lamp.bin",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Models/gltf/4k/vintage_oil_lamp/vintage_oil_lamp.bin",
+        "bytes": 186096,
+        "md5": "b43f17a0f09d6c14d45eb1099eb1077f",
+        "sha256": "4064065c8e288beaa58639c139c801db337bfc6183e73378a9177157f0587167"
+      },
+      {
+        "file": "textures/vintage_oil_lamp_glass_nor_gl_1k.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/vintage_oil_lamp/vintage_oil_lamp_glass_nor_gl_1k.jpg",
+        "bytes": 42123,
+        "md5": "40b084dae82420f972a3399e04cea91f",
+        "sha256": "2752589c8f6c7724bf2aa5d097010bd9257fff8ca0f85add13ec2ac702909df0"
+      },
+      {
+        "file": "textures/vintage_oil_lamp_arm_1k.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/vintage_oil_lamp/vintage_oil_lamp_arm_1k.jpg",
+        "bytes": 655961,
+        "md5": "5a385b1f8bea13f7d8ce47a1f6583db1",
+        "sha256": "004b7b6238632e4fc9e2ad7e76529caa292cfd96f5a42d6564531207f25c3e92"
+      },
+      {
+        "file": "textures/vintage_oil_lamp_glass_arm_1k.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/vintage_oil_lamp/vintage_oil_lamp_glass_arm_1k.jpg",
+        "bytes": 282607,
+        "md5": "35280190a34ca941710131a51e4c8d2a",
+        "sha256": "0ef2b0eb2087895851be979afc5ccb2c11076f71bc667f9e586b7f8038efc158"
+      }
+    ],
+    "normalizedSha256": "c8131233250cc87316d5b46dc505349d8792466136bef87add1ea890ee7ac1a7",
+    "dimensionsM": [
+      0.22,
+      0.80164,
+      0.22
+    ],
+    "priceNote": "Curated physical-item estimate in USD cents, not a source or retailer quotation."
+  },
+  {
+    "assetId": "wooden_stool_02",
+    "catalogId": "00000000-0000-4000-8000-000000002166",
+    "sourceUrl": "https://polyhaven.com/a/wooden_stool_02",
+    "author": "Kuutti Siitonen",
+    "license": "CC0-1.0",
+    "licenseUrl": "https://polyhaven.com/license",
+    "downloadDate": "2026-10-18",
+    "downloads": [
+      {
+        "file": "wooden_stool_02.gltf",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Models/gltf/1k/wooden_stool_02/wooden_stool_02_1k.gltf",
+        "bytes": 4077,
+        "md5": "44db244a27f82a7a8536c689e2995e79",
+        "sha256": "8bb8bc3e420db0f69cee3d2ee74eccad7cabd1110a864a7d945549684e6f32cf"
+      },
+      {
+        "file": "textures/wooden_stool_02_diff_1k.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/wooden_stool_02/wooden_stool_02_diff_1k.jpg",
+        "bytes": 829284,
+        "md5": "5a4c15920d70db2a54f98160bf65b32b",
+        "sha256": "591d92444c37bc2e7ba106e4f4e267f55d43cea517ac8ea6f54cd5bfadd5cbca"
+      },
+      {
+        "file": "textures/wooden_stool_02_nor_gl_1k.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/wooden_stool_02/wooden_stool_02_nor_gl_1k.jpg",
+        "bytes": 854910,
+        "md5": "0ca081d4d50b73f0e4e02b8586c7638d",
+        "sha256": "463af01cee188aaaeb2b89298b6f3b814ef3991315fafa5ea2e66c2e8402c570"
+      },
+      {
+        "file": "textures/wooden_stool_02_arm_1k.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/wooden_stool_02/wooden_stool_02_arm_1k.jpg",
+        "bytes": 699298,
+        "md5": "09abba658e10d55597bde0b7a1cd6912",
+        "sha256": "dc346290637bc0ae074e8662b62b00a70d0852f2b1857bc03a751998ad69cf2c"
+      },
+      {
+        "file": "wooden_stool_02.bin",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Models/gltf/8k/wooden_stool_02/wooden_stool_02.bin",
+        "bytes": 268448,
+        "md5": "ea27eb52e71c40319d9ca108843b19a0",
+        "sha256": "6b277259e77b8359fa6bd97a2b09d2b59ec615dd78f301f9ef63d25013d257b8"
+      }
+    ],
+    "normalizedSha256": "1ae073d31b0649f1aa2cd696b39e45ef2517f4295141591a3f6f40b93e48567a",
+    "dimensionsM": [
+      0.26518,
+      0.18194,
+      0.18314
+    ],
+    "priceNote": "Curated physical-item estimate in USD cents, not a source or retailer quotation."
+  },
+  {
+    "assetId": "WoodenTable_01",
+    "catalogId": "00000000-0000-4000-8000-000000002168",
+    "sourceUrl": "https://polyhaven.com/a/WoodenTable_01",
+    "author": "Ethan Place",
+    "license": "CC0-1.0",
+    "licenseUrl": "https://polyhaven.com/license",
+    "downloadDate": "2026-10-18",
+    "downloads": [
+      {
+        "file": "WoodenTable_01.gltf",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Models/gltf/1k/WoodenTable_01/WoodenTable_01_1k.gltf",
+        "bytes": 2688,
+        "md5": "585f78ec50d4b57dc239f9a9a2259fea",
+        "sha256": "413804e054055c397b4cfbd0916027097d2a20853b165b533007a46d131e1d17"
+      },
+      {
+        "file": "WoodenTable_01.bin",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Models/gltf/4k/WoodenTable_01/WoodenTable_01.bin",
+        "bytes": 42064,
+        "md5": "b764ee635684db5cc2c06288d51a3c14",
+        "sha256": "1083a3442969d27e18e6a7a454bc164407439e3908bf8f17f5fb24d58cd0172e"
+      },
+      {
+        "file": "textures/WoodenTable_01_nor_gl_1k.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/WoodenTable_01/WoodenTable_01_nor_gl_1k.jpg",
+        "bytes": 151350,
+        "md5": "ac08715658eaf47e6df70a6026231fd2",
+        "sha256": "330655534ea1fc7c7387b5d2ba5ca3231711a9fa680b980933a3a9c82cdb1c67"
+      },
+      {
+        "file": "textures/WoodenTable_01_diff_1k.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/WoodenTable_01/WoodenTable_01_diff_1k.jpg",
+        "bytes": 160147,
+        "md5": "be2bf3134566e1280412d191bd6657f8",
+        "sha256": "9535de577ad6b64deb68457af14240dd9b6d82143da0b6d2bf337660ebd855f3"
+      },
+      {
+        "file": "textures/WoodenTable_01_arm_1k.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/WoodenTable_01/WoodenTable_01_arm_1k.jpg",
+        "bytes": 198099,
+        "md5": "266842045283ef1ea475386172e8aa2f",
+        "sha256": "ad876f814215006d35f74670d4fc14a9f6eab386a9307764521449464a1cd6ef"
+      }
+    ],
+    "normalizedSha256": "41bf6e2f3f06c1c8ee9e907774af78f72e03b185466c58e43a9b24e7d868d69f",
+    "dimensionsM": [
+      1.79965,
+      0.54884,
+      0.65715
+    ],
+    "priceNote": "Curated physical-item estimate in USD cents, not a source or retailer quotation."
+  },
+  {
+    "assetId": "WoodenTable_02",
+    "catalogId": "00000000-0000-4000-8000-000000002169",
+    "sourceUrl": "https://polyhaven.com/a/WoodenTable_02",
+    "author": "Fran Calvente",
+    "license": "CC0-1.0",
+    "licenseUrl": "https://polyhaven.com/license",
+    "downloadDate": "2026-10-18",
+    "downloads": [
+      {
+        "file": "WoodenTable_02.gltf",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Models/gltf/1k/WoodenTable_02/WoodenTable_02_1k.gltf",
+        "bytes": 2692,
+        "md5": "5d7716dcf8cc006e0ae3357e037504ea",
+        "sha256": "3a54261d3757fd78561f1f4bedb7304e0f7b98dae433998e280bc2843cf3fb24"
+      },
+      {
+        "file": "textures/WoodenTable_02_arm_1k.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/WoodenTable_02/WoodenTable_02_arm_1k.jpg",
+        "bytes": 157036,
+        "md5": "dd4c7c83484ae80e9e8a7651275376cf",
+        "sha256": "232a482ff423c5c214c8a892b378b56995f53058f9c4ee5fb5c1798c9afa2adf"
+      },
+      {
+        "file": "textures/WoodenTable_02_nor_gl_1k.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/WoodenTable_02/WoodenTable_02_nor_gl_1k.jpg",
+        "bytes": 149799,
+        "md5": "46082ace0e2b44d6eabe554c88542e2b",
+        "sha256": "9ceabc356fb177af63e118c1ea24245fcec627a027c0e5503fb5d2165e0f5aa3"
+      },
+      {
+        "file": "WoodenTable_02.bin",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Models/gltf/4k/WoodenTable_02/WoodenTable_02.bin",
+        "bytes": 49564,
+        "md5": "e36320501a385c756b842bcb73139292",
+        "sha256": "740bca56c0c6eff1209bb046825f5a8467badef1aebe38aab80d309884d4352e"
+      },
+      {
+        "file": "textures/WoodenTable_02_diff_1k.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/WoodenTable_02/WoodenTable_02_diff_1k.jpg",
+        "bytes": 144218,
+        "md5": "fc9095965ee8302713e8a6792028c6af",
+        "sha256": "559a27ea7d127010c5557213020b7d4e43d57289ca041291665dfe1213f5fe6c"
+      }
+    ],
+    "normalizedSha256": "74a25081860146c73dab8604e5ebcefb43dbe2b170f5abf9eec0b3d6d7c12bea",
+    "dimensionsM": [
+      0.30068,
+      0.41766,
+      0.30068
+    ],
+    "priceNote": "Curated physical-item estimate in USD cents, not a source or retailer quotation."
+  }
+]

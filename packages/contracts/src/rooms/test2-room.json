@@ -1,0 +1,1812 @@
+{
+  "schemaVersion": 1,
+  "name": "test2 — warm minimal living room",
+  "referenceImage": "assets/test2.png",
+  "photoCamera": {
+    "position": [
+      5.6,
+      7.2,
+      6.4
+    ],
+    "target": [
+      -0.4,
+      0.2,
+      -0.5
+    ],
+    "fov": 32
+  },
+  "shell": {
+    "id": "7e520000-0000-4000-8000-000000000001",
+    "sourceScanId": "7e520000-0000-4000-8000-000000000009",
+    "coordinateVersion": 1,
+    "floor": {
+      "polygonXZ": [
+        [
+          -2.7,
+          -2.4
+        ],
+        [
+          -2.7,
+          2.4
+        ],
+        [
+          2.7,
+          2.4
+        ],
+        [
+          2.7,
+          -2.4
+        ]
+      ],
+      "elevationY": 0
+    },
+    "walls": [
+      {
+        "id": "7e5a1100-0000-4000-8000-000000000001",
+        "fromXZ": [
+          -2.8,
+          -2.5
+        ],
+        "toXZ": [
+          -2.8,
+          2.5
+        ],
+        "heightM": 2.7,
+        "thicknessM": 0.2
+      },
+      {
+        "id": "7e5a1100-0000-4000-8000-000000000002",
+        "fromXZ": [
+          -2.8,
+          2.5
+        ],
+        "toXZ": [
+          2.8,
+          2.5
+        ],
+        "heightM": 2.7,
+        "thicknessM": 0.2
+      },
+      {
+        "id": "7e5a1100-0000-4000-8000-000000000003",
+        "fromXZ": [
+          2.8,
+          2.5
+        ],
+        "toXZ": [
+          2.8,
+          -2.5
+        ],
+        "heightM": 2.7,
+        "thicknessM": 0.2
+      },
+      {
+        "id": "7e5a1100-0000-4000-8000-000000000004",
+        "fromXZ": [
+          2.8,
+          -2.5
+        ],
+        "toXZ": [
+          -2.8,
+          -2.5
+        ],
+        "heightM": 2.7,
+        "thicknessM": 0.2
+      }
+    ],
+    "openings": [
+      {
+        "id": "7e5009e7-0000-4000-8000-000000000001",
+        "wallId": "7e5a1100-0000-4000-8000-000000000001",
+        "kind": "door",
+        "offsetM": 1.15,
+        "widthM": 2.5,
+        "bottomM": 0,
+        "heightM": 2.3,
+        "swing": "none",
+        "glazing": {
+          "panels": 3,
+          "frameColor": "#1e1e1e"
+        }
+      },
+      {
+        "id": "7e5009e7-0000-4000-8000-000000000002",
+        "wallId": "7e5a1100-0000-4000-8000-000000000002",
+        "kind": "opening",
+        "offsetM": 1.2,
+        "widthM": 0.9,
+        "bottomM": 0,
+        "heightM": 2.1,
+        "swing": "none"
+      },
+      {
+        "id": "7e5009e7-0000-4000-8000-000000000003",
+        "wallId": "7e5a1100-0000-4000-8000-000000000003",
+        "kind": "window",
+        "offsetM": 0.6,
+        "widthM": 2.5,
+        "bottomM": 0.9,
+        "heightM": 1.4,
+        "glazing": {
+          "panels": 2,
+          "frameColor": "#1e1e1e"
+        }
+      }
+    ],
+    "ceilingHeightM": 2.7
+  },
+  "scene": {
+    "schemaVersion": 1,
+    "id": "7e520000-0000-4000-8000-000000000003",
+    "roomId": "7e520000-0000-4000-8000-000000000002",
+    "shellId": "7e520000-0000-4000-8000-000000000001",
+    "revision": 0,
+    "lightingPreset": "golden-hour",
+    "appearance": {
+      "wallColor": "#efe6da",
+      "floorMaterial": "honey"
+    },
+    "updatedAt": "2026-10-17T12:00:00.000Z",
+    "objects": [
+      {
+        "id": "7e50b1ec-0000-4000-8000-000000000001",
+        "assetId": "a55e7000-0000-4000-8000-000000000038",
+        "category": "rug",
+        "transform": {
+          "position": [
+            -0.3,
+            0,
+            0.55
+          ],
+          "rotation": [
+            0,
+            0,
+            0,
+            1
+          ],
+          "scale": [
+            1,
+            1,
+            1
+          ]
+        },
+        "dimensionsM": [
+          3.2,
+          0.015,
+          2.3
+        ],
+        "locked": false,
+        "source": "user",
+        "displayName": "Jute rug",
+        "placement": {
+          "support": "floor"
+        }
+      },
+      {
+        "id": "7e50b1ec-0000-4000-8000-000000000002",
+        "assetId": "a55e7000-0000-4000-8000-000000000019",
+        "category": "sofa",
+        "transform": {
+          "position": [
+            -0.25,
+            0,
+            -0.4
+          ],
+          "rotation": [
+            0,
+            0,
+            0,
+            1
+          ],
+          "scale": [
+            1,
+            1,
+            1
+          ]
+        },
+        "dimensionsM": [
+          2.3,
+          0.82,
+          0.95
+        ],
+        "locked": false,
+        "source": "user",
+        "displayName": "Cream sofa",
+        "placement": {
+          "support": "floor"
+        }
+      },
+      {
+        "id": "7e50b1ec-0000-4000-8000-000000000003",
+        "assetId": "a55e7000-0000-4000-8000-000000000027",
+        "category": "textile",
+        "transform": {
+          "position": [
+            -0.95,
+            0.45570294502613273,
+            -0.33399999999999996
+          ],
+          "rotation": [
+            -0.13052619222005157,
+            0,
+            0,
+            0.9914448613738104
+          ],
+          "scale": [
+            1,
+            1,
+            1
+          ]
+        },
+        "dimensionsM": [
+          0.45,
+          0.45,
+          0.15
+        ],
+        "locked": false,
+        "source": "user",
+        "displayName": "Rust pillow",
+        "placement": {
+          "support": "object",
+          "parentId": "7e50b1ec-0000-4000-8000-000000000002"
+        }
+      },
+      {
+        "id": "7e50b1ec-0000-4000-8000-000000000004",
+        "assetId": "a55e7000-0000-4000-8000-000000000027",
+        "category": "textile",
+        "transform": {
+          "position": [
+            -0.22,
+            0.45570294502612546,
+            -0.29499999999999993
+          ],
+          "rotation": [
+            -0.1298111560818536,
+            -0.1036342077743597,
+            -0.013643702288985569,
+            0.9860136226863458
+          ],
+          "scale": [
+            1,
+            1,
+            1
+          ]
+        },
+        "dimensionsM": [
+          0.45,
+          0.45,
+          0.15
+        ],
+        "locked": false,
+        "source": "user",
+        "displayName": "Sand pillow",
+        "placement": {
+          "support": "object",
+          "parentId": "7e50b1ec-0000-4000-8000-000000000002"
+        },
+        "materialOverrides": {
+          "linen": {
+            "colorHex": "#d8c4a6"
+          }
+        }
+      },
+      {
+        "id": "7e50b1ec-0000-4000-8000-000000000005",
+        "assetId": "a55e7000-0000-4000-8000-000000000027",
+        "category": "textile",
+        "transform": {
+          "position": [
+            0.38,
+            0.45570294502614156,
+            -0.30099999999999993
+          ],
+          "rotation": [
+            -0.13002950065175264,
+            0.08641011328672234,
+            0.011376107231006814,
+            0.9876721143511479
+          ],
+          "scale": [
+            1,
+            1,
+            1
+          ]
+        },
+        "dimensionsM": [
+          0.45,
+          0.45,
+          0.15
+        ],
+        "locked": false,
+        "source": "user",
+        "displayName": "Oat pillow",
+        "placement": {
+          "support": "object",
+          "parentId": "7e50b1ec-0000-4000-8000-000000000002"
+        },
+        "materialOverrides": {
+          "linen": {
+            "colorHex": "#e2d3bc"
+          }
+        }
+      },
+      {
+        "id": "7e50b1ec-0000-4000-8000-000000000006",
+        "assetId": "a55e7000-0000-4000-8000-000000000028",
+        "category": "textile",
+        "transform": {
+          "position": [
+            -0.6,
+            0.4401719,
+            0.03300000000000024
+          ],
+          "rotation": [
+            0,
+            0.13052619222,
+            0,
+            0.991444861374
+          ],
+          "scale": [
+            1,
+            1,
+            1
+          ]
+        },
+        "dimensionsM": [
+          0.6,
+          0.06,
+          0.45
+        ],
+        "locked": false,
+        "source": "user",
+        "displayName": "Knit throw",
+        "placement": {
+          "support": "object",
+          "parentId": "7e50b1ec-0000-4000-8000-000000000002"
+        }
+      },
+      {
+        "id": "7e50b1ec-0000-4000-8000-000000000007",
+        "assetId": "a55e7000-0000-4000-8000-000000000021",
+        "category": "coffee-table",
+        "transform": {
+          "position": [
+            -0.85,
+            0,
+            0.8
+          ],
+          "rotation": [
+            0,
+            0,
+            0,
+            1
+          ],
+          "scale": [
+            1,
+            1,
+            1
+          ]
+        },
+        "dimensionsM": [
+          0.9,
+          0.38,
+          0.9
+        ],
+        "locked": false,
+        "source": "user",
+        "displayName": "Travertine coffee table",
+        "placement": {
+          "support": "floor"
+        }
+      },
+      {
+        "id": "7e50b1ec-0000-4000-8000-000000000008",
+        "assetId": "a55e7000-0000-4000-8000-000000000037",
+        "category": "plant",
+        "transform": {
+          "position": [
+            -1,
+            0.38,
+            0.72
+          ],
+          "rotation": [
+            0,
+            0,
+            0,
+            1
+          ],
+          "scale": [
+            1,
+            1,
+            1
+          ]
+        },
+        "dimensionsM": [
+          0.168,
+          0.267,
+          0.185
+        ],
+        "locked": false,
+        "source": "user",
+        "displayName": "Small plant",
+        "placement": {
+          "support": "object",
+          "parentId": "7e50b1ec-0000-4000-8000-000000000007"
+        }
+      },
+      {
+        "id": "7e50b1ec-0000-4000-8000-000000000009",
+        "assetId": "a55e7000-0000-4000-8000-000000000029",
+        "category": "decor",
+        "transform": {
+          "position": [
+            -0.6844626186323454,
+            0.39499999999999424,
+            0.7778399592978884
+          ],
+          "rotation": [
+            0.6963642403198718,
+            0.1227878039690221,
+            -0.12278780396902209,
+            0.6963642403198719
+          ],
+          "scale": [
+            1,
+            1,
+            1
+          ]
+        },
+        "dimensionsM": [
+          0.18,
+          0.26,
+          0.03
+        ],
+        "locked": false,
+        "source": "user",
+        "displayName": "Coffee-table book",
+        "placement": {
+          "support": "object",
+          "parentId": "7e50b1ec-0000-4000-8000-000000000007"
+        },
+        "materialOverrides": {
+          "cover": {
+            "colorHex": "#cdb89a"
+          }
+        }
+      },
+      {
+        "id": "7e50b1ec-0000-4000-8000-000000000010",
+        "assetId": "a55e7000-0000-4000-8000-000000000029",
+        "category": "decor",
+        "transform": {
+          "position": [
+            -0.6916418719065192,
+            0.4225000000000021,
+            0.802875764785535
+          ],
+          "rotation": [
+            0.6861026878060857,
+            0.171064612896264,
+            -0.17106461289626398,
+            0.6861026878060859
+          ],
+          "scale": [
+            1,
+            1,
+            1
+          ]
+        },
+        "dimensionsM": [
+          0.15,
+          0.22,
+          0.025
+        ],
+        "locked": false,
+        "source": "user",
+        "displayName": "Small book",
+        "placement": {
+          "support": "object",
+          "parentId": "7e50b1ec-0000-4000-8000-000000000009"
+        },
+        "materialOverrides": {
+          "cover": {
+            "colorHex": "#8c7a6b"
+          }
+        }
+      },
+      {
+        "id": "7e50b1ec-0000-4000-8000-000000000011",
+        "assetId": "a55e7000-0000-4000-8000-000000000030",
+        "category": "decor",
+        "transform": {
+          "position": [
+            -0.64,
+            0.435,
+            0.9
+          ],
+          "rotation": [
+            0,
+            0.2419218956,
+            0,
+            0.970295726276
+          ],
+          "scale": [
+            1,
+            1,
+            1
+          ]
+        },
+        "dimensionsM": [
+          0.14,
+          0.05,
+          0.14
+        ],
+        "locked": false,
+        "source": "user",
+        "displayName": "Stoneware dish",
+        "placement": {
+          "support": "object",
+          "parentId": "7e50b1ec-0000-4000-8000-000000000010"
+        }
+      },
+      {
+        "id": "7e50b1ec-0000-4000-8000-000000000012",
+        "assetId": "a55e7000-0000-4000-8000-000000000020",
+        "category": "armchair",
+        "transform": {
+          "position": [
+            0.55,
+            0,
+            1.65
+          ],
+          "rotation": [
+            0,
+            -0.887010833178,
+            0,
+            0.461748613235
+          ],
+          "scale": [
+            1,
+            1,
+            1
+          ]
+        },
+        "dimensionsM": [
+          0.91,
+          0.77,
+          0.82
+        ],
+        "locked": false,
+        "source": "user",
+        "displayName": "Bouclé barrel chair",
+        "placement": {
+          "support": "floor"
+        }
+      },
+      {
+        "id": "7e50b1ec-0000-4000-8000-000000000013",
+        "assetId": "a55e7000-0000-4000-8000-000000000022",
+        "category": "lamp",
+        "transform": {
+          "position": [
+            -1.2263,
+            0,
+            -0.8911
+          ],
+          "rotation": [
+            0,
+            0.28736051985,
+            0,
+            0.957822494845
+          ],
+          "scale": [
+            1,
+            1,
+            1
+          ]
+        },
+        "dimensionsM": [
+          0.4,
+          1.864,
+          1.1
+        ],
+        "locked": false,
+        "source": "user",
+        "displayName": "Arc floor lamp",
+        "placement": {
+          "support": "floor"
+        }
+      },
+      {
+        "id": "7e50b1ec-0000-4000-8000-000000000014",
+        "assetId": "a55e7000-0000-4000-8000-000000000036",
+        "category": "plant",
+        "transform": {
+          "position": [
+            -2.25,
+            0,
+            -1.95
+          ],
+          "rotation": [
+            0,
+            0,
+            0,
+            1
+          ],
+          "scale": [
+            1,
+            1,
+            1
+          ]
+        },
+        "dimensionsM": [
+          0.7044,
+          1.62,
+          0.7608
+        ],
+        "locked": false,
+        "source": "user",
+        "displayName": "Olive tree",
+        "placement": {
+          "support": "floor"
+        }
+      },
+      {
+        "id": "7e50b1ec-0000-4000-8000-000000000015",
+        "assetId": "a55e7000-0000-4000-8000-000000000010",
+        "category": "plant",
+        "transform": {
+          "position": [
+            -2.33,
+            0,
+            1.65
+          ],
+          "rotation": [
+            0,
+            0,
+            0,
+            1
+          ],
+          "scale": [
+            1,
+            1,
+            1
+          ]
+        },
+        "dimensionsM": [
+          0.701,
+          0.841,
+          0.657
+        ],
+        "locked": false,
+        "source": "user",
+        "displayName": "Potted plant",
+        "placement": {
+          "support": "floor"
+        }
+      },
+      {
+        "id": "7e50b1ec-0000-4000-8000-000000000016",
+        "assetId": "a55e7000-0000-4000-8000-000000000023",
+        "category": "sideboard",
+        "transform": {
+          "position": [
+            -0.55,
+            0,
+            -2.15
+          ],
+          "rotation": [
+            0,
+            0,
+            0,
+            1
+          ],
+          "scale": [
+            1,
+            1,
+            1
+          ]
+        },
+        "dimensionsM": [
+          2.1,
+          0.75,
+          0.498
+        ],
+        "locked": false,
+        "source": "user",
+        "displayName": "Oak sideboard",
+        "placement": {
+          "support": "floor"
+        }
+      },
+      {
+        "id": "7e50b1ec-0000-4000-8000-000000000017",
+        "assetId": "a55e7000-0000-4000-8000-000000000032",
+        "category": "wall-art",
+        "transform": {
+          "position": [
+            -0.85,
+            0.88,
+            -2.3825
+          ],
+          "rotation": [
+            0,
+            0,
+            0,
+            1
+          ],
+          "scale": [
+            1,
+            1,
+            1
+          ]
+        },
+        "dimensionsM": [
+          0.6,
+          0.78,
+          0.035
+        ],
+        "locked": false,
+        "source": "user",
+        "displayName": "Abstract print",
+        "placement": {
+          "support": "wall",
+          "parentId": "7e5a1100-0000-4000-8000-000000000004"
+        }
+      },
+      {
+        "id": "7e50b1ec-0000-4000-8000-000000000018",
+        "assetId": "a55e7000-0000-4000-8000-000000000034",
+        "category": "decor",
+        "transform": {
+          "position": [
+            -1.45,
+            0.75,
+            -2.16
+          ],
+          "rotation": [
+            0,
+            0,
+            0,
+            1
+          ],
+          "scale": [
+            1,
+            1,
+            1
+          ]
+        },
+        "dimensionsM": [
+          0.084,
+          0.3105,
+          0.084
+        ],
+        "locked": false,
+        "source": "user",
+        "displayName": "Bottle vase",
+        "placement": {
+          "support": "object",
+          "parentId": "7e50b1ec-0000-4000-8000-000000000016"
+        }
+      },
+      {
+        "id": "7e50b1ec-0000-4000-8000-000000000019",
+        "assetId": "a55e7000-0000-4000-8000-000000000033",
+        "category": "decor",
+        "transform": {
+          "position": [
+            -1.27,
+            0.75,
+            -2.13
+          ],
+          "rotation": [
+            0,
+            0,
+            0,
+            1
+          ],
+          "scale": [
+            1,
+            1,
+            1
+          ]
+        },
+        "dimensionsM": [
+          0.1744,
+          0.2472,
+          0.1744
+        ],
+        "locked": false,
+        "source": "user",
+        "displayName": "Round vase",
+        "placement": {
+          "support": "object",
+          "parentId": "7e50b1ec-0000-4000-8000-000000000016"
+        }
+      },
+      {
+        "id": "7e50b1ec-0000-4000-8000-000000000020",
+        "assetId": "a55e7000-0000-4000-8000-000000000035",
+        "category": "decor",
+        "transform": {
+          "position": [
+            -1.11,
+            0.75,
+            -2.19
+          ],
+          "rotation": [
+            0,
+            0,
+            0,
+            1
+          ],
+          "scale": [
+            1,
+            1,
+            1
+          ]
+        },
+        "dimensionsM": [
+          0.1086,
+          0.2052,
+          0.1086
+        ],
+        "locked": false,
+        "source": "user",
+        "displayName": "Bud vase",
+        "placement": {
+          "support": "object",
+          "parentId": "7e50b1ec-0000-4000-8000-000000000016"
+        }
+      },
+      {
+        "id": "7e50b1ec-0000-4000-8000-000000000021",
+        "assetId": "a55e7000-0000-4000-8000-000000000029",
+        "category": "decor",
+        "transform": {
+          "position": [
+            -0.31220180398457986,
+            0.7675000000000045,
+            -2.2594672577328883
+          ],
+          "rotation": [
+            0.7064337722129926,
+            0.030843564596994312,
+            -0.030843564596994305,
+            0.7064337722129927
+          ],
+          "scale": [
+            1,
+            1,
+            1
+          ]
+        },
+        "dimensionsM": [
+          0.2,
+          0.28,
+          0.035
+        ],
+        "locked": false,
+        "source": "user",
+        "displayName": "Large book",
+        "placement": {
+          "support": "object",
+          "parentId": "7e50b1ec-0000-4000-8000-000000000016"
+        },
+        "materialOverrides": {
+          "cover": {
+            "colorHex": "#ece7df"
+          }
+        }
+      },
+      {
+        "id": "7e50b1ec-0000-4000-8000-000000000022",
+        "assetId": "a55e7000-0000-4000-8000-000000000029",
+        "category": "decor",
+        "transform": {
+          "position": [
+            -0.2937196852508135,
+            0.8000000000000134,
+            -2.2398355441706546
+          ],
+          "rotation": [
+            0.7068644733533338,
+            -0.018509897659356525,
+            0.01850989765935652,
+            0.7068644733533339
+          ],
+          "scale": [
+            1,
+            1,
+            1
+          ]
+        },
+        "dimensionsM": [
+          0.17,
+          0.24,
+          0.03
+        ],
+        "locked": false,
+        "source": "user",
+        "displayName": "Book",
+        "placement": {
+          "support": "object",
+          "parentId": "7e50b1ec-0000-4000-8000-000000000021"
+        },
+        "materialOverrides": {
+          "cover": {
+            "colorHex": "#d8c4a6"
+          }
+        }
+      },
+      {
+        "id": "7e50b1ec-0000-4000-8000-000000000023",
+        "assetId": "a55e7000-0000-4000-8000-000000000031",
+        "category": "decor",
+        "transform": {
+          "position": [
+            0.03,
+            0.75,
+            -2.1
+          ],
+          "rotation": [
+            0,
+            0.087155742748,
+            0,
+            0.996194698092
+          ],
+          "scale": [
+            1,
+            1,
+            1
+          ]
+        },
+        "dimensionsM": [
+          0.3,
+          0.03,
+          0.18
+        ],
+        "locked": false,
+        "source": "user",
+        "displayName": "Walnut tray",
+        "placement": {
+          "support": "object",
+          "parentId": "7e50b1ec-0000-4000-8000-000000000016"
+        }
+      },
+      {
+        "id": "7e50b1ec-0000-4000-8000-000000000024",
+        "assetId": "a55e7000-0000-4000-8000-000000000037",
+        "category": "plant",
+        "transform": {
+          "position": [
+            0.33,
+            0.75,
+            -2.13
+          ],
+          "rotation": [
+            0,
+            0,
+            0,
+            1
+          ],
+          "scale": [
+            1,
+            1,
+            1
+          ]
+        },
+        "dimensionsM": [
+          0.2688,
+          0.4272,
+          0.296
+        ],
+        "locked": false,
+        "source": "user",
+        "displayName": "Leafy plant",
+        "placement": {
+          "support": "object",
+          "parentId": "7e50b1ec-0000-4000-8000-000000000016"
+        }
+      },
+      {
+        "id": "7e50b1ec-0000-4000-8000-000000000025",
+        "assetId": "a55e7000-0000-4000-8000-000000000025",
+        "category": "lamp",
+        "transform": {
+          "position": [
+            1.02,
+            0,
+            -2.15
+          ],
+          "rotation": [
+            0,
+            0,
+            0,
+            1
+          ],
+          "scale": [
+            1,
+            1,
+            1
+          ]
+        },
+        "dimensionsM": [
+          0.22,
+          0.577,
+          0.22
+        ],
+        "locked": false,
+        "source": "user",
+        "displayName": "Tall lantern",
+        "placement": {
+          "support": "floor"
+        }
+      },
+      {
+        "id": "7e50b1ec-0000-4000-8000-000000000026",
+        "assetId": "a55e7000-0000-4000-8000-000000000026",
+        "category": "lamp",
+        "transform": {
+          "position": [
+            1.1,
+            0,
+            -1.82
+          ],
+          "rotation": [
+            0,
+            0,
+            0,
+            1
+          ],
+          "scale": [
+            1,
+            1,
+            1
+          ]
+        },
+        "dimensionsM": [
+          0.2,
+          0.23,
+          0.2
+        ],
+        "locked": false,
+        "source": "user",
+        "displayName": "Orb lantern",
+        "placement": {
+          "support": "floor"
+        }
+      },
+      {
+        "id": "7e50b1ec-0000-4000-8000-000000000027",
+        "assetId": "a55e7000-0000-4000-8000-000000000024",
+        "category": "bookshelf",
+        "transform": {
+          "position": [
+            2.05,
+            0,
+            -2.224
+          ],
+          "rotation": [
+            0,
+            0,
+            0,
+            1
+          ],
+          "scale": [
+            1,
+            1,
+            1
+          ]
+        },
+        "dimensionsM": [
+          1,
+          1.9,
+          0.35
+        ],
+        "locked": false,
+        "source": "user",
+        "displayName": "Open bookshelf",
+        "placement": {
+          "support": "floor"
+        }
+      },
+      {
+        "id": "7e50b1ec-0000-4000-8000-000000000028",
+        "assetId": "a55e7000-0000-4000-8000-000000000029",
+        "category": "decor",
+        "transform": {
+          "position": [
+            1.77,
+            0.485,
+            -2.354
+          ],
+          "rotation": [
+            0.7071067811865475,
+            0,
+            0,
+            0.7071067811865476
+          ],
+          "scale": [
+            1,
+            1,
+            1
+          ]
+        },
+        "dimensionsM": [
+          0.18,
+          0.26,
+          0.03
+        ],
+        "locked": false,
+        "source": "user",
+        "displayName": "Book",
+        "placement": {
+          "support": "object",
+          "parentId": "7e50b1ec-0000-4000-8000-000000000027"
+        },
+        "materialOverrides": {
+          "cover": {
+            "colorHex": "#8c7a6b"
+          }
+        }
+      },
+      {
+        "id": "7e50b1ec-0000-4000-8000-000000000029",
+        "assetId": "a55e7000-0000-4000-8000-000000000029",
+        "category": "decor",
+        "transform": {
+          "position": [
+            1.7619780055193117,
+            0.5139999999999978,
+            -2.338719865779854
+          ],
+          "rotation": [
+            0.7066760308407668,
+            0.02467767077868886,
+            -0.024677670778688855,
+            0.7066760308407669
+          ],
+          "scale": [
+            1,
+            1,
+            1
+          ]
+        },
+        "dimensionsM": [
+          0.17,
+          0.23,
+          0.028
+        ],
+        "locked": false,
+        "source": "user",
+        "displayName": "Book",
+        "placement": {
+          "support": "object",
+          "parentId": "7e50b1ec-0000-4000-8000-000000000028"
+        },
+        "materialOverrides": {
+          "cover": {
+            "colorHex": "#ece7df"
+          }
+        }
+      },
+      {
+        "id": "7e50b1ec-0000-4000-8000-000000000030",
+        "assetId": "a55e7000-0000-4000-8000-000000000037",
+        "category": "plant",
+        "transform": {
+          "position": [
+            2.27,
+            0.47,
+            -2.224
+          ],
+          "rotation": [
+            0,
+            0,
+            0,
+            1
+          ],
+          "scale": [
+            1,
+            1,
+            1
+          ]
+        },
+        "dimensionsM": [
+          0.168,
+          0.267,
+          0.185
+        ],
+        "locked": false,
+        "source": "user",
+        "displayName": "Shelf plant",
+        "placement": {
+          "support": "object",
+          "parentId": "7e50b1ec-0000-4000-8000-000000000027"
+        }
+      },
+      {
+        "id": "7e50b1ec-0000-4000-8000-000000000031",
+        "assetId": "a55e7000-0000-4000-8000-000000000029",
+        "category": "decor",
+        "transform": {
+          "position": [
+            1.65,
+            0.89,
+            -2.224
+          ],
+          "rotation": [
+            0,
+            0.707106781187,
+            0,
+            0.707106781187
+          ],
+          "scale": [
+            1,
+            1,
+            1
+          ]
+        },
+        "dimensionsM": [
+          0.16,
+          0.22,
+          0.03
+        ],
+        "locked": false,
+        "source": "user",
+        "displayName": "Book",
+        "placement": {
+          "support": "object",
+          "parentId": "7e50b1ec-0000-4000-8000-000000000027"
+        },
+        "materialOverrides": {
+          "cover": {
+            "colorHex": "#cdb89a"
+          }
+        }
+      },
+      {
+        "id": "7e50b1ec-0000-4000-8000-000000000032",
+        "assetId": "a55e7000-0000-4000-8000-000000000029",
+        "category": "decor",
+        "transform": {
+          "position": [
+            1.684,
+            0.89,
+            -2.224
+          ],
+          "rotation": [
+            0,
+            0.707106781187,
+            0,
+            0.707106781187
+          ],
+          "scale": [
+            1,
+            1,
+            1
+          ]
+        },
+        "dimensionsM": [
+          0.16,
+          0.24,
+          0.03
+        ],
+        "locked": false,
+        "source": "user",
+        "displayName": "Book",
+        "placement": {
+          "support": "object",
+          "parentId": "7e50b1ec-0000-4000-8000-000000000027"
+        },
+        "materialOverrides": {
+          "cover": {
+            "colorHex": "#8c7a6b"
+          }
+        }
+      },
+      {
+        "id": "7e50b1ec-0000-4000-8000-000000000033",
+        "assetId": "a55e7000-0000-4000-8000-000000000029",
+        "category": "decor",
+        "transform": {
+          "position": [
+            1.718,
+            0.89,
+            -2.224
+          ],
+          "rotation": [
+            0,
+            0.707106781187,
+            0,
+            0.707106781187
+          ],
+          "scale": [
+            1,
+            1,
+            1
+          ]
+        },
+        "dimensionsM": [
+          0.16,
+          0.26,
+          0.03
+        ],
+        "locked": false,
+        "source": "user",
+        "displayName": "Book",
+        "placement": {
+          "support": "object",
+          "parentId": "7e50b1ec-0000-4000-8000-000000000027"
+        },
+        "materialOverrides": {
+          "cover": {
+            "colorHex": "#ece7df"
+          }
+        }
+      },
+      {
+        "id": "7e50b1ec-0000-4000-8000-000000000034",
+        "assetId": "a55e7000-0000-4000-8000-000000000029",
+        "category": "decor",
+        "transform": {
+          "position": [
+            1.752,
+            0.89,
+            -2.224
+          ],
+          "rotation": [
+            0,
+            0.707106781187,
+            0,
+            0.707106781187
+          ],
+          "scale": [
+            1,
+            1,
+            1
+          ]
+        },
+        "dimensionsM": [
+          0.16,
+          0.22,
+          0.03
+        ],
+        "locked": false,
+        "source": "user",
+        "displayName": "Book",
+        "placement": {
+          "support": "object",
+          "parentId": "7e50b1ec-0000-4000-8000-000000000027"
+        },
+        "materialOverrides": {
+          "cover": {
+            "colorHex": "#9fa88f"
+          }
+        }
+      },
+      {
+        "id": "7e50b1ec-0000-4000-8000-000000000035",
+        "assetId": "a55e7000-0000-4000-8000-000000000029",
+        "category": "decor",
+        "transform": {
+          "position": [
+            1.786,
+            0.89,
+            -2.224
+          ],
+          "rotation": [
+            0,
+            0.707106781187,
+            0,
+            0.707106781187
+          ],
+          "scale": [
+            1,
+            1,
+            1
+          ]
+        },
+        "dimensionsM": [
+          0.16,
+          0.24,
+          0.03
+        ],
+        "locked": false,
+        "source": "user",
+        "displayName": "Book",
+        "placement": {
+          "support": "object",
+          "parentId": "7e50b1ec-0000-4000-8000-000000000027"
+        },
+        "materialOverrides": {
+          "cover": {
+            "colorHex": "#b8704c"
+          }
+        }
+      },
+      {
+        "id": "7e50b1ec-0000-4000-8000-000000000036",
+        "assetId": "a55e7000-0000-4000-8000-000000000029",
+        "category": "decor",
+        "transform": {
+          "position": [
+            1.82,
+            0.89,
+            -2.224
+          ],
+          "rotation": [
+            0,
+            0.707106781187,
+            0,
+            0.707106781187
+          ],
+          "scale": [
+            1,
+            1,
+            1
+          ]
+        },
+        "dimensionsM": [
+          0.16,
+          0.26,
+          0.03
+        ],
+        "locked": false,
+        "source": "user",
+        "displayName": "Book",
+        "placement": {
+          "support": "object",
+          "parentId": "7e50b1ec-0000-4000-8000-000000000027"
+        },
+        "materialOverrides": {
+          "cover": {
+            "colorHex": "#2f3440"
+          }
+        }
+      },
+      {
+        "id": "7e50b1ec-0000-4000-8000-000000000037",
+        "assetId": "a55e7000-0000-4000-8000-000000000035",
+        "category": "decor",
+        "transform": {
+          "position": [
+            2.3,
+            0.89,
+            -2.224
+          ],
+          "rotation": [
+            0,
+            0,
+            0,
+            1
+          ],
+          "scale": [
+            1,
+            1,
+            1
+          ]
+        },
+        "dimensionsM": [
+          0.1086,
+          0.2052,
+          0.1086
+        ],
+        "locked": false,
+        "source": "user",
+        "displayName": "Bud vase",
+        "placement": {
+          "support": "object",
+          "parentId": "7e50b1ec-0000-4000-8000-000000000027"
+        }
+      },
+      {
+        "id": "7e50b1ec-0000-4000-8000-000000000038",
+        "assetId": "a55e7000-0000-4000-8000-000000000037",
+        "category": "plant",
+        "transform": {
+          "position": [
+            1.8,
+            1.31,
+            -2.224
+          ],
+          "rotation": [
+            0,
+            0,
+            0,
+            1
+          ],
+          "scale": [
+            1,
+            1,
+            1
+          ]
+        },
+        "dimensionsM": [
+          0.168,
+          0.267,
+          0.185
+        ],
+        "locked": false,
+        "source": "user",
+        "displayName": "Shelf plant",
+        "placement": {
+          "support": "object",
+          "parentId": "7e50b1ec-0000-4000-8000-000000000027"
+        }
+      },
+      {
+        "id": "7e50b1ec-0000-4000-8000-000000000039",
+        "assetId": "a55e7000-0000-4000-8000-000000000029",
+        "category": "decor",
+        "transform": {
+          "position": [
+            2.2630660579084765,
+            1.3250000000000128,
+            -2.34831523692114
+          ],
+          "rotation": [
+            0.7061377159184276,
+            -0.037007109559307735,
+            0.03700710955930773,
+            0.7061377159184277
+          ],
+          "scale": [
+            1,
+            1,
+            1
+          ]
+        },
+        "dimensionsM": [
+          0.18,
+          0.25,
+          0.03
+        ],
+        "locked": false,
+        "source": "user",
+        "displayName": "Book",
+        "placement": {
+          "support": "object",
+          "parentId": "7e50b1ec-0000-4000-8000-000000000027"
+        },
+        "materialOverrides": {
+          "cover": {
+            "colorHex": "#b8704c"
+          }
+        }
+      },
+      {
+        "id": "7e50b1ec-0000-4000-8000-000000000040",
+        "assetId": "a55e7000-0000-4000-8000-000000000030",
+        "category": "decor",
+        "transform": {
+          "position": [
+            2.25,
+            1.34,
+            -2.224
+          ],
+          "rotation": [
+            0,
+            0,
+            0,
+            1
+          ],
+          "scale": [
+            1,
+            1,
+            1
+          ]
+        },
+        "dimensionsM": [
+          0.14,
+          0.05,
+          0.14
+        ],
+        "locked": false,
+        "source": "user",
+        "displayName": "Dish",
+        "placement": {
+          "support": "object",
+          "parentId": "7e50b1ec-0000-4000-8000-000000000039"
+        }
+      },
+      {
+        "id": "7e50b1ec-0000-4000-8000-000000000041",
+        "assetId": "a55e7000-0000-4000-8000-000000000029",
+        "category": "decor",
+        "transform": {
+          "position": [
+            2.17,
+            1.73,
+            -2.224
+          ],
+          "rotation": [
+            0,
+            0.707106781187,
+            0,
+            0.707106781187
+          ],
+          "scale": [
+            1,
+            1,
+            1
+          ]
+        },
+        "dimensionsM": [
+          0.15,
+          0.21,
+          0.03
+        ],
+        "locked": false,
+        "source": "user",
+        "displayName": "Book",
+        "placement": {
+          "support": "object",
+          "parentId": "7e50b1ec-0000-4000-8000-000000000027"
+        },
+        "materialOverrides": {
+          "cover": {
+            "colorHex": "#9fa88f"
+          }
+        }
+      },
+      {
+        "id": "7e50b1ec-0000-4000-8000-000000000042",
+        "assetId": "a55e7000-0000-4000-8000-000000000029",
+        "category": "decor",
+        "transform": {
+          "position": [
+            2.204,
+            1.73,
+            -2.224
+          ],
+          "rotation": [
+            0,
+            0.707106781187,
+            0,
+            0.707106781187
+          ],
+          "scale": [
+            1,
+            1,
+            1
+          ]
+        },
+        "dimensionsM": [
+          0.15,
+          0.22999999999999998,
+          0.03
+        ],
+        "locked": false,
+        "source": "user",
+        "displayName": "Book",
+        "placement": {
+          "support": "object",
+          "parentId": "7e50b1ec-0000-4000-8000-000000000027"
+        },
+        "materialOverrides": {
+          "cover": {
+            "colorHex": "#b8704c"
+          }
+        }
+      },
+      {
+        "id": "7e50b1ec-0000-4000-8000-000000000043",
+        "assetId": "a55e7000-0000-4000-8000-000000000029",
+        "category": "decor",
+        "transform": {
+          "position": [
+            2.238,
+            1.73,
+            -2.224
+          ],
+          "rotation": [
+            0,
+            0.707106781187,
+            0,
+            0.707106781187
+          ],
+          "scale": [
+            1,
+            1,
+            1
+          ]
+        },
+        "dimensionsM": [
+          0.15,
+          0.21,
+          0.03
+        ],
+        "locked": false,
+        "source": "user",
+        "displayName": "Book",
+        "placement": {
+          "support": "object",
+          "parentId": "7e50b1ec-0000-4000-8000-000000000027"
+        },
+        "materialOverrides": {
+          "cover": {
+            "colorHex": "#2f3440"
+          }
+        }
+      },
+      {
+        "id": "7e50b1ec-0000-4000-8000-000000000044",
+        "assetId": "a55e7000-0000-4000-8000-000000000029",
+        "category": "decor",
+        "transform": {
+          "position": [
+            2.272,
+            1.73,
+            -2.224
+          ],
+          "rotation": [
+            0,
+            0.707106781187,
+            0,
+            0.707106781187
+          ],
+          "scale": [
+            1,
+            1,
+            1
+          ]
+        },
+        "dimensionsM": [
+          0.15,
+          0.22999999999999998,
+          0.03
+        ],
+        "locked": false,
+        "source": "user",
+        "displayName": "Book",
+        "placement": {
+          "support": "object",
+          "parentId": "7e50b1ec-0000-4000-8000-000000000027"
+        },
+        "materialOverrides": {
+          "cover": {
+            "colorHex": "#d8c4a6"
+          }
+        }
+      },
+      {
+        "id": "7e50b1ec-0000-4000-8000-000000000045",
+        "assetId": "a55e7000-0000-4000-8000-000000000037",
+        "category": "plant",
+        "transform": {
+          "position": [
+            1.8,
+            1.73,
+            -2.224
+          ],
+          "rotation": [
+            0,
+            0,
+            0,
+            1
+          ],
+          "scale": [
+            1,
+            1,
+            1
+          ]
+        },
+        "dimensionsM": [
+          0.168,
+          0.267,
+          0.185
+        ],
+        "locked": false,
+        "source": "user",
+        "displayName": "Shelf plant",
+        "placement": {
+          "support": "object",
+          "parentId": "7e50b1ec-0000-4000-8000-000000000027"
+        }
+      }
+    ]
+  }
+}
