@@ -1,6 +1,8 @@
 import { describe, expect, it } from "vitest";
+import { readFileSync } from "node:fs";
 import {
   assetById,
+  catalog,
   createFixtureScene,
   fixtureId,
   roomShell,
@@ -38,6 +40,20 @@ describe("compound object collisions", () => {
           expect(max[axis]).toBeGreaterThan(min[axis]);
         }
       }
+    }
+  });
+  it("bakes a profile for every opaque catalog model; alpha models keep boxes", () => {
+    for (const asset of catalog) {
+      const glb = readFileSync(
+        `apps/web/public${asset.glbStorageKey}`,
+      ) as Buffer;
+      const json = JSON.parse(
+        glb.subarray(20, 20 + glb.readUInt32LE(12)).toString(),
+      ) as { materials?: { alphaMode?: string }[] };
+      const opaque = (json.materials ?? []).every(
+        (m) => (m.alphaMode ?? "OPAQUE") === "OPAQUE",
+      );
+      expect(asset.id in profiles, asset.title).toBe(opaque);
     }
   });
   it("allows the real chair partly under the desk, with the same result on Accept", () => {

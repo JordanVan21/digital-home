@@ -3,6 +3,8 @@ import { expect, test } from "@playwright/test";
 test("renders the room and edits, undoes and restores a saved arrangement", async ({
   page,
 }) => {
+  // A long end-to-end flow under software WebGL; it sits near the default timeout.
+  test.slow();
   const errors: string[] = [];
   page.on("pageerror", (e) => errors.push(e.message));
   page.on("console", (m) => {

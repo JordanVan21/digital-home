@@ -40,8 +40,10 @@ afterEach(() => {
 describe("adding furniture", () => {
   it("places new pieces with room to rotate in place", () => {
     const e = createEditor();
-    for (const asset of catalog.filter((a) =>
-      ["side-table", "armchair", "plant"].includes(a.category),
+    for (const asset of catalog.filter(
+      (a) =>
+        ["side-table", "armchair", "plant"].includes(a.category) &&
+        !a.id.startsWith("a55e7000-"),
     )) {
       e.chooseAsset(asset);
       const added = e.selected();
@@ -53,6 +55,23 @@ describe("adding furniture", () => {
       expect(e.draft.getState().conflicts[added!.id]).toBeUndefined();
     }
     e.dispose();
+  });
+  it("gives every catalog piece room to rotate in an empty room", () => {
+    for (const asset of catalog) {
+      const e = createEditor();
+      e.scene.setState({
+        scene: { ...e.scene.getState().scene, objects: [] },
+      });
+      e.chooseAsset(asset);
+      const added = e.selected();
+      expect(added?.assetId, asset.title).toBe(asset.id);
+      e.rotate(1);
+      expect(
+        e.draft.getState().conflicts[added!.id],
+        asset.title,
+      ).toBeUndefined();
+      e.dispose();
+    }
   });
 });
 describe("gesture integration", () => {

@@ -43,8 +43,10 @@ describe("normative fixtures", () => {
     expect(triangles).toBeLessThan(500_000);
   });
   it("includes self-hosted Poly Haven models with provenance and browser budgets", () => {
-    const imported = catalog.filter((a) =>
-      a.sourceUrl?.startsWith("https://polyhaven.com/"),
+    const imported = catalog.filter(
+      (a) =>
+        a.sourceUrl?.startsWith("https://polyhaven.com/") &&
+        !a.id.startsWith("a55e7000-"),
     );
     expect(imported).toHaveLength(3);
     expect(new Set(imported.map((a) => a.id)).size).toBe(3);
@@ -53,6 +55,21 @@ describe("normative fixtures", () => {
       expect(asset.attribution).toContain("CC0");
       expect(asset.triangleCount).toBeLessThanOrEqual(25000);
       expect(asset.dimensionsM.every((n) => n > 0 && n < 2)).toBe(true);
+    }
+  });
+  it("includes Jordan's catalog with CC0 provenance and unique IDs", () => {
+    const licenses = readFileSync("apps/web/public/models/LICENSES.md", "utf8");
+    const jordan = catalog.filter((a) => a.id.startsWith("a55e7000-"));
+    expect(jordan).toHaveLength(39);
+    expect(new Set(catalog.map((a) => a.id)).size).toBe(catalog.length);
+    expect(new Set(catalog.map((a) => a.glbStorageKey)).size).toBe(
+      catalog.length,
+    );
+    for (const a of jordan) {
+      expect(a.licenseStatus).toBe("verified");
+      expect(a.attribution).toContain("CC0");
+      expect(licenses).toContain(`| ${a.glbStorageKey.split("/").at(-1)} |`);
+      expect(a.category).toMatch(/^[a-z]+(-[a-z]+)*$/);
     }
   });
   it("rejects bad transforms and structural geometry", () => {

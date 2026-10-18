@@ -43,7 +43,7 @@
     "schemaVersion": 1,
     "id": "00000000-0000-4000-8000-000000001001",
     "category": "armchair",
-    "title": "Boucl\u00e9 lounge chair",
+    "title": "Bouclé lounge chair",
     "tags": [
       "warm",
       "minimal",
@@ -77,7 +77,7 @@
     "triangleCount": 78412,
     "textureBytes": 219440,
     "contentHash": "b42aaae02a968dc0b9efb94e1b441688e8f0a459d04cee831fd51247e9b5c464",
-    "searchableDescription": "Boucl\u00e9 lounge chair in a warm minimal living room"
+    "searchableDescription": "Bouclé lounge chair in a warm minimal living room"
   },
   {
     "schemaVersion": 1,
@@ -602,5 +602,1550 @@
     "textureBytes": 47580,
     "contentHash": "b28bb075978b81b2ab792094029d019662f15bdf744ce202ac3af4c4aea4e7a7",
     "searchableDescription": "Poly Haven ceramic vase, rustic, minimal, CC0 model by James Ray Cock from Poly Haven"
+  },
+  {
+    "schemaVersion": 1,
+    "id": "a55e7000-0000-4000-8000-000000000001",
+    "category": "sofa",
+    "title": "Classic fabric sofa",
+    "tags": [
+      "sofa",
+      "seating",
+      "fabric",
+      "three-seat"
+    ],
+    "styles": [
+      "classic",
+      "traditional"
+    ],
+    "colors": [
+      "greige",
+      "dark wood"
+    ],
+    "materials": [
+      "fabric",
+      "wood"
+    ],
+    "dimensionsM": [
+      1.571,
+      0.797,
+      0.658
+    ],
+    "glbStorageKey": "/models/sofa-fabric-classic.glb",
+    "thumbnailStorageKey": "/thumbnails/sofa-fabric-classic.webp",
+    "source": "other",
+    "sourceUrl": "https://polyhaven.com/a/Sofa_01",
+    "licenseStatus": "verified",
+    "attribution": "Sofa_01 by Kirill Sannikov — Poly Haven (CC0)",
+    "estimatedPrice": {
+      "currency": "USD",
+      "minor": 89900
+    },
+    "triangleCount": 4101,
+    "textureBytes": 184170,
+    "contentHash": "e6c09b2f968d5f01d1f2cea2900d749d1a12561190ab0c40e42b94b1cee033ae",
+    "searchableDescription": "Classic fabric sofa, sofa, sofa, seating, fabric, three-seat, classic, traditional, fabric, wood"
+  },
+  {
+    "schemaVersion": 1,
+    "id": "a55e7000-0000-4000-8000-000000000011",
+    "category": "sofa",
+    "title": "Tufted leather sofa",
+    "tags": [
+      "sofa",
+      "seating",
+      "leather",
+      "tufted"
+    ],
+    "styles": [
+      "vintage",
+      "chesterfield"
+    ],
+    "colors": [
+      "black"
+    ],
+    "materials": [
+      "leather",
+      "wood"
+    ],
+    "dimensionsM": [
+      1.807,
+      0.71,
+      0.818
+    ],
+    "glbStorageKey": "/models/sofa-leather-chesterfield.glb",
+    "thumbnailStorageKey": "/thumbnails/sofa-leather-chesterfield.webp",
+    "source": "other",
+    "sourceUrl": "https://polyhaven.com/a/sofa_02",
+    "licenseStatus": "verified",
+    "attribution": "sofa_02 by Kirill Sannikov — Poly Haven (CC0)",
+    "estimatedPrice": {
+      "currency": "USD",
+      "minor": 129900
+    },
+    "triangleCount": 2728,
+    "textureBytes": 158288,
+    "contentHash": "d0659b619a9eaa6753bd0071009b673ec7d9de86b95c8ecc0b75081fcaf6d792",
+    "searchableDescription": "Tufted leather sofa, sofa, sofa, seating, leather, tufted, vintage, chesterfield, leather, wood"
+  },
+  {
+    "schemaVersion": 1,
+    "id": "a55e7000-0000-4000-8000-000000000002",
+    "category": "armchair",
+    "title": "Wood-frame lounge armchair",
+    "tags": [
+      "armchair",
+      "seating",
+      "lounge"
+    ],
+    "styles": [
+      "mid-century",
+      "modern"
+    ],
+    "colors": [
+      "walnut",
+      "black"
+    ],
+    "materials": [
+      "wood",
+      "leather"
+    ],
+    "dimensionsM": [
+      0.82,
+      1.023,
+      0.987
+    ],
+    "glbStorageKey": "/models/armchair-modern-wood.glb",
+    "thumbnailStorageKey": "/thumbnails/armchair-modern-wood.webp",
+    "source": "other",
+    "sourceUrl": "https://polyhaven.com/a/modern_arm_chair_01",
+    "licenseStatus": "verified",
+    "attribution": "modern_arm_chair_01 by Vibrant Nordic — Poly Haven (CC0)",
+    "estimatedPrice": {
+      "currency": "USD",
+      "minor": 44900
+    },
+    "triangleCount": 8916,
+    "textureBytes": 285990,
+    "contentHash": "cd79dfcfd048b3d49ac1f5b63470ea9617e59645eba1fa9b87fff36089ad8014",
+    "searchableDescription": "Wood-frame lounge armchair, armchair, armchair, seating, lounge, mid-century, modern, wood, leather"
+  },
+  {
+    "schemaVersion": 1,
+    "id": "a55e7000-0000-4000-8000-000000000003",
+    "category": "coffee-table",
+    "title": "Concrete-top coffee table",
+    "tags": [
+      "coffee table",
+      "table",
+      "low"
+    ],
+    "styles": [
+      "modern",
+      "industrial"
+    ],
+    "colors": [
+      "grey",
+      "oak"
+    ],
+    "materials": [
+      "concrete",
+      "wood"
+    ],
+    "dimensionsM": [
+      1.202,
+      0.39,
+      0.6
+    ],
+    "glbStorageKey": "/models/coffee-table-modern.glb",
+    "thumbnailStorageKey": "/thumbnails/coffee-table-modern.webp",
+    "source": "other",
+    "sourceUrl": "https://polyhaven.com/a/modern_coffee_table_01",
+    "licenseStatus": "verified",
+    "attribution": "modern_coffee_table_01 by Amin — Poly Haven (CC0)",
+    "estimatedPrice": {
+      "currency": "USD",
+      "minor": 24900
+    },
+    "triangleCount": 4504,
+    "textureBytes": 145654,
+    "contentHash": "05626a5128625e175ac2d39390cce1ddd748af72a7297ec30e6177bef3970b18",
+    "searchableDescription": "Concrete-top coffee table, coffee table, coffee table, table, low, modern, industrial, concrete, wood"
+  },
+  {
+    "schemaVersion": 1,
+    "id": "a55e7000-0000-4000-8000-000000000013",
+    "category": "coffee-table",
+    "title": "Round marble coffee table",
+    "tags": [
+      "coffee table",
+      "table",
+      "round",
+      "low"
+    ],
+    "styles": [
+      "modern",
+      "glam"
+    ],
+    "colors": [
+      "white",
+      "black"
+    ],
+    "materials": [
+      "marble",
+      "metal"
+    ],
+    "dimensionsM": [
+      1.301,
+      0.491,
+      1.301
+    ],
+    "glbStorageKey": "/models/coffee-table-round.glb",
+    "thumbnailStorageKey": "/thumbnails/coffee-table-round.webp",
+    "source": "other",
+    "sourceUrl": "https://polyhaven.com/a/coffee_table_round_01",
+    "licenseStatus": "verified",
+    "attribution": "coffee_table_round_01 by Ulan Cabanilla — Poly Haven (CC0)",
+    "triangleCount": 4044,
+    "textureBytes": 175752,
+    "contentHash": "9de268213f77d66839ce2ae77dd585d8fb19e59d9cfc41b5529933e71f6b27e3",
+    "searchableDescription": "Round marble coffee table, coffee table, coffee table, table, round, low, modern, glam, marble, metal"
+  },
+  {
+    "schemaVersion": 1,
+    "id": "a55e7000-0000-4000-8000-000000000004",
+    "category": "desk",
+    "title": "Solid wood desk",
+    "tags": [
+      "desk",
+      "table",
+      "work"
+    ],
+    "styles": [
+      "rustic",
+      "minimal"
+    ],
+    "colors": [
+      "cherry"
+    ],
+    "materials": [
+      "wood"
+    ],
+    "dimensionsM": [
+      1.134,
+      0.8,
+      0.706
+    ],
+    "glbStorageKey": "/models/desk-wooden.glb",
+    "thumbnailStorageKey": "/thumbnails/desk-wooden.webp",
+    "source": "other",
+    "sourceUrl": "https://polyhaven.com/a/wooden_table_02",
+    "licenseStatus": "verified",
+    "attribution": "wooden_table_02 by Serhii Khromov — Poly Haven (CC0)",
+    "estimatedPrice": {
+      "currency": "USD",
+      "minor": 32900
+    },
+    "triangleCount": 196,
+    "textureBytes": 228954,
+    "contentHash": "f2940c0f7695f11140772d225f58741bbae637b40c11deb29439cef33b63c39e",
+    "searchableDescription": "Solid wood desk, desk, desk, table, work, rustic, minimal, wood"
+  },
+  {
+    "schemaVersion": 1,
+    "id": "a55e7000-0000-4000-8000-000000000005",
+    "category": "chair",
+    "title": "Upholstered dining chair",
+    "tags": [
+      "chair",
+      "seating",
+      "dining",
+      "desk chair"
+    ],
+    "styles": [
+      "classic"
+    ],
+    "colors": [
+      "brown"
+    ],
+    "materials": [
+      "leather",
+      "wood"
+    ],
+    "dimensionsM": [
+      0.434,
+      0.973,
+      0.576
+    ],
+    "glbStorageKey": "/models/chair-dining-upholstered.glb",
+    "thumbnailStorageKey": "/thumbnails/chair-dining-upholstered.webp",
+    "source": "other",
+    "sourceUrl": "https://polyhaven.com/a/dining_chair_02",
+    "licenseStatus": "verified",
+    "attribution": "dining_chair_02 by James Ray Cock — Poly Haven (CC0)",
+    "estimatedPrice": {
+      "currency": "USD",
+      "minor": 12900
+    },
+    "triangleCount": 11006,
+    "textureBytes": 166616,
+    "contentHash": "3d57890cc66c262394f9933b79621fabda2e8fc580c282d0acb43f047b44ef32",
+    "searchableDescription": "Upholstered dining chair, chair, chair, seating, dining, desk chair, classic, leather, wood"
+  },
+  {
+    "schemaVersion": 1,
+    "id": "a55e7000-0000-4000-8000-000000000015",
+    "category": "chair",
+    "title": "White painted wood chair",
+    "tags": [
+      "chair",
+      "seating",
+      "dining"
+    ],
+    "styles": [
+      "farmhouse",
+      "scandinavian"
+    ],
+    "colors": [
+      "white"
+    ],
+    "materials": [
+      "wood"
+    ],
+    "dimensionsM": [
+      0.432,
+      0.956,
+      0.54
+    ],
+    "glbStorageKey": "/models/chair-painted-wood.glb",
+    "thumbnailStorageKey": "/thumbnails/chair-painted-wood.webp",
+    "source": "other",
+    "sourceUrl": "https://polyhaven.com/a/painted_wooden_chair_01",
+    "licenseStatus": "verified",
+    "attribution": "painted_wooden_chair_01 by Kuutti Siitonen — Poly Haven (CC0)",
+    "estimatedPrice": {
+      "currency": "USD",
+      "minor": 7900
+    },
+    "triangleCount": 724,
+    "textureBytes": 205248,
+    "contentHash": "313a4a22b806fec66c9d92ba9950583c577b7a86cbf5b832946e8ee806cb8768",
+    "searchableDescription": "White painted wood chair, chair, chair, seating, dining, farmhouse, scandinavian, wood"
+  },
+  {
+    "schemaVersion": 1,
+    "id": "a55e7000-0000-4000-8000-000000000006",
+    "category": "bookshelf",
+    "title": "Oak cube bookshelf",
+    "tags": [
+      "shelf",
+      "bookshelf",
+      "storage"
+    ],
+    "styles": [
+      "scandinavian",
+      "minimal"
+    ],
+    "colors": [
+      "oak"
+    ],
+    "materials": [
+      "wood"
+    ],
+    "dimensionsM": [
+      1.078,
+      1.556,
+      0.371
+    ],
+    "glbStorageKey": "/models/shelf-cube-oak.glb",
+    "thumbnailStorageKey": "/thumbnails/shelf-cube-oak.webp",
+    "source": "other",
+    "sourceUrl": "https://polyhaven.com/a/wooden_display_shelves_01",
+    "licenseStatus": "verified",
+    "attribution": "wooden_display_shelves_01 by James Ray Cock — Poly Haven (CC0)",
+    "estimatedPrice": {
+      "currency": "USD",
+      "minor": 17900
+    },
+    "triangleCount": 3174,
+    "textureBytes": 156014,
+    "contentHash": "33739e8145bb53862ac4fd23754ae5e1f3d6cfcd48c18698ebf8883a9d9bbfe1",
+    "searchableDescription": "Oak cube bookshelf, shelf, shelf, bookshelf, storage, scandinavian, minimal, wood"
+  },
+  {
+    "schemaVersion": 1,
+    "id": "a55e7000-0000-4000-8000-000000000012",
+    "category": "sideboard",
+    "title": "Slatted walnut sideboard",
+    "tags": [
+      "sideboard",
+      "cabinet",
+      "storage",
+      "media console"
+    ],
+    "styles": [
+      "mid-century",
+      "modern"
+    ],
+    "colors": [
+      "walnut",
+      "brass"
+    ],
+    "materials": [
+      "wood",
+      "metal"
+    ],
+    "dimensionsM": [
+      2.44,
+      0.68,
+      0.52
+    ],
+    "glbStorageKey": "/models/sideboard-slatted.glb",
+    "thumbnailStorageKey": "/thumbnails/sideboard-slatted.webp",
+    "source": "other",
+    "sourceUrl": "https://polyhaven.com/a/modern_wooden_cabinet",
+    "licenseStatus": "verified",
+    "attribution": "modern_wooden_cabinet by Patrik Pangerl — Poly Haven (CC0)",
+    "estimatedPrice": {
+      "currency": "USD",
+      "minor": 59900
+    },
+    "triangleCount": 15688,
+    "textureBytes": 196672,
+    "contentHash": "d23e8820dc7347569986aedb60497cb62e905884bb3576e92a18b4b25ae94ab1",
+    "searchableDescription": "Slatted walnut sideboard, cabinet, sideboard, cabinet, storage, media console, mid-century, modern, wood, metal"
+  },
+  {
+    "schemaVersion": 1,
+    "id": "a55e7000-0000-4000-8000-000000000014",
+    "category": "side-table",
+    "title": "Two-tier side table",
+    "tags": [
+      "side table",
+      "end table",
+      "table"
+    ],
+    "styles": [
+      "minimal"
+    ],
+    "colors": [
+      "oak"
+    ],
+    "materials": [
+      "wood"
+    ],
+    "dimensionsM": [
+      0.55,
+      0.551,
+      0.45
+    ],
+    "glbStorageKey": "/models/side-table-oak.glb",
+    "thumbnailStorageKey": "/thumbnails/side-table-oak.webp",
+    "source": "other",
+    "sourceUrl": "https://polyhaven.com/a/side_table_01",
+    "licenseStatus": "verified",
+    "attribution": "side_table_01 by James Ray Cock — Poly Haven (CC0)",
+    "estimatedPrice": {
+      "currency": "USD",
+      "minor": 8900
+    },
+    "triangleCount": 2756,
+    "textureBytes": 174196,
+    "contentHash": "b016ba2545b7295db033999f2bad7db23f7ce1ce6e5483856bfa3dfde0f5abb0",
+    "searchableDescription": "Two-tier side table, side table, side table, end table, table, minimal, wood"
+  },
+  {
+    "schemaVersion": 1,
+    "id": "a55e7000-0000-4000-8000-000000000007",
+    "category": "lamp",
+    "title": "Orange arm desk lamp",
+    "tags": [
+      "lamp",
+      "desk lamp",
+      "lighting"
+    ],
+    "styles": [
+      "retro",
+      "industrial"
+    ],
+    "colors": [
+      "orange",
+      "grey"
+    ],
+    "materials": [
+      "metal"
+    ],
+    "dimensionsM": [
+      0.202,
+      0.893,
+      0.614
+    ],
+    "glbStorageKey": "/models/lamp-desk-arm.glb",
+    "thumbnailStorageKey": "/thumbnails/lamp-desk-arm.webp",
+    "source": "other",
+    "sourceUrl": "https://polyhaven.com/a/desk_lamp_arm_01",
+    "licenseStatus": "verified",
+    "attribution": "desk_lamp_arm_01 by Yann Kervran, Kuutti Siitonen — Poly Haven (CC0)",
+    "estimatedPrice": {
+      "currency": "USD",
+      "minor": 4900
+    },
+    "triangleCount": 12186,
+    "textureBytes": 372540,
+    "contentHash": "1b20d8df9cb8a8dc9d790548873e8ff80340de81742aff28dded8327db7b3e2a",
+    "searchableDescription": "Orange arm desk lamp, lamp, lamp, desk lamp, lighting, retro, industrial, metal"
+  },
+  {
+    "schemaVersion": 1,
+    "id": "a55e7000-0000-4000-8000-000000000010",
+    "category": "plant",
+    "title": "Potted philodendron",
+    "tags": [
+      "plant",
+      "greenery",
+      "terracotta"
+    ],
+    "styles": [
+      "organic"
+    ],
+    "colors": [
+      "green",
+      "terracotta"
+    ],
+    "materials": [
+      "ceramic",
+      "plant"
+    ],
+    "dimensionsM": [
+      0.701,
+      0.841,
+      0.657
+    ],
+    "glbStorageKey": "/models/plant-potted-philodendron.glb",
+    "thumbnailStorageKey": "/thumbnails/plant-potted-philodendron.webp",
+    "source": "other",
+    "sourceUrl": "https://polyhaven.com/a/potted_plant_02",
+    "licenseStatus": "verified",
+    "attribution": "potted_plant_02 by Rico Cilliers — Poly Haven (CC0)",
+    "estimatedPrice": {
+      "currency": "USD",
+      "minor": 6900
+    },
+    "triangleCount": 34902,
+    "textureBytes": 408938,
+    "contentHash": "f20ebdd1e4dc73bca55ff7664ad21b9165c32bfee7d467f0cf01a2ed5ae9b2f0",
+    "searchableDescription": "Potted philodendron, plant, plant, greenery, terracotta, organic, ceramic, plant"
+  },
+  {
+    "schemaVersion": 1,
+    "id": "a55e7000-0000-4000-8000-000000000009",
+    "category": "wall-art",
+    "title": "Framed landscape print",
+    "tags": [
+      "wall art",
+      "print",
+      "frame"
+    ],
+    "styles": [
+      "classic"
+    ],
+    "colors": [
+      "white",
+      "green"
+    ],
+    "materials": [
+      "wood",
+      "paper"
+    ],
+    "dimensionsM": [
+      0.752,
+      0.5,
+      0.033
+    ],
+    "glbStorageKey": "/models/art-framed-landscape.glb",
+    "thumbnailStorageKey": "/thumbnails/art-framed-landscape.webp",
+    "source": "other",
+    "sourceUrl": "https://polyhaven.com/a/hanging_picture_frame_02",
+    "licenseStatus": "verified",
+    "attribution": "hanging_picture_frame_02 by James Ray Cock — Poly Haven (CC0)",
+    "estimatedPrice": {
+      "currency": "USD",
+      "minor": 7900
+    },
+    "triangleCount": 3678,
+    "textureBytes": 198688,
+    "contentHash": "9fb8cb9799cb47c33d4d943871839464fbc471de7cfe97666cb27fe88ce5eae2",
+    "searchableDescription": "Framed landscape print, wall art, wall art, print, frame, classic, wood, paper"
+  },
+  {
+    "schemaVersion": 1,
+    "id": "a55e7000-0000-4000-8000-000000000016",
+    "category": "wall-art",
+    "title": "Gilded-frame painting",
+    "tags": [
+      "wall art",
+      "painting",
+      "frame"
+    ],
+    "styles": [
+      "traditional",
+      "vintage"
+    ],
+    "colors": [
+      "gold",
+      "green"
+    ],
+    "materials": [
+      "wood",
+      "canvas"
+    ],
+    "dimensionsM": [
+      0.603,
+      0.464,
+      0.02
+    ],
+    "glbStorageKey": "/models/art-gilded-painting.glb",
+    "thumbnailStorageKey": "/thumbnails/art-gilded-painting.webp",
+    "source": "other",
+    "sourceUrl": "https://polyhaven.com/a/fancy_picture_frame_01",
+    "licenseStatus": "verified",
+    "attribution": "fancy_picture_frame_01 by Rob Tuytel, Rico Cilliers — Poly Haven (CC0)",
+    "triangleCount": 938,
+    "textureBytes": 359606,
+    "contentHash": "9ace77daa9b5d7a37a45437001dffabe2f55bcd813454092dbc26faf1033168c",
+    "searchableDescription": "Gilded-frame painting, wall art, wall art, painting, frame, traditional, vintage, wood, canvas"
+  },
+  {
+    "schemaVersion": 1,
+    "id": "a55e7000-0000-4000-8000-000000000017",
+    "category": "decor",
+    "title": "White ceramic vase",
+    "tags": [
+      "vase",
+      "decor",
+      "ceramic"
+    ],
+    "styles": [
+      "minimal"
+    ],
+    "colors": [
+      "white"
+    ],
+    "materials": [
+      "ceramic"
+    ],
+    "dimensionsM": [
+      0.204,
+      0.4,
+      0.203
+    ],
+    "glbStorageKey": "/models/vase-ceramic-white.glb",
+    "thumbnailStorageKey": "/thumbnails/vase-ceramic-white.webp",
+    "source": "other",
+    "sourceUrl": "https://polyhaven.com/a/ceramic_vase_01",
+    "licenseStatus": "verified",
+    "attribution": "ceramic_vase_01 by James Ray Cock — Poly Haven (CC0)",
+    "estimatedPrice": {
+      "currency": "USD",
+      "minor": 2900
+    },
+    "triangleCount": 4117,
+    "textureBytes": 37226,
+    "contentHash": "0631a48eed88fdaf1cd74f993dfa381ccb20ee5906a5de5605a08dfa5be47077",
+    "searchableDescription": "White ceramic vase, decor, vase, decor, ceramic, minimal, ceramic"
+  },
+  {
+    "schemaVersion": 1,
+    "id": "a55e7000-0000-4000-8000-000000000008",
+    "category": "rug",
+    "title": "Bordered jute rug",
+    "tags": [
+      "rug",
+      "jute",
+      "textile"
+    ],
+    "styles": [
+      "organic",
+      "warm minimal"
+    ],
+    "colors": [
+      "tan",
+      "brown"
+    ],
+    "materials": [
+      "jute"
+    ],
+    "dimensionsM": [
+      2.4,
+      0.012,
+      1.7
+    ],
+    "glbStorageKey": "/models/rug-jute-bordered.glb",
+    "thumbnailStorageKey": "/thumbnails/rug-jute-bordered.webp",
+    "source": "self_authored",
+    "licenseStatus": "verified",
+    "attribution": "House project (self-authored, CC0)",
+    "estimatedPrice": {
+      "currency": "USD",
+      "minor": 19900
+    },
+    "triangleCount": 12,
+    "textureBytes": 8272,
+    "contentHash": "09c2e53d5dc95b7750252c7c5316c898e187efff985cb4ab94af744ac05c28bb",
+    "searchableDescription": "Bordered jute rug, rug, rug, jute, textile, organic, warm minimal, jute"
+  },
+  {
+    "schemaVersion": 1,
+    "id": "a55e7000-0000-4000-8000-000000000018",
+    "category": "rug",
+    "title": "Cream wool rug",
+    "tags": [
+      "rug",
+      "wool",
+      "textile"
+    ],
+    "styles": [
+      "scandinavian",
+      "warm minimal"
+    ],
+    "colors": [
+      "cream"
+    ],
+    "materials": [
+      "wool"
+    ],
+    "dimensionsM": [
+      2,
+      0.012,
+      1.4
+    ],
+    "glbStorageKey": "/models/rug-cream-runner.glb",
+    "thumbnailStorageKey": "/thumbnails/rug-cream-runner.webp",
+    "source": "self_authored",
+    "licenseStatus": "verified",
+    "attribution": "House project (self-authored, CC0)",
+    "triangleCount": 12,
+    "textureBytes": 6086,
+    "contentHash": "7e5ffda4446ae50e723af35708c2d3c2a34c4c3555822d42f52c33f367a556bd",
+    "searchableDescription": "Cream wool rug, rug, rug, wool, textile, scandinavian, warm minimal, wool"
+  },
+  {
+    "schemaVersion": 1,
+    "id": "a55e7000-0000-4000-8000-000000000019",
+    "category": "sofa",
+    "title": "Modern cream sofa",
+    "tags": [
+      "sofa",
+      "seating",
+      "three-seat",
+      "boucle"
+    ],
+    "styles": [
+      "warm minimal",
+      "modern"
+    ],
+    "colors": [
+      "cream"
+    ],
+    "materials": [
+      "boucle",
+      "wood"
+    ],
+    "dimensionsM": [
+      2.3,
+      0.82,
+      0.95
+    ],
+    "glbStorageKey": "/models/sofa-modern-cream.glb",
+    "thumbnailStorageKey": "/thumbnails/sofa-modern-cream.webp",
+    "source": "self_authored",
+    "licenseStatus": "verified",
+    "attribution": "House project (self-authored procedural, CC0)",
+    "estimatedPrice": {
+      "currency": "USD",
+      "minor": 149900
+    },
+    "triangleCount": 6432,
+    "textureBytes": 12196,
+    "contentHash": "79704f4f6125f62bea3dee687b4087a65f15197cda0f0e918c43860423046f6e",
+    "searchableDescription": "Modern cream sofa, sofa, sofa, seating, three-seat, boucle, warm minimal, modern, boucle, wood"
+  },
+  {
+    "schemaVersion": 1,
+    "id": "a55e7000-0000-4000-8000-000000000020",
+    "category": "armchair",
+    "title": "Boucle barrel chair",
+    "tags": [
+      "armchair",
+      "lounge chair",
+      "boucle"
+    ],
+    "styles": [
+      "warm minimal",
+      "organic"
+    ],
+    "colors": [
+      "cream"
+    ],
+    "materials": [
+      "boucle"
+    ],
+    "dimensionsM": [
+      0.91,
+      0.77,
+      0.82
+    ],
+    "glbStorageKey": "/models/armchair-barrel-boucle.glb",
+    "thumbnailStorageKey": "/thumbnails/armchair-barrel-boucle.webp",
+    "source": "self_authored",
+    "licenseStatus": "verified",
+    "attribution": "House project (self-authored procedural, CC0)",
+    "estimatedPrice": {
+      "currency": "USD",
+      "minor": 69900
+    },
+    "triangleCount": 4260,
+    "textureBytes": 11056,
+    "contentHash": "9c130b19479b16712da944c696df8e54e13bd5eccc56e28955c9f0d9582c2a3d",
+    "searchableDescription": "Boucle barrel chair, armchair, armchair, lounge chair, boucle, warm minimal, organic, boucle"
+  },
+  {
+    "schemaVersion": 1,
+    "id": "a55e7000-0000-4000-8000-000000000021",
+    "category": "coffee-table",
+    "title": "Round travertine coffee table",
+    "tags": [
+      "coffee table",
+      "round",
+      "stone"
+    ],
+    "styles": [
+      "warm minimal",
+      "organic"
+    ],
+    "colors": [
+      "travertine"
+    ],
+    "materials": [
+      "travertine"
+    ],
+    "dimensionsM": [
+      0.9,
+      0.38,
+      0.9
+    ],
+    "glbStorageKey": "/models/coffee-table-travertine.glb",
+    "thumbnailStorageKey": "/thumbnails/coffee-table-travertine.webp",
+    "source": "self_authored",
+    "licenseStatus": "verified",
+    "attribution": "House project (self-authored procedural, CC0)",
+    "estimatedPrice": {
+      "currency": "USD",
+      "minor": 89900
+    },
+    "triangleCount": 768,
+    "textureBytes": 14176,
+    "contentHash": "1ba35546d2c6f321bfec5d680ee9e72c1748fc4ffcdd39a3edba293d36c8a6b2",
+    "searchableDescription": "Round travertine coffee table, coffee table, coffee table, round, stone, warm minimal, organic, travertine"
+  },
+  {
+    "schemaVersion": 1,
+    "id": "a55e7000-0000-4000-8000-000000000022",
+    "category": "lamp",
+    "title": "Arc floor lamp",
+    "tags": [
+      "floor lamp",
+      "arc lamp",
+      "lighting"
+    ],
+    "styles": [
+      "modern"
+    ],
+    "colors": [
+      "black",
+      "white"
+    ],
+    "materials": [
+      "metal",
+      "glass"
+    ],
+    "dimensionsM": [
+      0.4,
+      1.864,
+      1.1
+    ],
+    "glbStorageKey": "/models/floor-lamp-arc.glb",
+    "thumbnailStorageKey": "/thumbnails/floor-lamp-arc.webp",
+    "source": "self_authored",
+    "licenseStatus": "verified",
+    "attribution": "House project (self-authored procedural, CC0)",
+    "estimatedPrice": {
+      "currency": "USD",
+      "minor": 22900
+    },
+    "triangleCount": 3704,
+    "textureBytes": 0,
+    "contentHash": "a9d7b2b3eb8d3fd84e7a5d65bc49ac18e4bf4dc306dc90696ddd175598dbdd76",
+    "searchableDescription": "Arc floor lamp, floor lamp, floor lamp, arc lamp, lighting, modern, metal, glass"
+  },
+  {
+    "schemaVersion": 1,
+    "id": "a55e7000-0000-4000-8000-000000000023",
+    "category": "sideboard",
+    "title": "Honey oak sideboard",
+    "tags": [
+      "sideboard",
+      "credenza",
+      "storage"
+    ],
+    "styles": [
+      "warm minimal",
+      "scandinavian"
+    ],
+    "colors": [
+      "oak"
+    ],
+    "materials": [
+      "wood"
+    ],
+    "dimensionsM": [
+      2.1,
+      0.75,
+      0.498
+    ],
+    "glbStorageKey": "/models/sideboard-oak.glb",
+    "thumbnailStorageKey": "/thumbnails/sideboard-oak.webp",
+    "source": "self_authored",
+    "licenseStatus": "verified",
+    "attribution": "House project (self-authored procedural, CC0)",
+    "estimatedPrice": {
+      "currency": "USD",
+      "minor": 79900
+    },
+    "triangleCount": 944,
+    "textureBytes": 11204,
+    "contentHash": "fef306a39d28fb10654c543815af97df4f1ede1c63467e2385fe52d5ec1bcb43",
+    "searchableDescription": "Honey oak sideboard, cabinet, sideboard, credenza, storage, warm minimal, scandinavian, wood"
+  },
+  {
+    "schemaVersion": 1,
+    "id": "a55e7000-0000-4000-8000-000000000024",
+    "category": "bookshelf",
+    "title": "Open oak and steel bookshelf",
+    "tags": [
+      "bookshelf",
+      "shelving",
+      "open"
+    ],
+    "styles": [
+      "warm minimal",
+      "industrial"
+    ],
+    "colors": [
+      "oak",
+      "black"
+    ],
+    "materials": [
+      "wood",
+      "steel"
+    ],
+    "dimensionsM": [
+      1,
+      1.9,
+      0.35
+    ],
+    "glbStorageKey": "/models/shelf-open-oak.glb",
+    "thumbnailStorageKey": "/thumbnails/shelf-open-oak.webp",
+    "source": "self_authored",
+    "licenseStatus": "verified",
+    "attribution": "House project (self-authored procedural, CC0)",
+    "estimatedPrice": {
+      "currency": "USD",
+      "minor": 34900
+    },
+    "triangleCount": 156,
+    "textureBytes": 11142,
+    "contentHash": "2b90835e40d0bd48980090d8ff2c107b546e9586a581f962c78dae00f27cf687",
+    "searchableDescription": "Open oak and steel bookshelf, shelf, bookshelf, shelving, open, warm minimal, industrial, wood, steel"
+  },
+  {
+    "schemaVersion": 1,
+    "id": "a55e7000-0000-4000-8000-000000000025",
+    "category": "lamp",
+    "title": "Tall glass lantern",
+    "tags": [
+      "lantern",
+      "candle",
+      "lighting"
+    ],
+    "styles": [
+      "organic"
+    ],
+    "colors": [
+      "clear",
+      "oak"
+    ],
+    "materials": [
+      "glass",
+      "wood"
+    ],
+    "dimensionsM": [
+      0.22,
+      0.577,
+      0.22
+    ],
+    "glbStorageKey": "/models/lantern-tall.glb",
+    "thumbnailStorageKey": "/thumbnails/lantern-tall.webp",
+    "source": "self_authored",
+    "licenseStatus": "verified",
+    "attribution": "House project (self-authored procedural, CC0)",
+    "estimatedPrice": {
+      "currency": "USD",
+      "minor": 5900
+    },
+    "triangleCount": 1208,
+    "textureBytes": 0,
+    "contentHash": "6ee2ada58ece0e42b47363d6edfd9e9d419f90fa1773921b978eef615274f40c",
+    "searchableDescription": "Tall glass lantern, lamp, lantern, candle, lighting, organic, glass, wood"
+  },
+  {
+    "schemaVersion": 1,
+    "id": "a55e7000-0000-4000-8000-000000000026",
+    "category": "lamp",
+    "title": "Frosted orb lantern",
+    "tags": [
+      "lantern",
+      "lamp",
+      "lighting"
+    ],
+    "styles": [
+      "organic"
+    ],
+    "colors": [
+      "frosted"
+    ],
+    "materials": [
+      "glass"
+    ],
+    "dimensionsM": [
+      0.2,
+      0.23,
+      0.2
+    ],
+    "glbStorageKey": "/models/lantern-orb.glb",
+    "thumbnailStorageKey": "/thumbnails/lantern-orb.webp",
+    "source": "self_authored",
+    "licenseStatus": "verified",
+    "attribution": "House project (self-authored procedural, CC0)",
+    "estimatedPrice": {
+      "currency": "USD",
+      "minor": 4900
+    },
+    "triangleCount": 1968,
+    "textureBytes": 0,
+    "contentHash": "e8dd31597fa5641ce527fca630ff5a7ac5324ca69e652235cd8a5c500636e571",
+    "searchableDescription": "Frosted orb lantern, lamp, lantern, lamp, lighting, organic, glass"
+  },
+  {
+    "schemaVersion": 1,
+    "id": "a55e7000-0000-4000-8000-000000000027",
+    "category": "textile",
+    "title": "Linen throw pillow",
+    "tags": [
+      "pillow",
+      "cushion",
+      "textile"
+    ],
+    "styles": [
+      "warm minimal"
+    ],
+    "colors": [
+      "rust"
+    ],
+    "materials": [
+      "linen"
+    ],
+    "dimensionsM": [
+      0.45,
+      0.45,
+      0.15
+    ],
+    "glbStorageKey": "/models/pillow-square.glb",
+    "thumbnailStorageKey": "/thumbnails/pillow-square.webp",
+    "source": "self_authored",
+    "licenseStatus": "verified",
+    "attribution": "House project (self-authored procedural, CC0)",
+    "estimatedPrice": {
+      "currency": "USD",
+      "minor": 3900
+    },
+    "triangleCount": 2028,
+    "textureBytes": 23630,
+    "contentHash": "dd0a5eaa461c8f606676baa2f365e0bffb0e439a80ec7dbaf9669d3c01285595",
+    "searchableDescription": "Linen throw pillow, pillow, pillow, cushion, textile, warm minimal, linen"
+  },
+  {
+    "schemaVersion": 1,
+    "id": "a55e7000-0000-4000-8000-000000000028",
+    "category": "textile",
+    "title": "Chunky knit throw (folded)",
+    "tags": [
+      "throw",
+      "blanket",
+      "textile"
+    ],
+    "styles": [
+      "warm minimal",
+      "cozy"
+    ],
+    "colors": [
+      "cream"
+    ],
+    "materials": [
+      "wool"
+    ],
+    "dimensionsM": [
+      0.6,
+      0.06,
+      0.45
+    ],
+    "glbStorageKey": "/models/throw-knit.glb",
+    "thumbnailStorageKey": "/thumbnails/throw-knit.webp",
+    "source": "self_authored",
+    "licenseStatus": "verified",
+    "attribution": "House project (self-authored procedural, CC0)",
+    "estimatedPrice": {
+      "currency": "USD",
+      "minor": 8900
+    },
+    "triangleCount": 1176,
+    "textureBytes": 23630,
+    "contentHash": "248c672c20d041f9c1915b5ae37660802cc2091482d618f14a7c8125b4a558e8",
+    "searchableDescription": "Chunky knit throw (folded), throw, throw, blanket, textile, warm minimal, cozy, wool"
+  },
+  {
+    "schemaVersion": 1,
+    "id": "a55e7000-0000-4000-8000-000000000029",
+    "category": "decor",
+    "title": "Hardcover book",
+    "tags": [
+      "book",
+      "decor"
+    ],
+    "styles": [
+      "minimal"
+    ],
+    "colors": [
+      "sand"
+    ],
+    "materials": [
+      "paper"
+    ],
+    "dimensionsM": [
+      0.161,
+      0.24,
+      0.03
+    ],
+    "glbStorageKey": "/models/book-hardcover.glb",
+    "thumbnailStorageKey": "/thumbnails/book-hardcover.webp",
+    "source": "self_authored",
+    "licenseStatus": "verified",
+    "attribution": "House project (self-authored procedural, CC0)",
+    "estimatedPrice": {
+      "currency": "USD",
+      "minor": 2500
+    },
+    "triangleCount": 24,
+    "textureBytes": 0,
+    "contentHash": "b5d9884ed6d79dbb09c0c3661ee49a3513b5fad8eb0c89af12efccd6de825c13",
+    "searchableDescription": "Hardcover book, book, book, decor, minimal, paper"
+  },
+  {
+    "schemaVersion": 1,
+    "id": "a55e7000-0000-4000-8000-000000000030",
+    "category": "decor",
+    "title": "Stoneware dish",
+    "tags": [
+      "bowl",
+      "dish",
+      "decor"
+    ],
+    "styles": [
+      "organic"
+    ],
+    "colors": [
+      "grey"
+    ],
+    "materials": [
+      "stoneware"
+    ],
+    "dimensionsM": [
+      0.14,
+      0.05,
+      0.14
+    ],
+    "glbStorageKey": "/models/bowl-stoneware.glb",
+    "thumbnailStorageKey": "/thumbnails/bowl-stoneware.webp",
+    "source": "self_authored",
+    "licenseStatus": "verified",
+    "attribution": "House project (self-authored procedural, CC0)",
+    "estimatedPrice": {
+      "currency": "USD",
+      "minor": 2900
+    },
+    "triangleCount": 672,
+    "textureBytes": 0,
+    "contentHash": "236e68c94da06d8682db5744d9c6db556e2eb10ec1cad263da19cc9016082877",
+    "searchableDescription": "Stoneware dish, bowl, bowl, dish, decor, organic, stoneware"
+  },
+  {
+    "schemaVersion": 1,
+    "id": "a55e7000-0000-4000-8000-000000000031",
+    "category": "decor",
+    "title": "Walnut tray",
+    "tags": [
+      "tray",
+      "decor"
+    ],
+    "styles": [
+      "minimal"
+    ],
+    "colors": [
+      "walnut"
+    ],
+    "materials": [
+      "wood"
+    ],
+    "dimensionsM": [
+      0.3,
+      0.03,
+      0.18
+    ],
+    "glbStorageKey": "/models/tray-walnut.glb",
+    "thumbnailStorageKey": "/thumbnails/tray-walnut.webp",
+    "source": "self_authored",
+    "licenseStatus": "verified",
+    "attribution": "House project (self-authored procedural, CC0)",
+    "estimatedPrice": {
+      "currency": "USD",
+      "minor": 3500
+    },
+    "triangleCount": 636,
+    "textureBytes": 0,
+    "contentHash": "da7769fd751976c35e922aec645cb4e719b93ff26c2bc5f088eefa7daed9df75",
+    "searchableDescription": "Walnut tray, tray, tray, decor, minimal, wood"
+  },
+  {
+    "schemaVersion": 1,
+    "id": "a55e7000-0000-4000-8000-000000000032",
+    "category": "wall-art",
+    "title": "Abstract circles print",
+    "tags": [
+      "wall art",
+      "print",
+      "abstract"
+    ],
+    "styles": [
+      "warm minimal"
+    ],
+    "colors": [
+      "beige",
+      "terracotta"
+    ],
+    "materials": [
+      "paper",
+      "wood"
+    ],
+    "dimensionsM": [
+      0.6,
+      0.78,
+      0.035
+    ],
+    "glbStorageKey": "/models/art-abstract-circles.glb",
+    "thumbnailStorageKey": "/thumbnails/art-abstract-circles.webp",
+    "source": "self_authored",
+    "licenseStatus": "verified",
+    "attribution": "House project (self-authored procedural, CC0)",
+    "estimatedPrice": {
+      "currency": "USD",
+      "minor": 12900
+    },
+    "triangleCount": 44,
+    "textureBytes": 15886,
+    "contentHash": "df0fa0c295ad7dbd7ba2506351311319bfc6e3995397d57f3f3a5de21fb827f3",
+    "searchableDescription": "Abstract circles print, wall art, wall art, print, abstract, warm minimal, paper, wood"
+  },
+  {
+    "schemaVersion": 1,
+    "id": "a55e7000-0000-4000-8000-000000000033",
+    "category": "decor",
+    "title": "Round clay vase",
+    "tags": [
+      "vase",
+      "ceramic"
+    ],
+    "styles": [
+      "organic"
+    ],
+    "colors": [
+      "clay"
+    ],
+    "materials": [
+      "ceramic"
+    ],
+    "dimensionsM": [
+      0.218,
+      0.309,
+      0.218
+    ],
+    "glbStorageKey": "/models/vase-clay-round.glb",
+    "thumbnailStorageKey": "/thumbnails/vase-clay-round.webp",
+    "source": "other",
+    "sourceUrl": "https://polyhaven.com/a/ceramic_vase_02",
+    "licenseStatus": "verified",
+    "attribution": "ceramic_vase_02 by James Ray Cock — Poly Haven (CC0)",
+    "estimatedPrice": {
+      "currency": "USD",
+      "minor": 3900
+    },
+    "triangleCount": 4451,
+    "textureBytes": 235984,
+    "contentHash": "ab4416447056b717534f3f820b2e76088a7b343809ae883f3dda4683b2867d84",
+    "searchableDescription": "Round clay vase, vase, vase, ceramic, organic, ceramic"
+  },
+  {
+    "schemaVersion": 1,
+    "id": "a55e7000-0000-4000-8000-000000000034",
+    "category": "decor",
+    "title": "Tall bottle vase",
+    "tags": [
+      "vase",
+      "ceramic"
+    ],
+    "styles": [
+      "organic"
+    ],
+    "colors": [
+      "terracotta"
+    ],
+    "materials": [
+      "ceramic"
+    ],
+    "dimensionsM": [
+      0.112,
+      0.414,
+      0.112
+    ],
+    "glbStorageKey": "/models/vase-bottle-tall.glb",
+    "thumbnailStorageKey": "/thumbnails/vase-bottle-tall.webp",
+    "source": "other",
+    "sourceUrl": "https://polyhaven.com/a/ceramic_vase_03",
+    "licenseStatus": "verified",
+    "attribution": "ceramic_vase_03 by James Ray Cock — Poly Haven (CC0)",
+    "estimatedPrice": {
+      "currency": "USD",
+      "minor": 3400
+    },
+    "triangleCount": 4448,
+    "textureBytes": 259466,
+    "contentHash": "6d049069646be4f891dcc9a38885dd619514d15251166b2bb7f3774512f01ca4",
+    "searchableDescription": "Tall bottle vase, vase, vase, ceramic, organic, ceramic"
+  },
+  {
+    "schemaVersion": 1,
+    "id": "a55e7000-0000-4000-8000-000000000035",
+    "category": "decor",
+    "title": "Sand bud vase",
+    "tags": [
+      "vase",
+      "ceramic"
+    ],
+    "styles": [
+      "organic"
+    ],
+    "colors": [
+      "sand"
+    ],
+    "materials": [
+      "ceramic"
+    ],
+    "dimensionsM": [
+      0.181,
+      0.342,
+      0.181
+    ],
+    "glbStorageKey": "/models/vase-bud-sand.glb",
+    "thumbnailStorageKey": "/thumbnails/vase-bud-sand.webp",
+    "source": "other",
+    "sourceUrl": "https://polyhaven.com/a/ceramic_vase_04",
+    "licenseStatus": "verified",
+    "attribution": "ceramic_vase_04 by James Ray Cock — Poly Haven (CC0)",
+    "estimatedPrice": {
+      "currency": "USD",
+      "minor": 2900
+    },
+    "triangleCount": 3599,
+    "textureBytes": 154800,
+    "contentHash": "bfff66966ea92f6c1f6873a8c1d305c3ced0decc474e0f2088585a6e3e12a445",
+    "searchableDescription": "Sand bud vase, vase, vase, ceramic, organic, ceramic"
+  },
+  {
+    "schemaVersion": 1,
+    "id": "a55e7000-0000-4000-8000-000000000036",
+    "category": "plant",
+    "title": "Potted olive tree",
+    "tags": [
+      "plant",
+      "tree",
+      "greenery"
+    ],
+    "styles": [
+      "organic"
+    ],
+    "colors": [
+      "green",
+      "terracotta"
+    ],
+    "materials": [
+      "plant",
+      "ceramic"
+    ],
+    "dimensionsM": [
+      0.587,
+      1.35,
+      0.634
+    ],
+    "glbStorageKey": "/models/plant-olive-tree.glb",
+    "thumbnailStorageKey": "/thumbnails/plant-olive-tree.webp",
+    "source": "other",
+    "sourceUrl": "https://polyhaven.com/a/potted_plant_01",
+    "licenseStatus": "verified",
+    "attribution": "potted_plant_01 by Rico Cilliers — Poly Haven (CC0)",
+    "estimatedPrice": {
+      "currency": "USD",
+      "minor": 14900
+    },
+    "triangleCount": 79294,
+    "textureBytes": 557516,
+    "contentHash": "5d22a157cdfcb750e4bc96c651e6ac7069e8d90be7358b1251947556b3c82278",
+    "searchableDescription": "Potted olive tree, plant, plant, tree, greenery, organic, plant, ceramic"
+  },
+  {
+    "schemaVersion": 1,
+    "id": "a55e7000-0000-4000-8000-000000000037",
+    "category": "plant",
+    "title": "Small potted succulent",
+    "tags": [
+      "plant",
+      "succulent",
+      "greenery"
+    ],
+    "styles": [
+      "organic"
+    ],
+    "colors": [
+      "green"
+    ],
+    "materials": [
+      "plant",
+      "ceramic"
+    ],
+    "dimensionsM": [
+      0.168,
+      0.267,
+      0.184
+    ],
+    "glbStorageKey": "/models/plant-small-succulent.glb",
+    "thumbnailStorageKey": "/thumbnails/plant-small-succulent.webp",
+    "source": "other",
+    "sourceUrl": "https://polyhaven.com/a/potted_plant_04",
+    "licenseStatus": "verified",
+    "attribution": "potted_plant_04 by James Ray Cock — Poly Haven (CC0)",
+    "estimatedPrice": {
+      "currency": "USD",
+      "minor": 1900
+    },
+    "triangleCount": 5338,
+    "textureBytes": 359364,
+    "contentHash": "baf8d59f3df0f5ef37ebdb1d70067b6918764c95e90fd90eabbba7413ea0cd44",
+    "searchableDescription": "Small potted succulent, small plant, plant, succulent, greenery, organic, plant, ceramic"
+  },
+  {
+    "schemaVersion": 1,
+    "id": "a55e7000-0000-4000-8000-000000000038",
+    "category": "rug",
+    "title": "Large chunky jute rug",
+    "tags": [
+      "rug",
+      "jute",
+      "textile"
+    ],
+    "styles": [
+      "organic",
+      "warm minimal"
+    ],
+    "colors": [
+      "tan"
+    ],
+    "materials": [
+      "jute"
+    ],
+    "dimensionsM": [
+      3.2,
+      0.015,
+      2.3
+    ],
+    "glbStorageKey": "/models/rug-jute-large.glb",
+    "thumbnailStorageKey": "/thumbnails/rug-jute-large.webp",
+    "source": "self_authored",
+    "licenseStatus": "verified",
+    "attribution": "House project (self-authored, CC0)",
+    "estimatedPrice": {
+      "currency": "USD",
+      "minor": 39900
+    },
+    "triangleCount": 12,
+    "textureBytes": 39926,
+    "contentHash": "7fb6b90ffca773f255965d6b3925969c6fd332736b3080bfd8ca2d5e0e2debfc",
+    "searchableDescription": "Large chunky jute rug, rug, rug, jute, textile, organic, warm minimal, jute"
+  },
+  {
+    "schemaVersion": 1,
+    "id": "a55e7000-0000-4000-8000-000000000039",
+    "category": "pendant",
+    "title": "Modern pendant lamp",
+    "tags": [
+      "pendant",
+      "ceiling lamp",
+      "lighting"
+    ],
+    "styles": [
+      "modern"
+    ],
+    "colors": [
+      "black"
+    ],
+    "materials": [
+      "metal"
+    ],
+    "dimensionsM": [
+      0.432,
+      0.952,
+      0.432
+    ],
+    "glbStorageKey": "/models/pendant-modern.glb",
+    "thumbnailStorageKey": "/thumbnails/pendant-modern.webp",
+    "source": "other",
+    "sourceUrl": "https://polyhaven.com/a/modern_ceiling_lamp_01",
+    "licenseStatus": "verified",
+    "attribution": "modern_ceiling_lamp_01 by James Ray Cock — Poly Haven (CC0)",
+    "estimatedPrice": {
+      "currency": "USD",
+      "minor": 18900
+    },
+    "triangleCount": 5602,
+    "textureBytes": 126788,
+    "contentHash": "4275e4f14340df8815daa7991e983c16f1ddb81765a523ee239475d3cfad31db",
+    "searchableDescription": "Modern pendant lamp, pendant, pendant, ceiling lamp, lighting, modern, metal"
   }
 ]

@@ -13,6 +13,7 @@ import { yawOf } from "@house/scene-engine";
 import { editor } from "../state/editor";
 import { useWorkingObject } from "../state/useWorking";
 import { Button } from "./Button";
+import { providerLabel } from "./provider";
 export function InspectorPanel() {
   const id = useStore(editor.interaction, (s) => s.selectedId),
     open = useStore(editor.interaction, (s) => s.inspector);
@@ -202,11 +203,14 @@ export function InspectorPanel() {
           <div className="asset-source">
             <ArrowDownToLine size={13} />
             {asset ? (
-              <a href={asset.sourceUrl} target="_blank" rel="noreferrer">
-                {asset.sourceUrl?.startsWith("https://polyhaven.com/")
-                  ? "Poly Haven · CC0 ↗"
-                  : "FurniMesh · Licensed model ↗"}
-              </a>
+              asset.sourceUrl ? (
+                <a href={asset.sourceUrl} target="_blank" rel="noreferrer">
+                  {providerLabel(asset)}
+                  {asset.source === "furnimesh" ? " · Licensed model" : ""} ↗
+                </a>
+              ) : (
+                <span>{providerLabel(asset)}</span>
+              )
             ) : (
               <span>Scanned object · Approximate</span>
             )}

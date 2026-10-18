@@ -69,7 +69,7 @@ The engine has no React, Three.js, DOM, or backend dependencies. ESLint enforces
 
 ## Assets
 
-Fifteen GLBs are shipped: twelve publicly downloadable FurniMesh models and three CC0 Poly Haven models (a leather dining chair, potted succulent, and ceramic vase), with embedded textures, meshopt compression, immutable content hashes, local thumbnails, and verified public-library licensing. See [model licenses](public/models/LICENSES.md), [source manifest](../../scripts/asset-sources.json), and [normalization report](../../scripts/asset-report.json).
+Fifty-four GLBs are shipped: twelve publicly downloadable FurniMesh models, three CC0 Poly Haven models (a leather dining chair, potted succulent, and ceramic vase), and 39 CC0 models from Jordan's sandbox branch (22 Poly Haven, 17 procedurally authored), with embedded textures, meshopt compression, immutable content hashes, local thumbnails, and verified public-library licensing. See [model licenses](public/models/LICENSES.md), [source manifest](../../scripts/asset-sources.json), and [normalization report](../../scripts/asset-report.json).
 
 To reproduce ingestion:
 
@@ -79,6 +79,8 @@ pnpm assets:normalize
 pnpm assets:verify
 node scripts/preview-assets.mjs
 pnpm assets:import:polyhaven  # Import the curated CC0 models with provenance and local thumbnails
+node scripts/import-jordan-catalog.mjs  # Re-import Jordan's catalog from git, then geometry:bake and assets:verify
+node scripts/render-thumbnails.mjs     # GPU-render thumbnails via the dev-only ?thumbnail-studio page
 ```
 
 Run these commands at the repository root. Raw downloads default to `/tmp/house-raw-models` (`HOUSE_RAW_MODELS` overrides the normalization input). Normalization preserves Y-up/+Z-front orientation, moves the origin to bottom-center, scales to the curated physical envelope, simplifies the mesh, caps textures at 1024², and applies meshopt compression. Catalog dimensions are measured from the resulting GLBs, not guessed again at runtime. Each instance clones its scene graph/materials and fits its actual bounding box to the object's dimensions. Geometry/textures are shared through the GLTF cache. Per-object suspense and error boundaries provide a neutral labelled proxy for loading/missing/failed GLBs. Generated environment lighting avoids remote HDR requests.
@@ -114,6 +116,8 @@ Poly Haven imports preserve original PBR materials and meter scale, embed 1K tex
 20. Added three locally hosted Poly Haven CC0 models with measured dimensions, stable IDs separate from FurniMesh, source checksums, author/license provenance, preserved PBR materials, compressed GLBs and generated thumbnails. Existing asset IDs/files and the fixture layout are preserved. The catalog and inspector identify Poly Haven correctly. Physical-item prices remain curated estimates, not source/retailer quotations.
 
 21. Holding Space during horizontal dragging temporarily uses the vertical plane; release resumes horizontal movement at the current height. Plane/offset rebasing prevents jumps and preserves both axes across transitions. The guide updates imperatively, avoiding model renders during movement or plane switches. One pointer release creates one suggestion. Keyup/blur clear the modifier; text fields, focused buttons, locked selections, rotation and dialogs retain their keyboard behavior. Explicit Height mode is still available.
+
+22. Merged Jordan's 39-asset catalog into this one rather than running two catalogs. Models and thumbnails are copied byte-for-byte from git (`scripts/import-jordan-catalog.mjs`, which records the source commit in the license file); they already follow this catalog's bottom-centered, metre-scale, +Z-front convention, so no renormalization was needed. His asset IDs (`a55e7000-…`) are kept so his fixtures resolve. Category names are mapped onto this vocabulary (`scripts/jordan-categories.mjs`) so the library filters and the rug underlay rule apply to his pieces too. Every opaque model gets a baked compound collider; the four with alpha materials (framed print, tall lantern, olive tree, philodendron) keep box colliders. His self-authored models shipped colour-swatch thumbnails, so they are re-rendered from the models in GPU Chrome. Provider credits come from the asset's source instead of defaulting to FurniMesh.
 
 ## Verification and known gaps
 

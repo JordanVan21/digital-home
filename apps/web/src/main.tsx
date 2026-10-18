@@ -9,11 +9,18 @@ import "@fontsource/manrope/latin-600.css";
 import "@fontsource/manrope/latin-700.css";
 import "./styles.css";
 const GeometryLab = lazy(() => import("./geometry-lab/GeometryLab"));
-const experiment = new URLSearchParams(window.location.search).has(
-  "geometry-lab",
+const ThumbnailStudio = lazy(
+  () => import("./thumbnail-studio/ThumbnailStudio"),
 );
+const params = new URLSearchParams(window.location.search);
+const experiment = params.has("geometry-lab");
+const thumbnail = import.meta.env.DEV && params.get("thumbnail-studio");
 createRoot(document.getElementById("root")!).render(
-  experiment ? (
+  thumbnail ? (
+    <Suspense fallback={null}>
+      <ThumbnailStudio assetId={thumbnail} />
+    </Suspense>
+  ) : experiment ? (
     <Suspense fallback={<p>Loading geometry experiment…</p>}>
       <GeometryLab />
     </Suspense>
