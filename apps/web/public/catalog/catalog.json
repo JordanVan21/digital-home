@@ -2088,6 +2088,510 @@
           0
         ]
       }
+    },
+    {
+      "schemaVersion": 1,
+      "id": "a55e7000-0000-4000-8000-000000000040",
+      "category": "sofa",
+      "title": "Linen sofa",
+      "tags": [
+        "warm",
+        "minimal",
+        "sofa"
+      ],
+      "styles": [
+        "warm minimal",
+        "scandinavian"
+      ],
+      "colors": [
+        "natural"
+      ],
+      "materials": [
+        "wood and fabric"
+      ],
+      "dimensionsM": [
+        2.16,
+        0.84,
+        0.92
+      ],
+      "glbStorageKey": "models/furnimesh-sofa.glb",
+      "thumbnailStorageKey": "thumbs/furnimesh-sofa.webp",
+      "source": "furnimesh",
+      "sourceUrl": "https://furnimesh.com/library/sofas/sofa/a-contemporary-sofa-featuring-an-ecrucolored-slipcover-netj96/",
+      "licenseStatus": "pending",
+      "attribution": "FurniMesh / UAB FURNISYSTEMS",
+      "estimatedPrice": {
+        "currency": "USD",
+        "minor": 129900
+      },
+      "triangleCount": 27000,
+      "textureBytes": 45214,
+      "contentHash": "sha256:f8b437d8b4f95e82aa6f41a8893dc2d7bb504dda180c0b5e08e234186aa2b09c",
+      "searchableDescription": "Linen sofa, sofa, warm, minimal, sofa, warm minimal, scandinavian, wood and fabric",
+      "frontAxis": "+Z",
+      "license": "FurniMesh public library (free commercial use; redistribution of files not confirmed)"
+    },
+    {
+      "schemaVersion": 1,
+      "id": "a55e7000-0000-4000-8000-000000000041",
+      "category": "armchair",
+      "title": "Bouclé lounge chair",
+      "tags": [
+        "warm",
+        "minimal",
+        "armchair"
+      ],
+      "styles": [
+        "warm minimal",
+        "scandinavian"
+      ],
+      "colors": [
+        "natural"
+      ],
+      "materials": [
+        "wood and fabric"
+      ],
+      "dimensionsM": [
+        0.85,
+        0.78,
+        0.84
+      ],
+      "glbStorageKey": "models/furnimesh-armchair.glb",
+      "thumbnailStorageKey": "thumbs/furnimesh-armchair.webp",
+      "source": "furnimesh",
+      "sourceUrl": "https://furnimesh.com/library/seating/office-chair/a-contemporary-swivel-armchair-upholstered-in-a-tso2z4/",
+      "licenseStatus": "pending",
+      "attribution": "FurniMesh / UAB FURNISYSTEMS",
+      "estimatedPrice": {
+        "currency": "USD",
+        "minor": 44900
+      },
+      "triangleCount": 78412,
+      "textureBytes": 182650,
+      "contentHash": "sha256:30f34352714d4664b94dc33aad8aa8aff8c0a4b8713267d22459b11a0ac6f582",
+      "searchableDescription": "Bouclé lounge chair, armchair, warm, minimal, armchair, warm minimal, scandinavian, wood and fabric",
+      "frontAxis": "+Z",
+      "license": "FurniMesh public library (free commercial use; redistribution of files not confirmed)"
+    },
+    {
+      "schemaVersion": 1,
+      "id": "a55e7000-0000-4000-8000-000000000042",
+      "category": "coffee_table",
+      "title": "Sculptural walnut coffee table",
+      "tags": [
+        "warm",
+        "minimal",
+        "coffee-table"
+      ],
+      "styles": [
+        "warm minimal",
+        "scandinavian"
+      ],
+      "colors": [
+        "natural"
+      ],
+      "materials": [
+        "wood and fabric"
+      ],
+      "dimensionsM": [
+        1.02,
+        0.35,
+        0.6
+      ],
+      "glbStorageKey": "models/furnimesh-coffee-table.glb",
+      "thumbnailStorageKey": "thumbs/furnimesh-coffee-table.webp",
+      "source": "furnimesh",
+      "sourceUrl": "https://furnimesh.com/library/tables/coffee-table/a-sculptural-multitiered-coffee-table-crafted-from-ojvaek/",
+      "licenseStatus": "pending",
+      "attribution": "FurniMesh / UAB FURNISYSTEMS",
+      "estimatedPrice": {
+        "currency": "USD",
+        "minor": 32900
+      },
+      "triangleCount": 27000,
+      "textureBytes": 254078,
+      "contentHash": "sha256:3d43363d94e431b346daa05ad3f0d743712cf7f60cc83ec857a1f8c67a3577d7",
+      "searchableDescription": "Sculptural walnut coffee table, coffee table, warm, minimal, coffee-table, warm minimal, scandinavian, wood and fabric",
+      "frontAxis": "+Z",
+      "license": "FurniMesh public library (free commercial use; redistribution of files not confirmed)"
+    },
+    {
+      "schemaVersion": 1,
+      "id": "a55e7000-0000-4000-8000-000000000043",
+      "category": "rug",
+      "title": "Natural woven rug",
+      "tags": [
+        "warm",
+        "minimal",
+        "rug"
+      ],
+      "styles": [
+        "warm minimal",
+        "scandinavian"
+      ],
+      "colors": [
+        "natural"
+      ],
+      "materials": [
+        "wood and fabric"
+      ],
+      "dimensionsM": [
+        2.75,
+        0.025,
+        2.25
+      ],
+      "glbStorageKey": "models/furnimesh-rug.glb",
+      "thumbnailStorageKey": "thumbs/furnimesh-rug.webp",
+      "source": "furnimesh",
+      "sourceUrl": "https://furnimesh.com/library/decor/rug/a-rectangular-rug-made-of-woven-fibers-4adwnz/",
+      "licenseStatus": "pending",
+      "attribution": "FurniMesh / UAB FURNISYSTEMS",
+      "estimatedPrice": {
+        "currency": "USD",
+        "minor": 18900
+      },
+      "triangleCount": 27000,
+      "textureBytes": 242424,
+      "contentHash": "sha256:040b8af123b4765390c78b8c0f01534c2115efe3819f189e6da8d7f2cb569ddf",
+      "searchableDescription": "Natural woven rug, rug, warm, minimal, rug, warm minimal, scandinavian, wood and fabric",
+      "frontAxis": "+Z",
+      "license": "FurniMesh public library (free commercial use; redistribution of files not confirmed)"
+    },
+    {
+      "schemaVersion": 1,
+      "id": "a55e7000-0000-4000-8000-000000000044",
+      "category": "floor_lamp",
+      "title": "Linen shade floor lamp",
+      "tags": [
+        "warm",
+        "minimal",
+        "lamp"
+      ],
+      "styles": [
+        "warm minimal",
+        "scandinavian"
+      ],
+      "colors": [
+        "natural"
+      ],
+      "materials": [
+        "wood and fabric"
+      ],
+      "dimensionsM": [
+        0.46,
+        1.65,
+        0.46
+      ],
+      "glbStorageKey": "models/furnimesh-floor-lamp.glb",
+      "thumbnailStorageKey": "thumbs/furnimesh-floor-lamp.webp",
+      "source": "furnimesh",
+      "sourceUrl": "https://furnimesh.com/library/lighting/floor-lamp/a-modern-floor-lamp-featuring-a-cylindrical-4vxr90/",
+      "licenseStatus": "pending",
+      "attribution": "FurniMesh / UAB FURNISYSTEMS",
+      "estimatedPrice": {
+        "currency": "USD",
+        "minor": 17900
+      },
+      "triangleCount": 27000,
+      "textureBytes": 249604,
+      "contentHash": "sha256:e9dab8dbce276a397c2f64ed7605906c0d0975f55bc9c7abe809be4b780f1a30",
+      "searchableDescription": "Linen shade floor lamp, floor lamp, warm, minimal, lamp, warm minimal, scandinavian, wood and fabric",
+      "frontAxis": "+Z",
+      "license": "FurniMesh public library (free commercial use; redistribution of files not confirmed)"
+    },
+    {
+      "schemaVersion": 1,
+      "id": "a55e7000-0000-4000-8000-000000000045",
+      "category": "cabinet",
+      "title": "Oak sideboard",
+      "tags": [
+        "warm",
+        "minimal",
+        "sideboard"
+      ],
+      "styles": [
+        "warm minimal",
+        "scandinavian"
+      ],
+      "colors": [
+        "natural"
+      ],
+      "materials": [
+        "wood and fabric"
+      ],
+      "dimensionsM": [
+        1.65,
+        0.78,
+        0.42
+      ],
+      "glbStorageKey": "models/furnimesh-sideboard.glb",
+      "thumbnailStorageKey": "thumbs/furnimesh-sideboard.webp",
+      "source": "furnimesh",
+      "sourceUrl": "https://furnimesh.com/library/storage/sideboard/a-rustic-light-oak-sideboard-featuring-four-tgts4z/",
+      "licenseStatus": "pending",
+      "attribution": "FurniMesh / UAB FURNISYSTEMS",
+      "estimatedPrice": {
+        "currency": "USD",
+        "minor": 69900
+      },
+      "triangleCount": 27000,
+      "textureBytes": 210492,
+      "contentHash": "sha256:0aa9feb5883879c60e01b7264ef637329bce5b554fa07353a467e5c67a4bdfa0",
+      "searchableDescription": "Oak sideboard, cabinet, warm, minimal, sideboard, warm minimal, scandinavian, wood and fabric",
+      "frontAxis": "+Z",
+      "license": "FurniMesh public library (free commercial use; redistribution of files not confirmed)"
+    },
+    {
+      "schemaVersion": 1,
+      "id": "a55e7000-0000-4000-8000-000000000046",
+      "category": "shelf",
+      "title": "Open walnut bookshelf",
+      "tags": [
+        "warm",
+        "minimal",
+        "bookshelf"
+      ],
+      "styles": [
+        "warm minimal",
+        "scandinavian"
+      ],
+      "colors": [
+        "natural"
+      ],
+      "materials": [
+        "wood and fabric"
+      ],
+      "dimensionsM": [
+        0.76,
+        1.8,
+        0.32
+      ],
+      "glbStorageKey": "models/furnimesh-bookshelf.glb",
+      "thumbnailStorageKey": "thumbs/furnimesh-bookshelf.webp",
+      "source": "furnimesh",
+      "sourceUrl": "https://furnimesh.com/library/storage/bookshelf/a-tall-fivetier-open-wooden-bookshelf-in-rfhc3x/",
+      "licenseStatus": "pending",
+      "attribution": "FurniMesh / UAB FURNISYSTEMS",
+      "estimatedPrice": {
+        "currency": "USD",
+        "minor": 34900
+      },
+      "triangleCount": 27000,
+      "textureBytes": 119458,
+      "contentHash": "sha256:356f13e0dc3f717162abb83bd7450418551a17bb2ec994f35d9075071131f13d",
+      "searchableDescription": "Open walnut bookshelf, shelf, warm, minimal, bookshelf, warm minimal, scandinavian, wood and fabric",
+      "frontAxis": "+Z",
+      "license": "FurniMesh public library (free commercial use; redistribution of files not confirmed)"
+    },
+    {
+      "schemaVersion": 1,
+      "id": "a55e7000-0000-4000-8000-000000000047",
+      "category": "plant",
+      "title": "Olive tree",
+      "tags": [
+        "warm",
+        "minimal",
+        "plant"
+      ],
+      "styles": [
+        "warm minimal",
+        "scandinavian"
+      ],
+      "colors": [
+        "natural"
+      ],
+      "materials": [
+        "foliage"
+      ],
+      "dimensionsM": [
+        0.62,
+        1.5,
+        0.62
+      ],
+      "glbStorageKey": "models/furnimesh-olive-tree.glb",
+      "thumbnailStorageKey": "thumbs/furnimesh-olive-tree.webp",
+      "source": "furnimesh",
+      "sourceUrl": "https://furnimesh.com/library/decor/plant/a-slender-olive-tree-with-sparse-delicate-4ya4h8/",
+      "licenseStatus": "pending",
+      "attribution": "FurniMesh / UAB FURNISYSTEMS",
+      "estimatedPrice": {
+        "currency": "USD",
+        "minor": 8900
+      },
+      "triangleCount": 26999,
+      "textureBytes": 484290,
+      "contentHash": "sha256:686aeb4624a35d8a49728ee1369a010508b5a38a62a291acbe184dca219922c4",
+      "searchableDescription": "Olive tree, plant, warm, minimal, plant, warm minimal, scandinavian, foliage",
+      "frontAxis": "+Z",
+      "license": "FurniMesh public library (free commercial use; redistribution of files not confirmed)"
+    },
+    {
+      "schemaVersion": 1,
+      "id": "a55e7000-0000-4000-8000-000000000048",
+      "category": "desk",
+      "title": "Light oak writing desk",
+      "tags": [
+        "warm",
+        "minimal",
+        "desk"
+      ],
+      "styles": [
+        "warm minimal",
+        "scandinavian"
+      ],
+      "colors": [
+        "natural"
+      ],
+      "materials": [
+        "wood and fabric"
+      ],
+      "dimensionsM": [
+        1.12,
+        0.76,
+        0.52
+      ],
+      "glbStorageKey": "models/furnimesh-desk.glb",
+      "thumbnailStorageKey": "thumbs/furnimesh-desk.webp",
+      "source": "furnimesh",
+      "sourceUrl": "https://furnimesh.com/library/tables/desk/a-modern-lighttoned-wood-desk-featuring-a-adkgdu/",
+      "licenseStatus": "pending",
+      "attribution": "FurniMesh / UAB FURNISYSTEMS",
+      "estimatedPrice": {
+        "currency": "USD",
+        "minor": 39900
+      },
+      "triangleCount": 27000,
+      "textureBytes": 111398,
+      "contentHash": "sha256:63d57a1b4a76bbae13a81e8497134f9c9d145a1b395d476dc184c70f96357360",
+      "searchableDescription": "Light oak writing desk, desk, warm, minimal, desk, warm minimal, scandinavian, wood and fabric",
+      "frontAxis": "+Z",
+      "license": "FurniMesh public library (free commercial use; redistribution of files not confirmed)"
+    },
+    {
+      "schemaVersion": 1,
+      "id": "a55e7000-0000-4000-8000-000000000049",
+      "category": "chair",
+      "title": "Cream desk chair",
+      "tags": [
+        "warm",
+        "minimal",
+        "chair"
+      ],
+      "styles": [
+        "warm minimal",
+        "scandinavian"
+      ],
+      "colors": [
+        "natural"
+      ],
+      "materials": [
+        "wood and fabric"
+      ],
+      "dimensionsM": [
+        0.55,
+        0.82,
+        0.56
+      ],
+      "glbStorageKey": "models/furnimesh-desk-chair.glb",
+      "thumbnailStorageKey": "thumbs/furnimesh-desk-chair.webp",
+      "source": "furnimesh",
+      "sourceUrl": "https://furnimesh.com/library/seating/office-chair/an-upholstered-swivel-office-chair-featuring-a-965gfl/",
+      "licenseStatus": "pending",
+      "attribution": "FurniMesh / UAB FURNISYSTEMS",
+      "estimatedPrice": {
+        "currency": "USD",
+        "minor": 19900
+      },
+      "triangleCount": 122742,
+      "textureBytes": 160668,
+      "contentHash": "sha256:5702525f3fdf5e9f67e40576e67cee44a12beee67e1eae6706f229c2b68c7f4a",
+      "searchableDescription": "Cream desk chair, chair, warm, minimal, chair, warm minimal, scandinavian, wood and fabric",
+      "frontAxis": "+Z",
+      "license": "FurniMesh public library (free commercial use; redistribution of files not confirmed)"
+    },
+    {
+      "schemaVersion": 1,
+      "id": "a55e7000-0000-4000-8000-000000000050",
+      "category": "side_table",
+      "title": "Round brass side table",
+      "tags": [
+        "warm",
+        "minimal",
+        "side-table"
+      ],
+      "styles": [
+        "warm minimal",
+        "scandinavian"
+      ],
+      "colors": [
+        "natural"
+      ],
+      "materials": [
+        "wood and fabric"
+      ],
+      "dimensionsM": [
+        0.44,
+        0.48,
+        0.44
+      ],
+      "glbStorageKey": "models/furnimesh-side-table.glb",
+      "thumbnailStorageKey": "thumbs/furnimesh-side-table.webp",
+      "source": "furnimesh",
+      "sourceUrl": "https://furnimesh.com/library/tables/side-table/a-round-twotier-side-table-featuring-a-job9xg/",
+      "licenseStatus": "pending",
+      "attribution": "FurniMesh / UAB FURNISYSTEMS",
+      "estimatedPrice": {
+        "currency": "USD",
+        "minor": 12900
+      },
+      "triangleCount": 27000,
+      "textureBytes": 256300,
+      "contentHash": "sha256:76230155f37649d1a48939f9330f5b90555017a642622f4cb6fd4951990d896f",
+      "searchableDescription": "Round brass side table, side table, warm, minimal, side-table, warm minimal, scandinavian, wood and fabric",
+      "frontAxis": "+Z",
+      "license": "FurniMesh public library (free commercial use; redistribution of files not confirmed)"
+    },
+    {
+      "schemaVersion": 1,
+      "id": "a55e7000-0000-4000-8000-000000000051",
+      "category": "sofa",
+      "title": "Sculpted two-seat sofa",
+      "tags": [
+        "warm",
+        "minimal",
+        "sofa"
+      ],
+      "styles": [
+        "warm minimal",
+        "scandinavian"
+      ],
+      "colors": [
+        "natural"
+      ],
+      "materials": [
+        "wood and fabric"
+      ],
+      "dimensionsM": [
+        2.05,
+        0.82,
+        0.9
+      ],
+      "glbStorageKey": "models/furnimesh-sofa-sculpted.glb",
+      "thumbnailStorageKey": "thumbs/furnimesh-sofa-sculpted.webp",
+      "source": "furnimesh",
+      "sourceUrl": "https://furnimesh.com/library/sofas/sofa/a-contemporary-twoseater-sofa-upholstered-in-light-yl03d4/",
+      "licenseStatus": "pending",
+      "attribution": "FurniMesh / UAB FURNISYSTEMS",
+      "estimatedPrice": {
+        "currency": "USD",
+        "minor": 119900
+      },
+      "triangleCount": 26999,
+      "textureBytes": 187386,
+      "contentHash": "sha256:7c7d17d01119a7585f6f8eb319ee4ce23c263ae30c8845ea671bb4682186b379",
+      "searchableDescription": "Sculpted two-seat sofa, sofa, warm, minimal, sofa, warm minimal, scandinavian, wood and fabric",
+      "frontAxis": "+Z",
+      "license": "FurniMesh public library (free commercial use; redistribution of files not confirmed)"
     }
   ]
 }

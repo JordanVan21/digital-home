@@ -1,5 +1,5 @@
 {
-  "description": "Catalog seed. Each entry becomes an AssetSpec in apps/web/public/catalog/catalog.json. Asset ids are fixed so fixtures can reference them. Prices are rough catalog estimates (USD cents), not retail quotes; omit to mean 'unknown'.",
+  "description": "Catalog seed. Each entry becomes an AssetSpec in apps/web/public/catalog/catalog.json. Asset ids are fixed so fixtures can reference them. Prices are rough catalog estimates (USD cents), not retail quotes; omit to mean 'unknown'. FurniMesh entries (licenseStatus pending, hidden in the app) come from the codex sandbox: copy apps/web/public/models/<name>.glb and public/thumbnails/<name>.webp from origin/feature/3d-sandbox-codex@139676f into asset-staging/furnimesh/, then run ingest with --only furnimesh-<name>,...",
   "assets": [
     {
       "id": "a55e7000-0000-4000-8000-000000000001",
@@ -1482,6 +1482,354 @@
           0
         ]
       }
+    },
+    {
+      "id": "a55e7000-0000-4000-8000-000000000040",
+      "slug": "furnimesh-sofa",
+      "category": "sofa",
+      "title": "Linen sofa",
+      "tags": [
+        "warm",
+        "minimal",
+        "sofa"
+      ],
+      "styles": [
+        "warm minimal",
+        "scandinavian"
+      ],
+      "colors": [
+        "natural"
+      ],
+      "materials": [
+        "wood and fabric"
+      ],
+      "priceMinor": 129900,
+      "localGlb": "asset-staging/furnimesh/sofa.glb",
+      "localThumb": "asset-staging/furnimesh/sofa.webp",
+      "source": "furnimesh",
+      "sourceUrl": "https://furnimesh.com/library/sofas/sofa/a-contemporary-sofa-featuring-an-ecrucolored-slipcover-netj96/",
+      "license": "FurniMesh public library (free commercial use; redistribution of files not confirmed)",
+      "attribution": "FurniMesh / UAB FURNISYSTEMS",
+      "licenseStatus": "pending"
+    },
+    {
+      "id": "a55e7000-0000-4000-8000-000000000041",
+      "slug": "furnimesh-armchair",
+      "category": "armchair",
+      "title": "Bouclé lounge chair",
+      "tags": [
+        "warm",
+        "minimal",
+        "armchair"
+      ],
+      "styles": [
+        "warm minimal",
+        "scandinavian"
+      ],
+      "colors": [
+        "natural"
+      ],
+      "materials": [
+        "wood and fabric"
+      ],
+      "priceMinor": 44900,
+      "localGlb": "asset-staging/furnimesh/armchair.glb",
+      "localThumb": "asset-staging/furnimesh/armchair.webp",
+      "source": "furnimesh",
+      "sourceUrl": "https://furnimesh.com/library/seating/office-chair/a-contemporary-swivel-armchair-upholstered-in-a-tso2z4/",
+      "license": "FurniMesh public library (free commercial use; redistribution of files not confirmed)",
+      "attribution": "FurniMesh / UAB FURNISYSTEMS",
+      "licenseStatus": "pending"
+    },
+    {
+      "id": "a55e7000-0000-4000-8000-000000000042",
+      "slug": "furnimesh-coffee-table",
+      "category": "coffee_table",
+      "title": "Sculptural walnut coffee table",
+      "tags": [
+        "warm",
+        "minimal",
+        "coffee-table"
+      ],
+      "styles": [
+        "warm minimal",
+        "scandinavian"
+      ],
+      "colors": [
+        "natural"
+      ],
+      "materials": [
+        "wood and fabric"
+      ],
+      "priceMinor": 32900,
+      "localGlb": "asset-staging/furnimesh/coffee-table.glb",
+      "localThumb": "asset-staging/furnimesh/coffee-table.webp",
+      "source": "furnimesh",
+      "sourceUrl": "https://furnimesh.com/library/tables/coffee-table/a-sculptural-multitiered-coffee-table-crafted-from-ojvaek/",
+      "license": "FurniMesh public library (free commercial use; redistribution of files not confirmed)",
+      "attribution": "FurniMesh / UAB FURNISYSTEMS",
+      "licenseStatus": "pending"
+    },
+    {
+      "id": "a55e7000-0000-4000-8000-000000000043",
+      "slug": "furnimesh-rug",
+      "category": "rug",
+      "title": "Natural woven rug",
+      "tags": [
+        "warm",
+        "minimal",
+        "rug"
+      ],
+      "styles": [
+        "warm minimal",
+        "scandinavian"
+      ],
+      "colors": [
+        "natural"
+      ],
+      "materials": [
+        "wood and fabric"
+      ],
+      "priceMinor": 18900,
+      "localGlb": "asset-staging/furnimesh/rug.glb",
+      "localThumb": "asset-staging/furnimesh/rug.webp",
+      "source": "furnimesh",
+      "sourceUrl": "https://furnimesh.com/library/decor/rug/a-rectangular-rug-made-of-woven-fibers-4adwnz/",
+      "license": "FurniMesh public library (free commercial use; redistribution of files not confirmed)",
+      "attribution": "FurniMesh / UAB FURNISYSTEMS",
+      "licenseStatus": "pending"
+    },
+    {
+      "id": "a55e7000-0000-4000-8000-000000000044",
+      "slug": "furnimesh-floor-lamp",
+      "category": "floor_lamp",
+      "title": "Linen shade floor lamp",
+      "tags": [
+        "warm",
+        "minimal",
+        "lamp"
+      ],
+      "styles": [
+        "warm minimal",
+        "scandinavian"
+      ],
+      "colors": [
+        "natural"
+      ],
+      "materials": [
+        "wood and fabric"
+      ],
+      "priceMinor": 17900,
+      "localGlb": "asset-staging/furnimesh/floor-lamp.glb",
+      "localThumb": "asset-staging/furnimesh/floor-lamp.webp",
+      "source": "furnimesh",
+      "sourceUrl": "https://furnimesh.com/library/lighting/floor-lamp/a-modern-floor-lamp-featuring-a-cylindrical-4vxr90/",
+      "license": "FurniMesh public library (free commercial use; redistribution of files not confirmed)",
+      "attribution": "FurniMesh / UAB FURNISYSTEMS",
+      "licenseStatus": "pending"
+    },
+    {
+      "id": "a55e7000-0000-4000-8000-000000000045",
+      "slug": "furnimesh-sideboard",
+      "category": "cabinet",
+      "title": "Oak sideboard",
+      "tags": [
+        "warm",
+        "minimal",
+        "sideboard"
+      ],
+      "styles": [
+        "warm minimal",
+        "scandinavian"
+      ],
+      "colors": [
+        "natural"
+      ],
+      "materials": [
+        "wood and fabric"
+      ],
+      "priceMinor": 69900,
+      "localGlb": "asset-staging/furnimesh/sideboard.glb",
+      "localThumb": "asset-staging/furnimesh/sideboard.webp",
+      "source": "furnimesh",
+      "sourceUrl": "https://furnimesh.com/library/storage/sideboard/a-rustic-light-oak-sideboard-featuring-four-tgts4z/",
+      "license": "FurniMesh public library (free commercial use; redistribution of files not confirmed)",
+      "attribution": "FurniMesh / UAB FURNISYSTEMS",
+      "licenseStatus": "pending"
+    },
+    {
+      "id": "a55e7000-0000-4000-8000-000000000046",
+      "slug": "furnimesh-bookshelf",
+      "category": "shelf",
+      "title": "Open walnut bookshelf",
+      "tags": [
+        "warm",
+        "minimal",
+        "bookshelf"
+      ],
+      "styles": [
+        "warm minimal",
+        "scandinavian"
+      ],
+      "colors": [
+        "natural"
+      ],
+      "materials": [
+        "wood and fabric"
+      ],
+      "priceMinor": 34900,
+      "localGlb": "asset-staging/furnimesh/bookshelf.glb",
+      "localThumb": "asset-staging/furnimesh/bookshelf.webp",
+      "source": "furnimesh",
+      "sourceUrl": "https://furnimesh.com/library/storage/bookshelf/a-tall-fivetier-open-wooden-bookshelf-in-rfhc3x/",
+      "license": "FurniMesh public library (free commercial use; redistribution of files not confirmed)",
+      "attribution": "FurniMesh / UAB FURNISYSTEMS",
+      "licenseStatus": "pending"
+    },
+    {
+      "id": "a55e7000-0000-4000-8000-000000000047",
+      "slug": "furnimesh-olive-tree",
+      "category": "plant",
+      "title": "Olive tree",
+      "tags": [
+        "warm",
+        "minimal",
+        "plant"
+      ],
+      "styles": [
+        "warm minimal",
+        "scandinavian"
+      ],
+      "colors": [
+        "natural"
+      ],
+      "materials": [
+        "foliage"
+      ],
+      "priceMinor": 8900,
+      "localGlb": "asset-staging/furnimesh/olive-tree.glb",
+      "localThumb": "asset-staging/furnimesh/olive-tree.webp",
+      "source": "furnimesh",
+      "sourceUrl": "https://furnimesh.com/library/decor/plant/a-slender-olive-tree-with-sparse-delicate-4ya4h8/",
+      "license": "FurniMesh public library (free commercial use; redistribution of files not confirmed)",
+      "attribution": "FurniMesh / UAB FURNISYSTEMS",
+      "licenseStatus": "pending"
+    },
+    {
+      "id": "a55e7000-0000-4000-8000-000000000048",
+      "slug": "furnimesh-desk",
+      "category": "desk",
+      "title": "Light oak writing desk",
+      "tags": [
+        "warm",
+        "minimal",
+        "desk"
+      ],
+      "styles": [
+        "warm minimal",
+        "scandinavian"
+      ],
+      "colors": [
+        "natural"
+      ],
+      "materials": [
+        "wood and fabric"
+      ],
+      "priceMinor": 39900,
+      "localGlb": "asset-staging/furnimesh/desk.glb",
+      "localThumb": "asset-staging/furnimesh/desk.webp",
+      "source": "furnimesh",
+      "sourceUrl": "https://furnimesh.com/library/tables/desk/a-modern-lighttoned-wood-desk-featuring-a-adkgdu/",
+      "license": "FurniMesh public library (free commercial use; redistribution of files not confirmed)",
+      "attribution": "FurniMesh / UAB FURNISYSTEMS",
+      "licenseStatus": "pending"
+    },
+    {
+      "id": "a55e7000-0000-4000-8000-000000000049",
+      "slug": "furnimesh-desk-chair",
+      "category": "chair",
+      "title": "Cream desk chair",
+      "tags": [
+        "warm",
+        "minimal",
+        "chair"
+      ],
+      "styles": [
+        "warm minimal",
+        "scandinavian"
+      ],
+      "colors": [
+        "natural"
+      ],
+      "materials": [
+        "wood and fabric"
+      ],
+      "priceMinor": 19900,
+      "localGlb": "asset-staging/furnimesh/desk-chair.glb",
+      "localThumb": "asset-staging/furnimesh/desk-chair.webp",
+      "source": "furnimesh",
+      "sourceUrl": "https://furnimesh.com/library/seating/office-chair/an-upholstered-swivel-office-chair-featuring-a-965gfl/",
+      "license": "FurniMesh public library (free commercial use; redistribution of files not confirmed)",
+      "attribution": "FurniMesh / UAB FURNISYSTEMS",
+      "licenseStatus": "pending"
+    },
+    {
+      "id": "a55e7000-0000-4000-8000-000000000050",
+      "slug": "furnimesh-side-table",
+      "category": "side_table",
+      "title": "Round brass side table",
+      "tags": [
+        "warm",
+        "minimal",
+        "side-table"
+      ],
+      "styles": [
+        "warm minimal",
+        "scandinavian"
+      ],
+      "colors": [
+        "natural"
+      ],
+      "materials": [
+        "wood and fabric"
+      ],
+      "priceMinor": 12900,
+      "localGlb": "asset-staging/furnimesh/side-table.glb",
+      "localThumb": "asset-staging/furnimesh/side-table.webp",
+      "source": "furnimesh",
+      "sourceUrl": "https://furnimesh.com/library/tables/side-table/a-round-twotier-side-table-featuring-a-job9xg/",
+      "license": "FurniMesh public library (free commercial use; redistribution of files not confirmed)",
+      "attribution": "FurniMesh / UAB FURNISYSTEMS",
+      "licenseStatus": "pending"
+    },
+    {
+      "id": "a55e7000-0000-4000-8000-000000000051",
+      "slug": "furnimesh-sofa-sculpted",
+      "category": "sofa",
+      "title": "Sculpted two-seat sofa",
+      "tags": [
+        "warm",
+        "minimal",
+        "sofa"
+      ],
+      "styles": [
+        "warm minimal",
+        "scandinavian"
+      ],
+      "colors": [
+        "natural"
+      ],
+      "materials": [
+        "wood and fabric"
+      ],
+      "priceMinor": 119900,
+      "localGlb": "asset-staging/furnimesh/sofa-sculpted.glb",
+      "localThumb": "asset-staging/furnimesh/sofa-sculpted.webp",
+      "source": "furnimesh",
+      "sourceUrl": "https://furnimesh.com/library/sofas/sofa/a-contemporary-twoseater-sofa-upholstered-in-light-yl03d4/",
+      "license": "FurniMesh public library (free commercial use; redistribution of files not confirmed)",
+      "attribution": "FurniMesh / UAB FURNISYSTEMS",
+      "licenseStatus": "pending"
     }
   ],
   "textures": [

@@ -2,7 +2,9 @@
 // (footprint centered at origin, base at y = 0, meters, front +Z), compresses (WebP textures,
 // Meshopt geometry), and writes apps/web/public/catalog/{models,thumbs,catalog.json}.
 //
-// Usage: pnpm --filter @house/asset-ingest ingest [--force]
+// Usage: pnpm --filter @house/asset-ingest ingest [--force] [--only slug,slug]
+//   --only processes just those entries (no network for localGlb ones) and merges them into the
+//   existing catalog.json, leaving every other asset untouched; HDRs/textures are skipped.
 // To add a FurniMesh (or other) GLB: add an entry with "localGlb": "<path>" plus "source"/"license"
 // fields, and only set "licenseStatus": "verified" once redistribution rights are confirmed.
 import { createHash } from 'node:crypto';
@@ -14,7 +16,7 @@ import { Document, NodeIO } from '@gltf-transform/core';
 import { ALL_EXTENSIONS, KHRMaterialsEmissiveStrength } from '@gltf-transform/extensions';
 import { bakedGeometry, builders } from './procedural.mjs';
 import { center, dedup, getBounds, meshopt, prune, simplify, textureCompress, weld } from '@gltf-transform/functions';
-import { MeshoptEncoder, MeshoptSimplifier } from 'meshoptimizer';
+import { MeshoptDecoder, MeshoptEncoder, MeshoptSimplifier } from 'meshoptimizer';
 import sharp from 'sharp';
 import { AssetCatalogFileSchema } from '@house/contracts';
 
@@ -24,12 +26,15 @@ const staging = join(root, 'asset-staging');
 const outDir = join(root, 'apps/web/public/catalog');
 const hdrDir = join(root, 'apps/web/public/hdr');
 const force = process.argv.includes('--force');
+const onlyArg = process.argv.indexOf('--only');
+const only = onlyArg >= 0 ? new Set(process.argv[onlyArg + 1].split(',')) : null;
 
 const config = JSON.parse(await readFile(join(here, 'assets.config.json'), 'utf8'));
 
 await MeshoptEncoder.ready;
 await MeshoptSimplifier.ready;
-const io = new NodeIO().registerExtensions(ALL_EXTENSIONS).registerDependencies({ 'meshopt.encoder': MeshoptEncoder });
+await MeshoptDecoder.ready;
+const io = new NodeIO().registerExtensions(ALL_EXTENSIONS).registerDependencies({ 'meshopt.encoder': MeshoptEncoder, 'meshopt.decoder': MeshoptDecoder });
 
 async function download(url, file) {
   if (existsSync(file) && !force) return;
@@ -230,6 +235,7 @@ async function processEntry(entry) {
     license = entry.license;
     sourceUrl = entry.sourceUrl;
     attribution = entry.attribution;
+    if (entry.localThumb) thumb = await readFile(resolve(root, entry.localThumb));
   } else throw new Error(`No source for ${entry.slug}`);
 
   if (entry.frontAxis && entry.frontAxis !== '+Z') bakeFrontToPlusZ(doc, entry.frontAxis);
@@ -289,9 +295,23 @@ async function processEntry(entry) {
 }
 
 const assets = [];
-for (const entry of config.assets) assets.push(await processEntry(entry));
+if (only) {
+  const existing = JSON.parse(await readFile(join(outDir, 'catalog.json'), 'utf8')).assets;
+  const byId = new Map(existing.map((a) => [a.id, a]));
+  for (const entry of config.assets) {
+    if (only.has(entry.slug)) assets.push(await processEntry(entry));
+    else if (byId.has(entry.id)) assets.push(byId.get(entry.id));
+    else throw new Error(`${entry.slug} is not in catalog.json yet; include it in --only`);
+  }
+} else {
+  for (const entry of config.assets) assets.push(await processEntry(entry));
+}
 const catalog = AssetCatalogFileSchema.parse({ schemaVersion: 1, assets });
 await writeFile(join(outDir, 'catalog.json'), `${JSON.stringify(catalog, null, 2)}\n`);
+if (only) {
+  console.log(`catalog.json: ${assets.length} assets (${only.size} reprocessed)`);
+  process.exit(0);
+}
 
 const hdrs = config.hdrs ?? (config.hdr ? [config.hdr] : []);
 if (hdrs.length) {

@@ -33,16 +33,22 @@ describe('fitToBox', () => {
 });
 
 describe('local catalog', () => {
-  it('every asset has a GLB and thumbnail on disk, CC0/verified provenance, and fits the budget', () => {
+  it('every asset has a GLB and thumbnail on disk, provenance, and fits the budget; only CC0 assets are verified', () => {
     for (const a of catalogFile.assets) {
       const glb = join(pub, 'catalog', a.glbStorageKey);
       expect(existsSync(glb), glb).toBe(true);
       expect(statSync(glb).size).toBeLessThan(EDITOR_POLICY.assetBudget.maxBytes);
       expect(a.triangleCount ?? 0).toBeLessThan(EDITOR_POLICY.assetBudget.maxTriangles);
       if (a.thumbnailStorageKey) expect(existsSync(join(pub, 'catalog', a.thumbnailStorageKey))).toBe(true);
-      expect(a.licenseStatus).toBe('verified');
-      expect(a.license).toBe('CC0-1.0');
       expect(a.attribution).toBeTruthy();
+      if (a.source === 'furnimesh') {
+        // Codex's FurniMesh models: hidden until redistribution rights are confirmed (MERGE_INVENTORY 0.4).
+        expect(a.licenseStatus).toBe('pending');
+        expect(a.sourceUrl).toMatch(/^https:\/\/furnimesh\.com\//);
+      } else {
+        expect(a.licenseStatus).toBe('verified');
+        expect(a.license).toBe('CC0-1.0');
+      }
       expect(a.frontAxis).toBe('+Z');
     }
   });

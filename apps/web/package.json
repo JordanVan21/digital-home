@@ -20,7 +20,8 @@
     "react": "19.3.1",
     "react-dom": "19.3.1",
     "three": "0.180.0",
-    "zustand": "5.0.1"
+    "zustand": "5.0.1",
+    "three-mesh-bvh": "0.8.3"
   },
   "devDependencies": {
     "@types/node": "24.19.2",
@@ -31,6 +32,10 @@
     "playwright-core": "1.49.1",
     "typescript": "5.9.3",
     "vite": "7.3.7",
-    "vitest": "3.2.7"
+    "vitest": "3.2.7",
+    "@gltf-transform/core": "4.1.1",
+    "@gltf-transform/extensions": "4.1.1",
+    "@gltf-transform/functions": "4.1.1",
+    "meshoptimizer": "0.22.0"
   }
 }
