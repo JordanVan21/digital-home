@@ -185,7 +185,7 @@ export function overlapViolations(ctx: RuleContext, index: ObjectIndex, obj: Sce
   const out: Violation[] = [];
   for (const other of others) {
     if (other.id === obj.id || overlapExempt(index, obj, other)) continue;
-    if (bodyContact(a, bodyOf(other, ctx.assets), cfg)) {
+    if (bodyContact(a, bodyOf(other, ctx.assets), cfg, { any: true })) {
       out.push({ rule: 'overlap', severity: 'warning', objectId: obj.id, otherId: other.id, detail: `Hits ${nameOf(other)}.` });
     }
   }
@@ -210,7 +210,7 @@ export function validateScene(ctx: RuleContext, scene: Pick<SceneSpec, 'objects'
       const a = objs[i]!;
       const b = objs[j]!;
       if (overlapExempt(index, a, b)) continue;
-      if (bodyContact(bodies[i]!, bodies[j]!, cfg)) {
+      if (bodyContact(bodies[i]!, bodies[j]!, cfg, { any: true })) {
         violations.push({ rule: 'overlap', severity: 'warning', objectId: a.id, otherId: b.id, detail: `Hits ${nameOf(b)}.` });
       }
     }

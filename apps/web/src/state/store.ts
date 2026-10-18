@@ -78,6 +78,8 @@ export type EditorState = {
   dragging: boolean;
   walkMode: boolean;
   wallMode: WallMode;
+  /** View-only: draw every piece's collision shape. */
+  showColliders: boolean;
   // ---- history (editor-local; never a timeline)
   history: History;
   // ---- save
@@ -119,6 +121,7 @@ const initial: EditorState = {
   dragging: false,
   walkMode: false,
   wallMode: 'cutaway',
+  showColliders: false,
   history: emptyHistory(EDITOR_POLICY.historyCap),
   save: { dirty: false, status: 'idle', lastError: null, baseRevision: 0, pending: [] },
   violations: {},

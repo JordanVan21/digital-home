@@ -1,4 +1,4 @@
-import { Eye, Footprints, Layers, Scan, Sun } from 'lucide-react';
+import { Boxes, Eye, Footprints, Layers, Scan, Sun } from 'lucide-react';
 import { frameCamera, requestCamera, setSceneSettings, toast, useEditor, type WallMode } from '../state/store';
 import { Button } from './Button';
 import { PRESET_ORDER, THEMES, useLightingPreset } from './theme';
@@ -11,6 +11,7 @@ export function ViewControls() {
   const preset = useLightingPreset();
   const wallMode = useEditor((s) => s.wallMode);
   const walk = useEditor((s) => s.walkMode);
+  const colliders = useEditor((s) => s.showColliders);
   const nextPreset = PRESET_ORDER[(PRESET_ORDER.indexOf(preset) + 1) % PRESET_ORDER.length]!;
   const nextWalls = WALL_ORDER[(WALL_ORDER.indexOf(wallMode) + 1) % WALL_ORDER.length]!;
   return (
@@ -44,6 +45,15 @@ export function ViewControls() {
         <Scan size={18} />
       </Button>
       <span className="rule" />
+      <Button
+        label="Collision shapes"
+        className="round glass glass-button"
+        active={colliders}
+        aria-pressed={colliders}
+        onClick={() => useEditor.setState({ showColliders: !colliders })}
+      >
+        <Boxes size={18} />
+      </Button>
       <Button
         label={walk ? 'Exit walk mode (P)' : 'Walk through the room (P)'}
         className="round glass glass-button"

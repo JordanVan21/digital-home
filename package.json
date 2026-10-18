@@ -8,7 +8,8 @@
     "typecheck": "pnpm -r typecheck",
     "test": "pnpm -r test",
     "lint": "eslint .",
-    "capture:test2": "node apps/web/scripts/copy-decoders.mjs && node apps/web/scripts/capture-test2.mjs"
+    "capture:test2": "node apps/web/scripts/copy-decoders.mjs && node apps/web/scripts/capture-test2.mjs",
+    "geometry:bake": "pnpm --filter @house/asset-ingest bake:colliders"
   },
   "devDependencies": {
     "@eslint/js": "9.17.0",

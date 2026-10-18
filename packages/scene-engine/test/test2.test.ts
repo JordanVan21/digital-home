@@ -73,3 +73,36 @@ describe('test2-room suggestions', () => {
     expect(ms).toBeLessThan(1500);
   });
 });
+
+describe('mesh-baked collision profiles', () => {
+  it('every baked asset has normalised boxes inside its own bounds', () => {
+    const baked = catalog.assets.filter((a) => a.collision?.boxes?.length);
+    expect(baked.length).toBeGreaterThan(20);
+    for (const a of baked) {
+      for (const b of a.collision!.boxes!) {
+        expect(b.min[0], a.title).toBeGreaterThanOrEqual(-0.5);
+        expect(b.max[0], a.title).toBeLessThanOrEqual(0.5);
+        expect(b.min[1], a.title).toBeGreaterThanOrEqual(0);
+        expect(b.max[1], a.title).toBeLessThanOrEqual(1);
+        expect(b.min[2], a.title).toBeGreaterThanOrEqual(-0.5);
+        expect(b.max[2], a.title).toBeLessThanOrEqual(0.5);
+        for (let i = 0; i < 3; i++) expect(b.max[i]!, a.title).toBeGreaterThan(b.min[i]!);
+      }
+    }
+  });
+
+  it('a desk keeps the space under its top open (a chair tucks in); a sofa seat is solid', async () => {
+    const { localBoxes } = await import('../src');
+    const desk = catalog.assets.find((a) => a.category === 'desk')!;
+    const sofa = catalog.assets.find((a) => a.category === 'sofa')!;
+    const at = (asset: typeof desk) => ({
+      id: asset.id, assetId: asset.id, category: asset.category, displayName: asset.title, dimensionsM: asset.dimensionsM,
+      locked: false, source: 'catalog' as const, transform: { position: [0, 0, 0] as [number, number, number], rotation: [0, 0, 0, 1] as [number, number, number, number], scale: [1, 1, 1] as [number, number, number] },
+    });
+    const inside = (boxes: { min: number[]; max: number[] }[], p: number[]) => boxes.some((b) => p.every((v, i) => v >= b.min[i]! && v <= b.max[i]!));
+    const d = localBoxes(at(desk), ctx.assets).boxes;
+    expect(inside(d, [0, desk.dimensionsM[1] * 0.4, 0])).toBe(false);
+    const s = localBoxes(at(sofa), ctx.assets).boxes;
+    expect(inside(s, [0, sofa.dimensionsM[1] * 0.45, 0])).toBe(true);
+  });
+});

@@ -93,22 +93,54 @@ export type PairContact = {
   push: { depth: number; dir: Vec2 } | null;
 };
 
+type BoxBounds = { x0: number; x1: number; y0: number; y1: number; z0: number; z1: number };
+const boxBoundsCache = new WeakMap<OBB[], BoxBounds[]>();
+
+/** World AABB of each compound box (cached per box list), for pruning box pairs. */
+function boxBounds(boxes: OBB[]): BoxBounds[] {
+  let out = boxBoundsCache.get(boxes);
+  if (!out) {
+    out = boxes.map((b) => {
+      const a = obbAabbXZ(b);
+      return { x0: a.min[0], x1: a.max[0], y0: b.yMin, y1: b.yMax, z0: a.min[1], z1: a.max[1] };
+    });
+    boxBoundsCache.set(boxes, out);
+  }
+  return out;
+}
+
+const boundsMeet = (a: BoxBounds, b: { x0: number; x1: number; y0: number; y1: number; z0: number; z1: number }, pad: number) =>
+  a.x0 - pad < b.x1 && a.x1 + pad > b.x0 && a.y0 - pad < b.y1 && a.y1 + pad > b.y0 && a.z0 - pad < b.z1 && a.z1 + pad > b.z0;
+
 /**
  * Contact between two bodies honouring the profile matrix. Caller handles parent/child exemption.
  * Returns null when they don't collide (touching within tolerance is not a collision).
+ * Mesh-baked bodies have many boxes, so box pairs are pruned by their AABBs before the exact
+ * test; with `any`, the first penetrating pair answers (no depth / push search).
  */
-export function bodyContact(a: Body, b: Body, cfg: RuleConfig = DEFAULT_RULE_CONFIG): PairContact | null {
+export function bodyContact(a: Body, b: Body, cfg: RuleConfig = DEFAULT_RULE_CONFIG, opts: { any?: boolean } = {}): PairContact | null {
   if (a.kind === 'flat' || b.kind === 'flat' || a.kind === 'none' || b.kind === 'none') return null;
   if (!aabbOverlap(a, b)) return null;
   const allowance = a.kind === 'soft' && b.kind === 'soft' ? cfg.softOverlapM : cfg.contactToleranceM;
+  const ab = boxBounds(a.boxes);
+  const bb = boxBounds(b.boxes);
+  const aBody = { x0: a.min[0], x1: a.max[0], y0: a.min[1], y1: a.max[1], z0: a.min[2], z1: a.max[2] };
+  const bBody = { x0: b.min[0], x1: b.max[0], y0: b.min[1], y1: b.max[1], z0: b.min[2], z1: b.max[2] };
+  const bIdx: number[] = [];
+  for (let j = 0; j < bb.length; j++) if (boundsMeet(bb[j]!, aBody, 0)) bIdx.push(j);
+  if (!bIdx.length) return null;
   let depth = 0;
   let push: PairContact['push'] = null;
-  for (const ba of a.boxes) {
-    for (const bb of b.boxes) {
-      const p = obbPenetration3D(ba, bb);
+  for (let i = 0; i < ab.length; i++) {
+    const ai = ab[i]!;
+    if (!boundsMeet(ai, bBody, 0)) continue;
+    for (const j of bIdx) {
+      if (!boundsMeet(ai, bb[j]!, 0)) continue;
+      const p = obbPenetration3D(a.boxes[i]!, b.boxes[j]!);
       if (!p || p.depth <= allowance) continue;
+      if (opts.any) return { depth: p.depth, push: null };
       depth = Math.max(depth, p.depth);
-      const m = obbMtvXZ(ba, bb);
+      const m = obbMtvXZ(a.boxes[i]!, b.boxes[j]!);
       if (m && (!push || m.depth > push.depth)) push = m;
     }
   }

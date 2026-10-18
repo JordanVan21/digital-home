@@ -5,7 +5,8 @@
   "type": "module",
   "description": "Downloads, normalizes and packs catalog GLBs into apps/web/public/catalog (dev tool; not shipped).",
   "scripts": {
-    "ingest": "node ingest.mjs"
+    "ingest": "node ingest.mjs",
+    "bake:colliders": "node bake-colliders.mjs"
   },
   "dependencies": {
     "@gltf-transform/core": "4.1.1",

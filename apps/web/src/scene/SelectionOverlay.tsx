@@ -1,9 +1,10 @@
-import { useMemo, useRef, useSyncExternalStore } from 'react';
+import { useEffect, useMemo, useRef, useSyncExternalStore } from 'react';
 import { useFrame } from '@react-three/fiber';
 import { Html } from '@react-three/drei';
 import { BoxGeometry, BufferGeometry, EdgesGeometry, Float32BufferAttribute, Quaternion, Vector3, type Group, type LineBasicMaterial, type PointsMaterial } from 'three';
 import type { SceneObject } from '@house/contracts';
-import { effectiveDimsOf } from '@house/scene-engine';
+import { effectiveDimsOf, localBoxes } from '@house/scene-engine';
+import { compoundExteriorPositions } from './compoundOutline';
 import { useEditor } from '../state/store';
 import { ObjectToolbar } from '../ui/ObjectToolbar';
 import { dragFeedback } from './dragFeedback';
@@ -188,6 +189,44 @@ function DraftOutlines({ exclude }: { exclude: readonly string[] }) {
   return <>{list.map((o) => <ObjectOutline key={`d-${o.id}`} obj={o} kind={conflicts[o.id] ? 'conflict' : 'resolved'} />)}</>;
 }
 
+/** One piece's collision shape: the exterior of its compound boxes, following its live group. */
+function ColliderOutline({ obj }: { obj: SceneObject }) {
+  const ref = useRef<Group>(null);
+  const catalog = useEditor((s) => s.catalog);
+  const conflict = useEditor((s) => !!s.draft.conflicts[obj.id]);
+  const lines = useMemo(() => {
+    const { boxes } = localBoxes(obj, catalog ? (id) => catalog.get(id) : undefined);
+    const g = new BufferGeometry();
+    g.setAttribute('position', new Float32BufferAttribute(compoundExteriorPositions(boxes.map((b) => [b.min, b.max])).slice(), 3));
+    return g;
+  }, [obj, catalog]);
+  useEffect(() => () => lines.dispose(), [lines]);
+  useFrame(() => {
+    const grp = registry.get(obj.id);
+    const o = ref.current;
+    if (!grp || !o) return;
+    grp.updateWorldMatrix(true, false);
+    grp.matrixWorld.decompose(_p, _q, _s);
+    _f.set(0, 0, 1).applyQuaternion(_q);
+    o.position.copy(_p);
+    o.rotation.set(0, Math.atan2(_f.x, _f.z), 0);
+  });
+  return (
+    <group ref={ref}>
+      <lineSegments geometry={lines} raycast={() => null} renderOrder={9}>
+        <lineBasicMaterial color={conflict ? COLORS.invalid : COLORS.selected} transparent opacity={0.7} depthTest={false} />
+      </lineSegments>
+    </group>
+  );
+}
+
+function ColliderOutlines() {
+  const on = useEditor((s) => s.showColliders);
+  const objects = useEditor((s) => s.workingScene?.objects);
+  if (!on || !objects) return null;
+  return <>{objects.map((o) => <ColliderOutline key={`c-${o.id}`} obj={o} />)}</>;
+}
+
 /** The glass tool pill above the primary selection; follows its group live (drags, glides). */
 function ToolbarAnchor({ obj }: { obj: SceneObject }) {
   const ref = useRef<Group>(null);
@@ -221,6 +260,7 @@ export function SelectionOverlay() {
       {selected.map((o) => <ObjectOutline key={`s-${o.id}`} obj={o} kind="selected" primary={o.id === primaryId} />)}
       <Blockers />
       <DraftOutlines exclude={selectedIds} />
+      <ColliderOutlines />
       <Badges />
       {primary && <ToolbarAnchor key={`t-${primary.id}`} obj={primary} />}
     </group>
