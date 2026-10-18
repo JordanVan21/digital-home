@@ -81,11 +81,11 @@ test("isolated planner renders, captures three real views, repairs, and leaves t
     "test-results/planner-observations.json",
     JSON.stringify(observations),
   );
-  await page.getByRole("button", { name: "Show before" }).click();
+  await page.getByRole("button", { name: "Before", exact: true }).click();
   await expect(
     page.getByText("Starting snapshot · orbit to inspect"),
   ).toBeVisible();
-  await page.getByRole("button", { name: "Show proposed design" }).click();
+  await page.getByRole("button", { name: "After", exact: true }).click();
   expect(
     await page.evaluate(() =>
       JSON.stringify(
