@@ -1024,8 +1024,14 @@ export function createEditor(
       notify("Could not load the saved room. Use the room menu to reset.");
     }
   };
+  const devAction = async (action:"failure"|"external") => {
+    if (!(repository instanceof LocalStorageSceneRepository)) return;
+    if(action === "failure"){repository.simulateSaveFailure();notify("The next save will fail once. Make and accept an edit, then Retry.");}
+    else {await repository.simulateExternalEdit(room.getState().room.roomId);notify("Saved revision changed in another session. Your next save will report a conflict.");}
+  };
   return {
     room,
+    devAction,
     context,
     scene,
     interaction,

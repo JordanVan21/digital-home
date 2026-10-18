@@ -139,6 +139,7 @@ function RoomMenu() {
           <button onClick={() => window.location.reload()}>
             <RotateCcw size={14} /> Reload saved room
           </button>
+          {import.meta.env.DEV && <><button onClick={()=>{void editor.devAction("failure");setOpen(false);}}>Simulate save failure</button><button onClick={()=>{void editor.devAction("external");setOpen(false);}}>Simulate another session edit</button></>}
           <p>Changes are saved on this device.</p>
         </div>
       )}

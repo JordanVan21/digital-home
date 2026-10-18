@@ -21,6 +21,9 @@ export class RepositoryError extends Error {
 }
 type StoragePort = Pick<Storage, "getItem" | "setItem">;
 export class LocalStorageSceneRepository implements SceneRepository {
+  private failNext = false;
+  simulateSaveFailure(){this.failNext=true;}
+  simulateExternalEdit(roomId:string){return this.exclusive(roomId,()=>{const current=this.read(roomId);this.write({...current,revision:current.revision+1});});}
   // Resolve browser storage lazily: disabled storage must produce an editor error, not an import-time crash.
   constructor(
     private providedStorage?: StoragePort,
@@ -95,6 +98,7 @@ export class LocalStorageSceneRepository implements SceneRepository {
   }
   save(scene: SceneSpec, baseRevision: number): Promise<{ revision: number }> {
     return this.exclusive(scene.roomId, () => {
+      if(this.failNext){this.failNext=false;throw new RepositoryError("STORAGE_UNAVAILABLE","Simulated save failure. Retry to save your changes.");}
       SceneSpecSchema.parse(scene);
       const existing = this.read(scene.roomId);
       if (existing.revision !== baseRevision || scene.revision < baseRevision)

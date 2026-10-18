@@ -77,7 +77,7 @@ Codex's interaction stays: controls, the suggest/Accept flow, nearest-surface pl
 - [x] **22 Replace model** ranked by dimension fit (`rankByDimensionFit` already exists in `scene-engine/src/matching.ts`).
 - [x] **23 Drag from the library** into the room (drop point onto floor or surface); clicking keeps codex's ring search.
 - [x] **24 Reference photo overlay and "Match photo" camera** for test2 (`photoCamera` and `referenceImage: "assets/test2.png"` are already on the room definition; the image lives in Jordan's branch).
-- [ ] **25 Dev menu:** simulate a save failure, simulate an edit from another session, reset room.
+- [x] **25 Dev menu:** simulate a save failure, simulate an edit from another session, reset room.
 
 ### Last: plumbing for the agent connection
 - [ ] **26 Patch-based saving.** Accept emits a validated contract patch (`diffToOps` from `feature/3d-sandbox-merge` `packages/scene-engine/src/draft.ts`) and saves it with `saveScenePatch(roomId, baseRevision, idempotencyKey, operations)`: revision CAS, idempotent retry, conflict state. Keep codex's autosave UX.
