@@ -21,4 +21,8 @@ export const registry = {
 };
 
 /** Timestamp of the last gizmo release — Canvas onPointerMissed ignores clicks right after it. */
-export const interaction = { lastDragEndAt: 0 };
+export const interaction = {
+  lastDragEndAt: 0,
+  /** Until this time, objects glide to their new pose instead of jumping (undo / redo; from codex). */
+  glideUntil: 0,
+};

@@ -9,7 +9,7 @@ import {
 import { EDITOR_POLICY } from '../../config/editorPolicy';
 import { applyObjectTransform } from '../../lib/convert';
 import { bodiesOf, liftBodies, movingSet, obstacleQuery, obstaclesFor, sweptBounds } from '../../state/physics';
-import { commit, ignoringCollisions, objectById, opContext, toast, useEditor } from '../../state/store';
+import { commit, ignoringCollisions, objectById, opContext, releaseSettles, toast, useEditor } from '../../state/store';
 import { dragFeedback } from '../dragFeedback';
 import { interaction, registry } from '../registry';
 import { contactGuides, smartSnap } from './snaps';
@@ -96,7 +96,10 @@ export interface DragSession {
 
 // ---------------------------------------------------------------- move / lift / wall / ceiling
 
-type Kind = 'move' | 'lift' | 'wall' | 'ceiling' | 'ceilingLift';
+type Kind = 'move' | 'move3d' | 'lift' | 'wall' | 'ceiling' | 'ceilingLift';
+
+/** Scroll-wheel height step per notch (m), and the cap for one wheel event (trackpads send many small ones). */
+const WHEEL_M_PER_NOTCH = 0.05;
 
 /**
  * Direct manipulation of one or more objects (the primary interaction):
@@ -104,6 +107,9 @@ type Kind = 'move' | 'lift' | 'wall' | 'ceiling' | 'ceilingLift';
  *   the cursor (vase onto a table, off the edge to the floor); block-and-slide against obstacles.
  * - lift (Alt): vertically with a guide + height readout; settles on release (gravity) unless Float.
  * - wall: slide along walls (crossing corners) and up/down. ceiling: across the ceiling; Alt = drop.
+ * - move3d (3D move tool): the piece slides on a camera-facing "pane of glass" — sideways and up/down
+ *   in one drag. From the top view (no screen "up") it falls back to a normal floor drag.
+ * - The scroll wheel raises / lowers a single piece during any move or 3D move.
  */
 export class MoveSession implements DragSession {
   private readonly ctx = opContext()!;
@@ -123,7 +129,12 @@ export class MoveSession implements DragSession {
   private prevDy = 0;
   private last: { offset: Vec2; dy: number; hit: SupportHit | null; yaw?: number; pos?: Vec3 } = { offset: [0, 0], dy: 0, hit: null };
   private pending: PointerEvent | null = null;
+  private lastEvent: PointerEvent | null = null;
   private raf = 0;
+  /** Height added with the scroll wheel during this drag (m). */
+  private raise = 0;
+  /** 3D move: offset from the pane-of-glass hit to the piece's base (x, y, z). */
+  private grab3: Vec3 = [0, 0, 0];
   readonly ok: boolean;
 
   constructor(private readonly host: Host, down: PointerEvent, ids: string[], primaryId: string, private readonly mods: Mods) {
@@ -135,7 +146,12 @@ export class MoveSession implements DragSession {
     const mounted = cls === 'wall' || cls === 'ceiling';
     this.roots = mounted ? [this.primary] : roots.filter((r) => { const c = classOf(this.ctx, r); return c !== 'wall' && c !== 'ceiling'; });
     this.rootIds = this.roots.map((r) => r.id);
-    this.kind = cls === 'wall' ? 'wall' : cls === 'ceiling' ? (mods.alt ? 'ceilingLift' : 'ceiling') : mods.alt ? 'lift' : 'move';
+    const look = new Vector3();
+    host.camera.getWorldDirection(look);
+    const topDown = look.y < -0.95;
+    const tool = useEditor.getState().mode;
+    this.kind = cls === 'wall' ? 'wall' : cls === 'ceiling' ? (mods.alt ? 'ceilingLift' : 'ceiling')
+      : mods.alt ? 'lift' : tool === 'move3d' && !topDown && roots.length === 1 ? 'move3d' : 'move';
     this.small = this.roots.length === 1 && !isLarge(this.primary?.category ?? '') && !mounted;
     const moving = movingSet(this.scene, this.rootIds);
     this.movingBodies = bodiesOf(this.ctx, this.scene, moving);
@@ -146,7 +162,10 @@ export class MoveSession implements DragSession {
 
     const r = setRay(host, down);
     const [px, py, pz] = this.primary.transform.position;
-    if (this.kind === 'lift' || this.kind === 'ceilingLift' || this.kind === 'wall') {
+    if (this.kind === 'move3d') {
+      const h = this.liftPlaneHit(r) ?? new Vector3(px, py + 0.5, pz);
+      this.grab3 = [px - h.x, py - h.y, pz - h.z];
+    } else if (this.kind === 'lift' || this.kind === 'ceilingLift' || this.kind === 'wall') {
       const h = this.liftPlaneHit(r) ?? new Vector3(px, py, pz);
       this.grabDy = h.y - py;
       this.grab = [px - h.x, pz - h.z];
@@ -169,7 +188,22 @@ export class MoveSession implements DragSession {
 
   move(e: PointerEvent) {
     this.pending = e;
+    this.lastEvent = e;
     if (!this.raf) this.raf = requestAnimationFrame(() => { this.raf = 0; if (this.pending) this.tick(this.pending); });
+  }
+
+  /** Scroll wheel during the drag: raise (scroll up) or lower (scroll down) a single piece. */
+  wheel(deltaY: number) {
+    if ((this.kind !== 'move' && this.kind !== 'move3d') || this.roots.length !== 1) return;
+    const step = Math.max(-WHEEL_M_PER_NOTCH, Math.min(WHEEL_M_PER_NOTCH, (-deltaY / 100) * WHEEL_M_PER_NOTCH));
+    const floorY = this.ctx.shell.floor.elevationY;
+    this.raise = Math.max(floorY - this.primary.transform.position[1], this.raise + step);
+    if (this.lastEvent) this.tick(this.lastEvent);
+  }
+
+  /** True when the piece is being held above where it would rest (wheel or 3D move). */
+  private get raised() {
+    return this.kind === 'move3d' || Math.abs(this.raise) > 1e-9;
   }
 
   private startOf(o: SceneObject): Vec3 {
@@ -232,11 +266,18 @@ export class MoveSession implements DragSession {
       return;
     }
 
-    // --- horizontal move
+    // --- horizontal move (+ wheel height), or 3D move on the camera-facing pane of glass
     let center: Vec2 | null = null;
     let targetY = py;
     let hit: SupportHit | null = null;
-    if (this.small) {
+    if (this.kind === 'move3d') {
+      const h = this.liftPlaneHit(r);
+      if (!h) return;
+      center = [h.x + this.grab3[0], h.z + this.grab3[2]];
+      targetY = Math.max(floorY, h.y + this.grab3[1] + this.raise);
+    } else if (this.raised) {
+      targetY = Math.max(floorY, py + this.raise);
+    } else if (this.small) {
       let bestT = Infinity;
       const o = r.ray.origin;
       const d = r.ray.direction;
@@ -263,7 +304,7 @@ export class MoveSession implements DragSession {
       }
     }
     if (!center) {
-      const h = hitPlaneY(r, py);
+      const h = hitPlaneY(r, this.raised ? targetY : py);
       if (!h) return;
       center = [h.x + this.grab[0], h.z + this.grab[1]];
     }
@@ -280,7 +321,7 @@ export class MoveSession implements DragSession {
     let blockers: Blocker[] = [];
     let touching: Body[] = [];
     if (!ctrl && EDITOR_POLICY.collision === 'block-and-slide') {
-      const lifted = liftBodies(this.movingBodies, this.small ? dy : 0);
+      const lifted = liftBodies(this.movingBodies, this.small || this.raised ? dy : 0);
       if (Math.abs(dy - this.prevDy) > 1e-6) this.prev = [0, 0];
       const a = sweptBounds(lifted, desired[0], desired[1]);
       const b = sweptBounds(lifted, this.prev[0], this.prev[1]);
@@ -296,14 +337,14 @@ export class MoveSession implements DragSession {
     }
     this.prev = offset;
     this.prevDy = dy;
-    this.last = { offset, dy: this.small ? dy : 0, hit: this.small ? hit : null };
+    this.last = { offset, dy: this.small || this.raised ? dy : 0, hit: this.small && !this.raised ? hit : null };
     this.preview(offset, this.last.dy);
     const cand: SceneObject = { ...this.primary, transform: { ...this.primary.transform, position: [px + offset[0], py + this.last.dy, pz + offset[1]] } };
     if (touching.length && this.roots.length === 1) guides = [...guides, ...contactGuides(cand, touching)];
-    this.feedbackFor(cand, blockers, ctrl, guides);
+    this.feedbackFor(cand, blockers, ctrl, guides, this.raised ? this.readout(cand.transform.position) : null);
   }
 
-  private feedbackFor(cand: SceneObject, blockers: Blocker[], ctrl: boolean, guides: { from: Vec3; to: Vec3 }[] = []) {
+  private feedbackFor(cand: SceneObject, blockers: Blocker[], ctrl: boolean, guides: { from: Vec3; to: Vec3 }[] = [], height: ReturnType<MoveSession['readout']> | null = null) {
     let violations = dragFeedback.violations;
     if (ctrl || this.kind === 'wall') {
       violations = timed(() => {
@@ -314,7 +355,7 @@ export class MoveSession implements DragSession {
         return validateObject(this.ctx, index, cand, near).filter((v) => v.rule === 'overlap' || v.severity === 'error');
       });
     } else violations = [];
-    dragFeedback.set({ objectId: this.primary.id, blockers, violations, guides, height: null, note: ctrl ? 'Collisions off' : null });
+    dragFeedback.set({ objectId: this.primary.id, blockers, violations, guides, height, note: ctrl ? 'Collisions off' : null });
   }
 
   private readout(pos: Vec3) {
@@ -356,15 +397,15 @@ export class MoveSession implements DragSession {
       if (this.last.pos) ops = [{ type: 'move', objectId: this.primary.id, transform: makeTransform(this.last.pos, this.last.yaw ?? 0) }];
     } else if (this.kind === 'ceiling' || this.kind === 'ceilingLift') {
       ops = [{ type: 'move', objectId: this.primary.id, transform: { ...this.primary.transform, position: [px + offset[0], py + dy, pz + offset[1]] } }];
-    } else if (this.kind === 'lift' || (this.small && this.roots.length === 1)) {
+    } else if (this.kind === 'lift' || this.raised || (this.small && this.roots.length === 1)) {
       const t = { ...this.primary.transform, position: [px + offset[0], py + dy, pz + offset[1]] as Vec3 };
-      ops = moveWithSupport(this.ctx, this.scene, this.primary.id, t, this.kind === 'move' && hit ? { support: hit } : {});
+      ops = moveWithSupport(this.ctx, this.scene, this.primary.id, t, !this.raised && this.kind === 'move' && hit ? { support: hit } : { settle: releaseSettles(this.raised) });
     } else {
       ops = groupTransformOps(this.ctx, this.scene, this.rootIds, offset, 0, [0, 0]);
     }
     const moved = Math.hypot(offset[0], offset[1]) > 1e-6 || Math.abs(dy) > 1e-6 || this.kind === 'wall';
     const ignored = (this.mods.ctrl || dragFeedback.note) && dragFeedback.violations.length > 0;
-    finish(this.kind === 'lift' ? 'Lift' : 'Move', moved ? ops : [], this.rootIds, () => {
+    finish(this.kind === 'lift' || this.raised ? 'Lift' : 'Move', moved ? ops : [], this.rootIds, () => {
       if (ignored) toast('Placed with collisions ignored — it’s flagged.', 'warning');
     });
   }

@@ -62,7 +62,9 @@ export function InteractionLayer() {
           const inSel = st.selectedIds.includes(press.id);
           if (!inSel) select(press.id);
           const ids = useEditor.getState().selectedIds;
-          const s = new MoveSession(host, press.down, ids, press.id, modsOf(press.down));
+          // Rotate tool: dragging the piece itself turns it (codex's swivel), with jordan's collisions.
+          const turn = useEditor.getState().mode === 'rotate' ? new RotateSession(host, press.down, modsOf(press.down)) : null;
+          const s = turn?.ok ? turn : new MoveSession(host, press.down, ids, press.id, modsOf(press.down));
           if (!s.ok) { setControls(true); press.draggable = false; return; }
           press.session = s;
           setHover(false);
@@ -128,6 +130,15 @@ export function InteractionLayer() {
       window.addEventListener('keydown', onKey);
     };
 
+    // Scroll wheel while dragging raises / lowers the piece (the camera doesn't zoom mid-drag).
+    const onWheel = (e: WheelEvent) => {
+      const s = press?.session as (DragSession & { wheel?: (dy: number) => void }) | null | undefined;
+      if (!s?.wheel) return;
+      e.preventDefault();
+      e.stopPropagation();
+      s.wheel(e.deltaY);
+    };
+
     const onDbl = (e: MouseEvent) => {
       if (useEditor.getState().walkMode) return;
       const r = setRay(host, e);
@@ -144,7 +155,9 @@ export function InteractionLayer() {
 
     el.addEventListener('pointerdown', onDown, { capture: true });
     el.addEventListener('dblclick', onDbl);
+    el.addEventListener('wheel', onWheel, { capture: true, passive: false });
     return () => {
+      el.removeEventListener('wheel', onWheel, { capture: true });
       el.removeEventListener('pointerdown', onDown, { capture: true });
       el.removeEventListener('dblclick', onDbl);
       window.removeEventListener('pointermove', onMove);
@@ -175,7 +188,11 @@ function objectsInRect(r: { x0: number; y0: number; x1: number; y1: number }, ho
   }).map((o) => o.id);
 }
 
-/** Floor dial around the selection: drag anywhere on it to turn (works from any camera angle). */
+/**
+ * Rotate tool only (codex's swivel): a ring around the selection whose whole disk is grabbable —
+ * drag anywhere inside the circle (or on the piece itself) to turn it. Works from any camera angle;
+ * jordan's collisions still block or push it clear.
+ */
 function RotationRing({ meshRef }: { meshRef: React.RefObject<Mesh | null> }) {
   const sel = useEditor((s) => s.selectedIds);
   const objects = useEditor((s) => s.workingScene?.objects);
@@ -195,19 +212,23 @@ function RotationRing({ meshRef }: { meshRef: React.RefObject<Mesh | null> }) {
       radius = Math.max(radius, Math.hypot(b.center[0] - pivot[0]!, b.center[1] - pivot[1]!) + Math.hypot(b.halfW, b.halfD));
     }
     const inner = radius + 0.12;
-    const outer = inner + (mode === 'rotate' ? 0.1 : 0.06);
-    const g = new BufferGeometry();
-    const pos: number[] = [];
-    const N = 96;
-    for (let i = 0; i < N; i++) {
-      const a0 = (i / N) * Math.PI * 2;
-      const a1 = ((i + 1) / N) * Math.PI * 2;
-      const p = (r: number, a: number) => [Math.sin(a) * r, 0, Math.cos(a) * r];
-      pos.push(...p(inner, a0), ...p(outer, a0), ...p(outer, a1), ...p(inner, a0), ...p(outer, a1), ...p(inner, a1));
-    }
-    g.setAttribute('position', new Float32BufferAttribute(pos, 3));
-    return { g, pivot: pivot as [number, number], y: Math.min(...roots.map((r) => r.transform.position[1])) + 0.008, outer };
-  }, [roots, objects, mode]);
+    const outer = inner + 0.08;
+    const band = (r0: number, r1: number) => {
+      const g = new BufferGeometry();
+      const pos: number[] = [];
+      const N = 96;
+      for (let i = 0; i < N; i++) {
+        const a0 = (i / N) * Math.PI * 2;
+        const a1 = ((i + 1) / N) * Math.PI * 2;
+        const p = (r: number, a: number) => [Math.sin(a) * r, 0, Math.cos(a) * r];
+        pos.push(...p(r0, a0), ...p(r1, a0), ...p(r1, a1), ...p(r0, a0), ...p(r1, a1), ...p(r0, a1));
+      }
+      g.setAttribute('position', new Float32BufferAttribute(pos, 3));
+      return g;
+    };
+    // `g` (the grab area) is the full disk; `ring` is the visible band at its edge.
+    return { g: band(0, outer), ring: band(inner, outer), pivot: pivot as [number, number], y: Math.min(...roots.map((r) => r.transform.position[1])) + 0.008, outer };
+  }, [roots, objects]);
   const tmp = useMemo(() => new Vector3(), []);
 
   useFrame(() => {
@@ -221,10 +242,13 @@ function RotationRing({ meshRef }: { meshRef: React.RefObject<Mesh | null> }) {
     }
   });
 
-  if (!geom || walk) return null;
+  if (!geom || walk || mode !== 'rotate') return null;
   return (
     <mesh ref={meshRef} geometry={geom.g} position={[geom.pivot[0], geom.y, geom.pivot[1]]} renderOrder={20}>
-      <meshBasicMaterial color="#8a8dff" transparent opacity={mode === 'rotate' ? 0.75 : 0.45} depthTest={false} side={2} />
+      <meshBasicMaterial color="#8a8dff" transparent opacity={0.08} depthTest={false} depthWrite={false} side={2} />
+      <mesh geometry={geom.ring} renderOrder={21} raycast={() => null}>
+        <meshBasicMaterial color="#8a8dff" transparent opacity={0.75} depthTest={false} depthWrite={false} side={2} />
+      </mesh>
     </mesh>
   );
 }

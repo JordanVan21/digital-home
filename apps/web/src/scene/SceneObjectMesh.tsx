@@ -1,16 +1,17 @@
 import { labelLayer } from './labelLayer';
 import { Component, memo, Suspense, useEffect, useLayoutEffect, useMemo, useRef, type ReactNode } from 'react';
 import { Bvh, Clone, Edges, Html, useGLTF } from '@react-three/drei';
-import type { Group, Mesh, Object3D } from 'three';
+import { Quaternion, Vector3, type Group, type Mesh, type Object3D } from 'three';
+import { useFrame, useThree } from '@react-three/fiber';
 import type { AssetSpec, SceneObject, Vec3 } from '@house/contracts';
 import { castsShadow, effectiveDimsOf } from '@house/scene-engine';
 import { EDITOR_POLICY } from '../config/editorPolicy';
-import { applyObjectTransform } from '../lib/convert';
+import { applyObjectTransform, relativeTransform } from '../lib/convert';
 import { hover, useEditor } from '../state/store';
 import { categoryColor, humanCategory } from './categoryColors';
 import { fitToBox } from './fit';
 import { makeGhost, makeVariant, prepareModel } from './prepareModel';
-import { registry } from './registry';
+import { interaction, registry } from './registry';
 
 const DRACO = EDITOR_POLICY.dracoDecoderPath;
 
@@ -163,9 +164,39 @@ export const SceneObjectNode = memo(function SceneObjectNode({ obj, parent, tree
   const url = obj.assetId ? catalog?.resolveUrl(obj.assetId) ?? null : null;
   const shadow = castsShadow(obj.category, asset);
 
+  // Undo / redo glide (from the codex sandbox): ease to the new pose instead of jumping. A node that
+  // just mounted (e.g. re-parented) snaps, so nothing flies in from the origin.
+  const glide = useRef<{ p: Vector3; q: Quaternion } | null>(null);
+  const mounted = useRef(false);
+  const invalidate = useThree((s) => s.invalidate);
   useLayoutEffect(() => {
-    if (ref.current) applyObjectTransform(ref.current, obj, parent);
-  }, [obj, parent]);
+    const g = ref.current;
+    if (!g) return;
+    if (mounted.current && performance.now() < interaction.glideUntil) {
+      const t = parent ? relativeTransform(obj.transform, parent.transform) : obj.transform;
+      glide.current = { p: new Vector3(...t.position), q: new Quaternion(...t.rotation) };
+      invalidate();
+    } else {
+      glide.current = null;
+      applyObjectTransform(g, obj, parent);
+    }
+    mounted.current = true;
+  }, [obj, parent, invalidate]);
+  useFrame((state, dt) => {
+    const t = glide.current;
+    const g = ref.current;
+    if (!t || !g) return;
+    const k = 1 - Math.exp(-Math.min(dt, 0.05) * 18);
+    g.position.lerp(t.p, k);
+    g.quaternion.slerp(t.q, k);
+    if (g.position.distanceToSquared(t.p) < 1e-8 && g.quaternion.angleTo(t.q) < 1e-4) {
+      g.position.copy(t.p);
+      g.quaternion.copy(t.q);
+      glide.current = null;
+    }
+    g.updateMatrixWorld();
+    state.invalidate();
+  });
 
   useEffect(() => {
     registry.set(obj.id, ref.current);

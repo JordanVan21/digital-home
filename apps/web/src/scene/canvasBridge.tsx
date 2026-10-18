@@ -3,6 +3,7 @@ import { useThree } from '@react-three/fiber';
 import { Plane, Raycaster, Vector2, Vector3, type Camera, type Object3D } from 'three';
 import type { Vec2 } from '@house/contracts';
 import { useEditor } from '../state/store';
+import { registry } from './registry';
 
 /**
  * Lets DOM UI (library drawer clicks / drag-and-drop) ask the 3D view for the floor point under
@@ -33,6 +34,14 @@ export function CanvasBridge() {
           return [r.left + ((v.x + 1) / 2) * r.width, r.top + ((1 - v.y) / 2) * r.height];
         },
         store: useEditor,
+        /** World position of an object's rendered group (to check glides / live previews). */
+        groupPosition(id: string) {
+          const g = registry.get(id);
+          if (!g) return null;
+          const v = new Vector3();
+          g.getWorldPosition(v);
+          return [v.x, v.y, v.z];
+        },
       };
     }
   }, [camera, gl, scene, controls]);

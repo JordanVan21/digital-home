@@ -13,6 +13,7 @@ import {
 import type { AssetCatalog } from '../catalog/AssetCatalog';
 import { EDITOR_POLICY } from '../config/editorPolicy';
 import { bodiesOf, movingSet, obstaclesFor, sweptBounds } from './physics';
+import { interaction } from '../scene/registry';
 
 export type SceneSource = 'demo-room' | 'demo-scan' | 'test2';
 /** 'move3d' = 3D move: drags slide on a camera-facing plane (sideways + up/down). */
@@ -24,6 +25,7 @@ export type CameraRequest =
   | { type: 'frame'; target: 'selection' | 'room'; nonce: number }
   | { type: 'focus'; point: Vec3; nonce: number };
 export type WallMode = 'cutaway' | 'fade' | 'full';
+export type ReleaseMode = 'mix' | 'fall' | 'stay';
 export type Toast = { id: number; kind: 'info' | 'warning' | 'error'; text: string };
 
 export type SaveState = {
@@ -59,6 +61,12 @@ export type EditorState = {
   collisionsOff: boolean;
   /** Draw every piece's shape outline (room panel switch, from codex's Bounding boxes toggle). */
   showAllOutlines: boolean;
+  /**
+   * Tryout (MERGE_INVENTORY §14): what happens on release to a piece you deliberately raised (3D move,
+   * scroll wheel, typed Y). 'mix' = raised pieces stay, ordinary drags fall; 'fall' = everything falls;
+   * 'stay' = nothing falls (codex).
+   */
+  releaseMode: ReleaseMode;
   walkMode: boolean;
   wallMode: WallMode;
   // ---- history (editor-local; never a timeline)
@@ -92,6 +100,7 @@ const initial: EditorState = {
   snapping: false,
   collisionsOff: false,
   showAllOutlines: false,
+  releaseMode: 'mix',
   walkMode: false,
   wallMode: 'cutaway',
   history: emptyHistory(EDITOR_POLICY.historyCap),
@@ -211,6 +220,7 @@ function step(kind: 'undo' | 'redo') {
   const ctx = opContext(s);
   if (!ctx || !s.workingScene || s.dragging) return;
   const r = (kind === 'undo' ? undoHistory : redoHistory)(ctx, s.workingScene, s.history);
+  interaction.glideUntil = performance.now() + 250;
   if (!r.ok) {
     // Rejected (e.g. the object was locked since): the entry stays put — never skipped silently.
     toast(`Can't ${kind}: ${describeOpError(r.error)}`, r.error.reason === 'EMPTY' ? 'info' : 'warning');
@@ -267,6 +277,11 @@ export function toggleCollisions() {
   const off = !get().collisionsOff;
   set({ collisionsOff: off });
   toast(off ? 'Collisions off — things can overlap (still flagged in red).' : 'Collisions on.', 'info', 2200);
+}
+
+/** Does a released piece settle onto the surface below? `raised` = deliberately lifted (3D move, wheel, typed Y). */
+export function releaseSettles(raised: boolean, mode: ReleaseMode = get().releaseMode): boolean {
+  return mode === 'fall' ? true : mode === 'stay' ? false : !raised;
 }
 
 /** True when collisions are ignored for an edit: the toggle is off, or Ctrl/Cmd is held. */
@@ -481,7 +496,7 @@ export function setPosition(id: string, target: Vec3) {
   const raised = Math.abs(target[1] - oy) > 1e-4;
   const y = raised ? Math.max(c.ctx.shell.floor.elevationY, target[1]) : oy;
   const transform = { ...o.transform, position: [ox + offset[0], y, oz + offset[1]] as Vec3 };
-  const r = commit('Move', moveWithSupport(c.ctx, c.scene, id, transform, { settle: !raised }));
+  const r = commit('Move', moveWithSupport(c.ctx, c.scene, id, transform, { settle: releaseSettles(raised) }));
   if (r.ok && blocker) toast(`Stopped short — it hits ${blocker}.`, 'info', 2200);
 }
 
