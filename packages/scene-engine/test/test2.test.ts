@@ -3,7 +3,7 @@ import { join } from 'node:path';
 import { describe, expect, it } from 'vitest';
 import test2 from '@house/contracts/fixtures/test2-room.json';
 import { AssetCatalogFileSchema, RoomFixtureSchema } from '@house/contracts';
-import { normalizeShell, restingSurface, settleTarget, validateScene } from '../src';
+import { bodyContact, bodyOf, normalizeShell, partsAbove, restingSurface, settleTarget, translateBody, validateScene } from '../src';
 
 // The catalog is data shared with the web app (apps/web/public/catalog); read it as JSON.
 const catalog = AssetCatalogFileSchema.parse(JSON.parse(readFileSync(join(__dirname, '../../../apps/web/public/catalog/catalog.json'), 'utf8')));
@@ -49,5 +49,18 @@ describe('test2-room fixture', () => {
       return p ? 1 + depth(p, idx) : 0;
     };
     expect(Math.max(...fixture.scene.objects.map((o) => depth(o.id)))).toBeGreaterThanOrEqual(3);
+  });
+  it('a pillow on the sofa seat is blocked by the backrest and arms, and flagged if it pokes into them', () => {
+    const sofa = fixture.scene.objects.find((o) => o.displayName === 'Cream sofa')!;
+    const pillow = fixture.scene.objects.find((o) => o.displayName === 'Rust pillow')!;
+    const parts = partsAbove(sofa, pillow.transform.position[1], ctx.assets)!;
+    expect(parts).not.toBeNull();
+    const body = bodyOf(pillow, ctx.assets);
+    expect(bodyContact(body, parts)).toBeNull(); // resting clear of the backrest
+    expect(bodyContact(translateBody(body, 0, -0.15), parts)).not.toBeNull(); // pushed back: hits the backrest
+    expect(bodyContact(translateBody(body, -0.3, 0), parts)).not.toBeNull(); // pushed sideways: hits the arm
+    const sunk = { ...pillow, transform: { ...pillow.transform, position: [pillow.transform.position[0], pillow.transform.position[1], pillow.transform.position[2] - 0.15] as typeof pillow.transform.position } };
+    const scene = { ...fixture.scene, objects: fixture.scene.objects.map((o) => (o.id === pillow.id ? sunk : o)) };
+    expect(validateScene(ctx, scene).violations.some((v) => v.objectId === pillow.id && v.detail.startsWith('Pokes into'))).toBe(true);
   });
 });

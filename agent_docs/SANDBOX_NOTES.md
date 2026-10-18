@@ -215,7 +215,8 @@ Dev hooks: `?perf` (r3f-perf), `window.__housePerf` (frame stats), `window.__hou
   - Hold Space while dragging to move up/down (codex); scroll while dragging also raises/lowers; Shift gives a 10 cm grid; Alt means no snapping; Ctrl ignores collisions.
   - R picks the Rotate tool, and you drag anywhere inside the ring or on the piece to turn it. Q/E turn 15°.
   - Undo/redo glide into place.
-- **Snapping:** only the back-to-wall snap is left; neighbour alignment was dropped.
+- **Snapping:** only the back-to-wall snap is left (3 cm reach, floor-standing pieces only); neighbour alignment was dropped.
+- **Seats:** a downloaded seat's cushion is its real baked face. The backrest and arms (`partsAbove`) block items resting on the seat and flag anything poking into them. While dragging, a piece never climbs to a higher face of what it sits on.
 - **Saving:** the mock persistence re-reads storage under a Web Lock, so a stale second tab gets a conflict. The app saves when hidden and warns before closing with an unsaved edit.
 - **Assets:** codex's 12 FurniMesh models are in the catalog as `pending`, hidden until redistribution rights are confirmed. Its Poly Haven models were already present.
 

@@ -11,8 +11,11 @@ export const EDITOR_POLICY = {
    * collisions for one drag either way (result flagged).
    */
   collision: DEFAULT_COLLISION_POLICY as CollisionPolicy,
-  /** Back-to-wall snap capture distance (m) and yaw tolerance (rad). */
-  wallSnapM: 0.12,
+  /**
+   * Back-to-wall snap capture distance (m) and yaw tolerance (rad). 3 cm (was 12 cm, which kept pulling
+   * pieces flush when you wanted them close to the wall). Floor-standing pieces only (sessions.ts).
+   */
+  wallSnapM: 0.03,
   wallSnapYawRad: (10 * Math.PI) / 180,
   /** Nudge step (arrow keys / PageUp-Down), and with Shift. */
   nudgeM: 0.01,

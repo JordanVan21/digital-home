@@ -1,6 +1,6 @@
 import type { SceneObject, SceneSpec, Vec3 } from '@house/contracts';
 import {
-  bodyOf, boundsOfBodies, classOf, GridBroadPhase, subtreeIds, translateBody, wallBodies,
+  bodyOf, boundsOfBodies, classOf, GridBroadPhase, partsAbove, subtreeIds, translateBody, wallBodies,
   type Body, type RuleContext,
 } from '@house/scene-engine';
 
@@ -60,7 +60,22 @@ export function obstaclesFor(
     const cls = o ? classOf(ctx, o) : 'floor';
     return cls === 'wall' || cls === 'ceiling';
   });
-  return [...near.filter((b) => !skip.has(b.id)), ...(mounted ? [] : wallBodies(ctx.shell))];
+  return [...near.filter((b) => !skip.has(b.id)), ...(mounted ? [] : wallBodies(ctx.shell)), ...parentParts(ctx, index, rootIds)];
+}
+
+/**
+ * The backrest / arms / upper parts of whatever each moving root rests on (partsAbove): the seat
+ * itself is exempt, but these still block, so a pillow can't sink into or pass through a backrest.
+ */
+function parentParts(ctx: RuleContext, index: ReadonlyMap<string, SceneObject>, rootIds: readonly string[]): Body[] {
+  const out: Body[] = [];
+  for (const id of rootIds) {
+    const o = index.get(id);
+    const p = o?.placement?.parentId ? index.get(o.placement.parentId) : undefined;
+    const parts = p ? partsAbove(p, o!.transform.position[1], ctx.assets) : null;
+    if (parts) out.push(parts);
+  }
+  return out;
 }
 
 /** Bounds of the moving bodies swept by an offset (for the broad-phase query). */
@@ -101,9 +116,22 @@ export function obstacleQuery(ctx: RuleContext, scene: SceneSpec, rootIds: reado
     }
     return c;
   };
-  return (bounds: { min: Vec3; max: Vec3 }, supportOwnerId?: string | null): Body[] => {
+  const ownParts = parentParts(ctx, index, rootIds);
+  const partsCache = new Map<string, Body | null>();
+  /** `supportOwnerId` / `supportY`: the surface the piece is about to rest on (exempt, but not its upper parts). */
+  return (bounds: { min: Vec3; max: Vec3 }, supportOwnerId?: string | null, supportY?: number): Body[] => {
     const extra = supportOwnerId ? chainOf(supportOwnerId) : null;
     const near = broad.query(bounds.min, bounds.max, 0.3).filter((b) => !base.has(b.id) && !extra?.has(b.id));
-    return walls.length ? [...near, ...walls] : near;
+    const parts = [...ownParts];
+    if (supportOwnerId && supportY !== undefined) {
+      const key = `${supportOwnerId}@${supportY.toFixed(4)}`;
+      if (!partsCache.has(key)) {
+        const owner = index.get(supportOwnerId);
+        partsCache.set(key, owner ? partsAbove(owner, supportY, ctx.assets) : null);
+      }
+      const p = partsCache.get(key);
+      if (p) parts.push(p);
+    }
+    return [...near, ...walls, ...parts];
   };
 }

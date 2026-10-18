@@ -1,7 +1,7 @@
 import type { CollisionKind, RoomShell, SceneObject, Vec2, Vec3 } from '@house/contracts';
-import { assetOf, worldBoxes, type AssetLookup } from './body';
+import { assetOf, localSurfaces, shapeLocalBoxes, worldBoxes, type AssetLookup } from './body';
 import { DEFAULT_RULE_CONFIG, placementClassOf, type RuleConfig } from './config';
-import { add2, len2, scale2, sub2 } from './math';
+import { add2, len2, rotateXZ, scale2, sub2, yawFromQuat } from './math';
 import { obbAabbXZ, obbMtvXZ, obbPenetration3D, translateObb, type OBB } from './obb';
 import { wallFrames } from './shell';
 
@@ -66,6 +66,36 @@ export function bodyOf(obj: SceneObject, assets?: AssetLookup): Body {
 export function bodyAt(obj: SceneObject, assets?: AssetLookup): Body {
   const { kind, boxes } = worldBoxes(obj, assets);
   return { id: obj.id, label: obj.displayName || obj.category, kind, boxes, ...boundsOf(boxes), ...(isWallMounted(obj, assets) ? { wallMounted: true } : {}) };
+}
+
+/**
+ * The parts of a support that rise above the surface an item rests on — a sofa's backrest and arms, a
+ * chair's back, the shelf board above — as a solid body from the support's baked shape. An item never
+ * collides with the surface it rests on (support chain exemption), but it does collide with these, so
+ * a pillow slides along the seat and stops at the backrest instead of sinking into it or passing
+ * through to fall off the back. Null when the support has no baked shape (then only the exemption).
+ */
+export function partsAbove(owner: SceneObject, aboveY: number, assets?: AssetLookup): Body | null {
+  // Only where the surfaces themselves come from the shape (sofas, downloaded models); self-made
+  // shelves keep their exact boards and jordan's open-shelf profile instead (voxels are too coarse).
+  if (!localSurfaces(owner, assets).some((s) => s.shaped)) return null;
+  const local = shapeLocalBoxes(owner, assets);
+  if (!local) return null;
+  const [px, py, pz] = owner.transform.position;
+  const parts = local.filter((b) => py + b.max[1] > aboveY + 0.01);
+  if (!parts.length) return null;
+  const yaw = yawFromQuat(owner.transform.rotation);
+  const u: Vec2 = [Math.cos(yaw), -Math.sin(yaw)];
+  const v: Vec2 = [Math.sin(yaw), Math.cos(yaw)];
+  const boxes: OBB[] = parts.map((b) => {
+    const c = rotateXZ([(b.min[0] + b.max[0]) / 2, (b.min[2] + b.max[2]) / 2], yaw);
+    return {
+      center: [c[0] + px, c[1] + pz], u, v,
+      halfW: (b.max[0] - b.min[0]) / 2, halfD: (b.max[2] - b.min[2]) / 2,
+      yMin: py + b.min[1], yMax: py + b.max[1],
+    };
+  });
+  return { id: `${owner.id}:above`, label: owner.displayName || owner.category.replace(/_/g, ' '), kind: 'solid', boxes, ...boundsOf(boxes) };
 }
 
 const wallCache = new WeakMap<RoomShell, Body[]>();

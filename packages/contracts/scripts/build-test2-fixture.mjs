@@ -67,11 +67,13 @@ const FLAT = { x: 1, z: 0 };
 // ---------------------------------------------------------------- floor layer
 place('rug', 'rug-jute-large', { x: -0.3, z: 0.55, name: 'Jute rug' });
 place('sofa', 'sofa-modern-cream', { x: -0.25, z: -0.4, name: 'Cream sofa' });
-const seatY = 0.55 * byKey.sofa.dimensionsM[1];
-place('pillow-rust', 'pillow-square', { x: -1.0, z: -0.65, y: seatY, parent: 'sofa', name: 'Rust pillow' });
-place('pillow-beige-1', 'pillow-square', { x: 0.02, z: -0.65, y: seatY, yaw: -12, parent: 'sofa', name: 'Sand pillow', overrides: linen('#d8c4a6') });
-place('pillow-beige-2', 'pillow-square', { x: 0.47, z: -0.63, y: seatY, yaw: 10, parent: 'sofa', name: 'Oat pillow', overrides: linen('#e2d3bc') });
-place('throw', 'throw-knit', { x: 0.2, z: -0.24, y: seatY, yaw: 15, parent: 'sofa', name: 'Knit throw' });
+// Seat cushion top from the sofa's baked shape (0.48 m); the backrest's front face is 4 cm behind the
+// sofa's centre line and the arms start 0.96 m from it. Pillows lean on the backrest, clear of the arms.
+const seatY = 0.48;
+place('pillow-rust', 'pillow-square', { x: -0.95, z: -0.36, y: seatY, parent: 'sofa', name: 'Rust pillow' });
+place('pillow-beige-1', 'pillow-square', { x: 0.02, z: -0.31, y: seatY, yaw: -12, parent: 'sofa', name: 'Sand pillow', overrides: linen('#d8c4a6') });
+place('pillow-beige-2', 'pillow-square', { x: 0.45, z: -0.31, y: seatY, yaw: 10, parent: 'sofa', name: 'Oat pillow', overrides: linen('#e2d3bc') });
+place('throw', 'throw-knit', { x: 0.2, z: 0.01, y: seatY, parent: 'sofa', name: 'Knit throw' }); // in front of the pillows, draped over the seat edge
 
 place('coffee', 'coffee-table-travertine', { x: -0.85, z: 0.8, name: 'Travertine coffee table' });
 place('ct-plant', 'plant-small-succulent', { x: -1.0, z: 0.72, y: top('coffee'), parent: 'coffee', name: 'Small plant' });

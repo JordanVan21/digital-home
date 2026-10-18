@@ -134,14 +134,17 @@ export function shapeLocalBoxes(obj: SceneObject, assets?: AssetLookup): LocalBo
  * 2. for downloaded / scanned models, the real exposed top faces of the baked shape (codex) — seats,
  *    shelves, table tops (4 cm voxel accuracy);
  * 3. jordan's category defaults (top / seat / boards): self-authored procedural models (exact boxes,
- *    so these are exact) and models without a shape.
+ *    so these are exact) and models without a shape. Exception: seats (sofas, armchairs) use the real
+ *    shape whenever there is one.
  * Rugs (collision `flat`) never hold things.
  */
 export function localSurfaces(obj: SceneObject, assets?: AssetLookup): LocalSurface[] {
   const asset = assetOf(obj, assets);
   const [w, h, d] = effectiveDimsOf(obj);
   if (collisionKindOf(obj, assets) === 'flat') return [];
-  if (!asset?.supports && asset?.source !== 'self_authored') {
+  // Seats always use the real shape when there is one: a guessed seat height sinks pillows into the
+  // cushion and reaches under the backrest. Self-made shelves keep their exact boards.
+  if (!asset?.supports && (asset?.source !== 'self_authored' || categoryRule(obj.category).supports === 'seat')) {
     const tilted = !!obj.tilt && (obj.tilt.x !== 0 || obj.tilt.z !== 0);
     const shape = tilted ? null : shapeOfAsset(asset);
     if (shape && asset) {

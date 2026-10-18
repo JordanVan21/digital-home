@@ -1,6 +1,6 @@
 import type { PlacementClass, RoomShell, SceneObject, SceneSpec, Vec2 } from '@house/contracts';
 import { assetOf, collisionKindOf, type AssetLookup } from './body';
-import { bodyOf, bodyContact } from './collision';
+import { bodyOf, bodyContact, partsAbove } from './collision';
 import { canRestOn, DEFAULT_RULE_CONFIG, placementClassOf, type RuleConfig } from './config';
 import { add2, angleDiff, dot2, scale2, sub2, yawFromQuat } from './math';
 import { obbCorners, obbOf, obbOverlap, type OBB } from './obb';
@@ -178,13 +178,28 @@ export function overlapExempt(index: ObjectIndex, a: SceneObject, b: SceneObject
   return isAncestor(index, a.id, b) || isAncestor(index, b.id, a);
 }
 
+/**
+ * A child vs the parts of its direct parent that rise above its seat (backrest, arms, shelf above).
+ * The surface itself stays exempt; touching sides counts as a collision.
+ */
+function pokesIntoParent(ctx: Pick<RuleContext, 'assets'>, child: SceneObject, parent: SceneObject, cfg: ReturnType<typeof ruleConfig>, childBody = bodyOf(child, ctx.assets)): boolean {
+  if (child.placement?.parentId !== parent.id) return false;
+  const parts = partsAbove(parent, child.transform.position[1], ctx.assets);
+  return !!parts && !!bodyContact(childBody, parts, cfg);
+}
+
 /** Pairwise collisions of `obj` against `others` using collision profiles. */
 export function overlapViolations(ctx: RuleContext, index: ObjectIndex, obj: SceneObject, others: Iterable<SceneObject>): Violation[] {
   const cfg = ruleConfig(ctx);
   const a = bodyOf(obj, ctx.assets);
   const out: Violation[] = [];
   for (const other of others) {
-    if (other.id === obj.id || overlapExempt(index, obj, other)) continue;
+    if (other.id === obj.id) continue;
+    if (overlapExempt(index, obj, other)) {
+      if (pokesIntoParent(ctx, obj, other, cfg, a)) out.push({ rule: 'overlap', severity: 'warning', objectId: obj.id, otherId: other.id, detail: `Pokes into ${nameOf(other)}.` });
+      else if (pokesIntoParent(ctx, other, obj, cfg)) out.push({ rule: 'overlap', severity: 'warning', objectId: obj.id, otherId: other.id, detail: `${nameOf(other)} pokes into it.` });
+      continue;
+    }
     if (bodyContact(a, bodyOf(other, ctx.assets), cfg)) {
       out.push({ rule: 'overlap', severity: 'warning', objectId: obj.id, otherId: other.id, detail: `Hits ${nameOf(other)}.` });
     }
@@ -209,7 +224,11 @@ export function validateScene(ctx: RuleContext, scene: Pick<SceneSpec, 'objects'
     for (let j = i + 1; j < objs.length; j++) {
       const a = objs[i]!;
       const b = objs[j]!;
-      if (overlapExempt(index, a, b)) continue;
+      if (overlapExempt(index, a, b)) {
+        if (pokesIntoParent(ctx, a, b, cfg, bodies[i]!)) violations.push({ rule: 'overlap', severity: 'warning', objectId: a.id, otherId: b.id, detail: `Pokes into ${nameOf(b)}.` });
+        else if (pokesIntoParent(ctx, b, a, cfg, bodies[j]!)) violations.push({ rule: 'overlap', severity: 'warning', objectId: b.id, otherId: a.id, detail: `Pokes into ${nameOf(a)}.` });
+        continue;
+      }
       if (bodyContact(bodies[i]!, bodies[j]!, cfg)) {
         violations.push({ rule: 'overlap', severity: 'warning', objectId: a.id, otherId: b.id, detail: `Hits ${nameOf(b)}.` });
       }

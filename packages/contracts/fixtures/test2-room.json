@@ -222,9 +222,9 @@
         "category": "pillow",
         "transform": {
           "position": [
-            -1,
-            0.451,
-            -0.65
+            -0.95,
+            0.48,
+            -0.36
           ],
           "rotation": [
             0,
@@ -258,8 +258,8 @@
         "transform": {
           "position": [
             0.02,
-            0.451,
-            -0.65
+            0.48,
+            -0.31
           ],
           "rotation": [
             0,
@@ -297,9 +297,9 @@
         "category": "pillow",
         "transform": {
           "position": [
-            0.47,
-            0.451,
-            -0.63
+            0.45,
+            0.48,
+            -0.31
           ],
           "rotation": [
             0,
@@ -338,14 +338,14 @@
         "transform": {
           "position": [
             0.2,
-            0.451,
-            -0.24
+            0.48,
+            0.01
           ],
           "rotation": [
             0,
-            0.13052619222,
             0,
-            0.991444861374
+            0,
+            1
           ],
           "scale": [
             1,
@@ -425,7 +425,7 @@
         "dimensionsM": [
           0.168,
           0.267,
-          0.185
+          0.184
         ],
         "locked": false,
         "source": "user",
@@ -1015,7 +1015,7 @@
         "dimensionsM": [
           0.2688,
           0.4272,
-          0.296
+          0.2944
         ],
         "locked": false,
         "source": "user",
@@ -1240,7 +1240,7 @@
         "dimensionsM": [
           0.168,
           0.267,
-          0.185
+          0.184
         ],
         "locked": false,
         "source": "user",
@@ -1550,7 +1550,7 @@
         "dimensionsM": [
           0.168,
           0.267,
-          0.185
+          0.184
         ],
         "locked": false,
         "source": "user",
@@ -1824,7 +1824,7 @@
         "dimensionsM": [
           0.168,
           0.267,
-          0.185
+          0.184
         ],
         "locked": false,
         "source": "user",

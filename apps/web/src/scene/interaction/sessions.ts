@@ -154,6 +154,8 @@ export class MoveSession implements DragSession {
   private raf = 0;
   /** Height the piece is held at while dragging off a surface (falls on release). */
   private holdY = 0;
+  /** What the piece currently sits on during the drag (its parent, then whatever it hopped onto). */
+  private holdOwner: string | null = null;
   private readonly owners = new Map(useEditor.getState().workingScene!.objects.map((o) => [o.id, o]));
   /** Height added with the scroll wheel during this drag (m). */
   private raise = 0;
@@ -181,6 +183,7 @@ export class MoveSession implements DragSession {
     if (!this.ok) return;
     if (this.small) this.surfaces = candidateSurfaces(this.scene.objects, this.primary, { assets: this.ctx.assets });
     this.holdY = this.primary.transform.position[1];
+    this.holdOwner = this.primary.placement?.parentId ?? null;
 
     const r = setRay(host, down);
     const [px, py, pz] = this.primary.transform.position;
@@ -271,7 +274,7 @@ export class MoveSession implements DragSession {
     const dy = targetY - py;
     if (!ctrl && EDITOR_POLICY.collision === 'block-and-slide') {
       const placed = liftBodies(this.movingBodies, dy).map((b) => translateBody(b, offset[0], offset[1]));
-      const obs = this.obstacles(sweptBounds(liftBodies(this.movingBodies, dy), offset[0], offset[1]), hit?.ownerId);
+      const obs = this.obstacles(sweptBounds(liftBodies(this.movingBodies, dy), offset[0], offset[1]), hit?.ownerId, hit?.y);
       const hits = obs.filter((o) => placed.some((b) => bodyContact(b, o)));
       if (hits.length) {
         dragFeedback.set({ objectId: this.primary.id, blockers: hits.map((o) => ({ movingId: this.primary.id, otherId: o.id, label: o.label, wall: !!o.wall })), note: null });
@@ -379,6 +382,9 @@ export class MoveSession implements DragSession {
       for (const s of this.surfaces) {
         if (d.y > -1e-6) break;
         if (s.y < this.holdY - 0.005) continue; // never hop down mid-drag
+        // Never climb to a higher face of the same piece (a seat's backrest or arms, the shelf board
+        // above): those parts block instead, so a pillow can't ride over the backrest and drop behind.
+        if (s.ownerId === this.holdOwner && s.y > this.holdY + 0.005) continue;
         const t = (s.y - o.y) / d.y;
         if (t <= 0 || t >= bestT) continue;
         const c: Vec2 = [o.x + d.x * t + this.grab[0], o.z + d.z * t + this.grab[1]];
@@ -415,12 +421,17 @@ export class MoveSession implements DragSession {
       const m = this.magnet(center, targetY, floorY);
       if (m) ({ y: targetY, hit, snapped: snappedTo } = m);
     }
-    if (this.small && !this.raised) this.holdY = targetY;
+    if (this.small && !this.raised) {
+      this.holdY = targetY;
+      if (hit) this.holdOwner = hit.ownerId;
+    }
 
     let desired: Vec2 = [center[0] - px, center[1] - pz];
     const dy = targetY - py;
     let guides: { from: Vec3; to: Vec3 }[] = [];
-    if (!shift && !noSnap) {
+    // Wall snap only for pieces standing on the floor: things on shelves, tables or seats (or held up)
+    // are never pulled to the wall.
+    if (!shift && !noSnap && !this.raised && targetY <= floorY + 0.005) {
       const snapped = wallSnap(this.ctx, { ...this.primary, transform: { ...this.primary.transform, position: [px, targetY, pz] } }, desired);
       desired = snapped.delta;
       guides = snapped.guides;
@@ -439,7 +450,7 @@ export class MoveSession implements DragSession {
         min: [Math.min(a.min[0], b.min[0]), a.min[1], Math.min(a.min[2], b.min[2])] as Vec3,
         max: [Math.max(a.max[0], b.max[0]), a.max[1], Math.max(a.max[2], b.max[2])] as Vec3,
       };
-      const obs = this.obstacles(bounds, hit?.ownerId);
+      const obs = this.obstacles(bounds, hit?.ownerId, hit?.y);
       const res = timed(() => resolveTranslation(lifted, obs, this.prev, desired));
       offset = res.offset;
       blockers = res.blockers;
