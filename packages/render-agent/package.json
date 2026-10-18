@@ -7,8 +7,9 @@
   "types": "./src/index.ts",
   "scripts": {
     "typecheck": "tsc --noEmit",
-    "test": "tsx --test src/*.test.ts",
-    "resolve": "tsx src/cli.ts"
+    "test": "tsx --test src/*.test.ts bench/*.test.ts",
+    "resolve": "tsx src/cli.ts",
+    "demo": "tsx bench/demo-server.ts"
   },
   "dependencies": {
     "@house/asset-service": "workspace:*",
