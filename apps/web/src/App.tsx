@@ -1,3 +1,4 @@
+import { ReferencePhoto } from "./components/ReferencePhoto";
 import { installEditorKeyboard } from "./state/keyboard";
 import { PerfOverlay } from "./components/PerfOverlay";
 import { WalkHint } from "./components/CameraViewMenu";
@@ -92,6 +93,7 @@ export default function App() {
       <TopBar />
       <SideNav />
       <ViewControls />
+      <ReferencePhoto />
       <WalkHint />
       {new URLSearchParams(window.location.search).has("perf") && (
         <PerfOverlay />

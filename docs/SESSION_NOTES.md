@@ -170,3 +170,5 @@ Implemented on the isolated base branch. User approved focused checks during imp
 Implemented on the isolated base branch. User approved focused checks during implementation and one complete verification run at the end (2026-10-18). Final review and screenshots are pending.
 
 Step 23: drop library assets onto floor and occupied surfaces; complete checks and visual review pending final integration.
+
+Step 24: add reference photo overlay and matching camera; complete checks and visual review pending final integration.

@@ -1245,4 +1245,20 @@ kbd {
   gap: 12px;
 }
 
-.finish-swatches { display:flex; flex-wrap:wrap; gap:8px; } .finish-swatches button[title] { width:30px; height:30px; border-radius:50%; border:2px solid white; cursor:pointer; } .finish-swatches button[aria-pressed="true"] { outline:2px solid var(--accent); }
+.finish-swatches {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.finish-swatches button[title] {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  border: 2px solid white;
+  cursor: pointer;
+}
+.finish-swatches button[aria-pressed="true"] {
+  outline: 2px solid var(--accent);
+}
+
+.reference-photo {position:absolute;left:24px;top:260px;z-index:5;max-width:340px;} .reference-photo section{margin-top:8px;padding:12px;border-radius:18px;} .reference-photo img{width:100%;border-radius:10px;} .reference-photo label{display:flex;gap:8px;font-size:12px;margin:8px 0;}
