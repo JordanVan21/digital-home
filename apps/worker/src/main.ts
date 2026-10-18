@@ -18,14 +18,14 @@ import { fileURLToPath } from "node:url";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { createClient } from "@supabase/supabase-js";
-import type { SceneObject, SceneSpec } from "@house/contracts";
+import type { AssetSpec, SceneObject, SceneSpec } from "@house/contracts";
 import {
   BlenderMcpClient,
   BlenderPool,
   RenderService,
   createModel,
+  fittedDimensions,
   requestForObject,
-  toReplaceAssetOps,
   type RenderOutcome,
 } from "@house/render-agent";
 import { normalizeRoomScan } from "@house/scan-import";
@@ -80,20 +80,21 @@ async function connectBlender(): Promise<BlenderPool | null> {
 
 const workDir = join(tmpdir(), "house-worker-assets");
 await mkdir(workDir, { recursive: true });
-const render = new RenderService({
+const shared = {
   catalog: () => loadCatalog(db),
   registry: new SupabaseAssetRegistry(db, workDir),
   store: new SupabaseGlbStore(db),
-  model,
-  blender,
-  concurrency: 2,
-});
+};
+// Pass 1: deterministic library matching only (seconds). Never blocks on a model or Blender.
+const fast = new RenderService({ ...shared, model: null, blender: null, ambiguousWithoutModel: "accept_best" });
+// Pass 2: agents + Blender for objects pass 1 could not match confidently.
+const full = new RenderService({ ...shared, model, blender, concurrency: 2 });
+const scanTimeLimitMs = (Number(process.env.SCAN_TIME_LIMIT_S) || 900) * 1000;
 
 console.log(
   `worker: model=${model ? `${provider}/${modelName}` : "none"} blender=${blender ? `port ${blenderPort}` : "none"} ` +
-    `generation=${allowGeneration && blender ? "on" : "off"}`,
+    `generation=${allowGeneration && blender ? "on" : "off"} scanLimit=${scanTimeLimitMs / 1000}s`,
 );
-
 // --retry-failed requeues failed scans; --reprocess also redoes finished ones
 // (e.g. after the asset library changed). Room/house ids are kept.
 const requeue = process.argv.includes("--reprocess") ? ["failed", "done"]
@@ -118,6 +119,52 @@ async function claim(): Promise<ScanRow | null> {
   return (claimed.data[0] as ScanRow | undefined) ?? null;
 }
 
+/** Plain-language method label: (a) library, (b) edited library model, (c) built in Blender. */
+function method(source: RenderOutcome["source"]): string {
+  switch (source) {
+    case "retrieved":
+    case "reused":
+      return "a";
+    case "modified":
+      return "b";
+    case "generated":
+      return "c";
+    case "best_effort":
+      return "a (best effort)";
+    default:
+      return "placeholder";
+  }
+}
+
+type ObjectReport = {
+  objectId: string;
+  category: string;
+  method: string;
+  source: RenderOutcome["source"];
+  assetId: string | null;
+  title: string | null;
+  notes: string[];
+  seconds: number;
+  usage: RenderOutcome["usage"];
+};
+
+const reportEntry = (objectId: string, category: string, o: RenderOutcome, seconds: number): ObjectReport => ({
+  objectId,
+  category,
+  method: method(o.source),
+  source: o.source,
+  assetId: o.assetId,
+  title: o.asset?.title ?? null,
+  notes: o.notes,
+  seconds: Math.round(seconds * 10) / 10,
+  usage: o.usage,
+});
+
+/** Same object id, new visual, uniformly fitted inside the scanned envelope. */
+function withAsset(object: SceneObject, asset: AssetSpec, envelope: [number, number, number]): SceneObject {
+  return { ...object, assetId: asset.id, dimensionsM: fittedDimensions(asset, envelope), displayName: asset.title };
+}
+
 async function processScan(scan: ScanRow) {
   const path = scan.files["scan.json"];
   if (!path) throw new Error("Upload has no scan.json.");
@@ -126,24 +173,26 @@ async function processScan(scan: ScanRow) {
   const raw = JSON.parse(await file.data.text());
 
   // Reprocessing reuses the existing house/room ids, so the sandbox URL stays valid.
-  const existing = await db.from("rooms").select("id").eq("scan_id", scan.id).eq("source_room_index", 0).maybeSingle();
+  const existing = await db.from("rooms").select("id,revision").eq("scan_id", scan.id).eq("source_room_index", 0).maybeSingle();
   if (existing.error) throw existing.error;
   const { shell, scene, warnings, scanToWorld } = normalizeRoomScan(raw);
   if (existing.data) scene.roomId = existing.data.id;
+  const envelopes = new Map(scene.objects.map((o) => [o.id, o.dimensionsM]));
 
-  const { outcomes, resolved } = await resolveAssets(scene);
+  // --- Pass 1: library matching, then write the room so the sandbox can open it now.
+  const started = Date.now();
+  const firstOutcomes = await fast.resolveMany(scene.objects.map((o) => requestForObject(o, { allowGeneration: false })));
+  const firstSeconds = (Date.now() - started) / 1000 / Math.max(scene.objects.length, 1);
+  const objects = scene.objects.map((o, i) => {
+    const asset = firstOutcomes[i]?.asset;
+    return asset ? withAsset(o, asset, o.dimensionsM) : o;
+  });
+  const resolved: SceneSpec = { ...scene, objects };
   const report = {
     warnings,
     scanToWorld,
-    objects: scene.objects.map((o, i) => ({
-      objectId: o.id,
-      category: o.category,
-      source: outcomes[i]?.source ?? "placeholder",
-      assetId: outcomes[i]?.assetId ?? null,
-      title: outcomes[i]?.asset?.title ?? null,
-      retrieval: outcomes[i]?.retrieval ?? null,
-      notes: outcomes[i]?.notes ?? [],
-    })),
+    pass: "library",
+    objects: scene.objects.map((o, i) => reportEntry(o.id, o.category, firstOutcomes[i], firstSeconds)),
   };
 
   let houseId = scan.house_id;
@@ -152,6 +201,7 @@ async function processScan(scan: ScanRow) {
     if (house.error) throw house.error;
     houseId = house.data.id as string;
   }
+  const revision = existing.data ? (existing.data.revision as number) + 1 : 0;
   const room = await db.from("rooms").upsert(
     {
       id: scene.roomId,
@@ -161,33 +211,87 @@ async function processScan(scan: ScanRow) {
       source_room_index: 0,
       name: scan.name,
       shell,
-      original_scene: resolved,
-      scene: resolved,
-      revision: 0,
+      original_scene: { ...resolved, revision },
+      scene: { ...resolved, revision },
+      revision,
       render_report: report,
     },
     { onConflict: "id" },
   );
   if (room.error) throw room.error;
-  const done = await db.from("scans").update({ status: "done", house_id: houseId, error: null }).eq("id", scan.id);
-  if (done.error) throw done.error;
+  const linked = await db.from("scans").update({ house_id: houseId }).eq("id", scan.id);
+  if (linked.error) throw linked.error;
   const matched = report.objects.filter((o) => o.assetId).length;
-  console.log(`  done: room ${scene.roomId}, ${matched}/${scene.objects.length} objects matched to library assets`);
+  console.log(`  room ${scene.roomId} ready: ${matched}/${scene.objects.length} objects from the library`);
+
+  // --- Pass 2: agents/Blender for objects without a confident match, swapped in live.
+  const pending = scene.objects
+    .map((o, i) => ({ object: o, first: firstOutcomes[i] }))
+    .filter(({ first }) => first.source !== "retrieved");
+  if (model && pending.length) {
+    console.log(`  improving ${pending.length} object(s) with ${blender && allowGeneration ? "agent + Blender" : "agent"}…`);
+    const signal = AbortSignal.timeout(scanTimeLimitMs);
+    let next = 0;
+    const workers = Array.from({ length: 2 }, async () => {
+      while (next < pending.length && !signal.aborted) {
+        const { object, first } = pending[next++];
+        const t0 = Date.now();
+        const outcome = await full.resolve(requestForObject(object, { allowGeneration }), signal);
+        const entry = reportEntry(object.id, object.category, outcome, (Date.now() - t0) / 1000);
+        const better = outcome.asset && outcome.assetId !== first.assetId && outcome.source !== "best_effort";
+        await swapIn(scene.roomId, object.id, first.assetId, better ? outcome.asset : null, envelopes.get(object.id)!, entry);
+        console.log(`    ${object.category}: (${entry.method}) ${entry.title ?? "placeholder"} in ${entry.seconds}s`);
+      }
+    });
+    await Promise.all(workers);
+    if (signal.aborted) console.log(`  scan time limit reached; remaining objects keep their pass-1 model`);
+  }
+
+  const done = await db.from("scans").update({ status: "done", error: null }).eq("id", scan.id);
+  if (done.error) throw done.error;
+  console.log(`  done`);
 }
 
-/** Ask the render agent for every scanned object; apply the resulting replaceAsset ops. */
-async function resolveAssets(scene: SceneSpec): Promise<{ outcomes: RenderOutcome[]; resolved: SceneSpec }> {
-  const targets = scene.objects;
-  const outcomes = await render.resolveMany(targets.map((o) => requestForObject(o, { allowGeneration })));
-  const byId = new Map(outcomes.map((o, i) => [targets[i].id, o]));
-  const ops = toReplaceAssetOps(targets, outcomes);
-  const objects: SceneObject[] = scene.objects.map((object) => {
-    const op = ops.find((p) => p.type === "replaceAsset" && p.objectId === object.id);
-    if (!op || op.type !== "replaceAsset") return object;
-    const asset = byId.get(object.id)?.asset;
-    return { ...object, assetId: op.assetId, dimensionsM: op.dimensionsM ?? object.dimensionsM, displayName: asset?.title ?? object.displayName };
-  });
-  return { outcomes, resolved: { ...scene, objects } };
+/**
+ * Swap one object's model into the saved room without touching anything else.
+ * Skips objects the user deleted or already re-modelled; retries on a concurrent save
+ * (revision check), so a sandbox edit is never overwritten.
+ */
+async function swapIn(
+  roomId: string,
+  objectId: string,
+  expectedAssetId: string | null,
+  asset: AssetSpec | null,
+  envelope: [number, number, number],
+  entry: ObjectReport,
+) {
+  for (let attempt = 0; attempt < 5; attempt++) {
+    const current = await db.from("rooms").select("scene,original_scene,revision,render_report").eq("id", roomId).single();
+    if (current.error) throw current.error;
+    const { scene, original_scene, revision, render_report } = current.data as {
+      scene: SceneSpec; original_scene: SceneSpec; revision: number; render_report: { objects: ObjectReport[] };
+    };
+    const report = { ...render_report, objects: render_report.objects.map((o) => (o.objectId === objectId ? entry : o)) };
+    let nextScene = scene;
+    let nextOriginal = original_scene;
+    if (asset) {
+      const target = scene.objects.find((o) => o.id === objectId);
+      if (target && target.assetId === expectedAssetId) {
+        nextScene = { ...scene, revision: revision + 1, objects: scene.objects.map((o) => (o.id === objectId ? withAsset(o, asset, envelope) : o)) };
+      }
+      nextOriginal = { ...original_scene, objects: original_scene.objects.map((o) => (o.id === objectId ? withAsset(o, asset, envelope) : o)) };
+    }
+    const nextRevision = nextScene === scene ? revision : revision + 1;
+    const update = await db
+      .from("rooms")
+      .update({ scene: nextScene, original_scene: nextOriginal, revision: nextRevision, render_report: report })
+      .eq("id", roomId)
+      .eq("revision", revision)
+      .select("id");
+    if (update.error) throw update.error;
+    if (update.data.length) return;
+  }
+  console.warn(`    could not swap ${objectId}: room kept changing`);
 }
 
 for (;;) {
