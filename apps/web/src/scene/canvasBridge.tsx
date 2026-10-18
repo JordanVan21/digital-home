@@ -2,6 +2,7 @@ import { useEffect } from 'react';
 import { useThree } from '@react-three/fiber';
 import { Plane, Raycaster, Vector2, Vector3, type Camera, type Object3D } from 'three';
 import type { Vec2 } from '@house/contracts';
+import { registry } from './registry';
 import { useEditor } from '../state/store';
 
 /**
@@ -33,6 +34,7 @@ export function CanvasBridge() {
           return [r.left + ((v.x + 1) / 2) * r.width, r.top + ((1 - v.y) / 2) * r.height];
         },
         store: useEditor,
+        registry,
       };
     }
   }, [camera, gl, scene, controls]);

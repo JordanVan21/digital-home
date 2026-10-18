@@ -20,7 +20,7 @@ type FeedbackState = {
   height: HeightReadout | null;
   note: string | null;
   /** The face the dragged piece is snapped onto (codex snap guide). */
-  surface: { y: number; polygon: [number, number][] } | null;
+  surface: { y: number; polygon: [number, number][]; label: string; at: Vec3 } | null;
   /** Live swivel angle, shown at the ring handle. */
   angle: string | null;
 };
@@ -57,7 +57,7 @@ export const dragFeedback: DragFeedback = {
       this.guides.map((g) => `${g.from.map((n) => n.toFixed(3))}`).join(';'),
       h ? `${h.baseY.toFixed(3)}|${h.surfaceY.toFixed(3)}` : '',
       this.note ?? '',
-      this.surface ? `${this.surface.y.toFixed(3)}:${this.surface.polygon[0]?.join(',')}` : '',
+      this.surface ? `${this.surface.label}:${this.surface.y.toFixed(3)}:${this.surface.polygon[0]?.join(',')}` : '',
       this.angle ?? '',
     ].join('#');
     if (sig !== this.signature) {

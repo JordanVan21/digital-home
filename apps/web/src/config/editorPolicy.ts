@@ -6,11 +6,6 @@ export const EDITOR_POLICY = {
    * Edits are suggestions: drags, nudges and turns are never blocked. New conflicts show red live
    * and the draft's Accept resolves them (scene-engine resolveDraft).
    */
-  /** Alignment snaps while dragging (Alt or Shift disables): capture distance (m). */
-  smartSnapM: 0.05,
-  /** Back-to-wall snap capture distance (m) and yaw tolerance (rad). */
-  wallSnapM: 0.12,
-  wallSnapYawRad: (10 * Math.PI) / 180,
   /** Shift-drag grid for positions and heights (m). */
   gridSnapM: 0.1,
   /** Nudge step (arrow keys / PageUp-Down), and with Shift. */

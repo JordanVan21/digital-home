@@ -12,6 +12,27 @@ import { boxSelect } from './boxSelect';
 import { hitPlaneY, modsOf, MoveSession, RotateSession, setRay, type DragSession, type Host } from './sessions';
 
 export const SELECT_COLOR = '#9187ff';
+/** Codex snap guide colour. */
+const SNAP_COLOR = '#54bca2';
+
+/** "Snapped to …" chip (codex), riding just above the face under the dragged piece. */
+function SnapChip({ id, y, label }: { id: string; y: number; label: string }) {
+  const ref = useRef<Group>(null);
+  const tmp = useMemo(() => new Vector3(), []);
+  useFrame(() => {
+    const g = registry.get(id);
+    if (!g || !ref.current) return;
+    g.getWorldPosition(tmp);
+    ref.current.position.set(tmp.x, y + 0.08, tmp.z);
+  });
+  return (
+    <group ref={ref}>
+      <Html center zIndexRange={[25, 0]} style={{ pointerEvents: 'none' }}>
+        <span className="angle-label snap-label">Snapped to {label}</span>
+      </Html>
+    </group>
+  );
+}
 
 type Controls = { enabled: boolean } | null;
 
@@ -341,9 +362,10 @@ function Guides() {
       )}
       {face && (
         <lineLoop geometry={face} renderOrder={30}>
-          <lineBasicMaterial color={SELECT_COLOR} transparent opacity={0.95} depthTest={false} />
+          <lineBasicMaterial color={SNAP_COLOR} transparent opacity={0.95} depthTest={false} />
         </lineLoop>
       )}
+      {surface && objectId && <SnapChip id={objectId} y={surface.y} label={surface.label} />}
       {height && (
         <Html position={height.at} center zIndexRange={[25, 0]} style={{ pointerEvents: 'none' }}>
           <div className="readout">

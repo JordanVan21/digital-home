@@ -1736,3 +1736,6 @@ kbd {
     width: auto;
   }
 }
+.snap-label {
+  color: #2f7a66;
+}
