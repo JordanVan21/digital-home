@@ -15,7 +15,11 @@
     "assets:preview": "node scripts/preview-assets.mjs",
     "assets:import:polyhaven": "node scripts/import-polyhaven.mjs",
     "geometry:bake": "node --experimental-strip-types scripts/bake-colliders.mjs",
-    "geometry:benchmark": "node --experimental-strip-types scripts/benchmark-geometry.mjs"
+    "geometry:benchmark": "node --experimental-strip-types scripts/benchmark-geometry.mjs",
+    "test:pipeline": "pnpm --filter @house/scan-import --filter @house/asset-service test && pnpm --filter @house/render-agent exec tsx --test src/render.test.ts",
+    "typecheck:pipeline": "pnpm --filter @house/scan-import --filter @house/asset-service --filter @house/render-agent --filter @house/worker typecheck",
+    "worker": "pnpm --filter @house/worker start",
+    "worker:once": "pnpm --filter @house/worker once"
   },
   "devDependencies": {
     "@eslint/js": "^9.39.0",
@@ -36,5 +40,8 @@
     "typescript-eslint": "^8.46.0",
     "vitest": "^3.2.4"
   },
-  "type": "module"
+  "type": "module",
+  "engines": {
+    "node": ">=18"
+  }
 }

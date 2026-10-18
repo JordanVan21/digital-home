@@ -58,7 +58,7 @@ importers:
         version: 8.71.2(eslint@9.39.5)(typescript@5.9.3)
       vitest:
         specifier: ^3.2.4
-        version: 3.2.7(@types/node@24.19.2)(jsdom@26.1.0)
+        version: 3.2.7(@types/node@24.19.2)(jsdom@26.1.0)(tsx@4.23.15)
 
   apps/web:
     dependencies:
@@ -116,16 +116,107 @@ importers:
         version: 0.180.0
       '@vitejs/plugin-react':
         specifier: ^5.0.4
-        version: 5.2.0(vite@7.3.7(@types/node@24.19.2))
+        version: 5.2.0(vite@7.3.7(@types/node@24.19.2)(tsx@4.23.15))
       vite:
         specifier: ^7.1.10
-        version: 7.3.7(@types/node@24.19.2)
+        version: 7.3.7(@types/node@24.19.2)(tsx@4.23.15)
+
+  apps/worker:
+    dependencies:
+      '@house/asset-service':
+        specifier: workspace:*
+        version: link:../../packages/asset-service
+      '@house/contracts':
+        specifier: workspace:*
+        version: link:../../packages/contracts
+      '@house/render-agent':
+        specifier: workspace:*
+        version: link:../../packages/render-agent
+      '@house/scan-import':
+        specifier: workspace:*
+        version: link:../../packages/scan-import
+      '@supabase/supabase-js':
+        specifier: ^2.45.0
+        version: 2.118.0
+    devDependencies:
+      '@types/node':
+        specifier: ^22.0.0
+        version: 22.20.5
+      tsx:
+        specifier: ^4.20.0
+        version: 4.23.15
+      typescript:
+        specifier: ^5.6.2
+        version: 5.9.3
+
+  packages/asset-service:
+    dependencies:
+      '@house/contracts':
+        specifier: workspace:*
+        version: link:../contracts
+    devDependencies:
+      '@types/node':
+        specifier: ^22.0.0
+        version: 22.20.5
+      tsx:
+        specifier: ^4.20.0
+        version: 4.23.15
+      typescript:
+        specifier: ^5.6.2
+        version: 5.9.3
 
   packages/contracts:
     dependencies:
       zod:
         specifier: ^3.25.76
         version: 3.25.76
+
+  packages/render-agent:
+    dependencies:
+      '@house/asset-service':
+        specifier: workspace:*
+        version: link:../asset-service
+      '@house/contracts':
+        specifier: workspace:*
+        version: link:../contracts
+      openai:
+        specifier: ^6.0.0
+        version: 6.49.0(ws@8.22.0)(zod@3.25.76)
+      zod:
+        specifier: ^3.23.8
+        version: 3.25.76
+    devDependencies:
+      '@types/node':
+        specifier: ^22.0.0
+        version: 22.20.5
+      tsx:
+        specifier: ^4.20.0
+        version: 4.23.15
+      typescript:
+        specifier: ^5.6.2
+        version: 5.9.3
+
+  packages/scan-import:
+    dependencies:
+      '@house/contracts':
+        specifier: workspace:*
+        version: link:../contracts
+      zod:
+        specifier: ^3.23.8
+        version: 3.25.76
+    devDependencies:
+      '@house/scene-engine':
+        specifier: workspace:*
+        version: link:../scene-engine
+      '@types/node':
+        specifier: ^22.0.0
+        version: 22.20.5
+      tsx:
+        specifier: ^4.20.0
+        version: 4.23.15
+      typescript:
+        specifier: ^5.6.2
+        version: 5.9.3
 
   packages/scene-engine:
     dependencies:
@@ -964,6 +1055,9 @@ packages:
   '@types/ndarray@1.1.0':
     resolution: {integrity: sha512-go+C6vHBUuO9jH6Tj6qEZ63JEGoMSxFdmd+6QAtthGD6xumBfIz3RbNDDs2aoRVLf9naH8lk5jnWy2UHHKgYQQ==}
 
+  '@types/node@22.20.5':
+    resolution: {integrity: sha512-U2+DNr+wSjpsTS/wZGYHq7GcwfuSmKiKvoPvK22zwTlRhU91yOniN4qRR5KhIjvif7ysw/dz/hKmfDH0Ris4aA==}
+
   '@types/node@24.19.2':
     resolution: {integrity: sha512-93d49wCWJkCyN87MxLpNN6KXPCwFw7bVUg79mGUV1OS40JGWwVCr8n61DXCSqz7CV6/VfPkb7xec7uP2M+QHWQ==}
 
@@ -1637,6 +1731,26 @@ packages:
   nwsapi@2.2.28:
     resolution: {integrity: sha512-IlVB7OS7qrOsVYlpnFIkETjMwT9jwvmocJmmM+GZU/PAB3uGi9Ezd7vcWhWBUnSc0ya4ppmQITOyP1ez9gg8cg==}
 
+  openai@6.49.0:
+    resolution: {integrity: sha512-aYCc0C6L864eR6WSYIwQGyXriw/nIyZx0ObvhzOEVuk0zoBDpynjSbrionWI7q65B5H8jJX0DXR9snEzM6bfPg==}
+    peerDependencies:
+      '@aws-sdk/credential-provider-node': '>=3.972.0 <4'
+      '@smithy/hash-node': '>=4.3.0 <5'
+      '@smithy/signature-v4': '>=5.4.0 <6'
+      ws: ^8.18.0
+      zod: ^3.25 || ^4.0
+    peerDependenciesMeta:
+      '@aws-sdk/credential-provider-node':
+        optional: true
+      '@smithy/hash-node':
+        optional: true
+      '@smithy/signature-v4':
+        optional: true
+      ws:
+        optional: true
+      zod:
+        optional: true
+
   optionator@0.9.4:
     resolution: {integrity: sha512-6IpQ7mKUxRcZNLIObR0hz7lxsapSSIYNZJwXPGeF0mTVqGKFIXj1DQcMoT22S3ROcLyY/rz0PWaWZ9ayWmad9g==}
     engines: {node: '>= 0.8.0'}
@@ -1916,6 +2030,11 @@ packages:
   tslib@2.8.1:
     resolution: {integrity: sha512-oJFu94HQb+KVduSUQL7wnpmqnfmLsOA/nAh6b6EH0wCEoK0/mPeXU6c3wKDV83MkOuHPRHtSXKKU99IBazS/2w==}
 
+  tsx@4.23.15:
+    resolution: {integrity: sha512-Yiex1Ovn8z2xPpOWckIiysV1SSyRMY9BkLF++q0yKiDxCqRhosKfMg3janKkiLBwZ5c/YryloKwGZcrEmtwxKw==}
+    engines: {node: '>=18.0.0'}
+    hasBin: true
+
   tunnel-rat@0.1.2:
     resolution: {integrity: sha512-lR5VHmkPhzdhrM092lI2nACsLO4QubF0/yoOhzX7c+wIpbN1GjHNzCc91QlpxBi+cnx8vVJ+Ur6vL5cEoQPFpQ==}
 
@@ -1934,6 +2053,9 @@ packages:
     resolution: {integrity: sha512-jl1vZzPDinLr9eUt3J/t7V6FgNEw9QjvBPdysz9KfQDD41fQrC2Y4vKQdiaUpFT4bXlb1RHhLpp8wtm6M5TgSw==}
     engines: {node: '>=14.17'}
     hasBin: true
+
+  undici-types@6.21.0:
+    resolution: {integrity: sha512-iwDZqg0QAGrg9Rav5H4n0M64c3mkR59cJ6wQp+7C4nI0gsmExaedaYLNO44eT4AtBBwjbTiGPMlt2Md0T9H9JQ==}
 
   undici-types@7.24.6:
     resolution: {integrity: sha512-WRNW+sJgj5OBN4/0JpHFqtqzhpbnV0GuB+OozA9gCL7a993SmU+1JBZCzLNxYsbMfIeDL+lTsphD5jN5N+n0zg==}
@@ -2829,6 +2951,10 @@ snapshots:
 
   '@types/ndarray@1.1.0': {}
 
+  '@types/node@22.20.5':
+    dependencies:
+      undici-types: 6.21.0
+
   '@types/node@24.19.2':
     dependencies:
       undici-types: 7.24.6
@@ -2959,7 +3085,7 @@ snapshots:
       '@use-gesture/core': 10.3.1
       react: 19.3.1
 
-  '@vitejs/plugin-react@5.2.0(vite@7.3.7(@types/node@24.19.2))':
+  '@vitejs/plugin-react@5.2.0(vite@7.3.7(@types/node@24.19.2)(tsx@4.23.15))':
     dependencies:
       '@babel/core': 7.29.7
       '@babel/plugin-transform-react-jsx-self': 7.29.7(@babel/core@7.29.7)
@@ -2967,7 +3093,7 @@ snapshots:
       '@rolldown/pluginutils': 1.0.0-rc.3
       '@types/babel__core': 7.20.5
       react-refresh: 0.18.0
-      vite: 7.3.7(@types/node@24.19.2)
+      vite: 7.3.7(@types/node@24.19.2)(tsx@4.23.15)
     transitivePeerDependencies:
       - supports-color
 
@@ -2979,13 +3105,13 @@ snapshots:
       chai: 5.3.3
       tinyrainbow: 2.0.0
 
-  '@vitest/mocker@3.2.7(vite@7.3.7(@types/node@24.19.2))':
+  '@vitest/mocker@3.2.7(vite@7.3.7(@types/node@24.19.2)(tsx@4.23.15))':
     dependencies:
       '@vitest/spy': 3.2.7
       estree-walker: 3.0.3
       magic-string: 0.30.21
     optionalDependencies:
-      vite: 7.3.7(@types/node@24.19.2)
+      vite: 7.3.7(@types/node@24.19.2)(tsx@4.23.15)
 
   '@vitest/pretty-format@3.2.7':
     dependencies:
@@ -3535,6 +3661,11 @@ snapshots:
 
   nwsapi@2.2.28: {}
 
+  openai@6.49.0(ws@8.22.0)(zod@3.25.76):
+    optionalDependencies:
+      ws: 8.22.0
+      zod: 3.25.76
+
   optionator@0.9.4:
     dependencies:
       deep-is: 0.1.4
@@ -3816,6 +3947,12 @@ snapshots:
 
   tslib@2.8.1: {}
 
+  tsx@4.23.15:
+    dependencies:
+      esbuild: 0.28.2
+    optionalDependencies:
+      fsevents: 2.3.3
+
   tunnel-rat@0.1.2(@types/react@19.3.0)(react@19.3.1):
     dependencies:
       zustand: 4.5.7(@types/react@19.3.0)(react@19.3.1)
@@ -3841,6 +3978,8 @@ snapshots:
 
   typescript@5.9.3: {}
 
+  undici-types@6.21.0: {}
+
   undici-types@7.24.6: {}
 
   uniq@1.0.1: {}
@@ -3861,13 +4000,13 @@ snapshots:
 
   utility-types@3.11.0: {}
 
-  vite-node@3.2.4(@types/node@24.19.2):
+  vite-node@3.2.4(@types/node@24.19.2)(tsx@4.23.15):
     dependencies:
       cac: 6.7.14
       debug: 4.4.3
       es-module-lexer: 1.7.0
       pathe: 2.0.3
-      vite: 7.3.7(@types/node@24.19.2)
+      vite: 7.3.7(@types/node@24.19.2)(tsx@4.23.15)
     transitivePeerDependencies:
       - '@types/node'
       - jiti
@@ -3882,7 +4021,7 @@ snapshots:
       - tsx
       - yaml
 
-  vite@7.3.7(@types/node@24.19.2):
+  vite@7.3.7(@types/node@24.19.2)(tsx@4.23.15):
     dependencies:
       esbuild: 0.28.2
       fdir: 6.5.0(picomatch@4.0.7)
@@ -3893,12 +4032,13 @@ snapshots:
     optionalDependencies:
       '@types/node': 24.19.2
       fsevents: 2.3.3
+      tsx: 4.23.15
 
-  vitest@3.2.7(@types/node@24.19.2)(jsdom@26.1.0):
+  vitest@3.2.7(@types/node@24.19.2)(jsdom@26.1.0)(tsx@4.23.15):
     dependencies:
       '@types/chai': 5.2.3
       '@vitest/expect': 3.2.7
-      '@vitest/mocker': 3.2.7(vite@7.3.7(@types/node@24.19.2))
+      '@vitest/mocker': 3.2.7(vite@7.3.7(@types/node@24.19.2)(tsx@4.23.15))
       '@vitest/pretty-format': 3.2.7
       '@vitest/runner': 3.2.7
       '@vitest/snapshot': 3.2.7
@@ -3916,8 +4056,8 @@ snapshots:
       tinyglobby: 0.2.17
       tinypool: 1.1.1
       tinyrainbow: 2.0.0
-      vite: 7.3.7(@types/node@24.19.2)
-      vite-node: 3.2.4(@types/node@24.19.2)
+      vite: 7.3.7(@types/node@24.19.2)(tsx@4.23.15)
+      vite-node: 3.2.4(@types/node@24.19.2)(tsx@4.23.15)
       why-is-node-running: 2.3.0
     optionalDependencies:
       '@types/node': 24.19.2

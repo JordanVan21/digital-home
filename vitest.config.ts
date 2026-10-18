@@ -33,7 +33,7 @@ export default defineConfig({
     ],
   },
   test: {
-    include: ["packages/**/*.test.ts", "apps/**/*.test.{ts,tsx}"],
+    include: ["packages/{contracts,scene-engine}/**/*.test.ts", "apps/**/*.test.{ts,tsx}"],
     environment: "node",
     restoreMocks: true,
     server: {
