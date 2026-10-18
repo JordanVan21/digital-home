@@ -13,6 +13,12 @@ is not complete; the features below are deferred or move into integration.
 `CONTRACTS.md` remains authoritative for shared names, units, normalized transforms,
 ownership and server-side validation. This document changes work priority only.
 
+**Hackathon update (2026-10-18):** with ~6 hours left the user prioritized a
+**single-room** end-to-end connection (phone → Supabase → render agent → sandbox,
+plus planner/budget). Whole-house capture was implemented and then deferred
+untested (see below). Every feature in "Deferred standalone phone features" is
+still deferred; try them after the single-room demo works.
+
 ## Verified phone baseline
 
 - Installation/signing on the user's LiDAR iPhone; unplugged launch and scanning.
@@ -25,6 +31,8 @@ ownership and server-side validation. This document changes work priority only.
   in `apps/ios/Fixtures/real-scan-1.json` and `real-scan-2.json`.
 - App-side USDZ preview/backup and native RoomPlan JSON written beside the primary
   scan. The UI currently shares primary JSON only.
+- Supabase email/password sign-in and scan upload (`78a368d`): the user confirmed
+  sign-up/sign-in works and both uploaded scans appear in the hosted `scans` table.
 - Current build checkpoint: unsigned physical-iPhone target build succeeds;
   13 Swift tests pass. This is build evidence, separate from the phone results above.
 
@@ -60,6 +68,24 @@ limits; independently captured rooms must not be concatenated without alignment.
 Acceptance: capture two adjoining rooms unplugged, preview/save/reopen/share the
 aligned house, and verify room membership and positions with real data.
 
+**Try later — implementation exists but was never phone-tested.** Commit `05dc2bc`
+added it and `4edab99` reverted it to protect the verified single-room flow.
+Restore with `git revert 4edab99`. What it does:
+
+- Finish room → Scan next room continues the same AR session
+  (`captureSession.stop(pauseARSession: false)`, then `run` again), or Finish house
+  merges rooms with `StructureBuilder(options: [.beautifyObjects])`.
+- `scan.json` stays the version 1 shape; multi-room adds optional `roomIndex` on every
+  surface/object plus `rooms: [{index, id, story, label}]` (label = RoomPlan section,
+  e.g. kitchen). Single-room output stays byte-identical (fixture round-trip test).
+  `packages/scan-import/src/rawScan.ts` accepts the same optional fields.
+- `roomplan.json` holds the native `CapturedStructure`; USDZ preview is the house.
+- Backgrounding or a failed later room keeps the rooms already captured.
+- Unverified: whether `RoomCaptureView` restarts cleanly for room 2 after showing its
+  processed result. The Supabase schema already supports it (`houses` → many `rooms`,
+  each with `placement`); the worker must split elements by `roomIndex` using one
+  shared scan-to-world transform so rooms stay aligned.
+
 ### Saved-scan management
 
 The current saved record already opens with preview, counts and primary JSON sharing.
@@ -92,13 +118,13 @@ These items move into the backend milestone rather than waiting for the deferred
    shell and scene IDs on each invocation by default. Reprocessing the same scan must
    not create duplicate rooms/scenes; supply/persist identities and use idempotent
    scan/job completion. Preserve source artifacts and the scan-to-world transform.
-4. **Add the swappable upload boundary.** Inject an uploader that accepts saved
+4. **Done (minimal, `78a368d`).** **Add the swappable upload boundary.** Inject an uploader that accepts saved
    artifacts and scan ID. Preserve local files before upload; persist status and
    retry without changing IDs/bytes; distinguish ready, uploading, uploaded and
    failed. Existing status enum values alone do not implement those transitions.
    A stand-in may remain for offline testing, but a separate placeholder-only
    release is not required before connecting a real uploader.
-5. **Connect identity and ownership.** Supabase Auth/RLS and trusted API ownership
+5. **Done (`31aa0d9`, `78a368d`): email/password + owner-only RLS.** **Connect identity and ownership.** Supabase Auth/RLS and trusted API ownership
    checks follow `CONTRACTS.md`. The phone still has no sign-in UI; agree the actual
    identity/session handoff as part of integration. Keep service-role/model secrets
    out of the app. The legacy HTTP uploader is unused and is not a Supabase upload flow.
