@@ -46,8 +46,11 @@ export function startAutosave(persistence: ScenePersistence, debounceMs: number 
       if (res.ok) {
         batch = null;
         const pending = st.save.pending.slice(sent.ops.length);
+        const stamp = <T extends { revision: number; updatedAt: string }>(x: T): T => ({ ...x, revision: res.revision, updatedAt: res.scene.updatedAt });
+        const accepted = st.acceptedScene ? stamp(st.acceptedScene) : st.acceptedScene;
         useEditor.setState({
-          workingScene: { ...st.workingScene, revision: res.revision, updatedAt: res.scene.updatedAt },
+          acceptedScene: accepted,
+          workingScene: st.hasDraft ? stamp(st.workingScene) : accepted,
           save: { ...st.save, baseRevision: res.revision, pending, dirty: pending.length > 0, status: pending.length ? 'saving' : 'saved', lastError: null },
         });
         if (pending.length) schedule();

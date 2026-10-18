@@ -8,7 +8,7 @@ import { LocalAssetCatalog } from '../src/catalog/AssetCatalog';
 import { LocalScenePersistence, memoryStorage } from '../src/persistence/ScenePersistence';
 import { startAutosave, type Autosave } from '../src/state/autosave';
 import {
-  addAsset, commit, deleteSelected, duplicateSelected, groupSelected, nudge, objectById, redo, resizeObject, rotateSelectionBy, select, selectMany, setScene, swapAsset, toggleLock, undo, useEditor,
+  accept, addAsset, canTravel, changes, commit, deleteSelected, discard, revertPiece, duplicateSelected, groupSelected, nudge, objectById, redo, resizeObject, rotateSelectionBy, select, selectMany, setScene, swapAsset, toggleLock, undo, useEditor,
 } from '../src/state/store';
 
 const catalog = new LocalAssetCatalog(AssetCatalogFileSchema.parse(JSON.parse(readFileSync(join(__dirname, '../public/catalog/catalog.json'), 'utf8'))).assets);
@@ -50,15 +50,17 @@ afterEach(() => {
 });
 
 const chairAt = (x: number) => moveObject(ID.chair, makeTransform([x, 0, -1.412], Math.PI));
+/** A design edit and its acceptance, as one user step. */
+const edit = (label: string, ops: Parameters<typeof commit>[1]) => { commit(label, ops); accept(); };
 
 describe('autosave', () => {
   it('fires once ~500 ms after editing stops, and persists every edit', async () => {
     const spy = vi.spyOn(persistence, 'saveScenePatch');
-    commit('m1', chairAt(0.05));
+    edit('m1', chairAt(0.05));
     await settle(300);
-    commit('m2', chairAt(0.1));
+    edit('m2', chairAt(0.1));
     await settle(300);
-    commit('m3', chairAt(0.15));
+    edit('m3', chairAt(0.15));
     await settle(499);
     expect(spy).not.toHaveBeenCalled();
     await settle(1);
@@ -75,7 +77,7 @@ describe('autosave', () => {
 
   it('never saves mid-drag; saves after the drag ends', async () => {
     const spy = vi.spyOn(persistence, 'saveScenePatch');
-    commit('m1', chairAt(0.05));
+    edit('m1', chairAt(0.05));
     useEditor.setState({ dragging: true });
     await settle(2000);
     expect(spy).not.toHaveBeenCalled();
@@ -89,7 +91,7 @@ describe('autosave', () => {
   it('keeps edits and shows an error on failure; retry reuses the idempotency key (no duplicate revision)', async () => {
     const spy = vi.spyOn(persistence, 'saveScenePatch');
     persistence.failNext(1);
-    commit('m1', chairAt(0.05));
+    edit('m1', chairAt(0.05));
     await settle(520);
     let s = useEditor.getState();
     expect(s.save.status).toBe('error');
@@ -115,14 +117,14 @@ describe('autosave', () => {
   it('shows a conflict and never silently overwrites newer state', async () => {
     persistence.simulateExternalEdit(ROOM);
     const before = await run(persistence.getScene(ROOM));
-    commit('m1', chairAt(0.05));
+    edit('m1', chairAt(0.05));
     await settle(520);
     const s = useEditor.getState();
     expect(s.save.status).toBe('conflict');
     expect(s.save.pending).toHaveLength(1);
     expect(await run(persistence.getScene(ROOM))).toEqual(before);
     // Further edits stay local; autosave stays paused.
-    commit('m2', chairAt(0.1));
+    edit('m2', chairAt(0.1));
     await settle(1000);
     expect(await run(persistence.getScene(ROOM))).toEqual(before);
   });
@@ -131,7 +133,7 @@ describe('autosave', () => {
 describe('editor commands', () => {
   it('undo/redo restore exact transforms and are recorded for autosave', async () => {
     const original = objectById(ID.chair)!.transform;
-    commit('m1', chairAt(0.123456));
+    edit('m1', chairAt(0.123456));
     undo();
     expect(objectById(ID.chair)!.transform).toEqual(original);
     redo();
@@ -140,10 +142,11 @@ describe('editor commands', () => {
   });
 
   it('a rejected undo shows a toast and leaves history untouched', () => {
-    commit('m1', chairAt(0.05));
+    edit('m1', chairAt(0.05));
     // Lock the chair outside the history (e.g. state arriving from elsewhere).
     const s = useEditor.getState();
-    useEditor.setState({ workingScene: { ...s.workingScene!, objects: s.workingScene!.objects.map((o) => (o.id === ID.chair ? { ...o, locked: true } : o)) } });
+    const locked = { ...s.acceptedScene!, objects: s.acceptedScene!.objects.map((o) => (o.id === ID.chair ? { ...o, locked: true } : o)) };
+    useEditor.setState({ acceptedScene: locked, workingScene: locked });
     const history = useEditor.getState().history;
     undo();
     const after = useEditor.getState();
@@ -171,6 +174,7 @@ describe('editor commands', () => {
     expect(objectById(ID.desk)).toBeUndefined();
     expect(objectById(ID.lamp)?.transform.position[1]).toBe(0);
     expect(objectById(ID.lamp)?.placement).toEqual({ support: 'floor' });
+    accept();
     expect(useEditor.getState().history.past.length).toBe(entries + 1);
     undo();
     expect(objectById(ID.desk)).toBeDefined();
@@ -218,9 +222,11 @@ describe('editor commands', () => {
 });
 
 describe('editing upgrades (store commands)', () => {
-  it('nudging into a wall stops against it instead of passing through', () => {
+  it('nudging through a wall is a conflicting suggestion that Accept resolves back inside', () => {
     select(ID.chair);
-    for (let i = 0; i < 40; i++) nudge([0, -0.1]); // push north toward the desk / wall
+    for (let i = 0; i < 40; i++) nudge([0, -0.1]); // push north through the desk and the wall
+    expect(useEditor.getState().draft.conflicts[ID.chair]?.length).toBeGreaterThan(0);
+    expect(accept()).toBe(true);
     const c = objectById(ID.chair)!;
     expect(useEditor.getState().violations[ID.chair] ?? []).toEqual([]);
     expect(c.transform.position[2]).toBeGreaterThan(-2.5);
@@ -235,7 +241,7 @@ describe('editing upgrades (store commands)', () => {
     const start = yaw();
     for (let i = 0; i < 24; i++) rotateSelectionBy((15 * Math.PI) / 180);
     expect(Math.abs(((yaw() - start + 540) % 360) - 180)).toBeLessThan(1e-6);
-    expect(useEditor.getState().history.past.filter((h) => h.label === 'Rotate').length).toBeGreaterThan(0);
+    expect(useEditor.getState().draft.undo.length).toBe(24);
   });
 
   it('group/ungroup is undoable and clicking a member selects the whole group', () => {
@@ -264,5 +270,86 @@ describe('editing upgrades (store commands)', () => {
     const s = useEditor.getState();
     expect(s.workingScene!.objects.length).toBe(45);
     expect(s.violations).toEqual({});
+  });
+});
+
+describe('suggestions (draft)', () => {
+  it('edits are suggestions: nothing is saved or recorded in history until Accept', async () => {
+    const spy = vi.spyOn(persistence, 'saveScenePatch');
+    const entries = useEditor.getState().history.past.length;
+    commit('m1', chairAt(0.05));
+    await settle(2000);
+    expect(spy).not.toHaveBeenCalled();
+    expect(useEditor.getState().hasDraft).toBe(true);
+    expect(useEditor.getState().history.past.length).toBe(entries);
+    expect(useEditor.getState().acceptedScene!.objects.find((o) => o.id === ID.chair)!.transform.position[0]).not.toBeCloseTo(0.05);
+    accept();
+    await settle(520);
+    expect(spy).toHaveBeenCalledTimes(1);
+    expect(spy.mock.calls[0]![0].operations).toEqual(chairAt(0.05));
+    expect(useEditor.getState().history.past.length).toBe(entries + 1);
+  });
+
+  it('a conflicting drop is kept as a suggestion; Accept moves it to the nearest free spot', () => {
+    const sofa = objectById(ID.sofa)!;
+    commit('drop', moveObject(ID.chair, makeTransform([sofa.transform.position[0], 0, sofa.transform.position[2]], 0)));
+    expect(useEditor.getState().draft.conflicts[ID.chair]?.some((v) => v.rule === 'overlap')).toBe(true);
+    expect(changes()[0]).toMatchObject({ id: ID.chair, kind: 'moved' });
+    expect(accept()).toBe(true);
+    const s = useEditor.getState();
+    expect(s.violations[ID.chair] ?? []).toEqual([]);
+    expect(s.draft.resolved).toEqual([ID.chair]);
+    expect(objectById(ID.sofa)).toEqual(sofa);
+    expect(s.toasts.at(-1)?.text).toMatch(/moved \d+ cm to fit/);
+  });
+
+  it('discard restores the accepted room', () => {
+    const before = useEditor.getState().acceptedScene;
+    commit('m1', chairAt(0.05));
+    discard();
+    const s = useEditor.getState();
+    expect(s.hasDraft).toBe(false);
+    expect(s.workingScene).toBe(before);
+  });
+
+  it('undo walks suggestions first, then accepted history', () => {
+    const x0 = objectById(ID.chair)!.transform.position[0];
+    edit('m1', chairAt(0.05));
+    commit('m2', chairAt(0.1));
+    commit('m3', chairAt(0.15));
+    undo();
+    expect(objectById(ID.chair)!.transform.position[0]).toBeCloseTo(0.1);
+    undo();
+    expect(objectById(ID.chair)!.transform.position[0]).toBeCloseTo(0.05);
+    expect(useEditor.getState().hasDraft).toBe(false);
+    expect(canTravel('redo')).toBe(true);
+    redo();
+    expect(objectById(ID.chair)!.transform.position[0]).toBeCloseTo(0.1);
+    discard();
+    undo();
+    expect(objectById(ID.chair)!.transform.position[0]).toBeCloseTo(x0);
+  });
+
+  it('locks apply at once to the room and the draft, and are never suggestions', () => {
+    commit('m1', chairAt(0.05));
+    select(ID.sofa);
+    toggleLock();
+    const s = useEditor.getState();
+    expect(s.acceptedScene!.objects.find((o) => o.id === ID.sofa)!.locked).toBe(true);
+    expect(objectById(ID.sofa)!.locked).toBe(true);
+    expect(changes().map((c) => c.id)).toEqual([ID.chair]);
+    expect(s.save.pending.at(-1)).toEqual({ type: 'setLock', objectId: ID.sofa, locked: true });
+  });
+
+  it('revertPiece restores one piece; a support reverts with what it carried', () => {
+    const desk = objectById(ID.desk)!;
+    const lamp = objectById(ID.lamp)!;
+    commit('m1', chairAt(0.05));
+    commit('move desk', moveObject(ID.desk, { ...desk.transform, position: [desk.transform.position[0] + 0.3, 0, desk.transform.position[2]] }));
+    expect(objectById(ID.lamp)!.transform.position[0]).toBeCloseTo(lamp.transform.position[0] + 0.3);
+    revertPiece(ID.desk);
+    expect(objectById(ID.desk)).toEqual(desk);
+    expect(objectById(ID.lamp)).toEqual(lamp);
+    expect(changes().map((c) => c.id)).toEqual([ID.chair]);
   });
 });

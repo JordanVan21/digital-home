@@ -4,15 +4,14 @@ import type {
   AssetSpec, RenovationDecision, RoomShell, SceneAppearance, SceneObject, SceneOp, SceneSpec, Tilt, Vec2, Vec3,
 } from '@house/contracts';
 import {
-  applyOps, bodyAt, ceilingPose, classOf, deleteWithSettle, duplicateObject, emptyHistory, findFreeSpot, findSupport,
-  findWallSpot, groupTransformOps, makeTransform, moveWithSupport, normalizeAngle, objectFromAsset, pushHistory,
-  redo as redoHistory, resizeOps, resolveRotation, resolveTranslation, rootsOf, selectionPivot, setAsset, setOwnership,
-  tiltOps, transformAbout, undo as undoHistory, validateScene, yawFromQuat,
-  type History, type OpContext, type OpError, type Violation,
+  applyOps, carryTransform, ceilingPose, classOf, deleteWithSettle, diffScenes, draftConflicts, duplicateObject, emptyHistory,
+  findFreeSpot, findSupport, findWallSpot, groupTransformOps, hasDifferences, makeTransform, moveWithSupport, normalizeAngle,
+  objectFromAsset, pushHistory, redo as redoHistory, resizeOps, resolveDraft, rootsOf, selectionPivot, setAsset, setOwnership,
+  stableStringify, subtreeIds, tiltOps, undo as undoHistory, validateScene, yawFromQuat,
+  type History, type OpContext, type OpError, type ResolutionEntry, type Violation,
 } from '@house/scene-engine';
 import type { AssetCatalog } from '../catalog/AssetCatalog';
 import { EDITOR_POLICY } from '../config/editorPolicy';
-import { bodiesOf, movingSet, obstaclesFor, sweptBounds } from './physics';
 
 export type SceneSource = 'demo-room' | 'demo-scan' | 'test2';
 export type TransformMode = 'select' | 'translate' | 'rotate';
@@ -36,12 +35,32 @@ export type SaveState = {
   pending: SceneOp[];
 };
 
+/**
+ * Pending suggestions. Every design edit lands in a draft that may hold conflicts; Accept resolves
+ * it into the accepted scene as one patch. Undo/redo hold the previous draft (null = no draft).
+ */
+export type DraftState = {
+  undo: (SceneSpec | null)[];
+  redo: (SceneSpec | null)[];
+  /** Newly introduced conflicts per changed or added piece. */
+  conflicts: Record<string, Violation[]>;
+  /** Pieces the last Accept moved to fit, for a brief highlight. */
+  resolved: string[];
+};
+
+export type ChangeKind = 'moved' | 'rotated' | 'replaced' | 'edited' | 'added' | 'removed';
+export type Change = { id: string; kind: ChangeKind; name: string; distanceM?: number; degrees?: number; conflict?: string };
+
 export type EditorState = {
-  // ---- workingScene (the mutable editable scene; NOT an accepted version)
   source: SceneSource;
   roomName: string;
   shell: RoomShell | null;
+  /** The accepted room: autosaved, with editor history. */
+  acceptedScene: SceneSpec | null;
+  /** What the user sees and edits: the draft when there is one, otherwise the accepted scene. */
   workingScene: SceneSpec | null;
+  hasDraft: boolean;
+  draft: DraftState;
   loadError: string | null;
   // ---- catalog
   catalog: AssetCatalog | null;
@@ -71,11 +90,16 @@ export type EditorState = {
   reference: { open: boolean; mode: 'pip' | 'full'; opacity: number };
 };
 
+const emptyDraft = (): DraftState => ({ undo: [], redo: [], conflicts: {}, resolved: [] });
+
 const initial: EditorState = {
   source: 'demo-room',
   roomName: '',
   shell: null,
+  acceptedScene: null,
   workingScene: null,
+  hasDraft: false,
+  draft: emptyDraft(),
   loadError: null,
   catalog: null,
   assets: [],
@@ -160,7 +184,10 @@ export function setScene(params: {
     source: params.source,
     roomName: params.roomName,
     shell: params.shell,
+    acceptedScene: params.scene,
     workingScene: params.scene,
+    hasDraft: false,
+    draft: emptyDraft(),
     catalog: params.catalog,
     assets: params.catalog.list(),
     loadError: null,
@@ -177,39 +204,283 @@ export function setScene(params: {
 export type CommitResult = { ok: true } | { ok: false; error: OpError };
 
 /**
- * The single mutation path: validate + apply contract ops through scene-engine, record ONE undo
- * entry, mark dirty (autosave subscribes to `save.pending`). Never called per frame.
+ * Ops that protect or organise rather than redesign. They apply to the accepted room at once (and
+ * to the draft), never as suggestions: a lock is protection, not a design change.
+ */
+const IMMEDIATE: ReadonlySet<SceneOp['type']> = new Set<SceneOp['type']>([
+  'setLock', 'setRenovationDecision', 'setLight', 'setGroup', 'setSceneSettings',
+]);
+
+const noScene = (): CommitResult => ({ ok: false, error: { code: 'VALIDATION_ERROR', reason: 'INVALID_OP', message: 'No scene loaded.' } });
+
+/**
+ * The single mutation path. Design edits become suggestions in the draft (conflicts allowed;
+ * locks and structural rules still enforced). Protective/organising ops commit immediately.
+ * Never called per frame.
  */
 export function commit(label: string, ops: SceneOp[], opts: { quiet?: boolean; select?: string[] } = {}): CommitResult {
+  if (ops.length && ops.every((op) => IMMEDIATE.has(op.type))) return commitImmediate(label, ops, opts);
+  return suggest(ops, opts);
+}
+
+/** Copies the accepted lock state onto a draft snapshot; locks are never suggestions. */
+function withAcceptedLocks(scene: SceneSpec, accepted: SceneSpec): SceneSpec {
+  const locks = new Map(accepted.objects.map((o) => [o.id, o.locked]));
+  return { ...scene, objects: scene.objects.map((o) => (locks.has(o.id) && locks.get(o.id) !== o.locked ? { ...o, locked: locks.get(o.id)! } : o)) };
+}
+
+/** Installs `next` as the draft (or clears it when nothing differs from the accepted room). */
+function setDraftScene(next: SceneSpec | null, stacks: Pick<DraftState, 'undo' | 'redo'>, select?: string[]) {
   const s = get();
   const ctx = opContext(s);
-  if (!ctx || !s.workingScene || ops.length === 0) return { ok: false, error: { code: 'VALIDATION_ERROR', reason: 'INVALID_OP', message: 'No scene loaded.' } };
-  const r = applyOps(ctx, s.workingScene, ops);
+  const accepted = s.acceptedScene;
+  if (!ctx || !accepted) return;
+  const live = next && hasDifferences(diffScenes(accepted, next)) ? next : null;
+  const working = live ?? accepted;
+  set({
+    workingScene: working,
+    hasDraft: !!live,
+    draft: { ...stacks, conflicts: live ? draftConflicts(ctx, accepted, live) : {}, resolved: [] },
+    violations: violationIndex(working, ctx),
+    ...keepSelection(select ?? s.selectedIds, working),
+  });
+}
+
+function suggest(ops: SceneOp[], opts: { quiet?: boolean; select?: string[] }): CommitResult {
+  const s = get();
+  const ctx = opContext(s);
+  if (!ctx || !s.workingScene || !ops.length) return noScene();
+  const r = applyOps({ ...ctx, geometry: 'report' }, s.workingScene, ops);
   if (!r.ok) {
     if (!opts.quiet) toast(describeOpError(r.error), 'warning');
     return { ok: false, error: r.error };
   }
+  const previous = s.hasDraft ? s.workingScene : null;
+  setDraftScene(r.scene, { undo: [...s.draft.undo, previous].slice(-EDITOR_POLICY.historyCap), redo: [] }, opts.select);
+  return { ok: true };
+}
+
+function commitImmediate(label: string, ops: SceneOp[], opts: { quiet?: boolean; select?: string[] }): CommitResult {
+  const s = get();
+  const ctx = opContext(s);
+  if (!ctx || !s.acceptedScene || !s.workingScene) return noScene();
+  // Pieces that exist only in the draft (added) take the op in the draft alone.
+  const inAccepted = new Set(s.acceptedScene.objects.map((o) => o.id));
+  const targets = (op: SceneOp): string[] => op.type === 'setGroup' ? op.objectIds : 'objectId' in op ? [op.objectId] : [];
+  const acceptedOps = ops
+    .map((op) => (op.type === 'setGroup' ? { ...op, objectIds: op.objectIds.filter((id) => inAccepted.has(id)) } : op))
+    .filter((op) => (op.type === 'setGroup' ? op.objectIds.length > 0 : targets(op).every((id) => inAccepted.has(id))));
+  let accepted = s.acceptedScene;
+  let history = s.history;
+  let pending = s.save.pending;
+  if (acceptedOps.length) {
+    const r = applyOps(ctx, accepted, acceptedOps);
+    if (!r.ok) {
+      if (!opts.quiet) toast(describeOpError(r.error), 'warning');
+      return { ok: false, error: r.error };
+    }
+    accepted = r.scene;
+    history = pushHistory(history, { label, forward: acceptedOps, inverse: r.inverse });
+    pending = [...pending, ...acceptedOps];
+  }
+  let working = accepted;
+  if (s.hasDraft) {
+    // Mirror onto the draft op by op; ops on pieces the draft removed are skipped.
+    let d = s.workingScene;
+    for (const op of ops) {
+      const r = applyOps({ ...ctx, geometry: 'report' }, d, [op]);
+      if (r.ok) d = r.scene;
+    }
+    working = d;
+  }
   set({
-    workingScene: r.scene,
-    history: pushHistory(s.history, { label, forward: ops, inverse: r.inverse }),
-    save: { ...s.save, dirty: true, pending: [...s.save.pending, ...ops] },
-    violations: violationIndex(r.scene, ctx),
-    ...keepSelection(opts.select ?? s.selectedIds, r.scene),
+    acceptedScene: accepted,
+    workingScene: working,
+    history,
+    save: acceptedOps.length ? { ...s.save, dirty: true, pending } : s.save,
+    draft: s.hasDraft ? { ...s.draft, conflicts: draftConflicts(ctx, accepted, working) } : s.draft,
+    violations: violationIndex(working, ctx),
+    ...keepSelection(opts.select ?? s.selectedIds, working),
   });
   return { ok: true };
+}
+
+function summarize(report: ResolutionEntry[], name: (id: string) => string): string {
+  const changed = report.filter((r) => r.outcome !== 'removed').length + report.filter((r) => r.outcome === 'removed').length;
+  const parts = [`Applied ${changed} change${changed === 1 ? '' : 's'}`];
+  for (const r of report) {
+    if (r.outcome === 'moved') parts.push(`${name(r.objectId)} moved ${Math.round(r.distanceM! * 100)} cm to fit`);
+    if (r.outcome === 'reverted') parts.push(`${name(r.objectId)} kept in place (no room)`);
+    if (r.outcome === 'dropped') parts.push(`${name(r.objectId)} not added (no room)`);
+  }
+  return parts.join(' · ');
+}
+
+let resolvedTimer: ReturnType<typeof setTimeout> | undefined;
+
+/** Resolve the draft into the accepted room: one history entry, one autosaved patch. */
+export function accept(): boolean {
+  const s = get();
+  const ctx = opContext(s);
+  if (!ctx || !s.acceptedScene || !s.workingScene || !s.hasDraft || s.dragging) return false;
+  const before = s.acceptedScene;
+  const proposed = s.workingScene;
+  const r = resolveDraft(ctx, before, proposed);
+  if (!r.ok) {
+    const stuck = r.unresolved[0]!;
+    if (proposed.objects.some((o) => o.id === stuck.objectId)) set({ selectedIds: [stuck.objectId], selectedId: stuck.objectId });
+    toast(stuck.message, 'warning', 5000);
+    return false;
+  }
+  const applied = applyOps({ ...ctx, geometry: 'report' }, before, r.ops);
+  if (!applied.ok) {
+    toast(describeOpError(applied.error), 'error');
+    return false;
+  }
+  const after = applied.scene;
+  const n = r.report.length;
+  const moved = r.report.filter((e) => e.outcome === 'moved').map((e) => e.objectId);
+  set({
+    acceptedScene: after,
+    workingScene: after,
+    hasDraft: false,
+    draft: { ...emptyDraft(), resolved: moved },
+    history: r.ops.length ? pushHistory(s.history, { label: `Accept ${n} change${n === 1 ? '' : 's'}`, forward: r.ops, inverse: applied.inverse }) : s.history,
+    save: r.ops.length ? { ...s.save, dirty: true, pending: [...s.save.pending, ...r.ops] } : s.save,
+    violations: violationIndex(after, ctx),
+    ...keepSelection(s.selectedIds, after),
+  });
+  const name = (id: string) => (proposed.objects.find((o) => o.id === id) ?? before.objects.find((o) => o.id === id))?.displayName ?? 'Item';
+  toast(summarize(r.report, name), moved.length || r.report.some((e) => e.outcome === 'reverted' || e.outcome === 'dropped') ? 'warning' : 'info', 4500);
+  clearTimeout(resolvedTimer);
+  if (moved.length) resolvedTimer = setTimeout(() => set((st) => ({ draft: { ...st.draft, resolved: [] } })), 1600);
+  return true;
+}
+
+/** Drop every suggestion (cannot be undone). */
+export function discard() {
+  const s = get();
+  const ctx = opContext(s);
+  if (!ctx || !s.acceptedScene || s.dragging) return;
+  set({
+    workingScene: s.acceptedScene,
+    hasDraft: false,
+    draft: emptyDraft(),
+    violations: violationIndex(s.acceptedScene, ctx),
+    ...keepSelection(s.selectedIds, s.acceptedScene),
+  });
+}
+
+/** Same object up to float noise in its transform. */
+function nearlySame(a: SceneObject, b: SceneObject): boolean {
+  const ta = [...a.transform.position, ...a.transform.rotation];
+  const tb = [...b.transform.position, ...b.transform.rotation];
+  return ta.every((v, i) => Math.abs(v - tb[i]!) < 1e-6)
+    && stableStringify({ ...a, transform: null }) === stableStringify({ ...b, transform: null });
+}
+
+/**
+ * Revert one piece to its accepted state as a draft step: re-adds a removed piece (and what was
+ * removed with it), removes an added one (returning anything placed on it), and restores carried
+ * items that only followed their support.
+ */
+export function revertPiece(id: string) {
+  const s = get();
+  const accepted = s.acceptedScene;
+  const current = s.workingScene;
+  if (!accepted || !current || !s.hasDraft) return;
+  const acc = new Map(accepted.objects.map((o) => [o.id, o]));
+  const cur = new Map(current.objects.map((o) => [o.id, o]));
+  const original = acc.get(id);
+  const now = cur.get(id);
+  let objects: SceneObject[];
+  if (original && now) {
+    objects = current.objects.map((o) => {
+      if (o.id === id) return { ...original, locked: o.locked };
+      const prev = acc.get(o.id);
+      const parentNow = o.placement?.parentId;
+      // A child that only followed this piece goes back with it.
+      if (prev && parentNow && subtreeIds(current.objects, id).has(o.id)) {
+        const followed = carryTransform(prev.transform, original.transform, now.transform);
+        if (nearlySame(o, { ...prev, transform: followed, locked: o.locked })) return { ...prev, locked: o.locked };
+      }
+      return o;
+    });
+  } else if (original) {
+    const gone = accepted.objects.filter((o) => (o.id === id || subtreeIds(accepted.objects, id).has(o.id)) && !cur.has(o.id));
+    objects = [...current.objects, ...gone];
+  } else {
+    const sub = subtreeIds(current.objects, id);
+    objects = current.objects.flatMap((o) => {
+      if (!sub.has(o.id)) return [o];
+      const prev = acc.get(o.id);
+      return prev ? [{ ...prev, locked: o.locked }] : [];
+    });
+  }
+  setDraftScene({ ...current, objects }, { undo: [...s.draft.undo, current], redo: [] });
+}
+
+const degreesBetween = (a: SceneObject, b: SceneObject) => {
+  const d = ((yawFromQuat(b.transform.rotation) - yawFromQuat(a.transform.rotation)) * 180) / Math.PI;
+  return ((((d + 180) % 360) + 360) % 360) - 180;
+};
+
+/** One row per changed piece in the draft, for the suggestions bar. */
+export function changes(state = get()): Change[] {
+  const accepted = state.acceptedScene;
+  const draft = state.workingScene;
+  if (!state.hasDraft || !accepted || !draft) return [];
+  const before = new Map(accepted.objects.map((o) => [o.id, o]));
+  const d = diffScenes(accepted, draft);
+  const changed = new Set(d.changed);
+  const rows: Change[] = [];
+  for (const o of draft.objects) {
+    const prev = before.get(o.id);
+    let row: Change;
+    if (!prev) row = { id: o.id, kind: 'added', name: o.displayName };
+    else if (changed.has(o.id)) {
+      const distanceM = Math.hypot(o.transform.position[0] - prev.transform.position[0], o.transform.position[2] - prev.transform.position[2]);
+      const degrees = degreesBetween(prev, o);
+      const kind: ChangeKind = prev.assetId !== o.assetId ? 'replaced' : distanceM > 0.005 ? 'moved' : Math.abs(degrees) > 0.5 ? 'rotated' : 'edited';
+      row = {
+        id: o.id, kind, name: o.displayName,
+        ...(distanceM > 0.005 ? { distanceM } : {}),
+        ...(Math.abs(degrees) > 0.5 ? { degrees } : {}),
+      };
+    } else continue;
+    const conflict = state.draft.conflicts[o.id]?.[0];
+    rows.push(conflict ? { ...row, conflict: conflict.detail } : row);
+  }
+  for (const id of d.removed) rows.push({ id, kind: 'removed', name: before.get(id)!.displayName });
+  return rows;
 }
 
 function step(kind: 'undo' | 'redo') {
   const s = get();
   const ctx = opContext(s);
-  if (!ctx || !s.workingScene || s.dragging) return;
-  const r = (kind === 'undo' ? undoHistory : redoHistory)(ctx, s.workingScene, s.history);
+  if (!ctx || !s.workingScene || !s.acceptedScene || s.dragging) return;
+  // Undo/redo walk the draft first, then accepted history.
+  if (s.hasDraft || s.draft[kind].length) {
+    const stack = s.draft[kind];
+    if (!stack.length) return;
+    const target = stack[stack.length - 1]!;
+    const current = s.hasDraft ? s.workingScene : null;
+    setDraftScene(
+      target && withAcceptedLocks(target, s.acceptedScene),
+      kind === 'undo'
+        ? { undo: s.draft.undo.slice(0, -1), redo: [...s.draft.redo, current] }
+        : { undo: [...s.draft.undo, current], redo: s.draft.redo.slice(0, -1) },
+    );
+    return;
+  }
+  const r = (kind === 'undo' ? undoHistory : redoHistory)(ctx, s.acceptedScene, s.history);
   if (!r.ok) {
     // Rejected (e.g. the object was locked since): the entry stays put — never skipped silently.
     toast(`Can't ${kind}: ${describeOpError(r.error)}`, r.error.reason === 'EMPTY' ? 'info' : 'warning');
     return;
   }
   set({
+    acceptedScene: r.scene,
     workingScene: r.scene,
     history: r.history,
     save: { ...s.save, dirty: true, pending: [...s.save.pending, ...r.applied] },
@@ -219,6 +490,12 @@ function step(kind: 'undo' | 'redo') {
 }
 export const undo = () => step('undo');
 export const redo = () => step('redo');
+
+/** Whether undo/redo has anything to do (mirrors `step`). */
+export function canTravel(kind: 'undo' | 'redo', s = get()): boolean {
+  if (s.hasDraft || s.draft[kind].length) return s.draft[kind].length > 0;
+  return kind === 'undo' ? s.history.past.length > 0 : s.history.future.length > 0;
+}
 
 // ---------------------------------------------------------------- selection
 /** Members of the object's persistent group (or just the object). */
@@ -379,21 +656,13 @@ export function addAsset(assetId: string, point: Vec2, surfaceParentId?: string 
 
 // ---------------------------------------------------------------- transform commands (keys / panel)
 
-/** Move the selection horizontally by `delta` with block-and-slide, then settle. */
-export function nudge(delta: Vec2, ignoreCollisions = false) {
+/** Move the selection horizontally by `delta` (a suggestion; conflicts resolve on Accept), then settle. */
+export function nudge(delta: Vec2) {
   const c = ctxOrNull();
   if (!c || !c.s.selectedIds.length) return;
   const roots = rootsOf(c.scene, c.s.selectedIds).filter((o) => !o.locked);
   if (!roots.length) return toast('Locked items can’t be moved.', 'warning');
-  let d = delta;
-  if (!ignoreCollisions && EDITOR_POLICY.collision === 'block-and-slide') {
-    const moving = bodiesOf(c.ctx, c.scene, movingSet(c.scene, roots.map((r) => r.id)));
-    const obstacles = obstaclesFor(c.ctx, c.scene, roots.map((r) => r.id), { bounds: sweptBounds(moving, delta[0], delta[1]) });
-    const res = resolveTranslation(moving, obstacles, [0, 0], delta);
-    d = res.offset;
-    if (Math.hypot(d[0], d[1]) < 1e-5 && res.blockers.length) return toast(`Blocked — hits ${res.blockers[0]!.label}`, 'info', 1500);
-  }
-  commit('Nudge', groupTransformOps(c.ctx, c.scene, roots.map((r) => r.id), d, 0, [0, 0]), { quiet: false });
+  commit('Nudge', groupTransformOps(c.ctx, c.scene, roots.map((r) => r.id), delta, 0, [0, 0]));
 }
 
 /** Vertical nudge — wall/ceiling items, or items with Float on. */
@@ -413,24 +682,15 @@ export function nudgeVertical(dy: number) {
   commit('Nudge up/down', ops);
 }
 
-/** Rotate the selection by `dYaw` about its centre (one object: about itself), respecting collisions. */
-export function rotateSelectionBy(dYaw: number, ignoreCollisions = false) {
+/** Rotate the selection by `dYaw` about its centre (one object: about itself), as a suggestion. */
+export function rotateSelectionBy(dYaw: number) {
   const c = ctxOrNull();
   if (!c) return;
   const roots = rootsOf(c.scene, c.s.selectedIds).filter((o) => !o.locked && classOf(c.ctx, o) !== 'wall');
   if (!roots.length) return;
   const ids = roots.map((r) => r.id);
   const pivot = roots.length === 1 ? [roots[0]!.transform.position[0], roots[0]!.transform.position[2]] as Vec2 : selectionPivot(c.scene, ids);
-  let offset: Vec2 = [0, 0];
-  if (!ignoreCollisions && EDITOR_POLICY.collision === 'block-and-slide') {
-    const all = [...movingSet(c.scene, ids)].map((id) => objectById(id)!);
-    const rotated = all.map((o) => bodyAt({ ...o, transform: transformAbout(o, [0, 0], dYaw, pivot) }, c.ctx.assets));
-    const obstacles = obstaclesFor(c.ctx, c.scene, ids, { bounds: sweptBounds(rotated, 0, 0) });
-    const res = resolveRotation(rotated, obstacles);
-    if (!res) return toast('Blocked — not enough room to turn it there.', 'info', 1500);
-    offset = res.offset;
-  }
-  commit('Rotate', groupTransformOps(c.ctx, c.scene, ids, offset, dYaw, pivot, { settle: false }));
+  commit('Rotate', groupTransformOps(c.ctx, c.scene, ids, [0, 0], dYaw, pivot, { settle: false }));
 }
 
 export function setYaw(id: string, yaw: number) {

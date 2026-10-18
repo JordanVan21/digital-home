@@ -2,7 +2,7 @@ import { useEffect } from 'react';
 import { EDITOR_POLICY } from '../config/editorPolicy';
 import { cameraAxisXZ } from '../scene/canvasBridge';
 import {
-  deleteSelected, duplicateSelected, frameCamera, groupSelected, nudge, nudgeVertical, redo, rotateSelectionBy, select,
+  accept, deleteSelected, discard, duplicateSelected, frameCamera, groupSelected, nudge, nudgeVertical, redo, rotateSelectionBy, select,
   setMode, toggleLock, undo, ungroupSelected, useEditor,
 } from '../state/store';
 
@@ -18,7 +18,7 @@ const DEG = Math.PI / 180;
 /**
  * V select · G/T move · R rotate · Q/E turn 15° (Shift 90°) · arrows nudge 1 cm (Shift 10 cm,
  * camera-relative) · PageUp/PageDown raise/lower · F frame selection · Home frame room ·
- * P walk mode · Esc deselect / exit walk · Delete/Backspace delete · L lock · Ctrl/Cmd+D duplicate ·
+ * P walk mode · Return accept suggestions · Esc deselect, then discard suggestions / exit walk · Delete/Backspace delete · L lock · Ctrl/Cmd+D duplicate ·
  * Ctrl/Cmd+G group (Shift: ungroup) · Ctrl/Cmd+Z undo · Shift+Ctrl/Cmd+Z or Ctrl+Y redo ·
  * hold Shift for 15° / 5 cm gizmo snaps. Ignored while typing; walk mode owns WASD/arrows.
  */
@@ -62,7 +62,11 @@ export function useKeyboardShortcuts() {
         case 'f': frameCamera('selection'); break;
         case 'p': useEditor.setState({ walkMode: true, selectedIds: [], selectedId: null }); break;
         case 'l': toggleLock(); break;
-        case 'escape': select(null); break;
+        case 'enter': if (st.hasDraft) { e.preventDefault(); accept(); } break;
+        case 'escape':
+          if (st.selectedIds.length) select(null);
+          else if (st.hasDraft) discard();
+          break;
         case 'delete':
         case 'backspace':
           e.preventDefault();
@@ -75,10 +79,15 @@ export function useKeyboardShortcuts() {
       if (e.key === 'Shift') useEditor.setState({ snapping: false });
     };
     const blur = () => useEditor.setState({ snapping: false });
+    const unload = (e: BeforeUnloadEvent) => {
+      if (useEditor.getState().hasDraft) e.preventDefault();
+    };
     window.addEventListener('keydown', down);
     window.addEventListener('keyup', up);
     window.addEventListener('blur', blur);
+    window.addEventListener('beforeunload', unload);
     return () => {
+      window.removeEventListener('beforeunload', unload);
       window.removeEventListener('keydown', down);
       window.removeEventListener('keyup', up);
       window.removeEventListener('blur', blur);
