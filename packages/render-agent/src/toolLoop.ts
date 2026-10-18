@@ -18,6 +18,7 @@ export type AgentTool<T> = {
   parameters: Record<string, unknown>;
   /** Source of truth for validation; arguments that fail it never reach `run`. */
   schema: ZodType;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any -- args are validated by each tool's `schema` before run
   run(args: any, signal?: AbortSignal): Promise<ToolOutput<T>>;
 };
 

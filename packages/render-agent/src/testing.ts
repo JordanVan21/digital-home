@@ -31,6 +31,7 @@ export function scriptedModel(
 }
 
 /** Last tool result the model would have seen, parsed. */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any -- test helper; callers assert on arbitrary JSON
 export function lastToolOutput(input: unknown[]): any {
   for (let i = input.length - 1; i >= 0; i--) {
     const item = input[i] as { type?: string; output?: unknown };

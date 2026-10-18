@@ -27,6 +27,7 @@ export function probeModel(model: AgentModel, request: AssetRequest, catalog: As
   const stats: ProbeStats = { requests: 0, inputTokens: 0, outputTokens: 0, calls: [], refused: 0, decision: null };
   let imported = false;
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any -- model-supplied tool args, checked per tool below
   const evaluate = (name: string, args: any): Decision | "refused" | null => {
     switch (name) {
       case "use_asset": {
