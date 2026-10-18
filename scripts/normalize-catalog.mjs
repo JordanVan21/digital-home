@@ -3,7 +3,7 @@ import fs from 'node:fs';
 import crypto from 'node:crypto';
 import { Box3, Vector3, Matrix4, Quaternion } from '../apps/web/node_modules/three/build/three.module.js';
 
-const root = new URL('../apps/web/public/models/polyhaven/', import.meta.url);
+const root = new URL('../packages/asset-service/fixtures/models/polyhaven/', import.meta.url);
 const records = JSON.parse(fs.readFileSync(new URL('manifest.json', root)));
 const catalog = [];
 for (const record of records) {
@@ -60,4 +60,4 @@ for (const record of records) {
   record.filename = filename; record.contentHash = hash;
 }
 fs.writeFileSync(new URL('manifest.json', root), JSON.stringify(records, null, 2) + '\n');
-fs.writeFileSync(new URL('../apps/web/src/fixtures/assetCatalog.json', import.meta.url), JSON.stringify(catalog, null, 2) + '\n');
+fs.writeFileSync(new URL('../packages/asset-service/fixtures/assetCatalog.json', import.meta.url), JSON.stringify(catalog, null, 2) + '\n');

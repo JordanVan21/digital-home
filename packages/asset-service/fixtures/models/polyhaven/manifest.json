@@ -1,0 +1,44 @@
+[
+  {
+    "category": "sofa",
+    "name": "sofa_03",
+    "filename": "sofa_03-421adb907cb5.glb",
+    "contentHash": "421adb907cb5edde415debccc35f29adbd561c95f1e1ee33987cb6fb877a2411",
+    "textureBytes": 2060026
+  },
+  {
+    "category": "armchair",
+    "name": "modern_arm_chair_01",
+    "filename": "modern_arm_chair_01-f1615ebdfa23.glb",
+    "contentHash": "f1615ebdfa230a97cfcb88a98be26a8d874e77a7a1e569c923b85d05b31baf4d",
+    "textureBytes": 8975800
+  },
+  {
+    "category": "coffee_table",
+    "name": "coffee_table_round_01",
+    "filename": "coffee_table_round_01-c04232e829eb.glb",
+    "contentHash": "c04232e829eb603a2067378d9985e86f9107e1105ef098d09b852e211e9faaee",
+    "textureBytes": 5530265
+  },
+  {
+    "category": "bookshelf",
+    "name": "wooden_display_shelves_01",
+    "filename": "wooden_display_shelves_01-23b15050c8dc.glb",
+    "contentHash": "23b15050c8dc0d0a903787069852888f81ad7e650e87df4350c32e52116c3e2f",
+    "textureBytes": 1297978
+  },
+  {
+    "category": "credenza",
+    "name": "modern_wooden_cabinet",
+    "filename": "modern_wooden_cabinet-ec6dcecdf69c.glb",
+    "contentHash": "ec6dcecdf69c17aa57778af5b2e173efb6fffee3c94b8ef95c25e5323caa482d",
+    "textureBytes": 7039481
+  },
+  {
+    "category": "plant",
+    "name": "potted_plant_02",
+    "filename": "potted_plant_02-563fa89cd86c.glb",
+    "contentHash": "563fa89cd86c3810ab336903d883c51281baae85ce0882e2c6b5bbe592841cd4",
+    "textureBytes": 3018100
+  }
+]

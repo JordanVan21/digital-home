@@ -17,7 +17,8 @@ const file = args.find((a) => !a.startsWith("--"));
 if (!file) { console.error("usage: resolve <requests.json> [--no-blender] [--no-model]"); process.exit(2); }
 
 const webRoot = fileURLToPath(new URL("../../../apps/web", import.meta.url));
-const bundled = (JSON.parse(readFileSync(`${webRoot}/src/fixtures/assetCatalog.json`, "utf8")) as unknown[]).map((r) => AssetSpec.parse(r));
+const fixtures = fileURLToPath(new URL("../../asset-service/fixtures", import.meta.url));
+const bundled = (JSON.parse(readFileSync(`${fixtures}/assetCatalog.json`, "utf8")) as unknown[]).map((r) => AssetSpec.parse(r));
 const registry = new FileAssetRegistry({ publicRoot: `${webRoot}/public` });
 
 let model: AgentModel | null = null;
@@ -29,7 +30,7 @@ if (!args.includes("--no-model")) {
 }
 const blender = args.includes("--no-blender") ? null : new BlenderPool([new BlenderMcpClient({ port: Number(process.env.BLENDER_MCP_PORT) || 9876 })]);
 
-const service = new RenderService({ store: new FileGlbStore(`${webRoot}/public`), catalog: async () => [...bundled, ...(await registry.list())], registry, model, blender });
+const service = new RenderService({ store: new FileGlbStore([`${webRoot}/public`, fixtures]), catalog: async () => [...bundled, ...(await registry.list())], registry, model, blender });
 const requests = (JSON.parse(readFileSync(file, "utf8")) as unknown[]).map((r) => AssetRequest.parse({ schemaVersion: 1, ...(r as object) }));
 const outcomes = await service.resolveMany(requests, (o) => console.log(`[${o.source}] ${o.request.category}: ${o.asset?.title ?? "placeholder"}`));
 console.log(JSON.stringify(outcomes.map((o) => ({ key: o.key, source: o.source, assetId: o.assetId, notes: o.notes, usage: o.usage })), null, 2));

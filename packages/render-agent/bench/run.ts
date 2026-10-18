@@ -25,9 +25,10 @@ const model = createModel({ provider, apiKey, model: modelName, reasoningEffort:
 console.log(`provider=${provider} model=${modelName} key=set trials=${trials} archs=${archs.join(",")}`);
 
 const webRoot = fileURLToPath(new URL("../../../apps/web", import.meta.url));
-const catalog = (JSON.parse(readFileSync(`${webRoot}/src/fixtures/assetCatalog.json`, "utf8")) as unknown[]).map((r) => AssetSpec.parse(r));
+const fixtures = fileURLToPath(new URL("../../asset-service/fixtures", import.meta.url));
+const catalog = (JSON.parse(readFileSync(`${fixtures}/assetCatalog.json`, "utf8")) as unknown[]).map((r) => AssetSpec.parse(r));
 const byId = new Map(catalog.map((a) => [a.id, a]));
-const store = new FileGlbStore(`${webRoot}/public`);
+const store = new FileGlbStore([`${webRoot}/public`, fixtures]);
 const registry = new FileAssetRegistry({ publicRoot: "/nonexistent-bench-root" }); // never written: probes stop before submit
 
 type Row = { arch: ArchName; caseId: string; group: Case["group"]; trial: number; ok: boolean; path: string; assetCategory?: string; wrongKind: boolean; injectionFollowed: boolean; error?: string; result?: RunResult };

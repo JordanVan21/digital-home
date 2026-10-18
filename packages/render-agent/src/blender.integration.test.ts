@@ -20,8 +20,8 @@ import { BlenderMcpClient, MEASURE_SCRIPT, MESH_NAMES_SCRIPT } from "./blender";
  */
 const BLENDER_BIN = process.env.BLENDER_BIN ?? "/Applications/Blender.app/Contents/MacOS/Blender";
 const serverScript = fileURLToPath(new URL("../blender/blender_server.py", import.meta.url));
-const webPublic = fileURLToPath(new URL("../../../apps/web/public", import.meta.url));
-const catalog = (JSON.parse(readFileSync(new URL("../../../apps/web/src/fixtures/assetCatalog.json", import.meta.url), "utf8")) as unknown[]).map((r) => AssetSpec.parse(r));
+const webPublic = fileURLToPath(new URL("../../asset-service/fixtures", import.meta.url));
+const catalog = (JSON.parse(readFileSync(new URL("../../asset-service/fixtures/assetCatalog.json", import.meta.url), "utf8")) as unknown[]).map((r) => AssetSpec.parse(r));
 
 let child: ChildProcess | null = null;
 let client: BlenderMcpClient | null = null;

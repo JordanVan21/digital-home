@@ -90,7 +90,7 @@ test("every resolution validates against the contract schema", () => {
 });
 
 // --- Evaluation set against the real catalog. The thresholds are tuned here. ---
-const catalog = (JSON.parse(readFileSync(new URL("../../../apps/web/src/fixtures/assetCatalog.json", import.meta.url), "utf8")) as unknown[]).map((r) => AssetSpec.parse(r));
+const catalog = (JSON.parse(readFileSync(new URL("../fixtures/assetCatalog.json", import.meta.url), "utf8")) as unknown[]).map((r) => AssetSpec.parse(r));
 const cases = JSON.parse(readFileSync(new URL("./eval/requests.json", import.meta.url), "utf8")) as {
   name: string; request: Record<string, unknown>;
   expect: { status: string; category?: string; generationAllowed?: boolean };
@@ -99,7 +99,7 @@ const cases = JSON.parse(readFileSync(new URL("./eval/requests.json", import.met
 for (const c of cases) {
   test(`eval: ${c.name}`, () => {
     const { resolution } = retrieveAsset(AssetRequest.parse({ schemaVersion: 1, ...c.request }), catalog);
-    const detail = JSON.stringify(resolution, (k, v) => (typeof v === "number" ? Math.round(v * 100) / 100 : v));
+    const detail = JSON.stringify(resolution, (_k, v) => (typeof v === "number" ? Math.round(v * 100) / 100 : v));
     assert.equal(resolution.status, c.expect.status, detail);
     if (c.expect.category && resolution.status !== "needs_generation") {
       assert.equal(catalog.find((a) => a.id === resolution.assetId)!.category, c.expect.category, detail);

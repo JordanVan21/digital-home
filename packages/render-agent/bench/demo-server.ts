@@ -24,8 +24,8 @@ const registryRoot = resolve(flag('--registry') ?? join(tmpdir(), 'house-render-
 const repoRoot = fileURLToPath(new URL('../../../', import.meta.url));
 if (registryRoot === repoRoot.slice(0,-1) || registryRoot.startsWith(repoRoot)) throw new Error('--registry must be outside the repository');
 const registry = new FileAssetRegistry({ publicRoot: registryRoot });
-const store = new FileGlbStore([registryRoot, publicRoot]);
-const bundled = (JSON.parse(await readFile(new URL('../../../apps/web/src/fixtures/assetCatalog.json', import.meta.url),'utf8')) as unknown[]).map(a=>AssetSpec.parse(a));
+const store = new FileGlbStore([registryRoot, publicRoot, fileURLToPath(new URL('../../asset-service/fixtures', import.meta.url))]);
+const bundled = (JSON.parse(await readFile(new URL('../../asset-service/fixtures/assetCatalog.json', import.meta.url),'utf8')) as unknown[]).map(a=>AssetSpec.parse(a));
 const provider = process.env.AGENT_PROVIDER === 'openai' ? 'openai' : 'deepseek';
 const apiKey = process.env[provider === 'openai' ? 'OPENAI_API_KEY' : 'DEEPSEEK_API_KEY'];
 const modelName = process.env[`${provider.toUpperCase()}_MODEL`] || (provider === 'openai' ? 'gpt-5.4-mini' : 'deepseek-v4-pro');

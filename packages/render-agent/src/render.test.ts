@@ -17,8 +17,8 @@ import { RenderService, requestKey } from "./service";
 import { FakeBlender, lastToolOutput, scriptedModel, type Turn } from "./testing";
 import { FatalToolError, runToolLoop, type AgentTool } from "./toolLoop";
 
-const webPublic = fileURLToPath(new URL("../../../apps/web/public", import.meta.url));
-const bundled = (JSON.parse(readFileSync(new URL("../../../apps/web/src/fixtures/assetCatalog.json", import.meta.url), "utf8")) as unknown[]).map((r) => AssetSpec.parse(r));
+const webPublic = fileURLToPath(new URL("../../asset-service/fixtures", import.meta.url));
+const bundled = (JSON.parse(readFileSync(new URL("../../asset-service/fixtures/assetCatalog.json", import.meta.url), "utf8")) as unknown[]).map((r) => AssetSpec.parse(r));
 const idOf = (category: string) => bundled.find((a) => a.category === category)!.id;
 const req = (r: Partial<AssetRequest> & { category: string; targetDimensionsM: [number, number, number] }) => AssetRequest.parse({ schemaVersion: 1, description: "", ...r });
 const bed = req({ category: "bed", description: "queen bed", targetDimensionsM: [1.6, 0.9, 2.1] }); // nothing of its kind: "needs_generation"

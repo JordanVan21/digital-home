@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { UUID, Vec3 } from "./primitives";
+import { UUIDSchema as UUID, Vec3Schema as Vec3 } from "./schemas";
 
 /**
  * What the aesthetic planner or room scanner asks the asset builder for, and

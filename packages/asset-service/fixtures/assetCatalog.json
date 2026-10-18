@@ -1,0 +1,176 @@
+[
+  {
+    "schemaVersion": 1,
+    "id": "421adb90-7cb5-4dde-815d-ebccc35f29ad",
+    "category": "sofa",
+    "title": "Sofa 03",
+    "tags": [
+      "fixture",
+      "CC0"
+    ],
+    "styles": [
+      "contemporary"
+    ],
+    "colors": [],
+    "materials": [],
+    "dimensionsM": [
+      2.73117733001709,
+      1.1182640366605483,
+      0.9250842034816742
+    ],
+    "glbStorageKey": "models/polyhaven/sofa_03-421adb907cb5.glb",
+    "source": "other",
+    "sourceUrl": "https://polyhaven.com/a/sofa_03",
+    "licenseStatus": "verified",
+    "attribution": "Sofa 03 · Poly Haven · CC0",
+    "textureBytes": 2060026,
+    "triangleCount": 8004,
+    "contentHash": "421adb907cb5edde415debccc35f29adbd561c95f1e1ee33987cb6fb877a2411",
+    "searchableDescription": "Sofa 03, CC0 Poly Haven furniture fixture"
+  },
+  {
+    "schemaVersion": 1,
+    "id": "f1615ebd-fa23-4a97-8fcb-88a98be26a8d",
+    "category": "armchair",
+    "title": "Modern Arm Chair 01",
+    "tags": [
+      "fixture",
+      "CC0"
+    ],
+    "styles": [
+      "contemporary"
+    ],
+    "colors": [],
+    "materials": [],
+    "dimensionsM": [
+      0.8203444182872772,
+      1.0228520567470696,
+      0.9865616858005524
+    ],
+    "glbStorageKey": "models/polyhaven/modern_arm_chair_01-f1615ebdfa23.glb",
+    "source": "other",
+    "sourceUrl": "https://polyhaven.com/a/modern_arm_chair_01",
+    "licenseStatus": "verified",
+    "attribution": "Modern Arm Chair 01 · Poly Haven · CC0",
+    "textureBytes": 8975800,
+    "triangleCount": 8916,
+    "contentHash": "f1615ebdfa230a97cfcb88a98be26a8d874e77a7a1e569c923b85d05b31baf4d",
+    "searchableDescription": "Modern Arm Chair 01, CC0 Poly Haven furniture fixture"
+  },
+  {
+    "schemaVersion": 1,
+    "id": "c04232e8-29eb-403a-8067-378d9985e86f",
+    "category": "coffee_table",
+    "title": "Coffee Table Round 01",
+    "tags": [
+      "fixture",
+      "CC0"
+    ],
+    "styles": [
+      "contemporary"
+    ],
+    "colors": [],
+    "materials": [],
+    "dimensionsM": [
+      1.3013009428977966,
+      0.4910094439983368,
+      1.3013015985488892
+    ],
+    "glbStorageKey": "models/polyhaven/coffee_table_round_01-c04232e829eb.glb",
+    "source": "other",
+    "sourceUrl": "https://polyhaven.com/a/coffee_table_round_01",
+    "licenseStatus": "verified",
+    "attribution": "Coffee Table Round 01 · Poly Haven · CC0",
+    "textureBytes": 5530265,
+    "triangleCount": 4044,
+    "contentHash": "c04232e829eb603a2067378d9985e86f9107e1105ef098d09b852e211e9faaee",
+    "searchableDescription": "Coffee Table Round 01, CC0 Poly Haven furniture fixture"
+  },
+  {
+    "schemaVersion": 1,
+    "id": "23b15050-c8dc-4d0a-8037-87069852888f",
+    "category": "bookshelf",
+    "title": "Wooden Display Shelves 01",
+    "tags": [
+      "fixture",
+      "CC0"
+    ],
+    "styles": [
+      "contemporary"
+    ],
+    "colors": [],
+    "materials": [],
+    "dimensionsM": [
+      1.077760934829712,
+      1.5561838150024414,
+      0.3715096414089205
+    ],
+    "glbStorageKey": "models/polyhaven/wooden_display_shelves_01-23b15050c8dc.glb",
+    "source": "other",
+    "sourceUrl": "https://polyhaven.com/a/wooden_display_shelves_01",
+    "licenseStatus": "verified",
+    "attribution": "Wooden Display Shelves 01 · Poly Haven · CC0",
+    "textureBytes": 1297978,
+    "triangleCount": 3174,
+    "contentHash": "23b15050c8dc0d0a903787069852888f81ad7e650e87df4350c32e52116c3e2f",
+    "searchableDescription": "Wooden Display Shelves 01, CC0 Poly Haven furniture fixture"
+  },
+  {
+    "schemaVersion": 1,
+    "id": "ec6dcecd-f69c-47aa-8777-8af5b2e173ef",
+    "category": "credenza",
+    "title": "Modern Wooden Cabinet",
+    "tags": [
+      "fixture",
+      "CC0"
+    ],
+    "styles": [
+      "contemporary"
+    ],
+    "colors": [],
+    "materials": [],
+    "dimensionsM": [
+      2.4400004148483276,
+      0.6801425069570541,
+      0.5200000107288361
+    ],
+    "glbStorageKey": "models/polyhaven/modern_wooden_cabinet-ec6dcecdf69c.glb",
+    "source": "other",
+    "sourceUrl": "https://polyhaven.com/a/modern_wooden_cabinet",
+    "licenseStatus": "verified",
+    "attribution": "Modern Wooden Cabinet · Poly Haven · CC0",
+    "textureBytes": 7039481,
+    "triangleCount": 24976,
+    "contentHash": "ec6dcecdf69c17aa57778af5b2e173efb6fffee3c94b8ef95c25e5323caa482d",
+    "searchableDescription": "Modern Wooden Cabinet, CC0 Poly Haven furniture fixture"
+  },
+  {
+    "schemaVersion": 1,
+    "id": "563fa89c-d86c-4810-8b33-6903d883c512",
+    "category": "plant",
+    "title": "Potted Plant 02",
+    "tags": [
+      "fixture",
+      "CC0"
+    ],
+    "styles": [
+      "contemporary"
+    ],
+    "colors": [],
+    "materials": [],
+    "dimensionsM": [
+      0.7011570334434509,
+      0.8411787391305552,
+      0.6573865756508894
+    ],
+    "glbStorageKey": "models/polyhaven/potted_plant_02-563fa89cd86c.glb",
+    "source": "other",
+    "sourceUrl": "https://polyhaven.com/a/potted_plant_02",
+    "licenseStatus": "verified",
+    "attribution": "Potted Plant 02 · Poly Haven · CC0",
+    "textureBytes": 3018100,
+    "triangleCount": 69806,
+    "contentHash": "563fa89cd86c3810ab336903d883c51281baae85ce0882e2c6b5bbe592841cd4",
+    "searchableDescription": "Potted Plant 02, CC0 Poly Haven furniture fixture"
+  }
+]

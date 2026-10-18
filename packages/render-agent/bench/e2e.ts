@@ -25,9 +25,10 @@ const modelName = process.env[`${provider.toUpperCase()}_MODEL`] || (provider ==
 const baseModel = createModel({ provider, apiKey, model: modelName, reasoningEffort: "low" });
 
 const webRoot = fileURLToPath(new URL("../../../apps/web", import.meta.url));
-const bundled = (JSON.parse(readFileSync(`${webRoot}/src/fixtures/assetCatalog.json`, "utf8")) as unknown[]).map((r) => AssetSpec.parse(r));
+const fixtures = fileURLToPath(new URL("../../asset-service/fixtures", import.meta.url));
+const bundled = (JSON.parse(readFileSync(`${fixtures}/assetCatalog.json`, "utf8")) as unknown[]).map((r) => AssetSpec.parse(r));
 const registry = new FileAssetRegistry({ publicRoot: outDir });
-const store = new FileGlbStore([outDir, `${webRoot}/public`]);
+const store = new FileGlbStore([outDir, `${webRoot}/public`, fixtures]);
 
 let step = 0;
 const log: string[] = [];

@@ -148,7 +148,7 @@ test("the sample scan fixture imports and every object passes the scene-engine v
   assert.deepEqual(warnings, []);
   for (const object of scene.objects) {
     const others = { ...scene, objects: scene.objects.filter((o) => o.id !== object.id) };
-    const result = validateOp(others, shell, { type: "add", object });
-    assert.ok(result.valid, `${object.category}: ${result.valid ? "" : result.errors.join("; ")}`);
+    const result = validateOp(others, { type: "add", object }, { room: shell, assets: {} });
+    assert.ok(result.ok, `${object.category}: ${result.ok ? "" : `${result.error.code} ${result.error.message}`}`);
   }
 });

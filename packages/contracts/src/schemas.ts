@@ -246,6 +246,8 @@ export const AssetSpecSchema = z.object({
     .optional(),
   mount: z.enum(["floor", "wall", "ceiling"]).optional(),
   light: AssetLightSchema.optional(),
+  /** Render-agent lineage: the asset this one was edited from. */
+  derivedFromAssetId: UUIDSchema.optional(),
 });
 export const SceneOpSchema = z.discriminatedUnion("type", [
   z.object({
