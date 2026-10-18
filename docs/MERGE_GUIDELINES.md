@@ -16,9 +16,9 @@ The user tried both builds side by side. The verdict:
 
 ### Suggest vs. accept (user rule, non-negotiable)
 - **Before Accept is a rule-breaking phase.** No physics, no gravity, no collision enforcement. What the user puts somewhere stays there exactly.
-- **Accept turns the rules back on.** Gravity settles moved or added pieces where needed, and then collisions are resolved (resolver option A: only changed pieces move, to the nearest valid spot; otherwise they revert or drop).
+- **Accept turns the rules back on.** Each changed piece is placed onto the nearest surface (codex `onNearestSurface`), and then collisions are resolved (resolver option A: only changed pieces move, to the nearest valid spot; otherwise they revert or drop).
 - Snapping is allowed while suggesting, because it is a placement aid and not physics. Alt bypasses it.
-- Codex already behaves this way (`allowConflicts`, `resolveDraft` using `onNearestSurface`). **Check one detail:** `onNearestSurface` picks the nearest face up *or* down. The user's phrase is "gravity is turned on if needed", so a piece left in mid-air should fall to the surface below it. Decide this with the user if it differs.
+- Codex already behaves this way (`allowConflicts`, `resolveDraft` using `onNearestSurface`). **Keep codex's nearest-surface placement: the user confirmed it is better than strict gravity.** It picks the nearest face up *or* down. Don't replace it with the falling-only gravity from the first attempt.
 
 ## 2. When the rule should NOT apply
 
@@ -41,7 +41,7 @@ Bring Jordan's version instead of keeping codex's in these cases. Each still has
 - floating "Hits X" drag labels
 - per-frame batched drag updates
 - relative (delta) rotation snapping
-- gravity on release while suggesting
+- gravity on release while suggesting, or strict falling-only gravity on Accept
 
 These all lost to codex in the side-by-side comparison.
 
@@ -67,7 +67,7 @@ Paths are in `origin/feature/3d-sandblox-jordan` (`c27fed7`), checked out at `/U
 9. Persistent groups: Ctrl/Cmd+G to group, Shift to ungroup; clicking selects the group, Alt picks one member.
 10. Wall-mounted items (art): slide along walls, crossing corners. Ceiling items (pendants): `wallPose`, `findWallSpot`, `ceilingPose`. Codex has no wall or ceiling class.
 11. Resize with keep-proportions; children stay seated (`resizeOps`).
-12. Float flag: stays in the air after Accept. It fits the suggest/accept rule as the explicit exception to gravity.
+12. Float flag: stays in the air after Accept. It is the explicit exception to codex's nearest-surface placement.
 13. Keep / Replace / Remove planning picker, independent of the lock.
 14. Replace model ranked by dimension fit (`rankByDimensionFit`, `SwapPicker`). Codex's "Replace model" opens the browser filtered by category; combine the two.
 15. Library drag-and-drop into the room (drop point → floor or surface). Codex places new pieces with a ring search from the room centre. Keep that for clicks and add drop for drags.
