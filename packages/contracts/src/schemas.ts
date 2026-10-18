@@ -239,6 +239,7 @@ export const AssetSpecSchema = z.object({
   light: AssetLightSchema.optional(),
 });
 export const SceneOpSchema = z.discriminatedUnion("type", [
+  z.object({type:z.literal("setPlan"),objectId:UUIDSchema,decision:z.enum(["keep","replace","remove"]).optional()}),
   z.object({type:z.literal("setFloat"),objectId:UUIDSchema,float:z.boolean().optional()}),
   z.object({
     type: z.literal("resize"),

@@ -198,7 +198,7 @@ export function validateOp(
   const obj = scene.objects.find((o) => o.id === id);
   if (!obj)
     return fail("UNKNOWN_OBJECT", "This object is no longer in the room.");
-  if (op.type === "setLock") return { ok: true };
+  if (op.type === "setLock" || op.type === "setPlan") return { ok: true };
   if (obj.locked)
     return fail(
       "OBJECT_LOCKED",
@@ -342,6 +342,7 @@ export function applyOp(
     objects = scene.objects.map((o) => {
       if (o.id !== op.objectId) return o;
       switch (op.type) {
+        case "setPlan": {const next={...o}; if(op.decision===undefined)delete next.renovationDecision;else next.renovationDecision=op.decision;return next;}
         case "setFloat": {
           const next = {...o,placement:{...o.placement,support:o.placement?.support ?? "floor"}};
           if(op.float===undefined) delete next.placement.float; else next.placement.float=op.float;
@@ -396,6 +397,8 @@ export function invertOp(before: SceneSpec, op: SceneOp): Inverse {
   const obj = before.objects.find((o) => o.id === id);
   if (!obj) throw new Error("Cannot invert an unknown object");
   switch (op.type) {
+    case "setPlan":
+      return {type:"setPlan",objectId:id,decision:obj.renovationDecision};
     case "setFloat":
       return {type:"checkpoint",scene:structuredClone(before)};
     case "resize":

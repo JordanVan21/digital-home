@@ -105,6 +105,8 @@ function GLB({
         const owned = source.map((m) => {
           const mat = m.clone() as MeshStandardMaterial;
           materials.push(mat);
+          if (object.renovationDecision === "remove") {mat.transparent=true;mat.opacity=.23;mat.depthWrite=false;}
+
           if (mat.transparent && /glass/i.test(m.name)) {
             mat.opacity = Math.min(mat.opacity, 0.1);
             mat.depthWrite = false;
@@ -124,6 +126,7 @@ function GLB({
           return mat;
         });
         child.material = Array.isArray(child.material) ? owned : owned[0];
+        if(object.renovationDecision === "remove")child.castShadow=false;
         if (source.every((m) => m.transparent && /glass/i.test(m.name)))
           child.castShadow = false;
       }
@@ -146,6 +149,7 @@ function GLB({
     object.dimensionsM,
     object.materialOverrides,
     object.category,
+    object.renovationDecision,
   ]);
   useEffect(() => {
     const light = asset.light;
