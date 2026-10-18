@@ -1,3 +1,5 @@
+> **Merging Jordan's sandbox into this base? Read `docs/MERGE_GUIDELINES.md` first.** It sets the rule (keep codex; adapt Jordan's missing features and look into it) and its exceptions.
+
 > **Read `docs/HANDOFF.md` first.** It describes the current state of this branch and the user's decisions since this brief was written, and it overrides this brief where they conflict. Notably, collisions no longer block edits: every edit is a suggestion that is resolved on Accept.
 
 # Task: Build the House 3D Sandbox (independent build)
