@@ -1,5 +1,6 @@
 import type { Placement, SceneObject, SceneOp, SceneSpec, Transform } from '@house/contracts';
 import { boundsOfBodies, bodyOf } from './collision';
+import { settleWithGravity } from './contact';
 import { applyOps, carryTransform, type OpContext } from './ops';
 import { classOf, indexObjects, validateObject, type RuleId, type Violation } from './rules';
 
@@ -180,8 +181,10 @@ export function draftConflicts(ctx: OpContext, accepted: SceneSpec, draft: Scene
 export type ResolutionEntry = {
   objectId: string;
   outcome: 'applied' | 'moved' | 'reverted' | 'dropped' | 'removed';
-  /** Distance from the suggested position, for "moved". */
+  /** Horizontal distance from the suggested position, for "moved". */
   distanceM?: number;
+  /** How far gravity lowered (or lifted onto a surface) the piece. */
+  settledM?: number;
 };
 
 export type DraftResolution =
@@ -191,11 +194,14 @@ export type DraftResolution =
 export type ResolveOptions = { stepM?: number; radiusM?: number };
 
 /**
- * Project a draft into a valid scene (resolver "option A"): untouched pieces never move. Each
- * changed or added piece — with the edited items resting on it, as one assembly — keeps its drop
- * position if it introduces no conflicts, else moves to the nearest conflict-free spot within
- * `radiusM` (keeping its rotation). Otherwise a changed piece reverts and an added piece is dropped.
- * Locked and wall/ceiling-mounted pieces never search; they only revert.
+ * Project a draft into a valid scene. Suggesting breaks the rules freely; accepting turns them back
+ * on, in order:
+ * 1. Gravity: each moved or added piece (with the edited items resting on it, as one assembly)
+ *    settles onto the surface beneath it, unless it's wall/ceiling-mounted, Float or locked.
+ * 2. Collisions (resolver "option A"): untouched pieces never move. An assembly keeps its drop
+ *    spot if it introduces no conflicts, else moves to the nearest conflict-free spot within
+ *    `radiusM` (keeping its rotation, settling again there). Otherwise a changed piece reverts and
+ *    an added piece is dropped. Locked and wall/ceiling pieces never search; they only revert.
  */
 export function resolveDraft(ctx: OpContext, accepted: SceneSpec, draft: SceneSpec, opts: ResolveOptions = {}): DraftResolution {
   const step = opts.stepM ?? 0.05;
@@ -229,6 +235,19 @@ export function resolveDraft(ctx: OpContext, accepted: SceneSpec, draft: SceneSp
     members.forEach((m) => handled.add(m.id));
     const memberIds = new Set(members.map((m) => m.id));
 
+    const prev = original.get(o.id);
+    const moved = !prev || !same(prev.transform, o.transform) || !same(prev.placement, o.placement);
+    const gravity = moved && !o.locked;
+    /** Gravity on the assembly root against what's placed so far; carried members follow. */
+    const ground = (cands: SceneObject[]): SceneObject[] => {
+      if (!gravity) return cands;
+      const root = cands[0]!;
+      const placed = [...final.values()].filter((p) => !memberIds.has(p.id));
+      const settled = settleWithGravity(ctx, [...placed, ...cands.slice(1)], root).object;
+      const dy = settled.transform.position[1] - root.transform.position[1];
+      return cands.map((c, i) => (i === 0 ? settled
+        : { ...c, transform: { ...c.transform, position: [c.transform.position[0], c.transform.position[1] + dy, c.transform.position[2]] } }));
+    };
     const fits = (cands: SceneObject[]): boolean => {
       const objects = [...[...final.values()].filter((p) => !memberIds.has(p.id)), ...cands];
       const index = indexObjects(objects);
@@ -244,14 +263,15 @@ export function resolveDraft(ctx: OpContext, accepted: SceneSpec, draft: SceneSp
       return members.map((m) => (m.id === o.id ? { ...m, transform: to } : { ...m, transform: carryTransform(m.transform, o.transform, to) }));
     };
 
-    let fit: SceneObject[] | null = fits(members) ? members : null;
+    const atDrop = ground(members);
+    let fit: SceneObject[] | null = fits(atDrop) ? atDrop : null;
     const searchable = !members.some((m) => m.locked) && classOf(ctx, o) !== 'wall' && classOf(ctx, o) !== 'ceiling';
     if (!fit && searchable) {
       search: for (let r = step; r <= radius + 1e-9; r += step) {
         const n = Math.max(8, Math.round((2 * Math.PI * r) / step));
         for (let k = 0; k < n; k++) {
           const a = (k / n) * Math.PI * 2;
-          const cand = shifted(Math.cos(a) * r, Math.sin(a) * r);
+          const cand = ground(shifted(Math.cos(a) * r, Math.sin(a) * r));
           if (fits(cand)) { fit = cand; break search; }
         }
       }
@@ -271,7 +291,9 @@ export function resolveDraft(ctx: OpContext, accepted: SceneSpec, draft: SceneSp
           continue;
         }
         final.set(p.id, p);
-        report.push(d > 1e-6 ? { objectId: p.id, outcome: 'moved', distanceM: d } : { objectId: p.id, outcome: 'applied' });
+        const dy = p.transform.position[1] - draftIndex.get(p.id)!.transform.position[1];
+        const settledM = Math.abs(dy) > 1e-4 ? { settledM: Math.abs(dy) } : {};
+        report.push(d > 1e-6 ? { objectId: p.id, outcome: 'moved', distanceM: d, ...settledM } : { objectId: p.id, outcome: 'applied', ...settledM });
       }
       continue;
     }

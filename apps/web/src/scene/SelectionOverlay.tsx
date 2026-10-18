@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useRef, useSyncExternalStore } from 'react';
 import { useFrame } from '@react-three/fiber';
 import { Html } from '@react-three/drei';
-import { BoxGeometry, BufferGeometry, EdgesGeometry, Float32BufferAttribute, Quaternion, Vector3, type Group, type LineBasicMaterial, type PointsMaterial } from 'three';
+import { BufferGeometry, Float32BufferAttribute, Quaternion, Shape, ShapeGeometry, Vector3, type Group, type LineBasicMaterial, type MeshBasicMaterial } from 'three';
 import type { SceneObject } from '@house/contracts';
 import { effectiveDimsOf, localBoxes } from '@house/scene-engine';
 import { compoundExteriorPositions } from './compoundOutline';
@@ -19,39 +19,45 @@ const _f = new Vector3();
 
 type Kind = 'hover' | 'selected' | 'blocker' | 'conflict' | 'resolved';
 
+/** Rounded-rectangle outline (XZ, centred) as a closed shape. */
+function roundedRect(w: number, d: number, r: number): Shape {
+  const x = w / 2;
+  const z = d / 2;
+  const k = Math.min(r, x, z);
+  const sh = new Shape();
+  sh.moveTo(-x + k, -z);
+  sh.lineTo(x - k, -z);
+  sh.quadraticCurveTo(x, -z, x, -z + k);
+  sh.lineTo(x, z - k);
+  sh.quadraticCurveTo(x, z, x - k, z);
+  sh.lineTo(-x + k, z);
+  sh.quadraticCurveTo(-x, z, -x, z - k);
+  sh.lineTo(-x, -z + k);
+  sh.quadraticCurveTo(-x, -z, -x + k, -z);
+  return sh;
+}
+
 /**
- * Highlight overlay: footprint outline + bounding-box wireframe + corner dots, built from the
- * object's scene-engine (tilted) dimensions — never from mesh bounds — and following its live
- * group transform each frame, so it tracks drags without store writes. Furniture materials are
- * never touched (instances share them).
+ * Selection cue in the codex style: no boxes around the model — a soft rounded glow on the floor
+ * under the piece (violet selected, red conflict, green resolved; hover is a faint edge). Built from
+ * scene-engine (tilted) dimensions and following the live group transform each frame, so it tracks
+ * drags without store writes. Furniture materials are never touched.
  */
-function ObjectOutline({ obj, kind, primary }: { obj: SceneObject; kind: Kind; primary?: boolean }) {
+function ObjectOutline({ obj, kind }: { obj: SceneObject; kind: Kind }) {
   const ref = useRef<Group>(null);
-  const boxMat = useRef<LineBasicMaterial>(null);
-  const footMat = useRef<LineBasicMaterial>(null);
-  const dotMat = useRef<PointsMaterial>(null);
+  const fillMat = useRef<MeshBasicMaterial>(null);
+  const edgeMat = useRef<LineBasicMaterial>(null);
   const committed = useEditor((s) => s.violations[obj.id]);
   const conflict = useEditor((s) => !!s.draft.conflicts[obj.id]);
   const resolved = useEditor((s) => s.draft.resolved.includes(obj.id));
-  const [w, h, d] = effectiveDimsOf(obj);
-  const pad = 0.015;
-  const edges = useMemo(() => new EdgesGeometry(new BoxGeometry(w + pad, h + pad, d + pad)), [w, h, d]);
-  const footprint = useMemo(() => {
-    const g = new BufferGeometry();
-    const x = w / 2 + 0.04;
-    const z = d / 2 + 0.04;
-    g.setAttribute('position', new Float32BufferAttribute([-x, 0, -z, x, 0, -z, x, 0, z, -x, 0, z], 3));
-    return g;
+  const [w, , d] = effectiveDimsOf(obj);
+  const pad = 0.06;
+  const { fill, edge } = useMemo(() => {
+    const shape = roundedRect(w + pad * 2, d + pad * 2, 0.08);
+    const pts = shape.getPoints(6).map((p) => new Vector3(p.x, 0, p.y));
+    return { fill: new ShapeGeometry(shape, 6).rotateX(Math.PI / 2), edge: new BufferGeometry().setFromPoints(pts) };
   }, [w, d]);
-  const dots = useMemo(() => {
-    const g = new BufferGeometry();
-    const x = (w + pad) / 2;
-    const z = (d + pad) / 2;
-    const pts: number[] = [];
-    for (const yy of [0, h + pad]) for (const [a, b] of [[-x, -z], [x, -z], [x, z], [-x, z]]) pts.push(a!, yy - pad / 2, b!);
-    g.setAttribute('position', new Float32BufferAttribute(pts, 3));
-    return g;
-  }, [w, h, d]);
+  useEffect(() => () => { fill.dispose(); edge.dispose(); }, [fill, edge]);
 
   useFrame(() => {
     const grp = registry.get(obj.id);
@@ -60,7 +66,7 @@ function ObjectOutline({ obj, kind, primary }: { obj: SceneObject; kind: Kind; p
     grp.updateWorldMatrix(true, false);
     grp.matrixWorld.decompose(_p, _q, _s);
     _f.set(0, 0, 1).applyQuaternion(_q);
-    o.position.copy(_p);
+    o.position.set(_p.x, _p.y + 0.006, _p.z);
     o.rotation.set(0, Math.atan2(_f.x, _f.z), 0);
     let color: string = kind === 'blocker' || kind === 'conflict' ? COLORS.invalid : COLORS[kind];
     if (kind === 'selected') {
@@ -69,54 +75,23 @@ function ObjectOutline({ obj, kind, primary }: { obj: SceneObject; kind: Kind; p
       else if (!live && conflict) color = COLORS.invalid;
       else if (!live && resolved) color = COLORS.resolved;
       else if (!live && committed?.some((v) => v.severity === 'error')) color = COLORS.invalid;
-      else if (!live && committed?.length) color = COLORS.warning;
     }
-    boxMat.current?.color.set(color);
-    footMat.current?.color.set(color);
-    dotMat.current?.color.set(color);
+    fillMat.current?.color.set(color);
+    edgeMat.current?.color.set(color);
   });
 
+  const fillOpacity = kind === 'hover' ? 0 : kind === 'selected' ? 0.24 : 0.18;
   return (
     <group ref={ref} renderOrder={10}>
-      <lineSegments geometry={edges} position={[0, h / 2, 0]}>
-        <lineBasicMaterial ref={boxMat} transparent opacity={kind === 'hover' ? 0.55 : kind === 'conflict' ? 0.8 : 0.95} depthTest={false} />
-      </lineSegments>
-      <lineLoop geometry={footprint} position={[0, 0.006, 0]}>
-        <lineBasicMaterial ref={footMat} transparent opacity={kind === 'hover' ? 0.5 : 1} depthTest={false} />
-      </lineLoop>
-      {(kind === 'selected' || kind === 'blocker') && (
-        <points geometry={dots}>
-          <pointsMaterial ref={dotMat} size={7} sizeAttenuation={false} depthTest={false} transparent />
-        </points>
+      {fillOpacity > 0 && (
+        <mesh geometry={fill} raycast={() => null} renderOrder={10}>
+          <meshBasicMaterial ref={fillMat} transparent opacity={fillOpacity} depthTest={false} depthWrite={false} />
+        </mesh>
       )}
-      {primary && <DragLabel id={obj.id} height={h} />}
-      {kind === 'blocker' && <BlockerLabel id={obj.id} height={h} />}
+      <lineLoop geometry={edge} raycast={() => null} renderOrder={11}>
+        <lineBasicMaterial ref={edgeMat} transparent opacity={kind === 'hover' ? 0.45 : 0.85} depthTest={false} />
+      </lineLoop>
     </group>
-  );
-}
-
-function DragLabel({ id, height }: { id: string; height: number }) {
-  const sig = useSyncExternalStore(dragFeedback.subscribe.bind(dragFeedback), () => dragFeedback.signature);
-  if (!sig || dragFeedback.objectId !== id) return null;
-  const msgs = [...new Set(dragFeedback.violations.map((v) => v.detail))].slice(0, 2);
-  if (!msgs.length) return null;
-  const isError = dragFeedback.violations.some((v) => v.severity === 'error');
-  return (
-    <Html position={[0, height + 0.2, 0]} center zIndexRange={[20, 0]} style={{ pointerEvents: 'none' }}>
-      <div className={`violation-label ${isError ? 'error' : ''}`}>{msgs.join(' · ')}</div>
-    </Html>
-  );
-}
-
-function BlockerLabel({ id, height }: { id: string; height: number }) {
-  useSyncExternalStore(dragFeedback.subscribe.bind(dragFeedback), () => dragFeedback.signature);
-  const v = dragFeedback.violations.find((x) => x.otherId === id);
-  const mover = v ? useEditor.getState().workingScene?.objects.find((o) => o.id === v.objectId) : undefined;
-  if (!v) return null;
-  return (
-    <Html position={[0, height + 0.12, 0]} center zIndexRange={[19, 0]} style={{ pointerEvents: 'none' }}>
-      <div className="violation-label error">{mover ? `${mover.displayName} hits this` : 'in the way'}</div>
-    </Html>
   );
 }
 
@@ -257,7 +232,7 @@ export function SelectionOverlay() {
   return (
     <group name="selection-overlay">
       {hovered && <ObjectOutline key={`h-${hovered.id}`} obj={hovered} kind="hover" />}
-      {selected.map((o) => <ObjectOutline key={`s-${o.id}`} obj={o} kind="selected" primary={o.id === primaryId} />)}
+      {selected.map((o) => <ObjectOutline key={`s-${o.id}`} obj={o} kind="selected" />)}
       <Blockers />
       <DraftOutlines exclude={selectedIds} />
       <ColliderOutlines />

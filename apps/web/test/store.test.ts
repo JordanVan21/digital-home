@@ -166,15 +166,17 @@ describe('editor commands', () => {
     expect(objectById(ID.sofa)!.renovationDecision).toBe('keep');
   });
 
-  it('deleting the desk lets the lamp settle to the floor (one undo entry); undo restores both', () => {
+  it('deleting the desk leaves the lamp in the air until Accept, when it falls to the floor; undo restores both', () => {
     const lampBefore = objectById(ID.lamp)!;
     select(ID.desk);
     const entries = useEditor.getState().history.past.length;
     deleteSelected();
     expect(objectById(ID.desk)).toBeUndefined();
+    expect(objectById(ID.lamp)?.transform.position[1]).toBe(lampBefore.transform.position[1]);
+    expect(objectById(ID.lamp)?.placement?.parentId).toBeUndefined();
+    accept();
     expect(objectById(ID.lamp)?.transform.position[1]).toBe(0);
     expect(objectById(ID.lamp)?.placement).toEqual({ support: 'floor' });
-    accept();
     expect(useEditor.getState().history.past.length).toBe(entries + 1);
     undo();
     expect(objectById(ID.desk)).toBeDefined();
@@ -367,13 +369,13 @@ describe('schema-first edits (original sandbox)', () => {
     expect(accepted!.summary).toMatch(/ScenePatch of 1 op/);
   });
 
-  it('typing coordinates moves the piece; raising Y above its support floats it there', () => {
+  it('typed coordinates are exact while suggesting; gravity applies on Accept unless Float is on', () => {
     setPosition(ID.chair, 0, 0.4);
     expect(objectById(ID.chair)!.transform.position[0]).toBeCloseTo(0.4);
     setPosition(ID.chair, 1, 0.3);
-    const c = objectById(ID.chair)!;
-    expect(c.transform.position[1]).toBeCloseTo(0.3);
-    expect(c.placement?.float).toBe(true);
-    expect(useEditor.getState().opLog.at(-1)!.ops.map((o) => o.type)).toEqual(['setPlacement', 'move']);
+    expect(objectById(ID.chair)!.transform.position[1]).toBe(0.3);
+    expect(useEditor.getState().opLog.at(-1)!.ops.map((o) => o.type)).toEqual(['move']);
+    accept();
+    expect(objectById(ID.chair)!.transform.position[1]).toBe(0);
   });
 });

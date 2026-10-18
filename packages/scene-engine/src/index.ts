@@ -20,3 +20,4 @@ export * from './placement';
 export * from './history';
 export * from './fixtureFormat';
 export * from './draft';
+export * from './contact';

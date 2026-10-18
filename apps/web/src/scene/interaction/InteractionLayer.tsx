@@ -62,8 +62,10 @@ export function InteractionLayer() {
         if (press.id && press.locked) {
           toast(`${objectById(press.id)?.displayName ?? 'It'} is locked. Unlock it to move it.`, 'info', 2000);
           press.locked = false;
+          press.id = null;
           return;
         }
+        if (!press.id && !press.box) return;
         if (press.id && press.draggable) {
           const st = useEditor.getState();
           const inSel = st.selectedIds.includes(press.id);
@@ -131,7 +133,8 @@ export function InteractionLayer() {
         const obj = target;
         const draggable = !!obj && !obj.locked;
         const box = !id && e.shiftKey;
-        if (draggable || box) setControls(false);
+        // Pressing a piece never orbits the camera (a locked one explains why it won't move).
+        if (obj || box) setControls(false);
         press = { id, x: e.clientX, y: e.clientY, down: e, box, draggable, locked: !!obj?.locked, session: null };
       }
       window.addEventListener('pointermove', onMove);
@@ -253,7 +256,19 @@ function RotationRing({ meshRef }: { meshRef: React.RefObject<Mesh> }) {
         <sphereGeometry args={[0.03, 16, 12]} />
         <meshBasicMaterial color={SELECT_COLOR} depthTest={false} />
       </mesh>
+      {active && <AngleChip position={[0, 0.08, geom.radius + 0.18]} />}
     </group>
+  );
+}
+
+/** Live swivel angle beside the ring handle (codex). */
+function AngleChip({ position }: { position: Vec3 }) {
+  useSyncExternalStore(dragFeedback.subscribe.bind(dragFeedback), () => dragFeedback.signature);
+  if (!dragFeedback.angle) return null;
+  return (
+    <Html position={position} center zIndexRange={[25, 0]} style={{ pointerEvents: 'none' }}>
+      <span className="angle-label">{dragFeedback.angle}</span>
+    </Html>
   );
 }
 
@@ -298,7 +313,7 @@ function HeightGuide() {
 /** Alignment guides, the vertical-move guide/readout, and the rotation readout. */
 function Guides() {
   useSyncExternalStore(dragFeedback.subscribe.bind(dragFeedback), () => dragFeedback.signature);
-  const { guides, height, note, objectId } = dragFeedback;
+  const { guides, height, note, objectId, surface } = dragFeedback;
   const lines = useMemo(() => {
     const pts: number[] = [];
     for (const g of guides) pts.push(...g.from, ...g.to);
@@ -308,14 +323,26 @@ function Guides() {
     geo.setAttribute('position', new Float32BufferAttribute(pts, 3));
     return geo;
   }, [guides, height]);
+  // Snap guide (codex): the outline of the face the piece is snapped onto.
+  const face = useMemo(() => {
+    if (!surface) return null;
+    const geo = new BufferGeometry();
+    geo.setAttribute('position', new Float32BufferAttribute(surface.polygon.flatMap(([x, z]) => [x, surface.y + 0.004, z]), 3));
+    return geo;
+  }, [surface]);
   const obj = objectId ? objectById(objectId) : undefined;
   const notePos: Vec3 | null = obj ? [obj.transform.position[0], obj.transform.position[1] + effectiveDimsOf(obj)[1] + 0.35, obj.transform.position[2]] : null;
   return (
     <>
       {lines && (
         <lineSegments geometry={lines} renderOrder={30}>
-          <lineBasicMaterial color="#5ee0c8" transparent opacity={0.9} depthTest={false} />
+          <lineBasicMaterial color={SELECT_COLOR} transparent opacity={0.85} depthTest={false} />
         </lineSegments>
+      )}
+      {face && (
+        <lineLoop geometry={face} renderOrder={30}>
+          <lineBasicMaterial color={SELECT_COLOR} transparent opacity={0.95} depthTest={false} />
+        </lineLoop>
       )}
       {height && (
         <Html position={height.at} center zIndexRange={[25, 0]} style={{ pointerEvents: 'none' }}>

@@ -32,8 +32,8 @@ export const EDITOR_POLICY = {
   autosaveDebounceMs: 500,
   /** Ignore empty-space clicks this long after a drag ends (release would deselect). */
   pointerMissedIgnoreMs: 150,
-  /** A click selects only if the pointer moved less than this (px) — orbit drags don't select. */
-  clickMaxDeltaPx: 4,
+  /** A click selects only if the pointer moved less than this (px); beyond it a drag starts. */
+  clickMaxDeltaPx: 3,
   snap: { translateM: 0.05, rotateRad: (15 * Math.PI) / 180 },
   historyCap: 100,
   /** Fit: per-axis non-uniform scale allowed while max/min ratio ≤ 1 + this; else uniform fit-inside. */

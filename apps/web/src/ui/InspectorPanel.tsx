@@ -6,7 +6,7 @@ import {
 import type { AssetSpec, RenovationDecision, SceneObject, Tilt, Vec3 } from '@house/contracts';
 import { areaXZ, classOf, findSupport, isTiltable, lockedAspect, rankByDimensionFit, yawFromQuat } from '@house/scene-engine';
 import {
-  deleteSelected, duplicateSelected, groupSelected, opContext, resizeObject, rotateSelectionBy, selectedObjects, setDecision,
+  deleteSelected, duplicateSelected, groupSelected, opContext, placeOnSurface, resizeObject, rotateSelectionBy, selectedObjects, setDecision,
   setFloat, setPosition, setSceneSettings, setTilt, setVariant, setYaw, swapAsset, toggleLight, toggleLock, ungroupSelected,
   useEditor,
 } from '../state/store';
@@ -134,18 +134,20 @@ function PositionSection({ obj }: { obj: SceneObject }) {
       <p className="section-note">
         {parentName ? `Resting on ${parentName}. ` : ''}
         {cls === 'wall' ? 'Mounted on the wall.' : cls === 'ceiling' ? 'Hanging from the ceiling.'
-          : obj.placement?.float ? 'Floating at this height.' : 'Snaps onto the surface below. Hold Alt while dragging to move freely.'}
+          : obj.placement?.float ? 'Floats at this height, even after Accept.'
+            : raised ? 'Stays here while you edit; it settles onto the surface below when you accept.'
+              : 'Stays exactly where you put it. Hold Alt while dragging to skip snapping.'}
       </p>
       {cls !== 'wall' && cls !== 'ceiling' && (
         <>
           <label className="check-row">
             <input type="checkbox" checked={!!obj.placement?.float} disabled={disabled} onChange={(e) => setFloat(obj.id, e.target.checked)} />
-            Float (don’t settle onto the surface below)
+            Float (keep it in the air after Accept)
           </label>
           {(raised || obj.placement?.float) && (
             <div className="chip-row">
-              <button className="chip-button" disabled={disabled} onClick={() => setFloat(obj.id, false)}>
-                <ArrowDownToLine size={12} /> Place on {parentName ?? 'the floor'}
+              <button className="chip-button" disabled={disabled} onClick={() => placeOnSurface(obj.id)}>
+                <ArrowDownToLine size={12} /> Put it down now
               </button>
             </div>
           )}
@@ -278,7 +280,7 @@ function SelectedObject({ obj }: { obj: SceneObject }) {
       </button>
       {obj.locked && <p className="locked-note">Locked pieces can't be moved, rotated, swapped or deleted, by you or by AI.</p>}
       {conflicts && conflicts.length > 0 && (
-        <div className="conflict-note"><TriangleAlert size={13} /><span>{conflicts.map((v) => v.detail).join(' ')} Accept moves it to the nearest free spot.</span></div>
+        <div className="conflict-note"><TriangleAlert size={13} /><span>{conflicts.map((v) => v.detail).join(' ')} That's fine for now; Accept moves it to the nearest free spot.</span></div>
       )}
 
       <PositionSection obj={obj} />
@@ -303,7 +305,7 @@ function SelectedObject({ obj }: { obj: SceneObject }) {
       {swapOpen && !obj.locked && <SwapPicker obj={obj} onClose={() => setSwapOpen(false)} />}
       <p className="panel-footnote">
         {obj.locked ? 'Unlock this piece to make changes.'
-          : 'Drag to move · Space for height · Alt moves freely · Shift snaps to a 10 cm grid'}
+          : 'Drag to move · Space for height · Alt skips snapping · Shift snaps to a 10 cm grid'}
       </p>
     </>
   );

@@ -2,13 +2,13 @@ import { Matrix4, Object3D, Plane, Quaternion, Raycaster, Vector2, Vector3, type
 import type { SceneObject, SceneOp, Vec2, Vec3 } from '@house/contracts';
 import {
   bearing, bodyAt, candidateSurfaces, ceilingPose, classOf, CONFLICT_RULES, findSupport, fitsSurface, groupTransformOps,
-  indexObjects, isLarge, makeTransform, moveWithSupport, normalizeAngle, pointInPolygon, prepareShell, quatFromYaw, rootsOf,
-  selectionPivot, subtreeIds, transformAbout, validateObject, wallPose, YawDial, yawFromQuat,
-  type SupportHit, type Violation, type WorldSurface,
+  indexObjects, isLarge, makeTransform, normalizeAngle, pointInPolygon, prepareShell, quatFromYaw, rootsOf,
+  selectionPivot, snapToSurface, subtreeIds, transformAbout, validateObject, wallPose, YawDial, yawFromQuat,
+  type ContactSurface, type Violation, type WorldSurface,
 } from '@house/scene-engine';
 import { EDITOR_POLICY } from '../../config/editorPolicy';
 import { movingSet, obstaclesFor, sweptBounds } from '../../state/physics';
-import { commit, objectById, opContext, useEditor } from '../../state/store';
+import { commit, contactMove, objectById, opContext, useEditor } from '../../state/store';
 import { dragFeedback } from '../dragFeedback';
 import { driven, interaction, registry } from '../registry';
 import { smartSnap } from './snaps';
@@ -111,14 +111,16 @@ export interface DragSession {
 type Kind = 'move' | 'lift' | 'wall' | 'ceiling' | 'ceilingLift';
 
 /**
- * Direct manipulation of one or more objects (the primary interaction). Never blocked: the
- * pieces go where the pointer puts them, new conflicts show red live, and release records one
- * suggestion that Accept resolves.
- * - move: horizontally across whatever they rest on; small items hop onto the surface under the
- *   cursor (vase onto a table, off the edge to the floor); alignment and back-to-wall snaps.
- * - lift (Space / height tool): vertically with a height readout; settles on release unless Float.
- * - wall: slide along walls (crossing corners) and up/down. ceiling: across the ceiling.
- * Alt moves freely (no snapping); Shift snaps the centre to a 10 cm grid.
+ * Direct manipulation of one or more objects (the primary interaction). Suggesting is rule-free:
+ * no gravity, no collision blocking — the pieces stay exactly where the user puts them, new
+ * conflicts show red live, and release records one suggestion. Accept turns the rules back on.
+ * Placement aids (Alt turns them all off):
+ * - contact snap (codex): the base clicks onto an exposed top face (table top, seat, shelf, floor)
+ *   within 12 cm, with a guide outlining it;
+ * - small items hop onto the surface under the cursor (vase onto a table, off the edge to the floor);
+ * - alignment and back-to-wall snaps; Shift snaps the centre to a 10 cm grid instead.
+ * Kinds: move (across the floor plane), lift (Space / height tool: up and down, stays where released),
+ * wall (slide along walls), ceiling (across the ceiling).
  */
 export class MoveSession implements DragSession {
   private readonly ctx = opContext()!;
@@ -133,9 +135,7 @@ export class MoveSession implements DragSession {
   private readonly prior: Set<string>;
   private grab: Vec2 = [0, 0];
   private grabDy = 0;
-  private last: { offset: Vec2; dy: number; hit: SupportHit | null; yaw?: number; pos?: Vec3 } = { offset: [0, 0], dy: 0, hit: null };
-  private pending: PointerEvent | null = null;
-  private raf = 0;
+  private last: { offset: Vec2; dy: number; yaw?: number; pos?: Vec3 } = { offset: [0, 0], dy: 0 };
   readonly ok: boolean;
 
   constructor(private readonly host: Host, down: PointerEvent, ids: string[], primaryId: string, mods: Mods) {
@@ -179,9 +179,9 @@ export class MoveSession implements DragSession {
     return hitPlane(r, n, new Vector3(px, py + 0.5, pz));
   }
 
+  /** Every pointer event updates at once (no frame batching): the piece stays under the pointer. */
   move(e: PointerEvent) {
-    this.pending = e;
-    if (!this.raf) this.raf = requestAnimationFrame(() => { this.raf = 0; if (this.pending) this.tick(this.pending); });
+    this.tick(e);
   }
 
   private preview(offset: Vec2, dy: number) {
@@ -206,7 +206,7 @@ export class MoveSession implements DragSession {
       if (!h) return;
       const pose = wallPose(this.ctx.shell, this.primary.dimensionsM, [h.x, h.z], h.y - this.grabDy + this.primary.dimensionsM[1] / 2);
       if (!pose) return;
-      this.last = { offset: [0, 0], dy: 0, hit: null, pos: pose.position, yaw: pose.yaw };
+      this.last = { offset: [0, 0], dy: 0, pos: pose.position, yaw: pose.yaw };
       const g = registry.get(this.primary.id);
       if (g) setWorldPose(g, pose.position, pose.yaw);
       this.feedbackFor({ ...this.primary, transform: makeTransform(pose.position, pose.yaw) });
@@ -225,7 +225,7 @@ export class MoveSession implements DragSession {
         if (!h) return;
         pos = ceilingPose(p, this.primary.dimensionsM, [px, pz], ceilY - this.primary.dimensionsM[1] - (h.y - this.grabDy)).position;
       }
-      this.last = { offset: [pos[0] - px, pos[2] - pz], dy: pos[1] - py, hit: null };
+      this.last = { offset: [pos[0] - px, pos[2] - pz], dy: pos[1] - py };
       this.preview(this.last.offset, this.last.dy);
       dragFeedback.set({ objectId: this.primary.id, height: this.kind === 'ceilingLift' ? this.readout(pos) : null });
       return;
@@ -235,16 +235,24 @@ export class MoveSession implements DragSession {
       if (!h) return;
       let baseY = Math.max(floorY, h.y - this.grabDy);
       if (shift) baseY = floorY + Math.round((baseY - floorY) / grid) * grid;
-      this.last = { offset: [0, 0], dy: baseY - py, hit: null };
+      let surface: ContactSurface | undefined;
+      if (!free) {
+        const snap = snapToSurface(this.ctx, this.statics, this.primary, { ...this.primary.transform, position: [px, baseY, pz] });
+        baseY = snap.transform.position[1];
+        surface = snap.surface;
+      }
+      this.last = { offset: [0, 0], dy: baseY - py };
       this.preview([0, 0], baseY - py);
-      dragFeedback.set({ objectId: this.primary.id, height: this.readout([px, baseY, pz]), violations: [], guides: [] });
+      const cand: SceneObject = { ...this.primary, transform: { ...this.primary.transform, position: [px, baseY, pz] } };
+      this.feedbackFor(cand, [], surface);
+      dragFeedback.set({ height: this.readout([px, baseY, pz]) });
       return;
     }
 
     // --- horizontal move
     let center: Vec2 | null = null;
     let targetY = py;
-    let hit: SupportHit | null = null;
+    let hopped = false;
     if (this.small && !free) {
       let bestT = Infinity;
       const o = r.ray.origin;
@@ -260,14 +268,14 @@ export class MoveSession implements DragSession {
         bestT = t;
         center = c;
         targetY = s.y;
-        hit = { ownerId: s.ownerId, surfaceId: s.id, y: s.y };
+        hopped = true;
       }
       if (d.y < -1e-6) {
         const tf = (floorY - o.y) / d.y;
         if (tf > 0 && tf < bestT) {
           center = [o.x + d.x * tf + this.grab[0], o.z + d.z * tf + this.grab[1]];
           targetY = floorY;
-          hit = { ownerId: null, surfaceId: 'floor', y: floorY };
+          hopped = true;
         }
       }
     }
@@ -277,7 +285,6 @@ export class MoveSession implements DragSession {
       center = [h.x + this.grab[0], h.z + this.grab[1]];
     }
     let offset: Vec2 = [center[0] - px, center[1] - pz];
-    const dy = targetY - py;
     let guides: { from: Vec3; to: Vec3 }[] = [];
     if (shift) {
       offset = [Math.round((px + offset[0]) / grid) * grid - px, Math.round((pz + offset[1]) / grid) * grid - pz];
@@ -287,14 +294,24 @@ export class MoveSession implements DragSession {
       offset = snapped.delta;
       guides = snapped.guides;
     }
-    this.last = { offset, dy: this.small ? dy : 0, hit: this.small ? hit : null };
-    this.preview(offset, this.last.dy);
-    const cand: SceneObject = { ...this.primary, transform: { ...this.primary.transform, position: [px + offset[0], py + this.last.dy, pz + offset[1]] } };
-    this.feedbackFor(cand, guides);
+    // Contact snap for the primary piece (single non-hopping drags): its base clicks onto a face nearby.
+    let dy = this.small ? targetY - py : 0;
+    let surface: ContactSurface | undefined;
+    if (!free && this.roots.length === 1) {
+      const snap = snapToSurface(this.ctx, this.statics, this.primary, { ...this.primary.transform, position: [px + offset[0], py + dy, pz + offset[1]] });
+      if (snap.surface && (!hopped || snap.surface.y === py + dy)) {
+        dy = snap.transform.position[1] - py;
+        surface = snap.surface;
+      }
+    }
+    this.last = { offset, dy };
+    this.preview(offset, dy);
+    const cand: SceneObject = { ...this.primary, transform: { ...this.primary.transform, position: [px + offset[0], py + dy, pz + offset[1]] } };
+    this.feedbackFor(cand, guides, surface);
   }
 
   /** Live red feedback: conflicts the dragged piece would newly introduce (never blocks). */
-  private feedbackFor(cand: SceneObject, guides: { from: Vec3; to: Vec3 }[] = []) {
+  private feedbackFor(cand: SceneObject, guides: { from: Vec3; to: Vec3 }[] = [], surface?: ContactSurface) {
     const violations = timed(() => {
       const index = indexObjects(this.scene.objects);
       index.set(cand.id, cand);
@@ -302,7 +319,9 @@ export class MoveSession implements DragSession {
         .filter((b) => !b.wall).map((b) => index.get(b.id)!).filter(Boolean);
       return validateObject(this.ctx, index, cand, near).filter((v) => CONFLICT_RULES.has(v.rule) && !this.prior.has(conflictKey(cand.id, v)));
     });
-    dragFeedback.set({ objectId: this.primary.id, blockers: [], violations, guides, height: null, note: null });
+    // The floor itself needs no guide.
+    const shown = surface?.ownerId ? { y: surface.y, polygon: surface.polygon } : null;
+    dragFeedback.set({ objectId: this.primary.id, blockers: [], violations, guides, height: null, note: null, surface: shown });
   }
 
   private readout(pos: Vec3) {
@@ -334,28 +353,26 @@ export class MoveSession implements DragSession {
     return best?.p ?? null;
   }
 
+  /** Release: exactly where it is; the resting-on link follows exact contact (or none). */
   up() {
-    cancelAnimationFrame(this.raf);
-    if (this.pending) this.tick(this.pending);
-    const { offset, dy, hit } = this.last;
+    const { offset, dy } = this.last;
     const [px, py, pz] = this.primary.transform.position;
     let ops: SceneOp[] = [];
     if (this.kind === 'wall') {
       if (this.last.pos) ops = [{ type: 'move', objectId: this.primary.id, transform: makeTransform(this.last.pos, this.last.yaw ?? 0) }];
     } else if (this.kind === 'ceiling' || this.kind === 'ceilingLift') {
       ops = [{ type: 'move', objectId: this.primary.id, transform: { ...this.primary.transform, position: [px + offset[0], py + dy, pz + offset[1]] } }];
-    } else if (this.kind === 'lift' || (this.small && this.roots.length === 1)) {
+    } else if (this.roots.length === 1) {
       const t = { ...this.primary.transform, position: [px + offset[0], py + dy, pz + offset[1]] as Vec3 };
-      ops = moveWithSupport(this.ctx, this.scene, this.primary.id, t, this.kind === 'move' && hit ? { support: hit } : {});
+      ops = contactMove(this.ctx, this.statics, this.primary, t);
     } else {
-      ops = groupTransformOps(this.ctx, this.scene, this.rootIds, offset, 0, [0, 0]);
+      ops = groupTransformOps(this.ctx, this.scene, this.rootIds, offset, 0, [0, 0], { settle: false });
     }
     const moved = Math.hypot(offset[0], offset[1]) > 1e-6 || Math.abs(dy) > 1e-6 || this.kind === 'wall';
     finish(this.kind === 'lift' ? 'Lift' : 'Move', moved ? ops : [], this.rootIds);
   }
 
   cancel() {
-    cancelAnimationFrame(this.raf);
     restore(this.rootIds);
     interaction.lastDragEndAt = performance.now();
     dragFeedback.clear();
@@ -380,8 +397,6 @@ export class RotateSession implements DragSession {
   private readonly dial: YawDial;
   private readonly prior: Set<string>;
   private last = { dYaw: 0 };
-  private pending: PointerEvent | null = null;
-  private raf = 0;
   readonly ok: boolean;
 
   constructor(private readonly host: Host, down: PointerEvent) {
@@ -401,8 +416,7 @@ export class RotateSession implements DragSession {
   }
 
   move(e: PointerEvent) {
-    this.pending = e;
-    if (!this.raf) this.raf = requestAnimationFrame(() => { this.raf = 0; if (this.pending) this.tick(this.pending); });
+    this.tick(e);
   }
 
   private tick(e: PointerEvent) {
@@ -428,19 +442,16 @@ export class RotateSession implements DragSession {
     });
     const yaw0 = yawFromQuat(this.roots[0]!.transform.rotation);
     const shown = Math.round((((normalizeAngle(yaw0 + dYaw) * 180) / Math.PI) % 360 + 360) % 360);
-    dragFeedback.set({ objectId: this.roots[0]!.id, blockers: [], violations, note: `${shown}°${e.shiftKey ? ' · 15° steps' : ''}` });
+    dragFeedback.set({ objectId: this.roots[0]!.id, blockers: [], violations, angle: `${shown}°` });
   }
 
   up() {
-    cancelAnimationFrame(this.raf);
-    if (this.pending) this.tick(this.pending);
     const { dYaw } = this.last;
     const ops = Math.abs(dYaw) > 1e-9 ? groupTransformOps(this.ctx, this.scene, this.rootIds, [0, 0], dYaw, this.pivot, { settle: false }) : [];
     finish('Rotate', ops, this.rootIds);
   }
 
   cancel() {
-    cancelAnimationFrame(this.raf);
     restore(this.rootIds);
     interaction.lastDragEndAt = performance.now();
     dragFeedback.clear();

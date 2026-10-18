@@ -186,3 +186,67 @@ describe('resolveDraft', () => {
     expect(r.ops).toEqual([{ type: 'delete', objectId: chair.id }]);
   });
 });
+
+describe('contact snapping (a placement aid while suggesting)', () => {
+  it('snaps a lifted piece onto the exposed top of a table within 12 cm, and the floor near it', async () => {
+    const { snapToSurface, exposedTops, localBoxes } = await import('../src');
+    const near = snapToSurface(ctx, base.objects, vase, makeTransform([-1.5, 0.68, -1.5], 0));
+    expect(near.transform.position[1]).toBeCloseTo(0.75, 9);
+    expect(near.surface?.ownerId).toBe(table.id);
+    const far = snapToSurface(ctx, base.objects, vase, makeTransform([-1.5, 0.4, -1.5], 0));
+    expect(far.surface).toBeUndefined();
+    expect(far.transform.position[1]).toBe(0.4);
+    const floor = snapToSurface(ctx, base.objects, chair, makeTransform([0, 0.07, 0], 0));
+    expect(floor.surface?.ownerId).toBeNull();
+    // Table legs are covered by the top: only the top slab is exposed.
+    const tops = exposedTops(localBoxes(table).boxes);
+    expect(tops.every((t) => Math.abs(t.y - 0.75) < 1e-9)).toBe(true);
+  });
+
+  it('never snaps a piece onto something it cannot rest on (large furniture stays on the floor)', async () => {
+    const { snapToSurface } = await import('../src');
+    const r = snapToSurface(ctx, base.objects, sofa, makeTransform([-1.5, 0.7, -1.5], 0));
+    expect(r.surface).toBeUndefined();
+  });
+});
+
+describe('Accept turns gravity back on', () => {
+  it('a piece left in the air settles onto the surface beneath it, re-parented', () => {
+    const lamp = obj(20, { category: 'lamp', pos: [1.5, 0, -0.5], dims: [0.2, 0.4, 0.2] });
+    const s = scene([...base.objects, lamp]);
+    const d = draftOf(s, [{ type: 'move', objectId: lamp.id, transform: makeTransform([-1.3, 1.4, -1.5], 0) }]);
+    expect(get(d, 20).transform.position[1]).toBe(1.4); // the draft keeps exactly what the user did
+    const r = resolveDraft(ctx, s, d);
+    if (!r.ok) throw new Error(r.unresolved[0]!.message);
+    const settled = get(r.scene, 20);
+    expect(settled.transform.position[1]).toBeCloseTo(0.75, 9);
+    expect(settled.placement).toEqual({ support: 'object', parentId: table.id });
+    expect(r.report[0]).toMatchObject({ objectId: lamp.id, outcome: 'applied' });
+    expect(r.report[0]!.settledM).toBeCloseTo(0.65, 9);
+  });
+
+  it('a piece in mid-air over the floor falls to the floor; Float keeps it up', () => {
+    const d = draftOf(base, [{ type: 'move', objectId: chair.id, transform: makeTransform([0, 0.8, 0], 0) }]);
+    const r = resolveDraft(ctx, base, d);
+    if (!r.ok) throw new Error(r.unresolved[0]!.message);
+    expect(get(r.scene, 4).transform.position[1]).toBe(0);
+    const f = draftOf(d, [{ type: 'setPlacement', objectId: chair.id, placement: { support: 'floor', float: true } }]);
+    const rf = resolveDraft(ctx, base, f);
+    if (!rf.ok) throw new Error(rf.unresolved[0]!.message);
+    expect(get(rf.scene, 4).transform.position[1]).toBe(0.8);
+  });
+
+  it('a support lowered by gravity takes what it carries along; a finish change never moves anything', () => {
+    const d = draftOf(base, [{ type: 'move', objectId: table.id, transform: makeTransform([-1.5, 0.3, -1.5], 0) }]);
+    expect(get(d, 2).transform.position[1]).toBeCloseTo(1.05, 9);
+    const r = resolveDraft(ctx, base, d);
+    if (!r.ok) throw new Error(r.unresolved[0]!.message);
+    expect(get(r.scene, 1).transform.position[1]).toBe(0);
+    expect(get(r.scene, 2).transform.position[1]).toBeCloseTo(0.75, 9);
+    const floating = scene([{ ...chair, transform: makeTransform([1.5, 0.02, -1.5], 0) }]);
+    const m = draftOf(floating, [{ type: 'changeMaterial', objectId: chair.id, overrides: { seat: { colorHex: '#000000' } } }]);
+    const rm = resolveDraft(ctx, floating, m);
+    if (!rm.ok) throw new Error(rm.unresolved[0]!.message);
+    expect(get(rm.scene, 4).transform.position[1]).toBe(0.02);
+  });
+});

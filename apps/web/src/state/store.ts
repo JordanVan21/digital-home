@@ -4,9 +4,9 @@ import type {
   AssetSpec, RenovationDecision, RoomShell, SceneAppearance, SceneObject, SceneOp, SceneSpec, Tilt, Vec2, Vec3,
 } from '@house/contracts';
 import {
-  applyOps, carryTransform, ceilingPose, classOf, deleteWithSettle, diffScenes, draftConflicts, duplicateObject, emptyHistory,
-  findFreeSpot, findSupport, findWallSpot, groupTransformOps, hasDifferences, makeTransform, moveWithSupport, normalizeAngle,
-  objectFromAsset, pushHistory, redo as redoHistory, resizeOps, resolveDraft, rootsOf, selectionPivot, setAsset, setOwnership,
+  applyOps, carryTransform, ceilingPose, classOf, diffScenes, draftConflicts, duplicateObject, emptyHistory,
+  findFreeSpot, findSupport, findWallSpot, groupTransformOps, hasDifferences, makeTransform, normalizeAngle,
+  objectFromAsset, placementFor, pushHistory, settleWithGravity, snapToSurface, redo as redoHistory, resizeOps, resolveDraft, rootsOf, selectionPivot, setAsset, setOwnership,
   stableStringify, subtreeIds, tiltOps, undo as undoHistory, validateScene, yawFromQuat,
   type History, type OpContext, type OpError, type ResolutionEntry, type Violation,
 } from '@house/scene-engine';
@@ -338,6 +338,7 @@ function summarize(report: ResolutionEntry[], name: (id: string) => string): str
     if (r.outcome === 'moved') parts.push(`${name(r.objectId)} moved ${Math.round(r.distanceM! * 100)} cm to fit`);
     if (r.outcome === 'reverted') parts.push(`${name(r.objectId)} kept in place (no room)`);
     if (r.outcome === 'dropped') parts.push(`${name(r.objectId)} not added (no room)`);
+    if (r.outcome !== 'reverted' && r.outcome !== 'dropped' && (r.settledM ?? 0) > 0.01) parts.push(`${name(r.objectId)} settled ${Math.round(r.settledM! * 100)} cm`);
   }
   return parts.join(' · ');
 }
@@ -588,21 +589,26 @@ export function setDecision(id: string, decision: RenovationDecision | null) {
   commit('Set plan decision', setOwnership(id, decision));
 }
 
-/** Delete the selection; whatever rests on deleted items settles to the next support below. */
+/**
+ * Delete the selection (a suggestion). Whatever rested on a deleted piece stays exactly where it
+ * was, detached; gravity brings it down when the suggestions are accepted.
+ */
 export function deleteSelected() {
   const c = ctxOrNull();
   if (!c || !c.s.selectedIds.length) return;
   const roots = rootsOf(c.scene, c.s.selectedIds);
-  let cur = c.scene;
+  const gone = new Set(roots.map((r) => r.id));
+  const locked = roots.find((r) => r.locked);
+  if (locked) return toast(`${locked.displayName} is locked. Unlock it to delete it.`, 'warning');
   const ops: SceneOp[] = [];
-  for (const r of roots) {
-    const d = deleteWithSettle(c.ctx, cur, r.id);
-    if (!d.ok) return toast(describeOpError(d.error), 'warning');
-    const applied = applyOps({ ...c.ctx, geometry: 'report' }, cur, d.ops);
-    if (!applied.ok) return toast(describeOpError(applied.error), 'warning');
-    cur = applied.scene;
-    ops.push(...d.ops);
+  for (const o of c.scene.objects) {
+    const pid = o.placement?.parentId;
+    if (pid && gone.has(pid) && !gone.has(o.id)) {
+      const { parentId: _p, ...rest } = o.placement!;
+      ops.push({ type: 'setPlacement', objectId: o.id, placement: { ...rest, support: rest.support === 'object' ? 'floor' : rest.support } });
+    }
   }
+  for (const r of roots) ops.push({ type: 'delete', objectId: r.id });
   if (commit('Delete', ops, { select: [] }).ok) {
     toast(roots.length === 1 ? `Deleted ${roots[0]!.displayName}` : `Deleted ${roots.length} items`);
   }
@@ -693,7 +699,7 @@ export function nudge(delta: Vec2) {
   if (!c || !c.s.selectedIds.length) return;
   const roots = rootsOf(c.scene, c.s.selectedIds).filter((o) => !o.locked);
   if (!roots.length) return toast('Locked items can’t be moved.', 'warning');
-  commit('Nudge', groupTransformOps(c.ctx, c.scene, roots.map((r) => r.id), delta, 0, [0, 0]));
+  commit('Nudge', groupTransformOps(c.ctx, c.scene, roots.map((r) => r.id), delta, 0, [0, 0], { settle: false }));
 }
 
 /** Vertical nudge — wall/ceiling items, or items with Float on. */
@@ -733,49 +739,57 @@ export function setYaw(id: string, yaw: number) {
 }
 
 /**
- * Type an exact coordinate (the inspector's X / Y / Z fields). X and Z keep the piece on its
- * support; raising Y above its support turns Float on so it stays where it was put.
+ * Type an exact coordinate (the inspector's X / Y / Z fields): the piece goes exactly there. It rests
+ * on whatever it then touches exactly; gravity applies only at Accept (unless Float is on).
  */
 export function setPosition(id: string, axis: 0 | 1 | 2, value: number) {
   const c = ctxOrNull();
   const o = objectById(id);
   if (!c || !o || !Number.isFinite(value)) return;
   const position = [...o.transform.position] as Vec3;
-  position[axis] = axis === 1 ? Math.max(c.ctx.shell.floor.elevationY, value) : value;
-  const transform = { ...o.transform, position };
-  const cls = classOf(c.ctx, o);
-  if (cls === 'wall' || cls === 'ceiling') {
-    commit('Set position', [{ type: 'move', objectId: id, transform }]);
-    return;
-  }
-  if (axis !== 1) {
-    commit('Set position', moveWithSupport(c.ctx, c.scene, id, transform, { settle: !o.placement?.float }));
-    return;
-  }
-  const below = findSupport(c.scene.objects.filter((x) => x.id !== id), { ...o, transform }, { assets: c.ctx.assets, floorY: c.ctx.shell.floor.elevationY }, { maxY: position[1] });
-  if (position[1] > below.y + 1e-4 && !o.placement?.float) {
-    commit('Set height', [
-      { type: 'setPlacement', objectId: id, placement: { ...(o.placement ?? { support: 'floor' }), float: true } },
-      { type: 'move', objectId: id, transform },
-    ]);
-  } else {
-    commit('Set height', moveWithSupport(c.ctx, c.scene, id, transform, { settle: !o.placement?.float }));
-  }
+  position[axis] = value;
+  commit('Set position', contactMove(c.ctx, c.scene.objects, o, { ...o.transform, position }));
 }
 
-export function setFloat(id: string, float: boolean) {
+/**
+ * A move plus the placement implied by exact contact (codex): resting on the face it touches, or
+ * free when it touches nothing. Wall and ceiling items keep their mounting.
+ */
+export function contactMove(ctx: OpContext, objects: readonly SceneObject[], o: SceneObject, transform: SceneObject['transform']): SceneOp[] {
+  const ops: SceneOp[] = [{ type: 'move', objectId: o.id, transform }];
+  const cls = classOf(ctx, o);
+  if (cls === 'wall' || cls === 'ceiling') return ops;
+  const moved = { ...o, transform };
+  const y = transform.position[1];
+  // Exact contact: a designed support surface first (seat, shelf board, top), then any exposed face.
+  const others = objects.filter((x) => x.id !== o.id);
+  const designed = findSupport(others, moved, { assets: ctx.assets, floorY: ctx.shell.floor.elevationY }, { maxY: y + 1e-4 });
+  const face = Math.abs(designed.y - y) < 1e-4 ? null : snapToSurface(ctx, others, moved, transform, 1e-4).surface;
+  const hit = Math.abs(designed.y - y) < 1e-4 ? designed : face ? { ownerId: face.ownerId, surfaceId: 'contact', y: face.y } : null;
+  const placement = placementFor(ctx, { ...o, placement: { ...(o.placement ?? { support: 'floor' }), parentId: undefined } }, hit);
+  if (stableStringify(placement) !== stableStringify(o.placement ?? { support: 'floor' })) ops.push({ type: 'setPlacement', objectId: o.id, placement });
+  return ops;
+}
+
+/** Put a piece down now (explicit gravity): it lands on the surface beneath it, Float off. */
+export function placeOnSurface(id: string) {
   const c = ctxOrNull();
   const o = objectById(id);
   if (!c || !o) return;
+  const { float: _f, ...placement } = o.placement ?? { support: 'floor' as const };
+  const settled = settleWithGravity(c.ctx, c.scene.objects, { ...o, placement }).object;
+  const ops: SceneOp[] = [{ type: 'move', objectId: id, transform: settled.transform }];
+  if (stableStringify(settled.placement) !== stableStringify(o.placement ?? { support: 'floor' })) ops.push({ type: 'setPlacement', objectId: id, placement: settled.placement! });
+  commit('Place on surface', ops);
+}
+
+export function setFloat(id: string, float: boolean) {
+  const o = objectById(id);
+  if (!o) return;
   const placement = { ...(o.placement ?? { support: 'floor' as const }), ...(float ? { float: true } : {}) };
   if (!float) delete (placement as { float?: boolean }).float;
-  const ops: SceneOp[] = [{ type: 'setPlacement', objectId: id, placement }];
-  if (!float) {
-    // Turning Float off lets it settle right away.
-    const after = applyOps({ ...c.ctx, geometry: 'report' }, c.scene, ops);
-    if (after.ok) ops.push(...moveWithSupport(c.ctx, after.scene, id, o.transform));
-  }
-  commit(float ? 'Float on' : 'Float off', ops);
+  // Turning Float off doesn't drop it now: gravity applies when the suggestions are accepted.
+  commit(float ? 'Float on' : 'Float off', [{ type: 'setPlacement', objectId: id, placement }]);
 }
 
 export function setTilt(id: string, tilt: Tilt) {
