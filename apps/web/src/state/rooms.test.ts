@@ -8,7 +8,7 @@ import {
   SceneSpecSchema,
   type RoomDefinition,
 } from "@house/contracts";
-import { validateObject } from "@house/scene-engine";
+import { snapToSurface, validateObject } from "@house/scene-engine";
 import { contextFor, createEditor } from "./editor";
 import { LocalStorageSceneRepository } from "./repository";
 import { roomById, rooms } from "./rooms";
@@ -278,6 +278,60 @@ describe("Jordan's fixtures in this engine's conventions", () => {
           );
       }
     }
+  });
+});
+
+describe("test2's open bookshelf", () => {
+  const room = rooms[1],
+    ctx = contextFor(room);
+  const shelfItems = (scene: ReturnType<typeof room.createScene>) => {
+    const byId = new Map(scene.objects.map((o) => [o.id, o]));
+    const shelf = scene.objects.find(
+      (o) => o.displayName === "Open bookshelf",
+    )!;
+    return {
+      shelf,
+      items: scene.objects.filter((o) => {
+        let p = o.placement?.parentId
+          ? byId.get(o.placement.parentId)
+          : undefined;
+        while (p && p !== shelf && p.placement?.support === "object")
+          p = byId.get(p.placement.parentId!);
+        return p === shelf;
+      }),
+    };
+  };
+  it("holds its books, dishes and plants at their authored board heights", () => {
+    const scene = room.createScene(),
+      { items } = shelfItems(scene);
+    expect(items).toHaveLength(18);
+    for (const o of items)
+      expect(validateObject(scene, o, ctx), o.displayName).toEqual({
+        ok: true,
+      });
+  });
+  it("snaps a book dropped just above a board onto the real board", () => {
+    const scene = room.createScene(),
+      { shelf, items } = shelfItems(scene);
+    const book = items.find(
+      (o) => o.displayName === "Book" && o.transform.position[1] === 1.73,
+    )!;
+    const lifted = {
+      ...book.transform,
+      position: [
+        book.transform.position[0],
+        1.75,
+        book.transform.position[2],
+      ] as [number, number, number],
+    };
+    const { transform, surface } = snapToSurface(
+      scene,
+      book,
+      lifted,
+      room.shell,
+    );
+    expect(surface?.placement.parentId).toBe(shelf.id);
+    expect(transform.position[1]).toBeCloseTo(1.73, 3);
   });
 });
 

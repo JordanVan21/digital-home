@@ -1,15 +1,34 @@
 import { BufferGeometry, EdgesGeometry, Float32BufferAttribute } from "three";
 type Blocks = number[][][];
-const cache = new WeakMap<Blocks, Float32Array>();
-const round = (n: number) => Math.round(n * 1e8) / 1e8;
+const cache = new WeakMap<Blocks, Map<string, Float32Array>>();
+/** Outline corners snap to this real-world step: exact collider tops vary by
+ * fractions of a millimetre, which would otherwise explode the outline grid. */
+export const OUTLINE_STEP_M = 0.005;
 /** Exterior crease edges of the union, with shared faces, coplanar seams and
- * sealed internal cavities removed. Cached in normalized asset coordinates. */
-export function compoundExteriorPositions(boxes: Blocks): Float32Array {
-  const cached = cache.get(boxes);
+ * sealed internal cavities removed. Cached in normalized asset coordinates.
+ * With the model's size, corners snap to OUTLINE_STEP_M along each axis. */
+export function compoundExteriorPositions(
+  boxes: Blocks,
+  dimensionsM?: readonly number[],
+): Float32Array {
+  const step = [0, 1, 2].map((i) =>
+    dimensionsM ? OUTLINE_STEP_M / dimensionsM[i] : 1e-8,
+  );
+  const key = step.join(",");
+  let byStep = cache.get(boxes);
+  if (!byStep) cache.set(boxes, (byStep = new Map()));
+  const cached = byStep.get(key);
   if (cached) return cached;
+  const round = (n: number, axis: number) =>
+    Math.min(1, Math.max(0, Math.round(n / step[axis]) * step[axis]));
   const coords = [0, 1, 2].map((axis) =>
     [
-      ...new Set(boxes.flatMap((b) => [round(b[0][axis]), round(b[1][axis])])),
+      ...new Set(
+        boxes.flatMap((b) => [
+          round(b[0][axis], axis),
+          round(b[1][axis], axis),
+        ]),
+      ),
     ].sort((a, b) => a - b),
   );
   const [nx, ny, nz] = coords.map((c) => c.length - 1),
@@ -22,8 +41,8 @@ export function compoundExteriorPositions(boxes: Blocks): Float32Array {
     queue = new Int32Array(total);
   const lookup = coords.map((c) => new Map(c.map((n, i) => [n, i])));
   for (const [min, max] of boxes) {
-    const lo = min.map((n, i) => lookup[i].get(round(n))!),
-      hi = max.map((n, i) => lookup[i].get(round(n))!);
+    const lo = min.map((n, i) => lookup[i].get(round(n, i))!),
+      hi = max.map((n, i) => lookup[i].get(round(n, i))!);
     for (let z = lo[2]; z < hi[2]; z++)
       for (let y = lo[1]; y < hi[1]; y++)
         for (let x = lo[0]; x < hi[0]; x++) occupied[index(x, y, z)] = 1;
@@ -147,6 +166,6 @@ export function compoundExteriorPositions(boxes: Blocks): Float32Array {
   surface.dispose();
   edges.dispose();
   const output = new Float32Array(result);
-  cache.set(boxes, output);
+  byStep.set(key, output);
   return output;
 }

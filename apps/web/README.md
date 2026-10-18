@@ -127,6 +127,8 @@ Poly Haven imports preserve original PBR materials and meter scale, embed 1K tex
 
 28. Decor tilt (quarter turns about the object's X, then Z) is part of the geometry, not just the look. `dimensionsM` stays the model's upright size; `scaledDimensions`, footprints and `colliderBlocks` use the tilted size, and compound collider blocks are rotated with the model (cached per profile and tilt, so collision BVHs and exposed-face lookups stay cached). The renderer turns the model about its centre and re-bases it on y = 0. There is no tilt control yet; test2's flat books use it.
 
+29. Colliders bake at 2 cm with exact tops (`docs/COLLIDER_PRECISION.md`). Every solid cell with air above it gets its real top height, merged into thin caps, so shelf boards, seats and tabletops are millimetre-exact; seams up to 4 cm are closed for the outside fill so scanned shells stay solid. A piece settles on the highest top under its footprint within 2 cm, and contact uses the same 0.1 mm tolerance as collision because GLB positions are quantized. Convex decomposition (CoACD) was tried and dropped: inaccurate and slow on the scanned models.
+
 ## Verification and known gaps
 
 - The required build, test, typecheck, and lint commands pass. The test suite covers fixture parsing, shipped-file/license coverage, the fixture triangle budget, all operations, locks, rotated/concave bounds, SAT touching/overlap, occupancy exemptions, door clearance, inverse/history behavior, drag commit/rejection/cancel (including GPU-free tests of the actual canvas handler, live red feedback, spring-back, and no model rerenders during pointer movement), autosave debounce/serialization/retry, stale/concurrent saves, reset/recovery, and accessible locked controls.

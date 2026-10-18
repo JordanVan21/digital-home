@@ -20,6 +20,7 @@ it("draws the compound exterior under the current furniture transform without mu
   };
   const normalized = compoundExteriorPositions(
     colliderBlocks(object, assetById),
+    object.dimensionsM,
   );
   const before = Array.from(normalized);
   const renderer = await ReactThreeTestRenderer.create(

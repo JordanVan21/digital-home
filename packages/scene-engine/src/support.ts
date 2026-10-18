@@ -1,5 +1,5 @@
 import { assetById, type AssetSpec } from "@house/contracts";
-import { objectsCollide } from "./collision";
+import { COLLISION_TOLERANCE_M, objectsCollide } from "./collision";
 import { topContactFaces, bottomContactFaces } from "./contactFaces";
 import type {
   RoomShell,
@@ -52,7 +52,12 @@ export type SurfaceFace = {
   placement: NonNullable<SceneObject["placement"]>;
 };
 export const FACE_SNAP_DISTANCE_M = 0.12;
-const CONTACT_EPS_M = 1e-5;
+/** Contact matches the collision tolerance: model files store positions to
+ * tens of micrometres, so authored heights differ from baked tops by that much. */
+const CONTACT_EPS_M = COLLISION_TOLERANCE_M;
+/** Tops at most this much higher under a piece's footprint are part of the same
+ * uneven surface (one 2 cm collider cell); taller ones are obstacles. */
+const SETTLE_BAND_M = 0.02;
 function contactFaces(
   parent: SceneObject,
   child: SceneObject,
@@ -60,24 +65,40 @@ function contactFaces(
 ): SurfaceFace[] {
   if (parent.id === child.id || !overlaps(footprint(parent), footprint(child)))
     return [];
-  const bottom = bottomContactFaces(child, assets);
-  return topContactFaces(parent, assets).flatMap((face) => {
+  const bottom = bottomContactFaces(child, assets),
+    tops = topContactFaces(parent, assets);
+  const under = (polygon: [number, number][]) =>
+    bottom.polygons.some((p) => overlaps(p, polygon));
+  return tops.flatMap((face) => {
     // Retain the bottom-center stability rule, while requiring actual occupied contact.
     if (
       !insidePoint(
         [child.transform.position[0], child.transform.position[2]],
         face.polygonXZ,
       ) ||
-      !bottom.polygons.some((p) => overlaps(p, face.polygonXZ))
+      !under(face.polygonXZ)
     )
       return [];
+    // Real surfaces are uneven by millimetres: rest on the highest nearby top
+    // beneath the piece's footprint, as a real object would.
+    const heightY = Math.max(
+      face.heightY,
+      ...tops
+        .filter(
+          (t) =>
+            t.heightY > face.heightY &&
+            t.heightY <= face.heightY + SETTLE_BAND_M &&
+            under(t.polygonXZ),
+        )
+        .map((t) => t.heightY),
+    );
     const candidate = {
       ...child,
       transform: {
         ...child.transform,
         position: [
           child.transform.position[0],
-          face.heightY - bottom.offsetY,
+          heightY - bottom.offsetY,
           child.transform.position[2],
         ] as [number, number, number],
       },
@@ -88,6 +109,7 @@ function contactFaces(
         key: parent.id,
         face: "top" as const,
         ...face,
+        heightY,
         offsetY: bottom.offsetY,
         label: parent.displayName,
         placement: { support: "object" as const, parentId: parent.id },

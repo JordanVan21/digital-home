@@ -11,7 +11,7 @@ import {
   Ray,
   Vector3,
 } from "three";
-import { createFixtureScene, fixtureId } from "@house/contracts";
+import { assetById, createFixtureScene, fixtureId } from "@house/contracts";
 import { createHistory, yawOf, topY } from "@house/scene-engine";
 import { editor } from "../state/editor";
 import { Furniture } from "./Furniture";
@@ -318,9 +318,13 @@ describe("actual canvas gesture adapter (without GPU)", () => {
       const original = editor
         .working()
         .objects.find((o) => o.id === fixtureId(111))!;
-      const table = editor
-        .working()
-        .objects.find((o) => o.category === "coffee-table")!;
+      // A flat concrete top: the fixture's sculpted walnut table is multi-level.
+      const concrete = assetById["a55e7000-0000-4000-8000-000000000003"];
+      const table = {
+        ...editor.working().objects.find((o) => o.category === "coffee-table")!,
+        assetId: concrete.id,
+        dimensionsM: concrete.dimensionsM,
+      };
       const [x, , z] = table.transform.position;
       const object = {
         ...original,

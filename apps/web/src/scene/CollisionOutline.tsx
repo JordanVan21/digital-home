@@ -13,7 +13,10 @@ export const CollisionOutline = forwardRef<Group, { object: SceneObject }>(
     const lines = useMemo(() => {
       const geometry = new BufferGeometry().setAttribute(
         "position",
-        new Float32BufferAttribute(compoundExteriorPositions(boxes).slice(), 3),
+        new Float32BufferAttribute(
+          compoundExteriorPositions(boxes, [w, h, d]).slice(),
+          3,
+        ),
       );
       geometry.scale(w, h, d).translate(-w / 2, 0, -d / 2);
       return geometry;

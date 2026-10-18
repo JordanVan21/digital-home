@@ -52,24 +52,29 @@ function compoundBoxes(
   bounds: Box3,
   cell: number,
   closeBase: boolean,
+  closeGapsM: number,
 ) {
+  // Seams up to closeGapsM wide are closed by thickening the surface by `grow`
+  // cells for the outside fill, then shrinking the outside back again.
+  const grow = Math.round(closeGapsM / (2 * cell)),
+    pad = grow + 1;
   const origin = bounds.min
     .clone()
     .divideScalar(cell)
     .floor()
     .multiplyScalar(cell)
-    .addScalar(-cell);
+    .addScalar(-cell * pad);
   const size = bounds.max
     .clone()
     .sub(origin)
     .divideScalar(cell)
     .ceil()
-    .addScalar(2);
+    .addScalar(pad + 1);
   const [nx, ny, nz] = size.toArray();
   const total = nx * ny * nz;
-  if (!Number.isFinite(total) || total > 200000 || cell < 0.01)
+  if (!Number.isFinite(total) || total > 4000000 || cell < 0.01)
     throw new Error(
-      "Choose a cell size of at least 1 cm and fewer than 200,000 cells.",
+      "Choose a cell size of at least 1 cm and fewer than 4,000,000 cells.",
     );
   const cells = new Uint8Array(total),
     indexOf = (x: number, y: number, z: number) => x + nx * (y + ny * z);
@@ -80,29 +85,35 @@ function compoundBoxes(
     voxel = new Box3();
   const start = new Vector3(),
     end = new Vector3();
-  for (let i = 0; i < (indices?.count ?? position.count); i += 3) {
-    triangle.a.fromBufferAttribute(position, indices ? indices.getX(i) : i);
-    triangle.b.fromBufferAttribute(
-      position,
-      indices ? indices.getX(i + 1) : i + 1,
-    );
-    triangle.c.fromBufferAttribute(
-      position,
-      indices ? indices.getX(i + 2) : i + 2,
-    );
-    triangleBounds.setFromPoints([triangle.a, triangle.b, triangle.c]);
-    start.copy(triangleBounds.min).sub(origin).divideScalar(cell).floor();
-    end.copy(triangleBounds.max).sub(origin).divideScalar(cell).floor();
-    for (let z = start.z; z <= end.z; z++)
-      for (let y = start.y; y <= end.y; y++)
-        for (let x = start.x; x <= end.x; x++) {
-          const index = indexOf(x, y, z);
-          if (cells[index] === 1) continue;
-          voxel.min.set(x, y, z).multiplyScalar(cell).add(origin);
-          voxel.max.copy(voxel.min).addScalar(cell);
-          if (voxel.intersectsTriangle(triangle)) cells[index] = 1;
-        }
-  }
+  /** Visit every grid cell each triangle's bounds overlap. */
+  const eachTriangleCell = (
+    visit: (index: number, x: number, y: number, z: number) => void,
+  ) => {
+    for (let i = 0; i < (indices?.count ?? position.count); i += 3) {
+      triangle.a.fromBufferAttribute(position, indices ? indices.getX(i) : i);
+      triangle.b.fromBufferAttribute(
+        position,
+        indices ? indices.getX(i + 1) : i + 1,
+      );
+      triangle.c.fromBufferAttribute(
+        position,
+        indices ? indices.getX(i + 2) : i + 2,
+      );
+      triangleBounds.setFromPoints([triangle.a, triangle.b, triangle.c]);
+      start.copy(triangleBounds.min).sub(origin).divideScalar(cell).floor();
+      end.copy(triangleBounds.max).sub(origin).divideScalar(cell).floor();
+      for (let z = start.z; z <= end.z; z++)
+        for (let y = start.y; y <= end.y; y++)
+          for (let x = start.x; x <= end.x; x++)
+            visit(indexOf(x, y, z), x, y, z);
+    }
+  };
+  eachTriangleCell((index, x, y, z) => {
+    if (cells[index] === 1) return;
+    voxel.min.set(x, y, z).multiplyScalar(cell).add(origin);
+    voxel.max.copy(voxel.min).addScalar(cell);
+    if (voxel.intersectsTriangle(triangle)) cells[index] = 1;
+  });
   let surfaceCells = 0;
   for (const v of cells) if (v === 1) surfaceCells++;
   // Flood-fill exterior. Closed regions become solid; open meshes can leak.
@@ -118,6 +129,27 @@ function compoundBoxes(
       for (let y = 0; y < baseY; y++)
         for (let x = 0; x < nx; x++) cells[indexOf(x, y, z)] = 2;
   }
+  // Cells within `grow` of the surface (3) block the outside fill for now.
+  const around = (i: number, reach: number, visit: (j: number) => void) => {
+    const x = i % nx,
+      y = Math.floor(i / nx) % ny,
+      z = Math.floor(i / (nx * ny));
+    for (let dz = -reach; dz <= reach; dz++)
+      for (let dy = -reach; dy <= reach; dy++)
+        for (let dx = -reach; dx <= reach; dx++) {
+          const u = x + dx,
+            v = y + dy,
+            w = z + dz;
+          if (u >= 0 && v >= 0 && w >= 0 && u < nx && v < ny && w < nz)
+            visit(indexOf(u, v, w));
+        }
+  };
+  if (grow > 0)
+    for (let i = 0; i < total; i++)
+      if (cells[i] === 1)
+        around(i, grow, (j) => {
+          if (cells[j] === 0) cells[j] = 3;
+        });
   queue[0] = indexOf(0, ny - 1, 0);
   cells[queue[0]] = 2;
   const enqueue = (i: number) => {
@@ -138,10 +170,50 @@ function compoundBoxes(
     if (z > 0) enqueue(i - nx * ny);
     if (z < nz - 1) enqueue(i + nx * ny);
   }
+  // Shrink the outside back over the thickened cells, one layer per step, so
+  // only seams stay closed; the real surface (1) is never crossed.
+  for (let step = 0; step < grow; step++) {
+    const reached: number[] = [];
+    for (let i = 0; i < total; i++)
+      if (cells[i] === 3) {
+        let outside = false;
+        around(i, 1, (j) => {
+          outside ||= cells[j] === 2;
+        });
+        if (outside) reached.push(i);
+      }
+    for (const i of reached) cells[i] = 2;
+  }
+  for (let i = 0; i < total; i++) if (cells[i] === 3) cells[i] = 0;
   let interiorCells = 0;
   for (const v of cells) if (v === 0) interiorCells++;
+  // A solid cell with open air above holds a real top surface somewhere inside
+  // it. Find its true height (the highest triangle point clipped to the cell),
+  // so resting surfaces are exact instead of rounded up to the grid line.
+  const top = new Float64Array(total).fill(-Infinity);
+  const exposed = (x: number, y: number, z: number) =>
+    cells[indexOf(x, y, z)] === 1 &&
+    (y === ny - 1 || cells[indexOf(x, y + 1, z)] === 2);
+  eachTriangleCell((index, x, y, z) => {
+    if (!exposed(x, y, z)) return;
+    voxel.min.set(x, y, z).multiplyScalar(cell).add(origin);
+    voxel.max.copy(voxel.min).addScalar(cell);
+    top[index] = Math.max(top[index], clippedTop(triangle, voxel));
+  });
+  // Geometry that only touches a cell's floor needs no cap when the block below
+  // already ends at that surface; over open space, keep the whole cell as before.
+  for (let z = 0; z < nz; z++)
+    for (let y = 0; y < ny; y++)
+      for (let x = 0; x < nx; x++) {
+        const i = indexOf(x, y, z),
+          floor = origin.y + y * cell;
+        if (top[i] === -Infinity || top[i] - floor > MIN_CAP_M) continue;
+        if (y === 0 || cells[indexOf(x, y - 1, z)] === 2) top[i] = floor + cell;
+      }
   const used = new Uint8Array(total),
     boxes: Box3[] = [];
+  // Exposed cells become caps of their own; everything below merges as before.
+  for (let i = 0; i < total; i++) if (top[i] > -Infinity) used[i] = 1;
   const solid = (x: number, y: number, z: number) =>
     cells[indexOf(x, y, z)] !== 2 && !used[indexOf(x, y, z)];
   // Greedy merging turns the occupied grid into a small compound of solid boxes.
@@ -176,12 +248,100 @@ function compoundBoxes(
           ),
         );
       }
-  return { boxes, surfaceCells, interiorCells };
+  // Merge caps on the same layer whose real tops lie within CAP_MERGE_M, keeping
+  // the highest, so a curved cushion doesn't become one box per cell.
+  const capped = new Uint8Array(total);
+  const cap = (x: number, y: number, z: number) =>
+    top[indexOf(x, y, z)] > -Infinity && !capped[indexOf(x, y, z)];
+  for (let y = 0; y < ny; y++)
+    for (let z = 0; z < nz; z++)
+      for (let x = 0; x < nx; x++) {
+        if (!cap(x, y, z)) continue;
+        let low = top[indexOf(x, y, z)],
+          high = low;
+        const fits = (xx: number, zz: number) => {
+          if (!cap(xx, y, zz)) return false;
+          const t = top[indexOf(xx, y, zz)];
+          return (
+            Math.max(high, t) - Math.min(low, t) <= CAP_MERGE_M &&
+            ((low = Math.min(low, t)), (high = Math.max(high, t)), true)
+          );
+        };
+        let dx = 1,
+          dz = 1;
+        while (x + dx < nx && fits(x + dx, z)) dx++;
+        const row = (zz: number) => {
+          const [l, h] = [low, high];
+          for (let xx = x; xx < x + dx; xx++)
+            if (!fits(xx, zz)) {
+              [low, high] = [l, h];
+              return false;
+            }
+          return true;
+        };
+        while (z + dz < nz && row(z + dz)) dz++;
+        for (let zz = z; zz < z + dz; zz++)
+          for (let xx = x; xx < x + dx; xx++) capped[indexOf(xx, y, zz)] = 1;
+        if (high - (origin.y + y * cell) <= MIN_CAP_M) continue;
+        boxes.push(
+          new Box3(
+            new Vector3(x, y, z).multiplyScalar(cell).add(origin),
+            new Vector3((x + dx) * cell, 0, (z + dz) * cell)
+              .add(origin)
+              .setY(high),
+          ),
+        );
+      }
+  // Cells straddle the model's outer faces; nothing solid lies beyond them,
+  // and float-noise slivers along those faces (under 10 µm) add nothing.
+  const clippedBoxes = boxes
+    .map((b) => b.intersect(bounds))
+    .filter((b) => {
+      const size = b.getSize(new Vector3());
+      return Math.min(size.x, size.y, size.z) > 1e-5;
+    });
+  return { boxes: clippedBoxes, surfaceCells, interiorCells };
+}
+/** Caps whose real tops differ by at most this much merge into one box. */
+const CAP_MERGE_M = 0.002;
+/** Thinner caps add nothing: the block below already ends within 0.1 mm. */
+const MIN_CAP_M = 0.0001;
+const clipped: Vector3[] = Array.from({ length: 9 }, () => new Vector3()),
+  scratch: Vector3[] = Array.from({ length: 9 }, () => new Vector3());
+/** Highest point of a triangle clipped to an axis-aligned box (-Infinity if none). */
+function clippedTop(t: Triangle, box: Box3): number {
+  let poly = clipped,
+    next = scratch,
+    n = 3;
+  poly[0].copy(t.a);
+  poly[1].copy(t.b);
+  poly[2].copy(t.c);
+  for (const axis of ["x", "y", "z"] as const)
+    for (const sign of [1, -1]) {
+      const limit = sign > 0 ? box.max[axis] : box.min[axis];
+      const inside = (p: Vector3) => sign * (limit - p[axis]) >= -1e-9;
+      let m = 0;
+      for (let i = 0; i < n; i++) {
+        const p = poly[i],
+          q = poly[(i + 1) % n];
+        if (inside(p)) next[m++].copy(p);
+        if (inside(p) !== inside(q)) {
+          const f = (limit - p[axis]) / (q[axis] - p[axis]);
+          next[m++].copy(p).lerp(q, f);
+        }
+      }
+      [poly, next] = [next, poly];
+      n = m;
+      if (!n) return -Infinity;
+    }
+  let high = -Infinity;
+  for (let i = 0; i < n; i++) high = Math.max(high, poly[i].y);
+  return Math.min(high, box.max.y);
 }
 export function buildProfile(
   geometry: BufferGeometry,
   cellSize = 0.04,
-  options: { closeBase?: boolean } = {},
+  options: { closeBase?: boolean; closeGapsM?: number } = {},
 ): Profile {
   if (!Number.isFinite(cellSize) || cellSize < 0.01)
     throw new Error("Invalid cell size.");
@@ -198,6 +358,7 @@ export function buildProfile(
     bounds,
     cellSize,
     options.closeBase ?? false,
+    options.closeGapsM ?? 0,
   );
   return {
     geometry,

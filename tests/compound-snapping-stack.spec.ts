@@ -48,11 +48,14 @@ test("snaps to a chair seat, carries the item with its chair, and preserves the 
     )
       throw new Error("Seat snap failed");
   }, moduleUrl);
+  // The real seat under the box is 0.4715–0.475 m (the 4 cm voxel seat was
+  // 0.48); the height field shows three decimals.
+  const onSeat = (y: number) => y > 0.4715 && y <= 0.4755;
   await expect
     .poll(async () =>
-      Number(await page.getByLabel("Height in meters").inputValue()),
+      onSeat(Number(await page.getByLabel("Height in meters").inputValue())),
     )
-    .toBeCloseTo(0.48, 5);
+    .toBe(true);
   await page.getByRole("button", { name: /^Accept suggestions/ }).click();
   await page.evaluate(async (url) => {
     const { editor } = await import(url);
@@ -111,7 +114,7 @@ test("snaps to a chair seat, carries the item with its chair, and preserves the 
     .poll(async () => (await savedStack())?.[1].position[0])
     .toBeCloseTo(0.5);
   const saved = await savedStack();
-  expect(saved[1].position[1]).toBeCloseTo(0.48, 5);
+  expect(onSeat(saved[1].position[1])).toBe(true);
   expect(saved[1].placement).toEqual({
     support: "object",
     parentId: saved[0].id,

@@ -36,7 +36,10 @@ describe("compound support faces", () => {
       support: "object",
       parentId: chair.id,
     });
-    expect(snap.transform.position[1]).toBeCloseTo(0.48, 5);
+    // The real seat slopes 0.469–0.4725 m under the item; it rests on the
+    // highest point beneath it (the 4 cm voxel seat was 0.48).
+    expect(snap.transform.position[1]).toBeGreaterThan(0.4715);
+    expect(snap.transform.position[1]).toBeLessThan(0.475);
     const moved = applyOp(
       scene,
       { type: "move", objectId: item.id, transform: snap.transform },
@@ -75,11 +78,12 @@ describe("compound support faces", () => {
     const scene = { ...fixture, objects: [shelf, item] };
     const snap = snapToSurface(scene, item, item.transform, roomShell);
     expect(snap.surface?.placement.parentId).toBe(shelf.id);
-    expect(snap.transform.position[1]).toBeCloseTo(0.56, 5);
+    // The real board top is 0.546–0.547 m (the 4 cm voxel board was 0.56).
+    expect(snap.transform.position[1]).toBeCloseTo(0.547, 3);
   });
   it("keeps compound contact correct after yaw and scale changes", () => {
     const chair = model(110),
-      item = child(0.98);
+      item = child(0.96);
     chair.transform.rotation = [
       0,
       Math.sin(Math.PI / 8),
@@ -93,6 +97,8 @@ describe("compound support faces", () => {
       item.transform,
       roomShell,
     );
-    expect(snap.transform.position[1]).toBeCloseTo(0.96, 5);
+    // Twice the real seat height under the item (2 × 0.4715–0.475 m).
+    expect(snap.transform.position[1]).toBeGreaterThan(0.943);
+    expect(snap.transform.position[1]).toBeLessThan(0.95);
   });
 });

@@ -7,7 +7,7 @@
 1. `docs/MERGE_GUIDELINES.md`: the rules. It is authoritative.
 2. This file: the plan and progress.
 3. `docs/SESSION_NOTES.md`: environment, decisions and gotchas from the working sessions.
-4. `docs/CONVEX_COLLIDERS.md`: the spec for the next step.
+4. `docs/COLLIDER_PRECISION.md`: the spec for the next step.
 
 ## Framing (user, 2026-10-17)
 
@@ -40,12 +40,13 @@ Codex's interaction stays: controls, the suggest/Accept flow, nearest-surface pl
 - **No soft-furnishings overlap rule.** test2's pillows sit 9–12 cm inside the sofa's back cushion, which is not physically feasible either. They will be re-posed leaning on the cushion once full rotation exists. A small tolerance for soft items may come later, on top of exact geometry.
 - **Every piece can rotate on all three axes**, furniture included.
 - **Rotation controls go in the inspector:** X (pitch), Y (turn) and Z (roll) degree fields with ±15° steps, plus quick poses ("Lay flat", "Lean back 15°"). The existing swivel ring stays for yaw; no extra rings in the 3D view.
-- **Collision moves to convex decomposition**, robotics-style hulls with GJK. The 4 cm voxel boxes are not precise enough. Spec: `docs/CONVEX_COLLIDERS.md`. It must be a general rule, not book- or shelf-specific.
+- **Collider precision: exact surface heights on 2 cm blocks** (options 1 + 2). Convex decomposition (CoACD) was tried and dropped: it was inaccurate and slow on the scanned models. Spec and trial numbers: `docs/COLLIDER_PRECISION.md`. It must be a general rule, not book- or shelf-specific.
+- **Stability rule:** a piece is supported when its centre is over its contact area. Applies from step 5.
 
 ## Checklist (in order)
 
 ### Next: geometry foundation
-- [ ] **4 Convex colliders.** Write the spec's open points up for the user and get approval, then implement it (bake, GJK engine, resting/contact, renderer outline, side-by-side switch against the voxel boxes). This replaces the old "3c exact shelf heights" idea. Acceptance: test2's shelf books and dishes are valid and snap onto the real boards; the chair-under-desk and couch-containment regressions hold; dragging stays smooth.
+- [x] **4 Collider precision** (awaiting commit). Bake at 2 cm and trim every block top to the real geometry (spec: `docs/COLLIDER_PRECISION.md`). Acceptance: test2's shelf books and dishes are valid and snap onto the real boards; the chair-under-desk and couch-containment regressions hold; dragging stays smooth.
 - [ ] **5 Full 3-axis rotation.** Relax the engine's "Keep furniture upright" rule; add X/Y/Z degree fields and quick poses in the inspector; Accept settles a rotated piece by its lowest point (nearest surface, up or down). Fold `tilt` into `transform.rotation` (the importer converts test2's tilts; keep the schema field for compatibility). Re-pose test2's three sofa pillows leaning back against the back cushion. Update the swivel ring to be yaw about world Y for tipped pieces.
 - [ ] **6 (Optional) a few cm of tolerance for soft items,** only if it still feels needed after steps 4 and 5. Ask the user first.
 

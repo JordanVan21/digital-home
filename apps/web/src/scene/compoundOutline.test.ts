@@ -49,7 +49,10 @@ describe("compound exterior outlines", () => {
       })),
     ];
     for (const o of objects) {
-      const positions = compoundExteriorPositions(colliderBlocks(o, assetById));
+      const positions = compoundExteriorPositions(
+        colliderBlocks(o, assetById),
+        o.dimensionsM,
+      );
       expect(positions.length).toBeGreaterThan(0);
       expect(Array.from(positions).every(Number.isFinite)).toBe(true);
     }

@@ -1,6 +1,6 @@
 # Session notes: merge working knowledge (2026-10-17)
 
-Things learned while doing steps 0–3b that are not obvious from the code. See `docs/MERGE_PLAN.md` for the plan and `docs/CONVEX_COLLIDERS.md` for the next step.
+Things learned while doing steps 0–3b that are not obvious from the code. See `docs/MERGE_PLAN.md` for the plan and `docs/COLLIDER_PRECISION.md` for the next step.
 
 ## Environment
 
@@ -66,7 +66,7 @@ Things learned while doing steps 0–3b that are not obvious from the code. See 
 - **Models:** both catalogs are bottom-centred, metre scale, +Z front. Codex's renderer fits each model to `dimensionsM` non-uniformly, so a loosely matched model looks stretched.
 - **Validation:** codex only validates changed and added pieces. A fixture that breaks rules looks fine until you edit near it, then Accept tries to "fix" it. Always check new fixtures with `validateObject` over every object.
 - **Accept:** carries children at their local offset (`moveAssembly`), so a sofa's pillows keep their pose when the sofa moves.
-- **test2 status after step 3b:** the 17 shelf items and 4 sofa items are still invalid under the voxel colliders (see CONVEX_COLLIDERS.md); everything else validates. The demo studio and the scanned studio validate fully.
+- **test2 status after step 3b:** the 17 shelf items and 4 sofa items are still invalid under the voxel colliders (see COLLIDER_PRECISION.md); everything else validates. The demo studio and the scanned studio validate fully.
 
 ## User preferences seen this session
 

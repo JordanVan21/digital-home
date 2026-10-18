@@ -62,19 +62,21 @@ for (const asset of catalog) {
         group.add(child);
       }
     });
-  const profile = buildProfile(bakeGeometry(group), 0.04, { closeBase: true });
+  const profile = buildProfile(bakeGeometry(group), 0.02, {
+    closeBase: true,
+    closeGapsM: 0.04,
+  });
   const bounds = profile.bounds;
   const lo = bounds.min.toArray(),
     hi = bounds.max.toArray();
+  // Six decimals of the unit box is a couple of micrometres: far below the
+  // engine's 0.1 mm collision and 10 µm contact tolerances.
+  const unit = (v, i) => Number(((v - lo[i]) / (hi[i] - lo[i])).toFixed(6));
   models[asset.id] = {
     contentHash: asset.contentHash,
     boxes: profile.boxes.map((box) => [
-      box.min
-        .toArray()
-        .map((v, i) => Math.max(0, (v - lo[i]) / (hi[i] - lo[i]))),
-      box.max
-        .toArray()
-        .map((v, i) => Math.min(1, (v - lo[i]) / (hi[i] - lo[i]))),
+      box.min.toArray().map((v, i) => Math.max(0, unit(v, i))),
+      box.max.toArray().map((v, i) => Math.min(1, unit(v, i))),
     ]),
   };
   console.log(`${asset.title}: ${profile.boxes.length} collision blocks`);
