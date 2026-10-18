@@ -31,39 +31,44 @@ struct ScanFlowView: View {
                 }
             case .scanning, .processing:
                 if let captureID = model.captureID {
-                    RoomCaptureViewRepresentable(stopRequested: model.phase == .processing,
-                                                 onResult: { model.didFinishCapture($0, captureID: captureID) },
-                                                 onError: { model.captureFailed($0, captureID: captureID) })
-                        .id(captureID)
-                        .ignoresSafeArea()
-                        .safeAreaInset(edge: .top) {
+                    // Give RoomPlan its own bounds: overlays/insets can obscure its
+                    // built-in miniature room preview near the bottom of the view.
+                    VStack(spacing: 0) {
+                        VStack(spacing: 8) {
                             HStack {
-                                Text("Single room").font(.headline)
-                                Spacer()
-                                Button("Cancel", role: .cancel) { showCancelConfirmation = true }
+                                Button("Cancel") { showCancelConfirmation = true }
                                     .buttonStyle(.bordered)
-                            }
-                            .padding().background(.regularMaterial)
-                        }
-                        .safeAreaInset(edge: .bottom) {
-                            VStack(spacing: 12) {
+                                Spacer()
+                                Text("Room scan").font(.headline)
+                                Spacer()
                                 if model.phase == .scanning {
-                                    Text("Walk slowly. Scan every wall, then doors, windows and furniture. Finish where you started.")
-                                        .font(.callout).multilineTextAlignment(.center)
                                     Button("Finish scan") { model.finishCapture() }
-                                        .buttonStyle(.borderedProminent).controlSize(.large)
+                                        .buttonStyle(.borderedProminent)
                                 } else {
-                                    ProgressView("Building your room…")
-                                    Text("Keep House open while your scan is processed.").font(.caption)
+                                    ProgressView().accessibilityLabel("Building your room")
                                 }
                             }
-                            .frame(maxWidth: .infinity).padding().background(.regularMaterial)
+                            Text(model.phase == .scanning
+                                 ? "Move slowly. Cover every wall, door, window and furnishing."
+                                 : "Building your room… Keep House open.")
+                                .font(.footnote).multilineTextAlignment(.center)
                         }
-                        .confirmationDialog("Discard this unfinished scan?", isPresented: $showCancelConfirmation,
-                                            titleVisibility: .visible) {
-                            Button("Discard scan", role: .destructive) { model.cancelCapture() }
-                            Button("Keep scanning", role: .cancel) {}
-                        }
+                        .padding(.horizontal).padding(.vertical, 8)
+                        .frame(maxWidth: .infinity).background(.regularMaterial)
+
+                        RoomCaptureViewRepresentable(stopRequested: model.phase == .processing,
+                                                     onResult: { model.didFinishCapture($0, captureID: captureID) },
+                                                     onError: { model.captureFailed($0, captureID: captureID) })
+                            .id(captureID)
+                            .frame(maxWidth: .infinity, maxHeight: .infinity)
+                            .clipped()
+                    }
+                    .alert("Discard this unfinished scan?", isPresented: $showCancelConfirmation) {
+                        Button(model.phase == .processing ? "Keep processing" : "Keep scanning", role: .cancel) {}
+                        Button("Discard scan", role: .destructive) { model.cancelCapture() }
+                    } message: {
+                        Text("Discarding removes this unfinished scan.")
+                    }
                 }
             case .review(let summary, let hint, let uploadable):
                 VStack(spacing: 16) {

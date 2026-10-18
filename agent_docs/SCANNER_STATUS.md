@@ -151,3 +151,10 @@ This update supersedes the initial read-through's build/tooling status above.
 - Second genuine AirDrop capture received and saved unchanged as `apps/ios/Fixtures/real-scan-2.json`; raw structural validation passes. Contains 4 walls, 3 doors, 3 windows, 1 floor, 9 objects. Two genuine captures now exist; room identity/simple-versus-larger coverage is not confirmed.
 - Awaiting phone verification of the updated capture controls. Next test: install with Command-R, unplug; test Keep scanning and Discard; scan a small furnished room and Finish; background a new capture and verify a clear restart message, then start again.
 - Durable saving/preview/list, version 2 export, house capture, diagnostic log and uploader placeholder remain later checkpoints. Current real fixtures are version 1.
+
+### Checkpoint 2 phone feedback and correction
+
+- User reported that the confirmation dialog only exposed Discard and the bottom Finish panel obscured Apple's miniature room preview.
+- Replaced the confirmation dialog with a two-button alert: Keep scanning (Keep processing while building) and Discard scan.
+- Removed the bottom panel. Cancel, Finish and a short guidance line now sit above RoomPlan in a separate vertical layout; the native capture view has unobstructed bounds for its built-in coaching and miniature preview.
+- iPhone build and all 5 Swift tests pass. Visual confirmation of the correction is still required on the real phone before moving to preview/persistent storage.
