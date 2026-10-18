@@ -19,6 +19,10 @@ export function CloudAccount() {
     void supabase.auth
       .getSession()
       .then(({ data }) => setEmail(data.session?.user.email ?? null));
+    const { data } = supabase.auth.onAuthStateChange((_event, session) =>
+      setEmail(session?.user.email ?? null),
+    );
+    return () => data.subscription.unsubscribe();
   }, []);
   useEffect(() => {
     if (!open) return;
@@ -69,7 +73,7 @@ export function CloudAccount() {
         <span>{email ? "My scans" : "Sign in"}</span>
       </button>
       {open && (
-        <div className="room-menu glass" role="dialog" aria-label="Account">
+        <div className="room-menu cloud-menu glass" role="dialog" aria-label="Account">
           {email ? (
             <>
               <p className="cloud-account-email">{email}</p>
@@ -86,7 +90,8 @@ export function CloudAccount() {
                 void signIn();
               }}
             >
-              <p>Use the same account as the House iPhone app.</p>
+              <p className="cloud-title">Open your scans</p>
+              <p>Sign in with the same account as the House iPhone app.</p>
               <input
                 type="email"
                 placeholder="Email"
@@ -102,7 +107,11 @@ export function CloudAccount() {
                 onChange={(e) => setForm({ ...form, password: e.target.value })}
               />
               {error && <p className="cloud-error">{error}</p>}
-              <button type="submit" disabled={busy || !form.email || !form.password}>
+              <button
+                type="submit"
+                className="cloud-submit"
+                disabled={busy || !form.email || !form.password}
+              >
                 <span>{busy ? "Signing in…" : "Sign in"}</span>
               </button>
             </form>
