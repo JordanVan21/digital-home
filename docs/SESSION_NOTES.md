@@ -144,3 +144,7 @@ Shift-click/Shift-marquee selection, primary inspector/rotation, atomic multi-pi
 ## Step 16 completed
 
 Typed groupId/setGroup with inverse, atomic Group/Ungroup suggestions, Ctrl/Cmd+G / Shift modifier, saved group selection, Alt-member pick. Copies detach group identity. Browser caught normal clicks retaining a prior Alt-member selection; fixed and covered. All checks: 223 unit tests, 19 GPU browser tests, format/typecheck/lint/build. Review: `docs/review/STEP_16.md`. Next: wall/ceiling items.
+
+## Step 17 completed
+
+Asset mount metadata (preserved by catalog importer), ceiling support, exact wall contact/opening validation, collision checks for mounted objects, nearest-wall remount on Accept and ceiling attachment. Wall pointer plane rebases when crossing corners and mutates both live position and quaternion; GPU-free regression covers continuation without model rerenders. Explicit transparent glass is corrected on owned materials (opacity/depth/shadow); source artwork had a fully opaque metallic glass layer hiding the picture, confirmed by inspecting both sides in Chrome. All checks: 229 unit tests, 20 GPU browser tests, format/typecheck/lint/build. Review: `docs/review/STEP_17.md`. Next: resize.

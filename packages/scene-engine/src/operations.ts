@@ -1,3 +1,4 @@
+import { hasWallSupport, onCeiling } from "./mounting";
 import { bottomContactFaces } from "./contactFaces";
 import { moveAssembly, supportedDescendants } from "./assembly";
 import { objectsCollide } from "./collision";
@@ -57,12 +58,6 @@ export const occupancyRules = {
   underlayCategories: ["rug"],
   nonFloorSupports: ["wall", "object"],
 } as const;
-function occupiesFloor(o: SceneObject): boolean {
-  return (
-    !occupancyRules.underlayCategories.some((c) => c === o.category) &&
-    !occupancyRules.nonFloorSupports.some((s) => s === o.placement?.support)
-  );
-}
 /**
  * Draft edits pass `allowConflicts` to skip only the checks a later resolve can
  * fix by moving or settling the piece (bounds, wall band, doorway, overlaps,
@@ -109,6 +104,21 @@ export function validateObject(
       "INVALID_SUPPORT",
       "Accept will settle this piece onto the nearest floor or furniture surface.",
     );
+  if (support === "wall" && !hasWallSupport(ctx.room, o))
+    return fail(
+      "INVALID_SUPPORT",
+      "Mount the rear face on a solid part of the wall.",
+    );
+  if (
+    support === "ceiling" &&
+    Math.abs(
+      onCeiling(ctx.room, o).transform.position[1] - o.transform.position[1],
+    ) > 0.0001
+  )
+    return fail(
+      "INVALID_SUPPORT",
+      "Accept will mount this piece on the ceiling.",
+    );
   if (support === "object") {
     const parent = scene.objects.find((p) => p.id === o.placement?.parentId)!;
     if (!canSupport(parent, o, ctx.assets))
@@ -131,14 +141,22 @@ export function validateObject(
     return fail("OUT_OF_BOUNDS", "Leave a little space from the wall.");
   if (
     support !== "wall" &&
+    verticalBounds(o).bottom <
+      ctx.room.floor.elevationY +
+        Math.max(
+          0,
+          ...ctx.room.openings
+            .filter((o) => o.kind === "door")
+            .map((o) => o.bottomM + o.heightM),
+        ) &&
     doorClearances(ctx.room).some((d) => overlaps(rect, d))
   )
     return fail("BLOCKS_OPENING", "Leave the doorway clear.");
-  if (occupiesFloor(o) || support === "object")
+  if (!occupancyRules.underlayCategories.some((c) => c === o.category))
     for (const other of scene.objects) {
       if (
         other.id !== o.id &&
-        (occupiesFloor(other) || other.placement?.support === "object") &&
+        !occupancyRules.underlayCategories.some((c) => c === other.category) &&
         Math.min(topY(o), topY(other)) -
           Math.max(verticalBounds(o).bottom, verticalBounds(other).bottom) >
           1e-7 &&

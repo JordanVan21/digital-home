@@ -105,6 +105,16 @@ function GLB({
         const owned = source.map((m) => {
           const mat = m.clone() as MeshStandardMaterial;
           materials.push(mat);
+          if (mat.transparent && /glass/i.test(m.name)) {
+            mat.opacity = Math.min(mat.opacity, 0.1);
+            mat.depthWrite = false;
+            mat.metalness = 0;
+            mat.roughness = 0.15;
+            mat.map = null;
+            mat.metalnessMap = null;
+            mat.roughnessMap = null;
+            mat.color.set("#ffffff");
+          }
           const override =
             object.materialOverrides?.[m.name] ??
             object.materialOverrides?.["*"];
@@ -114,6 +124,8 @@ function GLB({
           return mat;
         });
         child.material = Array.isArray(child.material) ? owned : owned[0];
+        if (source.every((m) => m.transparent && /glass/i.test(m.name)))
+          child.castShadow = false;
       }
     });
     clone.updateMatrixWorld(true);

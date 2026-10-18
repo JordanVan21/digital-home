@@ -14,6 +14,7 @@ import {
 } from "three";
 import { assetById, createFixtureScene, fixtureId } from "@house/contracts";
 import {
+  onWall,
   createHistory,
   yawOf,
   topY,
@@ -723,4 +724,47 @@ it("hides wall items and lets clicks pass through them when their wall is cut aw
   await renderer.advanceFrames(1, 0.016);
   expect(node.instance.visible).toBe(true);
   editor.motion.wallVisibility.delete(wall);
+});
+
+it("turns a wall item at a corner during an imperative drag and continues on the new face", async () => {
+  const original = editor
+    .working()
+    .objects.find((o) => o.id === fixtureId(111))!;
+  const object = onWall(editor.context().room, {
+    ...original,
+    category: "wall-art",
+    dimensionsM: [0.6, 0.5, 0.03],
+    transform: { ...original.transform, position: [-0.7, 1.1, -2.1] },
+  });
+  editor.scene.setState({ scene: { ...editor.working(), objects: [object] } });
+  renderer = await ReactThreeTestRenderer.create(<Furniture object={object} />);
+  const node = renderer.scene.children[0];
+  const event = (point: [number, number, number], clientX: number) => ({
+    ...pointer(point[0], point[2], clientX),
+    ray: new Ray(
+      new Vector3(8, 8, 8),
+      new Vector3(...point).sub(new Vector3(8, 8, 8)).normalize(),
+    ),
+  });
+  await renderer.fireEvent(
+    node,
+    "pointerDown",
+    event(object.transform.position, 100),
+  );
+  const renders = model.renders;
+  await renderer.fireEvent(
+    node,
+    "pointerMove",
+    event([-2.8, 1.1, object.transform.position[2]], 150),
+  );
+  expect(yawOf((node.instance as Group).quaternion.toArray())).toBeCloseTo(
+    Math.PI / 2,
+  );
+  const z = (node.instance as Group).position.z;
+  await renderer.fireEvent(node, "pointerMove", event([-2.525, 1.1, -1], 180));
+  expect((node.instance as Group).position.z).toBeGreaterThan(z + 0.2);
+  expect(model.renders).toBe(renders);
+  await renderer.fireEvent(node, "pointerUp", event([-2.525, 1.1, -1], 180));
+  expect(editor.draft.getState().undo).toHaveLength(1);
+  expect(editor.selected()?.placement?.parentId).toBe(fixtureId(13));
 });

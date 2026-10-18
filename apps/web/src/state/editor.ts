@@ -13,6 +13,8 @@ import {
 } from "@house/contracts";
 import {
   applyOp,
+  onWall,
+  onCeiling,
   moveAssembly,
   supportedDescendants,
   createHistory,
@@ -803,6 +805,43 @@ export function createEditor(
         scale: [1, 1, 1],
       },
     };
+    if (a.mount === "wall" || a.mount === "ceiling") {
+      const [mountX, mountZ] = floorCenter(sceneContext.room);
+      for (let ring = 0; ring <= 60; ring++)
+        for (let k = 0; k < Math.max(1, ring * 8); k++) {
+          const angle = (k / Math.max(1, ring * 8)) * Math.PI * 2;
+          const proposed = {
+            ...candidate,
+            transform: {
+              ...candidate.transform,
+              position: [
+                mountX + Math.cos(angle) * ring * 0.1,
+                sceneContext.room.floor.elevationY + 1.25,
+                mountZ + Math.sin(angle) * ring * 0.1,
+              ] as Vec3,
+            },
+          };
+          const mounted =
+            a.mount === "wall"
+              ? onWall(sceneContext.room, proposed, true)
+              : onCeiling(sceneContext.room, proposed);
+          if (
+            validateOp(
+              working(),
+              { type: "add", object: mounted },
+              sceneContext,
+            ).ok
+          ) {
+            if (suggest({ type: "add", object: mounted })) {
+              select(mounted.id);
+              interaction.setState({ browser: false, replacing: false });
+            }
+            return;
+          }
+        }
+      notify("No free mounting space. Move another piece first.");
+      return;
+    }
     // Search deterministic concentric rings from the center, nearest free location first.
     // First pass checks the piece's full rotation circle (a square as wide as its
     // diagonal) so it isn't wedged against a neighbour and can rotate in place;

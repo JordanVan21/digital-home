@@ -172,7 +172,7 @@ export const SceneObjectSchema = z.object({
   materialOverrides: MaterialOverridesSchema.optional(),
   placement: z
     .object({
-      support: z.enum(["floor", "wall", "object"]),
+      support: z.enum(["floor", "wall", "object", "ceiling"]),
       parentId: UUIDSchema.optional(),
     })
     .optional(),
@@ -233,6 +233,7 @@ export const AssetSpecSchema = z.object({
   contentHash: z.string(),
   searchableDescription: z.string(),
   embeddingVersion: z.string().optional(),
+  mount: z.enum(["floor", "wall", "ceiling"]).optional(),
   light: AssetLightSchema.optional(),
 });
 export const SceneOpSchema = z.discriminatedUnion("type", [

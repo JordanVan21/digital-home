@@ -1,3 +1,4 @@
+import { onWall, onCeiling } from "./mounting";
 import { assetById, type AssetSpec } from "@house/contracts";
 import {
   COLLISION_TOLERANCE_M,
@@ -218,6 +219,13 @@ export function snapToSurface(
   assets: Readonly<Record<string, AssetSpec>> = assetById,
 ): { transform: Transform; surface?: SurfaceFace } {
   if (o.locked || o.placement?.support === "wall") return { transform };
+  if (o.placement?.support === "ceiling") {
+    const mounted = onCeiling(room, { ...o, transform });
+    return Math.abs(mounted.transform.position[1] - transform.position[1]) <=
+      distanceM
+      ? { transform: mounted.transform }
+      : { transform };
+  }
   const candidate = { ...o, transform };
   const nearest = rankedFaces(scene, candidate, room, assets)[0];
   if (
@@ -235,7 +243,9 @@ export function withContactSupport(
   room: RoomShell,
   assets: Readonly<Record<string, AssetSpec>> = assetById,
 ): SceneObject {
-  if (o.placement?.support === "wall") return o;
+  if (o.placement?.support === "wall")
+    return { ...o, placement: onWall(room, o).placement };
+  if (o.placement?.support === "ceiling") return o;
   const nearest = rankedFaces(scene, o, room, assets)[0];
   return nearest &&
     Math.abs(nearest.object.transform.position[1] - o.transform.position[1]) <=
@@ -250,7 +260,8 @@ export function onNearestSurface(
   room: RoomShell,
   assets: Readonly<Record<string, AssetSpec>> = assetById,
 ): SceneObject {
-  if (o.placement?.support === "wall") return o;
+  if (o.placement?.support === "wall") return onWall(room, o, true);
+  if (o.placement?.support === "ceiling") return onCeiling(room, o);
   return rankedFaces(scene, o, room, assets)[0].object;
 }
 

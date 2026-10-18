@@ -62,6 +62,11 @@ for (const a of source.assets) {
     contentHash: createHash("sha256").update(glb).digest("hex"),
     searchableDescription: a.searchableDescription,
     ...(a.light ? { light: a.light } : {}),
+    ...(a.category === "pendant"
+      ? { mount: "ceiling" }
+      : a.category === "wall_art"
+        ? { mount: "wall" }
+        : {}),
   });
 }
 await fs.writeFile(

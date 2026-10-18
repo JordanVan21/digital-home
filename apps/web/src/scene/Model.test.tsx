@@ -117,3 +117,33 @@ it("switches owned bulb emissive materials without changing the cached source", 
     await renderer.unmount();
   }
 });
+
+it("keeps imported transparent glass clear without opaque shadows or changing cached materials", async () => {
+  const scene = new Group(),
+    material = new MeshStandardMaterial({
+      transparent: true,
+      opacity: 1,
+      metalness: 1,
+    });
+  material.name = "picture_glass";
+  scene.add(new Mesh(new BoxGeometry(), material));
+  loader.scene = scene;
+  const object = createFixtureScene().objects.find(
+    (o) => o.id === fixtureId(100),
+  )!;
+  const renderer = await ReactThreeTestRenderer.create(
+    <Model object={object} />,
+  );
+  try {
+    const mesh = renderer.scene.findAll((n) => n.instance instanceof Mesh)[0]
+      .instance as Mesh;
+    const owned = mesh.material as MeshStandardMaterial;
+    expect(owned.opacity).toBeLessThanOrEqual(0.12);
+    expect(owned.depthWrite).toBe(false);
+    expect(mesh.castShadow).toBe(false);
+    expect(material.opacity).toBe(1);
+    expect(material.metalness).toBe(1);
+  } finally {
+    await renderer.unmount();
+  }
+});

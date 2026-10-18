@@ -57,7 +57,7 @@ describe("adding furniture", () => {
     }
     e.dispose();
   });
-  it("gives every catalog piece room to rotate in an empty room", () => {
+  it("places every catalog piece, keeping free wall turns until Accept", () => {
     for (const asset of catalog) {
       const e = createEditor();
       e.scene.setState({
@@ -67,6 +67,10 @@ describe("adding furniture", () => {
       const added = e.selected();
       expect(added?.assetId, asset.title).toBe(asset.id);
       e.rotate(1);
+      if (asset.mount === "wall") {
+        expect(e.draft.getState().conflicts[added!.id]).toBeDefined();
+        expect(e.accept()).toBe(true);
+      }
       expect(
         e.draft.getState().conflicts[added!.id],
         asset.title,

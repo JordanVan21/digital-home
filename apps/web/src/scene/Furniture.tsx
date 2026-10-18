@@ -17,6 +17,8 @@ import {
 import type { SceneObject, Transform } from "@house/contracts";
 import {
   snapToSurface,
+  onWall,
+  wallFrame,
   tiltedDimensions,
   validateOp,
   yawOf,
@@ -86,6 +88,7 @@ export const Furniture = memo(function Furniture({
     startX: 0,
     startY: 0,
     moved: false,
+    wallId: undefined as string | undefined,
     shiftSelection: null as string[] | null,
     startYaw: 0,
     startAngle: 0,
@@ -217,7 +220,19 @@ export const Furniture = memo(function Furniture({
   ) => {
     const state = drag.current;
     state.height = height;
-    if (height) {
+    const wall =
+      latest.current.placement?.support === "wall"
+        ? wallFrame(
+            editor.context().room,
+            state.wallId ?? latest.current.placement.parentId ?? "",
+          )
+        : undefined;
+    if (wall) {
+      state.plane.setFromNormalAndCoplanarPoint(
+        new Vector3(wall.normal[0], 0, wall.normal[1]),
+        new Vector3(...current.position),
+      );
+    } else if (height) {
       const normal = new Vector3(e.ray.direction.x, 0, e.ray.direction.z);
       if (normal.lengthSq() < 1e-8) normal.set(0, 0, 1);
       state.plane.setFromNormalAndCoplanarPoint(
@@ -287,6 +302,10 @@ export const Furniture = memo(function Furniture({
     state.startX = e.clientX;
     state.startY = e.clientY;
     const current = latest.current.transform;
+    state.wallId =
+      latest.current.placement?.support === "wall"
+        ? latest.current.placement.parentId
+        : undefined;
     state.transform = structuredClone(current);
     const interaction = editor.interaction.getState();
     setMovePlane(
@@ -319,10 +338,28 @@ export const Furniture = memo(function Furniture({
     const snap = e.shiftKey ? 0.1 : 0;
     const current = state.transform;
     const snapped = (n: number) => (snap ? Math.round(n / snap) * snap : n);
-    const position: Transform["position"] = state.height
-      ? [current.position[0], snapped(state.point.y), current.position[2]]
-      : [snapped(state.point.x), current.position[1], snapped(state.point.z)];
-    const raw = { ...current, position };
+    const position: Transform["position"] =
+      latest.current.placement?.support === "wall"
+        ? [
+            snapped(state.point.x),
+            snapped(state.point.y),
+            snapped(state.point.z),
+          ]
+        : state.height
+          ? [current.position[0], snapped(state.point.y), current.position[2]]
+          : [
+              snapped(state.point.x),
+              current.position[1],
+              snapped(state.point.z),
+            ];
+    const mounted =
+      latest.current.placement?.support === "wall"
+        ? onWall(editor.context().room, {
+            ...latest.current,
+            transform: { ...current, position },
+          })
+        : undefined;
+    const raw = mounted?.transform ?? { ...current, position };
     const contact = e.altKey
       ? { transform: raw }
       : snapToSurface(
@@ -332,9 +369,14 @@ export const Furniture = memo(function Furniture({
           editor.context().room,
         );
     state.transform = contact.transform;
+    if (mounted && mounted.placement?.parentId !== state.wallId) {
+      state.wallId = mounted.placement?.parentId;
+      setMovePlane(e, state.transform, state.height);
+    }
     editor.previewMove(object.id, state.transform);
     invalidate();
     group.current?.position.fromArray(state.transform.position);
+    group.current?.quaternion.fromArray(state.transform.rotation);
     snapGuide.current?.update(contact.surface, state.transform.position);
     liveCheck(state.transform);
   };

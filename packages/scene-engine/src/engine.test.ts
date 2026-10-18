@@ -1,3 +1,4 @@
+import { onWall } from "./mounting";
 import { describe, expect, it } from "vitest";
 import {
   catalog,
@@ -185,10 +186,10 @@ describe("operation validation and purity", () => {
     expect(
       code(s, {
         type: "add",
-        object: {
+        object: onWall(roomShell, {
           ...box(501),
-          placement: { support: "wall", parentId: roomShell.walls[0].id },
-        },
+          transform: transformAt(2.3, 0, 0, 1),
+        }),
       }),
     ).toBe("OK");
     expect(

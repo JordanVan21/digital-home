@@ -159,10 +159,20 @@ export function InspectorPanel() {
           <p className="subtle">
             {object.placement?.support === "object"
               ? `Resting on ${(draftScene ?? acceptedScene).objects.find((o) => o.id === object.placement?.parentId)?.displayName ?? "furniture"}.`
-              : "Nearby floor and object faces snap into place. Hold Alt to move freely."}
+              : object.placement?.support === "wall"
+                ? "Drag along walls and around corners. Accept reattaches free edits."
+                : object.placement?.support === "ceiling"
+                  ? "Attached to the ceiling. Accept reattaches free height edits."
+                  : "Nearby floor and object faces snap into place. Hold Alt to move freely."}
           </p>
           <Button
-            label="Place on floor"
+            label={
+              object.placement?.support === "wall"
+                ? "Remount on wall"
+                : object.placement?.support === "ceiling"
+                  ? "Attach to ceiling"
+                  : "Place on floor"
+            }
             className="secondary-button"
             disabled={object.locked || dragging}
             onClick={() =>
@@ -181,7 +191,11 @@ export function InspectorPanel() {
               })
             }
           >
-            Place on floor
+            {object.placement?.support === "wall"
+              ? "Remount on wall"
+              : object.placement?.support === "ceiling"
+                ? "Attach to ceiling"
+                : "Place on floor"}
           </Button>
           <h3>
             Rotation <small>degrees</small>

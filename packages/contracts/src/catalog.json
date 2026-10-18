@@ -43,7 +43,7 @@
     "schemaVersion": 1,
     "id": "00000000-0000-4000-8000-000000001001",
     "category": "armchair",
-    "title": "Bouclé lounge chair",
+    "title": "Boucl\u00e9 lounge chair",
     "tags": [
       "warm",
       "minimal",
@@ -77,7 +77,7 @@
     "triangleCount": 78412,
     "textureBytes": 219440,
     "contentHash": "b42aaae02a968dc0b9efb94e1b441688e8f0a459d04cee831fd51247e9b5c464",
-    "searchableDescription": "Bouclé lounge chair in a warm minimal living room"
+    "searchableDescription": "Boucl\u00e9 lounge chair in a warm minimal living room"
   },
   {
     "schemaVersion": 1,
@@ -651,7 +651,7 @@
     "source": "other",
     "sourceUrl": "https://polyhaven.com/a/Sofa_01",
     "licenseStatus": "verified",
-    "attribution": "Sofa_01 by Kirill Sannikov — Poly Haven (CC0)",
+    "attribution": "Sofa_01 by Kirill Sannikov \u2014 Poly Haven (CC0)",
     "estimatedPrice": {
       "currency": "USD",
       "minor": 89900
@@ -693,7 +693,7 @@
     "source": "other",
     "sourceUrl": "https://polyhaven.com/a/sofa_02",
     "licenseStatus": "verified",
-    "attribution": "sofa_02 by Kirill Sannikov — Poly Haven (CC0)",
+    "attribution": "sofa_02 by Kirill Sannikov \u2014 Poly Haven (CC0)",
     "estimatedPrice": {
       "currency": "USD",
       "minor": 129900
@@ -735,7 +735,7 @@
     "source": "other",
     "sourceUrl": "https://polyhaven.com/a/modern_arm_chair_01",
     "licenseStatus": "verified",
-    "attribution": "modern_arm_chair_01 by Vibrant Nordic — Poly Haven (CC0)",
+    "attribution": "modern_arm_chair_01 by Vibrant Nordic \u2014 Poly Haven (CC0)",
     "estimatedPrice": {
       "currency": "USD",
       "minor": 44900
@@ -777,7 +777,7 @@
     "source": "other",
     "sourceUrl": "https://polyhaven.com/a/modern_coffee_table_01",
     "licenseStatus": "verified",
-    "attribution": "modern_coffee_table_01 by Amin — Poly Haven (CC0)",
+    "attribution": "modern_coffee_table_01 by Amin \u2014 Poly Haven (CC0)",
     "estimatedPrice": {
       "currency": "USD",
       "minor": 24900
@@ -820,7 +820,7 @@
     "source": "other",
     "sourceUrl": "https://polyhaven.com/a/coffee_table_round_01",
     "licenseStatus": "verified",
-    "attribution": "coffee_table_round_01 by Ulan Cabanilla — Poly Haven (CC0)",
+    "attribution": "coffee_table_round_01 by Ulan Cabanilla \u2014 Poly Haven (CC0)",
     "triangleCount": 4044,
     "textureBytes": 175752,
     "contentHash": "9de268213f77d66839ce2ae77dd585d8fb19e59d9cfc41b5529933e71f6b27e3",
@@ -856,7 +856,7 @@
     "source": "other",
     "sourceUrl": "https://polyhaven.com/a/wooden_table_02",
     "licenseStatus": "verified",
-    "attribution": "wooden_table_02 by Serhii Khromov — Poly Haven (CC0)",
+    "attribution": "wooden_table_02 by Serhii Khromov \u2014 Poly Haven (CC0)",
     "estimatedPrice": {
       "currency": "USD",
       "minor": 32900
@@ -897,7 +897,7 @@
     "source": "other",
     "sourceUrl": "https://polyhaven.com/a/dining_chair_02",
     "licenseStatus": "verified",
-    "attribution": "dining_chair_02 by James Ray Cock — Poly Haven (CC0)",
+    "attribution": "dining_chair_02 by James Ray Cock \u2014 Poly Haven (CC0)",
     "estimatedPrice": {
       "currency": "USD",
       "minor": 12900
@@ -937,7 +937,7 @@
     "source": "other",
     "sourceUrl": "https://polyhaven.com/a/painted_wooden_chair_01",
     "licenseStatus": "verified",
-    "attribution": "painted_wooden_chair_01 by Kuutti Siitonen — Poly Haven (CC0)",
+    "attribution": "painted_wooden_chair_01 by Kuutti Siitonen \u2014 Poly Haven (CC0)",
     "estimatedPrice": {
       "currency": "USD",
       "minor": 7900
@@ -977,7 +977,7 @@
     "source": "other",
     "sourceUrl": "https://polyhaven.com/a/wooden_display_shelves_01",
     "licenseStatus": "verified",
-    "attribution": "wooden_display_shelves_01 by James Ray Cock — Poly Haven (CC0)",
+    "attribution": "wooden_display_shelves_01 by James Ray Cock \u2014 Poly Haven (CC0)",
     "estimatedPrice": {
       "currency": "USD",
       "minor": 17900
@@ -1020,7 +1020,7 @@
     "source": "other",
     "sourceUrl": "https://polyhaven.com/a/modern_wooden_cabinet",
     "licenseStatus": "verified",
-    "attribution": "modern_wooden_cabinet by Patrik Pangerl — Poly Haven (CC0)",
+    "attribution": "modern_wooden_cabinet by Patrik Pangerl \u2014 Poly Haven (CC0)",
     "estimatedPrice": {
       "currency": "USD",
       "minor": 59900
@@ -1059,7 +1059,7 @@
     "source": "other",
     "sourceUrl": "https://polyhaven.com/a/side_table_01",
     "licenseStatus": "verified",
-    "attribution": "side_table_01 by James Ray Cock — Poly Haven (CC0)",
+    "attribution": "side_table_01 by James Ray Cock \u2014 Poly Haven (CC0)",
     "estimatedPrice": {
       "currency": "USD",
       "minor": 8900
@@ -1100,7 +1100,7 @@
     "source": "other",
     "sourceUrl": "https://polyhaven.com/a/desk_lamp_arm_01",
     "licenseStatus": "verified",
-    "attribution": "desk_lamp_arm_01 by Yann Kervran, Kuutti Siitonen — Poly Haven (CC0)",
+    "attribution": "desk_lamp_arm_01 by Yann Kervran, Kuutti Siitonen \u2014 Poly Haven (CC0)",
     "estimatedPrice": {
       "currency": "USD",
       "minor": 4900
@@ -1152,7 +1152,7 @@
     "source": "other",
     "sourceUrl": "https://polyhaven.com/a/potted_plant_02",
     "licenseStatus": "verified",
-    "attribution": "potted_plant_02 by Rico Cilliers — Poly Haven (CC0)",
+    "attribution": "potted_plant_02 by Rico Cilliers \u2014 Poly Haven (CC0)",
     "estimatedPrice": {
       "currency": "USD",
       "minor": 6900
@@ -1193,7 +1193,7 @@
     "source": "other",
     "sourceUrl": "https://polyhaven.com/a/hanging_picture_frame_02",
     "licenseStatus": "verified",
-    "attribution": "hanging_picture_frame_02 by James Ray Cock — Poly Haven (CC0)",
+    "attribution": "hanging_picture_frame_02 by James Ray Cock \u2014 Poly Haven (CC0)",
     "estimatedPrice": {
       "currency": "USD",
       "minor": 7900
@@ -1201,7 +1201,8 @@
     "triangleCount": 3678,
     "textureBytes": 198688,
     "contentHash": "9fb8cb9799cb47c33d4d943871839464fbc471de7cfe97666cb27fe88ce5eae2",
-    "searchableDescription": "Framed landscape print, wall art, wall art, print, frame, classic, wood, paper"
+    "searchableDescription": "Framed landscape print, wall art, wall art, print, frame, classic, wood, paper",
+    "mount": "wall"
   },
   {
     "schemaVersion": 1,
@@ -1235,11 +1236,12 @@
     "source": "other",
     "sourceUrl": "https://polyhaven.com/a/fancy_picture_frame_01",
     "licenseStatus": "verified",
-    "attribution": "fancy_picture_frame_01 by Rob Tuytel, Rico Cilliers — Poly Haven (CC0)",
+    "attribution": "fancy_picture_frame_01 by Rob Tuytel, Rico Cilliers \u2014 Poly Haven (CC0)",
     "triangleCount": 938,
     "textureBytes": 359606,
     "contentHash": "9ace77daa9b5d7a37a45437001dffabe2f55bcd813454092dbc26faf1033168c",
-    "searchableDescription": "Gilded-frame painting, wall art, wall art, painting, frame, traditional, vintage, wood, canvas"
+    "searchableDescription": "Gilded-frame painting, wall art, wall art, painting, frame, traditional, vintage, wood, canvas",
+    "mount": "wall"
   },
   {
     "schemaVersion": 1,
@@ -1270,7 +1272,7 @@
     "source": "other",
     "sourceUrl": "https://polyhaven.com/a/ceramic_vase_01",
     "licenseStatus": "verified",
-    "attribution": "ceramic_vase_01 by James Ray Cock — Poly Haven (CC0)",
+    "attribution": "ceramic_vase_01 by James Ray Cock \u2014 Poly Haven (CC0)",
     "estimatedPrice": {
       "currency": "USD",
       "minor": 2900
@@ -1943,7 +1945,8 @@
     "triangleCount": 44,
     "textureBytes": 15886,
     "contentHash": "df0fa0c295ad7dbd7ba2506351311319bfc6e3995397d57f3f3a5de21fb827f3",
-    "searchableDescription": "Abstract circles print, wall art, wall art, print, abstract, warm minimal, paper, wood"
+    "searchableDescription": "Abstract circles print, wall art, wall art, print, abstract, warm minimal, paper, wood",
+    "mount": "wall"
   },
   {
     "schemaVersion": 1,
@@ -1973,7 +1976,7 @@
     "source": "other",
     "sourceUrl": "https://polyhaven.com/a/ceramic_vase_02",
     "licenseStatus": "verified",
-    "attribution": "ceramic_vase_02 by James Ray Cock — Poly Haven (CC0)",
+    "attribution": "ceramic_vase_02 by James Ray Cock \u2014 Poly Haven (CC0)",
     "estimatedPrice": {
       "currency": "USD",
       "minor": 3900
@@ -2011,7 +2014,7 @@
     "source": "other",
     "sourceUrl": "https://polyhaven.com/a/ceramic_vase_03",
     "licenseStatus": "verified",
-    "attribution": "ceramic_vase_03 by James Ray Cock — Poly Haven (CC0)",
+    "attribution": "ceramic_vase_03 by James Ray Cock \u2014 Poly Haven (CC0)",
     "estimatedPrice": {
       "currency": "USD",
       "minor": 3400
@@ -2049,7 +2052,7 @@
     "source": "other",
     "sourceUrl": "https://polyhaven.com/a/ceramic_vase_04",
     "licenseStatus": "verified",
-    "attribution": "ceramic_vase_04 by James Ray Cock — Poly Haven (CC0)",
+    "attribution": "ceramic_vase_04 by James Ray Cock \u2014 Poly Haven (CC0)",
     "estimatedPrice": {
       "currency": "USD",
       "minor": 2900
@@ -2090,7 +2093,7 @@
     "source": "other",
     "sourceUrl": "https://polyhaven.com/a/potted_plant_01",
     "licenseStatus": "verified",
-    "attribution": "potted_plant_01 by Rico Cilliers — Poly Haven (CC0)",
+    "attribution": "potted_plant_01 by Rico Cilliers \u2014 Poly Haven (CC0)",
     "estimatedPrice": {
       "currency": "USD",
       "minor": 14900
@@ -2130,7 +2133,7 @@
     "source": "other",
     "sourceUrl": "https://polyhaven.com/a/potted_plant_04",
     "licenseStatus": "verified",
-    "attribution": "potted_plant_04 by James Ray Cock — Poly Haven (CC0)",
+    "attribution": "potted_plant_04 by James Ray Cock \u2014 Poly Haven (CC0)",
     "estimatedPrice": {
       "currency": "USD",
       "minor": 1900
@@ -2208,7 +2211,7 @@
     "source": "other",
     "sourceUrl": "https://polyhaven.com/a/modern_ceiling_lamp_01",
     "licenseStatus": "verified",
-    "attribution": "modern_ceiling_lamp_01 by James Ray Cock — Poly Haven (CC0)",
+    "attribution": "modern_ceiling_lamp_01 by James Ray Cock \u2014 Poly Haven (CC0)",
     "estimatedPrice": {
       "currency": "USD",
       "minor": 18900
@@ -2227,6 +2230,7 @@
         0.15,
         0
       ]
-    }
+    },
+    "mount": "ceiling"
   }
 ]

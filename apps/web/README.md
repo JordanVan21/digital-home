@@ -151,6 +151,8 @@ Poly Haven imports preserve original PBR materials and meter scale, embed 1K tex
 
 40. Optional groupId and typed setGroup persist selection groups. Group/ungroup are atomic suggestions with undo; normal clicks select all members and Alt selects one. This does not alter physical support edges or collision rules.
 
+41. Asset mount metadata chooses wall/ceiling library placement; placement.support accepts ceiling. Wall movement follows vertical faces and rebases at corners; Accept mounts nearest wall or ceiling. Exact contact, openings, bounds and compound collisions are checked for mounted pieces. Transparent glass gets owned clear materials and no opaque shadow; cached assets stay unchanged.
+
 ## Verification and known gaps
 
 - The required build, test, typecheck, and lint commands pass. The test suite covers fixture parsing, shipped-file/license coverage, the fixture triangle budget, all operations, locks, rotated/concave bounds, SAT touching/overlap, occupancy exemptions, door clearance, inverse/history behavior, drag commit/rejection/cancel (including GPU-free tests of the actual canvas handler, live red feedback, spring-back, and no model rerenders during pointer movement), autosave debounce/serialization/retry, stale/concurrent saves, reset/recovery, and accessible locked controls.
