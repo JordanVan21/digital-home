@@ -1,0 +1,130 @@
+.geometry-lab {
+  height: 100vh;
+  display: grid;
+  grid-template-columns: 360px minmax(0, 1fr);
+  background: #f5f6f8;
+  color: #252932;
+}
+.geometry-lab .lab-panel {
+  overflow: auto;
+  padding: 26px;
+  border-right: 1px solid #dce0e8;
+}
+.geometry-lab a {
+  color: #6551b4;
+}
+.geometry-lab h1 {
+  font-size: 25px;
+  margin: 8px 0 14px;
+}
+.geometry-lab h2 {
+  font-size: 15px;
+  margin: 24px 0 12px;
+}
+.geometry-lab p {
+  line-height: 1.5;
+}
+.geometry-lab .lab-eyebrow {
+  font-size: 10px;
+  letter-spacing: 2px;
+  margin-top: 26px;
+  color: #8575ab;
+}
+.geometry-lab .lab-muted {
+  font-size: 11px;
+  color: #697180;
+}
+.geometry-lab .lab-select {
+  display: grid;
+  gap: 7px;
+  margin: 18px 0;
+}
+.geometry-lab select {
+  padding: 9px;
+  border: 1px solid #d2d8e1;
+  border-radius: 8px;
+  background: white;
+  width: 100%;
+}
+.geometry-lab .lab-slider {
+  display: grid;
+  gap: 5px;
+  margin: 13px 0;
+}
+.geometry-lab .lab-slider > span {
+  display: flex;
+  justify-content: space-between;
+}
+.geometry-lab output {
+  font-variant-numeric: tabular-nums;
+  color: #667080;
+}
+.geometry-lab input[type="range"] {
+  width: 100%;
+  accent-color: #7864ba;
+}
+.geometry-lab .lab-results {
+  border: 1px solid #dce0e8;
+  border-radius: 9px;
+  padding: 10px 12px;
+  background: white;
+}
+.geometry-lab .lab-results > div {
+  display: flex;
+  justify-content: space-between;
+  padding: 5px 0;
+  font-size: 12px;
+}
+.geometry-lab .lab-notice {
+  padding: 10px 12px;
+  background: #fff3df;
+  border-radius: 8px;
+  font-size: 11px;
+  line-height: 1.5;
+}
+.geometry-lab .lab-button {
+  padding: 11px 14px;
+  border-radius: 8px;
+  color: white;
+  background: #6551b4;
+  width: 100%;
+}
+.geometry-lab .lab-viewport {
+  position: relative;
+  min-width: 0;
+  min-height: 0;
+}
+.geometry-lab .lab-legend {
+  position: absolute;
+  bottom: 22px;
+  left: 22px;
+  background: #ffffffe8;
+  border-radius: 8px;
+  padding: 11px 16px;
+  pointer-events: none;
+  font-size: 12px;
+}
+.geometry-lab table {
+  width: 100%;
+  margin-top: 12px;
+  text-align: left;
+}
+.geometry-lab td,
+.geometry-lab th {
+  padding: 5px;
+}
+.geometry-lab .lab-error {
+  padding: 30px;
+}
+@media (max-width: 800px) {
+  .geometry-lab {
+    grid-template-columns: 285px minmax(0, 1fr);
+  }
+  .geometry-lab .lab-panel {
+    padding: 18px;
+  }
+  .geometry-lab .lab-legend {
+    max-width: 220px;
+    line-height: 1.5;
+  }
+}
