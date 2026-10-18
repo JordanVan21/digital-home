@@ -18,14 +18,11 @@ public struct RawRoomScan: Codable, Equatable {
         public var dimensions: [Double]
         /// Floor outline in world coordinates, when RoomPlan provides one.
         public var polygonCorners: [[Double]]?
-        /// Index into `rooms` for multi-room captures; absent for single-room scans.
-        public var roomIndex: Int?
 
         public init(id: String, category: String, confidence: Confidence, transform: [Double],
-                    dimensions: [Double], polygonCorners: [[Double]]? = nil, roomIndex: Int? = nil) {
+                    dimensions: [Double], polygonCorners: [[Double]]? = nil) {
             self.id = id; self.category = category; self.confidence = confidence
             self.transform = transform; self.dimensions = dimensions; self.polygonCorners = polygonCorners
-            self.roomIndex = roomIndex
         }
     }
 
@@ -36,26 +33,10 @@ public struct RawRoomScan: Codable, Equatable {
         public var transform: [Double]
         /// [width, height, depth] in the object's local frame.
         public var dimensions: [Double]
-        /// Index into `rooms` for multi-room captures; absent for single-room scans.
-        public var roomIndex: Int?
 
-        public init(id: String, category: String, confidence: Confidence, transform: [Double],
-                    dimensions: [Double], roomIndex: Int? = nil) {
+        public init(id: String, category: String, confidence: Confidence, transform: [Double], dimensions: [Double]) {
             self.id = id; self.category = category; self.confidence = confidence
-            self.transform = transform; self.dimensions = dimensions; self.roomIndex = roomIndex
-        }
-    }
-
-    /// One room of a multi-room (whole house) capture. All rooms share the capture
-    /// frame, so their surfaces/objects are already aligned with each other.
-    public struct Room: Codable, Equatable {
-        public var index: Int
-        public var id: String
-        public var story: Int
-        /// RoomPlan section label: livingRoom, bedroom, bathroom, kitchen, diningRoom, unidentified.
-        public var label: String?
-        public init(index: Int, id: String, story: Int, label: String?) {
-            self.index = index; self.id = id; self.story = story; self.label = label
+            self.transform = transform; self.dimensions = dimensions
         }
     }
 
@@ -76,17 +57,13 @@ public struct RawRoomScan: Codable, Equatable {
     public var openings: [Surface]
     public var floors: [Surface]
     public var objects: [Object]
-    /// Present only for multi-room captures; elements carry `roomIndex`.
-    public var rooms: [Room]?
-
-    public var roomCount: Int { rooms?.count ?? 1 }
 
     public init(scanId: UUID = UUID(), capturedAt: Date = Date(), device: Device? = nil,
                 walls: [Surface], doors: [Surface], windows: [Surface], openings: [Surface],
-                floors: [Surface] = [], objects: [Object], rooms: [Room]? = nil) {
+                floors: [Surface] = [], objects: [Object]) {
         self.scanId = scanId; self.capturedAt = capturedAt; self.device = device
         self.walls = walls; self.doors = doors; self.windows = windows
-        self.openings = openings; self.floors = floors; self.objects = objects; self.rooms = rooms
+        self.openings = openings; self.floors = floors; self.objects = objects
     }
 
     /// Canonical JSON: ISO-8601 UTC dates, sorted keys (stable checksums).

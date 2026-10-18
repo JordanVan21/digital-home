@@ -31,14 +31,6 @@ public final class CaptureLifecycle: @unchecked Sendable {
         return needsStop
     }
 
-    /// Start capturing the next room of a house after the previous room finished.
-    public func restart() -> Bool {
-        lock.lock(); defer { lock.unlock() }
-        guard state == .finished else { return false }
-        state = .capturing
-        return true
-    }
-
     /// Deliver at most one result/error, and none after cancellation.
     public func acceptCompletion() -> Bool {
         lock.lock(); defer { lock.unlock() }

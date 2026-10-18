@@ -32,16 +32,4 @@ final class CaptureLifecycleTests: XCTestCase {
         XCTAssertTrue(next.acceptCompletion(), "A cancelled attempt must not affect a new scan")
         XCTAssertFalse(cancelled.acceptCompletion())
     }
-
-    func testNextRoomRestartsOnlyAfterACompletedRoom() {
-        let attempt = CaptureLifecycle()
-        XCTAssertFalse(attempt.restart(), "Still capturing the first room")
-        XCTAssertTrue(attempt.requestFinish())
-        XCTAssertTrue(attempt.acceptCompletion())
-        XCTAssertTrue(attempt.restart())
-        XCTAssertTrue(attempt.requestFinish(), "Second room can finish")
-        XCTAssertTrue(attempt.acceptCompletion())
-        XCTAssertFalse(attempt.cancel())
-        XCTAssertFalse(attempt.restart(), "Cancelled house cannot restart")
-    }
 }
