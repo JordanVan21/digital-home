@@ -56,5 +56,5 @@ describe("compound exterior outlines", () => {
       expect(positions.length).toBeGreaterThan(0);
       expect(Array.from(positions).every(Number.isFinite)).toBe(true);
     }
-  });
+  }, 30_000); // one outline per collider profile; grows with the catalog
 });

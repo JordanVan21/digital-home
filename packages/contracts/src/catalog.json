@@ -2462,5 +2462,2735 @@
       ]
     },
     "mount": "ceiling"
+  },
+  {
+    "schemaVersion": 1,
+    "id": "00000000-0000-4000-8000-000000002100",
+    "category": "decor",
+    "title": "Antique Ceramic Vase 01",
+    "tags": [
+      "polyhaven",
+      "poly haven",
+      "CC0",
+      "decor",
+      "vintage",
+      "antique",
+      "pot",
+      "fancy",
+      "pattern",
+      "vase"
+    ],
+    "styles": [],
+    "colors": [
+      "natural"
+    ],
+    "materials": [],
+    "dimensionsM": [
+      0.25501,
+      0.43955,
+      0.25501
+    ],
+    "glbStorageKey": "/models/polyhaven-antique-ceramic-vase-01.glb",
+    "thumbnailStorageKey": "/thumbnails/polyhaven-antique-ceramic-vase-01.webp",
+    "source": "other",
+    "sourceUrl": "https://polyhaven.com/a/antique_ceramic_vase_01",
+    "licenseStatus": "verified",
+    "attribution": "James Ray Cock / Poly Haven (CC0)",
+    "estimatedPrice": {
+      "currency": "USD",
+      "minor": 4900
+    },
+    "triangleCount": 9408,
+    "textureBytes": 164874,
+    "contentHash": "94556941da73050f6c6aa57dc36d0bec675cff0174a242b9c4c4024b4905c464",
+    "searchableDescription": "Antique Ceramic Vase 01, decor, vintage, antique, pot, fancy, pattern, vase, CC0 model by James Ray Cock from Poly Haven"
+  },
+  {
+    "schemaVersion": 1,
+    "id": "00000000-0000-4000-8000-000000002101",
+    "category": "armchair",
+    "title": "Arm Chair 01",
+    "tags": [
+      "polyhaven",
+      "poly haven",
+      "CC0",
+      "armchair",
+      "gothic",
+      "vintage",
+      "chair",
+      "furniture",
+      "victorian",
+      "couch",
+      "wood",
+      "varnished"
+    ],
+    "styles": [],
+    "colors": [
+      "natural"
+    ],
+    "materials": [],
+    "dimensionsM": [
+      0.84848,
+      1.06509,
+      0.76575
+    ],
+    "glbStorageKey": "/models/polyhaven-armchair-01.glb",
+    "thumbnailStorageKey": "/thumbnails/polyhaven-armchair-01.webp",
+    "source": "other",
+    "sourceUrl": "https://polyhaven.com/a/ArmChair_01",
+    "licenseStatus": "verified",
+    "attribution": "Kirill Sannikov / Poly Haven (CC0)",
+    "estimatedPrice": {
+      "currency": "USD",
+      "minor": 39900
+    },
+    "triangleCount": 5626,
+    "textureBytes": 488238,
+    "contentHash": "7782fe35b5016467b1c071a968e92596aa337d598bb34ee893c7d5bfe6b1250b",
+    "searchableDescription": "Arm Chair 01, armchair, gothic, vintage, chair, furniture, victorian, couch, wood, varnished, CC0 model by Kirill Sannikov from Poly Haven"
+  },
+  {
+    "schemaVersion": 1,
+    "id": "00000000-0000-4000-8000-000000002102",
+    "category": "chair",
+    "title": "Bar Chair Round 01",
+    "tags": [
+      "polyhaven",
+      "poly haven",
+      "CC0",
+      "chair",
+      "bar",
+      "pub",
+      "stool",
+      "tall",
+      "wooden",
+      "classical",
+      "old",
+      "vintage"
+    ],
+    "styles": [],
+    "colors": [
+      "natural"
+    ],
+    "materials": [],
+    "dimensionsM": [
+      0.48317,
+      0.75055,
+      0.48601
+    ],
+    "glbStorageKey": "/models/polyhaven-bar-chair-round-01.glb",
+    "thumbnailStorageKey": "/thumbnails/polyhaven-bar-chair-round-01.webp",
+    "source": "other",
+    "sourceUrl": "https://polyhaven.com/a/bar_chair_round_01",
+    "licenseStatus": "verified",
+    "attribution": "Dairon Sanchez / Poly Haven (CC0)",
+    "estimatedPrice": {
+      "currency": "USD",
+      "minor": 14900
+    },
+    "triangleCount": 14373,
+    "textureBytes": 349674,
+    "contentHash": "413bd6f830c0096b9969cca700ddcca3465046c697d5b8bc27598bc54c02cafa",
+    "searchableDescription": "Bar Chair Round 01, chair, bar, pub, stool, tall, wooden, classical, old, vintage, CC0 model by Dairon Sanchez from Poly Haven"
+  },
+  {
+    "schemaVersion": 1,
+    "id": "00000000-0000-4000-8000-000000002103",
+    "category": "decor",
+    "title": "Brass Candleholders",
+    "tags": [
+      "polyhaven",
+      "poly haven",
+      "CC0",
+      "decor",
+      "vintage",
+      "antique",
+      "ornate",
+      "fancy",
+      "brass",
+      "pattern",
+      "candleholders",
+      "elegant"
+    ],
+    "styles": [],
+    "colors": [
+      "natural"
+    ],
+    "materials": [],
+    "dimensionsM": [
+      1.05295,
+      0.83526,
+      0.36465
+    ],
+    "glbStorageKey": "/models/polyhaven-brass-candleholders.glb",
+    "thumbnailStorageKey": "/thumbnails/polyhaven-brass-candleholders.webp",
+    "source": "other",
+    "sourceUrl": "https://polyhaven.com/a/brass_candleholders",
+    "licenseStatus": "verified",
+    "attribution": "Tina / Poly Haven (CC0)",
+    "estimatedPrice": {
+      "currency": "USD",
+      "minor": 4900
+    },
+    "triangleCount": 26616,
+    "textureBytes": 2073146,
+    "contentHash": "844303f24871d50bae17a986062006225fe1f6ce5ca62b135fa47b18da426226",
+    "searchableDescription": "Brass Candleholders, decor, vintage, antique, ornate, fancy, brass, pattern, candleholders, elegant, CC0 model by Tina from Poly Haven"
+  },
+  {
+    "schemaVersion": 1,
+    "id": "00000000-0000-4000-8000-000000002104",
+    "category": "decor",
+    "title": "Brass Vase 01",
+    "tags": [
+      "polyhaven",
+      "poly haven",
+      "CC0",
+      "decor",
+      "brass",
+      "antique",
+      "metal",
+      "ancient",
+      "artifact",
+      "vase",
+      "old",
+      "clean"
+    ],
+    "styles": [],
+    "colors": [
+      "natural"
+    ],
+    "materials": [],
+    "dimensionsM": [
+      0.22733,
+      0.69247,
+      0.22733
+    ],
+    "glbStorageKey": "/models/polyhaven-brass-vase-01.glb",
+    "thumbnailStorageKey": "/thumbnails/polyhaven-brass-vase-01.webp",
+    "source": "other",
+    "sourceUrl": "https://polyhaven.com/a/brass_vase_01",
+    "licenseStatus": "verified",
+    "attribution": "Rico Cilliers / Poly Haven (CC0)",
+    "estimatedPrice": {
+      "currency": "USD",
+      "minor": 4900
+    },
+    "triangleCount": 21440,
+    "textureBytes": 178832,
+    "contentHash": "2afc9adbc5893b6e18c0f8855d5435337f92354ad1eab868d204e034ef54c3de",
+    "searchableDescription": "Brass Vase 01, decor, brass, antique, metal, ancient, artifact, vase, old, clean, CC0 model by Rico Cilliers from Poly Haven"
+  },
+  {
+    "schemaVersion": 1,
+    "id": "00000000-0000-4000-8000-000000002105",
+    "category": "decor",
+    "title": "Brass Vase 02",
+    "tags": [
+      "polyhaven",
+      "poly haven",
+      "CC0",
+      "decor",
+      "brass",
+      "antique",
+      "metal",
+      "ancient",
+      "old",
+      "gold",
+      "container",
+      "vase"
+    ],
+    "styles": [],
+    "colors": [
+      "natural"
+    ],
+    "materials": [],
+    "dimensionsM": [
+      0.21027,
+      0.52864,
+      0.21027
+    ],
+    "glbStorageKey": "/models/polyhaven-brass-vase-02.glb",
+    "thumbnailStorageKey": "/thumbnails/polyhaven-brass-vase-02.webp",
+    "source": "other",
+    "sourceUrl": "https://polyhaven.com/a/brass_vase_02",
+    "licenseStatus": "verified",
+    "attribution": "Rico Cilliers / Poly Haven (CC0)",
+    "estimatedPrice": {
+      "currency": "USD",
+      "minor": 4900
+    },
+    "triangleCount": 6890,
+    "textureBytes": 291346,
+    "contentHash": "171de6a5159f311cb2e06d4654be3704b10a47247ade7821edc3c4eff25389e3",
+    "searchableDescription": "Brass Vase 02, decor, brass, antique, metal, ancient, old, gold, container, vase, CC0 model by Rico Cilliers from Poly Haven"
+  },
+  {
+    "schemaVersion": 1,
+    "id": "00000000-0000-4000-8000-000000002106",
+    "category": "pendant",
+    "title": "Chandelier 01",
+    "tags": [
+      "polyhaven",
+      "poly haven",
+      "CC0",
+      "pendant",
+      "lighting",
+      "ceiling",
+      "hanging",
+      "fixture",
+      "chandelier",
+      "ornate",
+      "vintage"
+    ],
+    "styles": [],
+    "colors": [
+      "natural"
+    ],
+    "materials": [],
+    "dimensionsM": [
+      0.74646,
+      0.79823,
+      0.81555
+    ],
+    "glbStorageKey": "/models/polyhaven-chandelier-01.glb",
+    "thumbnailStorageKey": "/thumbnails/polyhaven-chandelier-01.webp",
+    "source": "other",
+    "sourceUrl": "https://polyhaven.com/a/Chandelier_01",
+    "licenseStatus": "verified",
+    "attribution": "Kirill Sannikov / Poly Haven (CC0)",
+    "estimatedPrice": {
+      "currency": "USD",
+      "minor": 19900
+    },
+    "triangleCount": 25035,
+    "textureBytes": 249922,
+    "contentHash": "ac8d4c173b9686a712e04b5ca6e8c1107c469d9a30b59b4b79a2718ac91e90aa",
+    "searchableDescription": "Chandelier 01, pendant, lighting, ceiling, hanging, fixture, chandelier, ornate, vintage, CC0 model by Kirill Sannikov from Poly Haven",
+    "mount": "ceiling"
+  },
+  {
+    "schemaVersion": 1,
+    "id": "00000000-0000-4000-8000-000000002107",
+    "category": "pendant",
+    "title": "Chandelier 02",
+    "tags": [
+      "polyhaven",
+      "poly haven",
+      "CC0",
+      "pendant",
+      "lighting",
+      "ceiling",
+      "decorative",
+      "chandelier",
+      "elegant",
+      "hanging",
+      "ornate",
+      "vintage"
+    ],
+    "styles": [],
+    "colors": [
+      "natural"
+    ],
+    "materials": [],
+    "dimensionsM": [
+      0.67901,
+      0.84807,
+      0.61904
+    ],
+    "glbStorageKey": "/models/polyhaven-chandelier-02.glb",
+    "thumbnailStorageKey": "/thumbnails/polyhaven-chandelier-02.webp",
+    "source": "other",
+    "sourceUrl": "https://polyhaven.com/a/Chandelier_02",
+    "licenseStatus": "verified",
+    "attribution": "Kirill Sannikov / Poly Haven (CC0)",
+    "estimatedPrice": {
+      "currency": "USD",
+      "minor": 19900
+    },
+    "triangleCount": 21514,
+    "textureBytes": 397490,
+    "contentHash": "66adac0bfab3e3a98d5bec3b276fa6598fb41a2dd260d775c0153614e86a9e27",
+    "searchableDescription": "Chandelier 02, pendant, lighting, ceiling, decorative, chandelier, elegant, hanging, ornate, vintage, CC0 model by Kirill Sannikov from Poly Haven",
+    "mount": "ceiling"
+  },
+  {
+    "schemaVersion": 1,
+    "id": "00000000-0000-4000-8000-000000002108",
+    "category": "pendant",
+    "title": "Chandelier 03",
+    "tags": [
+      "polyhaven",
+      "poly haven",
+      "CC0",
+      "pendant",
+      "lighting",
+      "ceiling",
+      "hanging",
+      "fixture",
+      "chandelier",
+      "ornate",
+      "decor",
+      "elegant"
+    ],
+    "styles": [],
+    "colors": [
+      "natural"
+    ],
+    "materials": [],
+    "dimensionsM": [
+      0.78044,
+      1.04065,
+      0.78543
+    ],
+    "glbStorageKey": "/models/polyhaven-chandelier-03.glb",
+    "thumbnailStorageKey": "/thumbnails/polyhaven-chandelier-03.webp",
+    "source": "other",
+    "sourceUrl": "https://polyhaven.com/a/Chandelier_03",
+    "licenseStatus": "verified",
+    "attribution": "Kirill Sannikov / Poly Haven (CC0)",
+    "estimatedPrice": {
+      "currency": "USD",
+      "minor": 19900
+    },
+    "triangleCount": 25592,
+    "textureBytes": 374664,
+    "contentHash": "1d48cee5eede5627b61f7a5638b8fea594728681907177ceb70c22afcdaf991b",
+    "searchableDescription": "Chandelier 03, pendant, lighting, ceiling, hanging, fixture, chandelier, ornate, decor, elegant, CC0 model by Kirill Sannikov from Poly Haven",
+    "mount": "ceiling"
+  },
+  {
+    "schemaVersion": 1,
+    "id": "00000000-0000-4000-8000-000000002109",
+    "category": "armchair",
+    "title": "Chinese Armchair",
+    "tags": [
+      "polyhaven",
+      "poly haven",
+      "CC0",
+      "armchair",
+      "vintage",
+      "antique",
+      "ornate",
+      "chinese",
+      "asian",
+      "varnished",
+      "elegant",
+      "wooden"
+    ],
+    "styles": [],
+    "colors": [
+      "natural"
+    ],
+    "materials": [],
+    "dimensionsM": [
+      0.84832,
+      1.58748,
+      0.78858
+    ],
+    "glbStorageKey": "/models/polyhaven-chinese-armchair.glb",
+    "thumbnailStorageKey": "/thumbnails/polyhaven-chinese-armchair.webp",
+    "source": "other",
+    "sourceUrl": "https://polyhaven.com/a/chinese_armchair",
+    "licenseStatus": "verified",
+    "attribution": "Kirill Sannikov / Poly Haven (CC0)",
+    "estimatedPrice": {
+      "currency": "USD",
+      "minor": 39900
+    },
+    "triangleCount": 2675,
+    "textureBytes": 252126,
+    "contentHash": "cf60228683d49162d2d3ad2d49a43a9450679efac418ab786992b955203f32d8",
+    "searchableDescription": "Chinese Armchair, armchair, vintage, antique, ornate, chinese, asian, varnished, elegant, wooden, CC0 model by Kirill Sannikov from Poly Haven"
+  },
+  {
+    "schemaVersion": 1,
+    "id": "00000000-0000-4000-8000-000000002111",
+    "category": "pendant",
+    "title": "Chinese Chandelier",
+    "tags": [
+      "polyhaven",
+      "poly haven",
+      "CC0",
+      "pendant",
+      "vintage",
+      "antique",
+      "old",
+      "wooden",
+      "ornate",
+      "traditional",
+      "asian"
+    ],
+    "styles": [],
+    "colors": [
+      "natural"
+    ],
+    "materials": [],
+    "dimensionsM": [
+      0.87839,
+      0.74827,
+      0.87871
+    ],
+    "glbStorageKey": "/models/polyhaven-chinese-chandelier.glb",
+    "thumbnailStorageKey": "/thumbnails/polyhaven-chinese-chandelier.webp",
+    "source": "other",
+    "sourceUrl": "https://polyhaven.com/a/chinese_chandelier",
+    "licenseStatus": "verified",
+    "attribution": "Kirill Sannikov / Poly Haven (CC0)",
+    "estimatedPrice": {
+      "currency": "USD",
+      "minor": 19900
+    },
+    "triangleCount": 7828,
+    "textureBytes": 360002,
+    "contentHash": "869047214bb8b92045e546768329dbd720931f4d094baee4389a21e307573d8c",
+    "searchableDescription": "Chinese Chandelier, pendant, vintage, antique, old, wooden, ornate, traditional, asian, CC0 model by Kirill Sannikov from Poly Haven",
+    "mount": "ceiling"
+  },
+  {
+    "schemaVersion": 1,
+    "id": "00000000-0000-4000-8000-000000002113",
+    "category": "sideboard",
+    "title": "Chinese Console Table",
+    "tags": [
+      "polyhaven",
+      "poly haven",
+      "CC0",
+      "sideboard",
+      "vintage",
+      "antique",
+      "wooden",
+      "ornate",
+      "traditional",
+      "asian"
+    ],
+    "styles": [],
+    "colors": [
+      "natural"
+    ],
+    "materials": [],
+    "dimensionsM": [
+      1.71962,
+      0.66068,
+      0.33881
+    ],
+    "glbStorageKey": "/models/polyhaven-chinese-console-table.glb",
+    "thumbnailStorageKey": "/thumbnails/polyhaven-chinese-console-table.webp",
+    "source": "other",
+    "sourceUrl": "https://polyhaven.com/a/chinese_console_table",
+    "licenseStatus": "verified",
+    "attribution": "Kirill Sannikov / Poly Haven (CC0)",
+    "estimatedPrice": {
+      "currency": "USD",
+      "minor": 59900
+    },
+    "triangleCount": 13648,
+    "textureBytes": 475064,
+    "contentHash": "b7cd39a406e4ad20d35426145c7dd855d84ff5cd33719ce86407de2b82ed27ab",
+    "searchableDescription": "Chinese Console Table, sideboard, vintage, antique, wooden, ornate, traditional, asian, CC0 model by Kirill Sannikov from Poly Haven"
+  },
+  {
+    "schemaVersion": 1,
+    "id": "00000000-0000-4000-8000-000000002114",
+    "category": "sofa",
+    "title": "Chinese Sofa",
+    "tags": [
+      "polyhaven",
+      "poly haven",
+      "CC0",
+      "sofa",
+      "vintage",
+      "antique",
+      "wooden",
+      "ornate",
+      "traditional",
+      "fancy"
+    ],
+    "styles": [],
+    "colors": [
+      "natural"
+    ],
+    "materials": [],
+    "dimensionsM": [
+      2.28543,
+      0.85992,
+      0.96873
+    ],
+    "glbStorageKey": "/models/polyhaven-chinese-sofa.glb",
+    "thumbnailStorageKey": "/thumbnails/polyhaven-chinese-sofa.webp",
+    "source": "other",
+    "sourceUrl": "https://polyhaven.com/a/chinese_sofa",
+    "licenseStatus": "verified",
+    "attribution": "Kirill Sannikov / Poly Haven (CC0)",
+    "estimatedPrice": {
+      "currency": "USD",
+      "minor": 99900
+    },
+    "triangleCount": 704,
+    "textureBytes": 218916,
+    "contentHash": "63cad2939fa6e20829896383c51208ecf0d88686d3e09f57a814fa3942c60f61",
+    "searchableDescription": "Chinese Sofa, sofa, vintage, antique, wooden, ornate, traditional, fancy, CC0 model by Kirill Sannikov from Poly Haven"
+  },
+  {
+    "schemaVersion": 1,
+    "id": "00000000-0000-4000-8000-000000002115",
+    "category": "stool",
+    "title": "Chinese Stool",
+    "tags": [
+      "polyhaven",
+      "poly haven",
+      "CC0",
+      "stool",
+      "vintage",
+      "antique",
+      "wooden",
+      "ornate",
+      "traditional",
+      "asian"
+    ],
+    "styles": [],
+    "colors": [
+      "natural"
+    ],
+    "materials": [],
+    "dimensionsM": [
+      0.599,
+      0.63056,
+      0.5064
+    ],
+    "glbStorageKey": "/models/polyhaven-chinese-stool.glb",
+    "thumbnailStorageKey": "/thumbnails/polyhaven-chinese-stool.webp",
+    "source": "other",
+    "sourceUrl": "https://polyhaven.com/a/chinese_stool",
+    "licenseStatus": "verified",
+    "attribution": "Kirill Sannikov / Poly Haven (CC0)",
+    "estimatedPrice": {
+      "currency": "USD",
+      "minor": 7900
+    },
+    "triangleCount": 1090,
+    "textureBytes": 241684,
+    "contentHash": "c84508b81995cf06778514748577836f95dbaadb0477e6b3fc637a19123df04e",
+    "searchableDescription": "Chinese Stool, stool, vintage, antique, wooden, ornate, traditional, asian, CC0 model by Kirill Sannikov from Poly Haven"
+  },
+  {
+    "schemaVersion": 1,
+    "id": "00000000-0000-4000-8000-000000002116",
+    "category": "coffee-table",
+    "title": "Chinese Tea Table",
+    "tags": [
+      "polyhaven",
+      "poly haven",
+      "CC0",
+      "coffee-table",
+      "vintage",
+      "antique",
+      "old",
+      "wooden",
+      "ornate",
+      "traditional"
+    ],
+    "styles": [],
+    "colors": [
+      "natural"
+    ],
+    "materials": [],
+    "dimensionsM": [
+      0.84131,
+      0.49867,
+      0.83567
+    ],
+    "glbStorageKey": "/models/polyhaven-chinese-tea-table.glb",
+    "thumbnailStorageKey": "/thumbnails/polyhaven-chinese-tea-table.webp",
+    "source": "other",
+    "sourceUrl": "https://polyhaven.com/a/chinese_tea_table",
+    "licenseStatus": "verified",
+    "attribution": "Kirill Sannikov / Poly Haven (CC0)",
+    "estimatedPrice": {
+      "currency": "USD",
+      "minor": 29900
+    },
+    "triangleCount": 2508,
+    "textureBytes": 194056,
+    "contentHash": "35a741280f8c725cb8ebab8ac01c4e78a9e35f6c2b8db23d83d0f41a5e436ca2",
+    "searchableDescription": "Chinese Tea Table, coffee-table, vintage, antique, old, wooden, ornate, traditional, CC0 model by Kirill Sannikov from Poly Haven"
+  },
+  {
+    "schemaVersion": 1,
+    "id": "00000000-0000-4000-8000-000000002117",
+    "category": "sideboard",
+    "title": "Classic Console 01",
+    "tags": [
+      "polyhaven",
+      "poly haven",
+      "CC0",
+      "sideboard",
+      "wood",
+      "vintage",
+      "table",
+      "gothic",
+      "victorian",
+      "decorative"
+    ],
+    "styles": [],
+    "colors": [
+      "natural"
+    ],
+    "materials": [],
+    "dimensionsM": [
+      1.54302,
+      0.94907,
+      0.58925
+    ],
+    "glbStorageKey": "/models/polyhaven-classicconsole-01.glb",
+    "thumbnailStorageKey": "/thumbnails/polyhaven-classicconsole-01.webp",
+    "source": "other",
+    "sourceUrl": "https://polyhaven.com/a/ClassicConsole_01",
+    "licenseStatus": "verified",
+    "attribution": "Kirill Sannikov / Poly Haven (CC0)",
+    "estimatedPrice": {
+      "currency": "USD",
+      "minor": 59900
+    },
+    "triangleCount": 7566,
+    "textureBytes": 356592,
+    "contentHash": "dcf7837e9f0822a0b91c48ef3cfaf028a432381ac67f9069bf7d6f7e4c0f1cab",
+    "searchableDescription": "Classic Console 01, sideboard, wood, vintage, table, gothic, victorian, decorative, CC0 model by Kirill Sannikov from Poly Haven"
+  },
+  {
+    "schemaVersion": 1,
+    "id": "00000000-0000-4000-8000-000000002118",
+    "category": "side-table",
+    "title": "Classic Nightstand 01",
+    "tags": [
+      "polyhaven",
+      "poly haven",
+      "CC0",
+      "side-table",
+      "wood",
+      "vintage",
+      "table",
+      "gothic",
+      "victorian",
+      "decorative"
+    ],
+    "styles": [],
+    "colors": [
+      "natural"
+    ],
+    "materials": [],
+    "dimensionsM": [
+      0.56778,
+      0.69996,
+      0.4242
+    ],
+    "glbStorageKey": "/models/polyhaven-classicnightstand-01.glb",
+    "thumbnailStorageKey": "/thumbnails/polyhaven-classicnightstand-01.webp",
+    "source": "other",
+    "sourceUrl": "https://polyhaven.com/a/ClassicNightstand_01",
+    "licenseStatus": "verified",
+    "attribution": "Kirill Sannikov / Poly Haven (CC0)",
+    "estimatedPrice": {
+      "currency": "USD",
+      "minor": 14900
+    },
+    "triangleCount": 2002,
+    "textureBytes": 195746,
+    "contentHash": "055a49b541e0fee17479a3c7ff850184dff4a70b2ee05606d47023c286b5f1d7",
+    "searchableDescription": "Classic Nightstand 01, side-table, wood, vintage, table, gothic, victorian, decorative, CC0 model by Kirill Sannikov from Poly Haven"
+  },
+  {
+    "schemaVersion": 1,
+    "id": "00000000-0000-4000-8000-000000002119",
+    "category": "coffee-table",
+    "title": "Coffee Table 01",
+    "tags": [
+      "polyhaven",
+      "poly haven",
+      "CC0",
+      "coffee-table",
+      "wood",
+      "vintage",
+      "table",
+      "painted",
+      "old",
+      "worn",
+      "decorative"
+    ],
+    "styles": [],
+    "colors": [
+      "natural"
+    ],
+    "materials": [],
+    "dimensionsM": [
+      1.54001,
+      0.52324,
+      0.97278
+    ],
+    "glbStorageKey": "/models/polyhaven-coffeetable-01.glb",
+    "thumbnailStorageKey": "/thumbnails/polyhaven-coffeetable-01.webp",
+    "source": "other",
+    "sourceUrl": "https://polyhaven.com/a/CoffeeTable_01",
+    "licenseStatus": "verified",
+    "attribution": "Fernando Quinn / Poly Haven (CC0)",
+    "estimatedPrice": {
+      "currency": "USD",
+      "minor": 29900
+    },
+    "triangleCount": 10404,
+    "textureBytes": 379122,
+    "contentHash": "83070bf4b49c2dbade04a94e2da2381fac9834cb4d26be53f952d9b355640149",
+    "searchableDescription": "Coffee Table 01, coffee-table, wood, vintage, table, painted, old, worn, decorative, CC0 model by Fernando Quinn from Poly Haven"
+  },
+  {
+    "schemaVersion": 1,
+    "id": "00000000-0000-4000-8000-000000002120",
+    "category": "dresser",
+    "title": "Drawer Cabinet",
+    "tags": [
+      "polyhaven",
+      "poly haven",
+      "CC0",
+      "dresser",
+      "wood",
+      "furniture",
+      "shelf",
+      "drawer",
+      "metal",
+      "modern"
+    ],
+    "styles": [],
+    "colors": [
+      "natural"
+    ],
+    "materials": [],
+    "dimensionsM": [
+      1.14103,
+      1.88125,
+      0.48808
+    ],
+    "glbStorageKey": "/models/polyhaven-drawer-cabinet.glb",
+    "thumbnailStorageKey": "/thumbnails/polyhaven-drawer-cabinet.webp",
+    "source": "other",
+    "sourceUrl": "https://polyhaven.com/a/drawer_cabinet",
+    "licenseStatus": "verified",
+    "attribution": "Ulan Cabanilla / Poly Haven (CC0)",
+    "estimatedPrice": {
+      "currency": "USD",
+      "minor": 59900
+    },
+    "triangleCount": 24996,
+    "textureBytes": 188224,
+    "contentHash": "90c0c529e33a55a01cc82872e5465d612994d451fc360b0ae7e45e443d079e41",
+    "searchableDescription": "Drawer Cabinet, dresser, wood, furniture, shelf, drawer, metal, modern, CC0 model by Ulan Cabanilla from Poly Haven"
+  },
+  {
+    "schemaVersion": 1,
+    "id": "00000000-0000-4000-8000-000000002121",
+    "category": "stove",
+    "title": "Electric Stove",
+    "tags": [
+      "polyhaven",
+      "poly haven",
+      "CC0",
+      "stove",
+      "kitchen appliance",
+      "cooking equipment",
+      "stovetop",
+      "oven",
+      "cooktop",
+      "simple",
+      "white",
+      "cooking"
+    ],
+    "styles": [],
+    "colors": [
+      "natural"
+    ],
+    "materials": [],
+    "dimensionsM": [
+      0.50259,
+      0.8587,
+      0.6476
+    ],
+    "glbStorageKey": "/models/polyhaven-electric-stove.glb",
+    "thumbnailStorageKey": "/thumbnails/polyhaven-electric-stove.webp",
+    "source": "other",
+    "sourceUrl": "https://polyhaven.com/a/electric_stove",
+    "licenseStatus": "verified",
+    "attribution": "Kuutti Siitonen / Poly Haven (CC0)",
+    "estimatedPrice": {
+      "currency": "USD",
+      "minor": 89900
+    },
+    "triangleCount": 13914,
+    "textureBytes": 239938,
+    "contentHash": "7625079cad6391e82427b4c249cae6e79c0d2cee6c675c9db2f02f42a47463f0",
+    "searchableDescription": "Electric Stove, stove, kitchen appliance, cooking equipment, stovetop, oven, cooktop, simple, white, cooking, CC0 model by Kuutti Siitonen from Poly Haven"
+  },
+  {
+    "schemaVersion": 1,
+    "id": "00000000-0000-4000-8000-000000002122",
+    "category": "wall-art",
+    "title": "Fancy Picture Frame 02",
+    "tags": [
+      "polyhaven",
+      "poly haven",
+      "CC0",
+      "wall-art",
+      "art",
+      "vintage",
+      "old",
+      "dutch",
+      "painting",
+      "oil",
+      "antique",
+      "fancy"
+    ],
+    "styles": [],
+    "colors": [
+      "natural"
+    ],
+    "materials": [],
+    "dimensionsM": [
+      0.66054,
+      0.77105,
+      0.08904
+    ],
+    "glbStorageKey": "/models/polyhaven-fancy-picture-frame-02.glb",
+    "thumbnailStorageKey": "/thumbnails/polyhaven-fancy-picture-frame-02.webp",
+    "source": "other",
+    "sourceUrl": "https://polyhaven.com/a/fancy_picture_frame_02",
+    "licenseStatus": "verified",
+    "attribution": "Rob Tuytel, Rico Cilliers / Poly Haven (CC0)",
+    "estimatedPrice": {
+      "currency": "USD",
+      "minor": 7900
+    },
+    "triangleCount": 25000,
+    "textureBytes": 647162,
+    "contentHash": "513355a3022d70747c5b4a4b6e3e551b01ab235c64a64977f9396a4d1e1ae4d4",
+    "searchableDescription": "Fancy Picture Frame 02, wall-art, art, vintage, old, dutch, painting, oil, antique, fancy, CC0 model by Rob Tuytel, Rico Cilliers from Poly Haven",
+    "mount": "wall"
+  },
+  {
+    "schemaVersion": 1,
+    "id": "00000000-0000-4000-8000-000000002123",
+    "category": "stool",
+    "title": "Folding Wooden Stool",
+    "tags": [
+      "polyhaven",
+      "poly haven",
+      "CC0",
+      "stool",
+      "workshop",
+      "garage",
+      "woodwork",
+      "camping",
+      "folding stool",
+      "portable",
+      "compact",
+      "outdoor"
+    ],
+    "styles": [],
+    "colors": [
+      "natural"
+    ],
+    "materials": [],
+    "dimensionsM": [
+      0.52785,
+      0.44196,
+      0.54708
+    ],
+    "glbStorageKey": "/models/polyhaven-folding-wooden-stool.glb",
+    "thumbnailStorageKey": "/thumbnails/polyhaven-folding-wooden-stool.webp",
+    "source": "other",
+    "sourceUrl": "https://polyhaven.com/a/folding_wooden_stool",
+    "licenseStatus": "verified",
+    "attribution": "Ulan Cabanilla / Poly Haven (CC0)",
+    "estimatedPrice": {
+      "currency": "USD",
+      "minor": 7900
+    },
+    "triangleCount": 6324,
+    "textureBytes": 441856,
+    "contentHash": "562bc279d963aae9c4bb16ffd7d3579e5c8d4c057afe26f1da4e18a9e1febb4a",
+    "searchableDescription": "Folding Wooden Stool, stool, workshop, garage, woodwork, camping, folding stool, portable, compact, outdoor, CC0 model by Ulan Cabanilla from Poly Haven"
+  },
+  {
+    "schemaVersion": 1,
+    "id": "00000000-0000-4000-8000-000000002124",
+    "category": "chair",
+    "title": "Gallinera Chair",
+    "tags": [
+      "polyhaven",
+      "poly haven",
+      "CC0",
+      "chair",
+      "vintage",
+      "antique",
+      "philippines",
+      "traditional",
+      "old",
+      "wooden"
+    ],
+    "styles": [],
+    "colors": [
+      "natural"
+    ],
+    "materials": [],
+    "dimensionsM": [
+      0.58077,
+      1.03369,
+      0.60387
+    ],
+    "glbStorageKey": "/models/polyhaven-gallinera-chair.glb",
+    "thumbnailStorageKey": "/thumbnails/polyhaven-gallinera-chair.webp",
+    "source": "other",
+    "sourceUrl": "https://polyhaven.com/a/gallinera_chair",
+    "licenseStatus": "verified",
+    "attribution": "Ulan Cabanilla / Poly Haven (CC0)",
+    "estimatedPrice": {
+      "currency": "USD",
+      "minor": 14900
+    },
+    "triangleCount": 11560,
+    "textureBytes": 342884,
+    "contentHash": "9bc6aad433f45fc52060037edf317650f4e3a9b622f6bbf16a94b9866eac698c",
+    "searchableDescription": "Gallinera Chair, chair, vintage, antique, philippines, traditional, old, wooden, CC0 model by Ulan Cabanilla from Poly Haven"
+  },
+  {
+    "schemaVersion": 1,
+    "id": "00000000-0000-4000-8000-000000002125",
+    "category": "table",
+    "title": "Gallinera Table",
+    "tags": [
+      "polyhaven",
+      "poly haven",
+      "CC0",
+      "table",
+      "vintage",
+      "antique",
+      "philippines",
+      "traditional",
+      "old",
+      "wooden"
+    ],
+    "styles": [],
+    "colors": [
+      "natural"
+    ],
+    "materials": [],
+    "dimensionsM": [
+      0.83008,
+      0.48776,
+      0.51826
+    ],
+    "glbStorageKey": "/models/polyhaven-gallinera-table.glb",
+    "thumbnailStorageKey": "/thumbnails/polyhaven-gallinera-table.webp",
+    "source": "other",
+    "sourceUrl": "https://polyhaven.com/a/gallinera_table",
+    "licenseStatus": "verified",
+    "attribution": "Ulan Cabanilla / Poly Haven (CC0)",
+    "estimatedPrice": {
+      "currency": "USD",
+      "minor": 49900
+    },
+    "triangleCount": 5528,
+    "textureBytes": 247426,
+    "contentHash": "7b39d236ff9a3ac5f4a679cc3390d318c6f11628e2394908a47787d0715c538a",
+    "searchableDescription": "Gallinera Table, table, vintage, antique, philippines, traditional, old, wooden, CC0 model by Ulan Cabanilla from Poly Haven"
+  },
+  {
+    "schemaVersion": 1,
+    "id": "00000000-0000-4000-8000-000000002126",
+    "category": "coffee-table",
+    "title": "Gothic Coffee Table",
+    "tags": [
+      "polyhaven",
+      "poly haven",
+      "CC0",
+      "coffee-table",
+      "vintage",
+      "antique",
+      "old",
+      "wooden",
+      "gothic",
+      "medieval",
+      "dark decor"
+    ],
+    "styles": [],
+    "colors": [
+      "natural"
+    ],
+    "materials": [],
+    "dimensionsM": [
+      1.44309,
+      0.55884,
+      1.44309
+    ],
+    "glbStorageKey": "/models/polyhaven-gothic-coffee-table.glb",
+    "thumbnailStorageKey": "/thumbnails/polyhaven-gothic-coffee-table.webp",
+    "source": "other",
+    "sourceUrl": "https://polyhaven.com/a/gothic_coffee_table",
+    "licenseStatus": "verified",
+    "attribution": "Ulan Cabanilla / Poly Haven (CC0)",
+    "estimatedPrice": {
+      "currency": "USD",
+      "minor": 29900
+    },
+    "triangleCount": 23836,
+    "textureBytes": 519638,
+    "contentHash": "53c5ede58f8e004092334f2e6a697a9432839b1b368b075b3658d3b012b0e4f0",
+    "searchableDescription": "Gothic Coffee Table, coffee-table, vintage, antique, old, wooden, gothic, medieval, dark decor, CC0 model by Ulan Cabanilla from Poly Haven"
+  },
+  {
+    "schemaVersion": 1,
+    "id": "00000000-0000-4000-8000-000000002127",
+    "category": "bed",
+    "title": "Gothic Bed 01",
+    "tags": [
+      "polyhaven",
+      "poly haven",
+      "CC0",
+      "bed",
+      "vintage",
+      "gothic",
+      "furniture",
+      "bed",
+      "wood",
+      "decorative"
+    ],
+    "styles": [],
+    "colors": [
+      "natural"
+    ],
+    "materials": [],
+    "dimensionsM": [
+      1.49381,
+      1.53397,
+      2.04
+    ],
+    "glbStorageKey": "/models/polyhaven-gothicbed-01.glb",
+    "thumbnailStorageKey": "/thumbnails/polyhaven-gothicbed-01.webp",
+    "source": "other",
+    "sourceUrl": "https://polyhaven.com/a/GothicBed_01",
+    "licenseStatus": "verified",
+    "attribution": "Kirill Sannikov / Poly Haven (CC0)",
+    "estimatedPrice": {
+      "currency": "USD",
+      "minor": 129900
+    },
+    "triangleCount": 18745,
+    "textureBytes": 304760,
+    "contentHash": "7c01598d176f33b03a0c8dc8fee81cae71ff28680e2a151d94bc4bf4d8833b78",
+    "searchableDescription": "Gothic Bed 01, bed, vintage, gothic, furniture, bed, wood, decorative, CC0 model by Kirill Sannikov from Poly Haven"
+  },
+  {
+    "schemaVersion": 1,
+    "id": "00000000-0000-4000-8000-000000002128",
+    "category": "cabinet",
+    "title": "Gothic Cabinet 01",
+    "tags": [
+      "polyhaven",
+      "poly haven",
+      "CC0",
+      "cabinet",
+      "vintage",
+      "wood",
+      "gothic",
+      "furniture",
+      "table",
+      "shelf",
+      "decorative"
+    ],
+    "styles": [],
+    "colors": [
+      "natural"
+    ],
+    "materials": [],
+    "dimensionsM": [
+      1.719,
+      2.3609,
+      1.11647
+    ],
+    "glbStorageKey": "/models/polyhaven-gothiccabinet-01.glb",
+    "thumbnailStorageKey": "/thumbnails/polyhaven-gothiccabinet-01.webp",
+    "source": "other",
+    "sourceUrl": "https://polyhaven.com/a/GothicCabinet_01",
+    "licenseStatus": "verified",
+    "attribution": "Kirill Sannikov / Poly Haven (CC0)",
+    "estimatedPrice": {
+      "currency": "USD",
+      "minor": 69900
+    },
+    "triangleCount": 12170,
+    "textureBytes": 307346,
+    "contentHash": "6db38e2128735db7ae278cd7a8fe5ae86ac3b845b50e60d586e1ca17c9153701",
+    "searchableDescription": "Gothic Cabinet 01, cabinet, vintage, wood, gothic, furniture, table, shelf, decorative, CC0 model by Kirill Sannikov from Poly Haven"
+  },
+  {
+    "schemaVersion": 1,
+    "id": "00000000-0000-4000-8000-000000002129",
+    "category": "dresser",
+    "title": "Gothic Commode 01",
+    "tags": [
+      "polyhaven",
+      "poly haven",
+      "CC0",
+      "dresser",
+      "vintage",
+      "wood",
+      "table",
+      "gothic",
+      "shelf",
+      "furniture",
+      "decorative"
+    ],
+    "styles": [],
+    "colors": [
+      "natural"
+    ],
+    "materials": [],
+    "dimensionsM": [
+      1.20139,
+      1.21204,
+      0.58063
+    ],
+    "glbStorageKey": "/models/polyhaven-gothiccommode-01.glb",
+    "thumbnailStorageKey": "/thumbnails/polyhaven-gothiccommode-01.webp",
+    "source": "other",
+    "sourceUrl": "https://polyhaven.com/a/GothicCommode_01",
+    "licenseStatus": "verified",
+    "attribution": "Kirill Sannikov / Poly Haven (CC0)",
+    "estimatedPrice": {
+      "currency": "USD",
+      "minor": 59900
+    },
+    "triangleCount": 3897,
+    "textureBytes": 244564,
+    "contentHash": "7126c1814afade42103d3b0c7c09bfe92876a6a0d995bc94d1404a119d37c7fa",
+    "searchableDescription": "Gothic Commode 01, dresser, vintage, wood, table, gothic, shelf, furniture, decorative, CC0 model by Kirill Sannikov from Poly Haven"
+  },
+  {
+    "schemaVersion": 1,
+    "id": "00000000-0000-4000-8000-000000002130",
+    "category": "armchair",
+    "title": "Green Chair 01",
+    "tags": [
+      "polyhaven",
+      "poly haven",
+      "CC0",
+      "armchair",
+      "vintage",
+      "wood",
+      "gothic",
+      "furniture",
+      "chair",
+      "fabric",
+      "decorative"
+    ],
+    "styles": [],
+    "colors": [
+      "natural"
+    ],
+    "materials": [],
+    "dimensionsM": [
+      0.67315,
+      1.05851,
+      0.66437
+    ],
+    "glbStorageKey": "/models/polyhaven-greenchair-01.glb",
+    "thumbnailStorageKey": "/thumbnails/polyhaven-greenchair-01.webp",
+    "source": "other",
+    "sourceUrl": "https://polyhaven.com/a/GreenChair_01",
+    "licenseStatus": "verified",
+    "attribution": "Kirill Sannikov / Poly Haven (CC0)",
+    "estimatedPrice": {
+      "currency": "USD",
+      "minor": 39900
+    },
+    "triangleCount": 4213,
+    "textureBytes": 329834,
+    "contentHash": "fbf1f30b1a1cc316b53190a20402c53d48d1d652d7d1c987b243debd03f45d3e",
+    "searchableDescription": "Green Chair 01, armchair, vintage, wood, gothic, furniture, chair, fabric, decorative, CC0 model by Kirill Sannikov from Poly Haven"
+  },
+  {
+    "schemaVersion": 1,
+    "id": "00000000-0000-4000-8000-000000002131",
+    "category": "pendant",
+    "title": "Hanging Industrial Lamp",
+    "tags": [
+      "polyhaven",
+      "poly haven",
+      "CC0",
+      "pendant",
+      "industrial lighting",
+      "hanging lamp",
+      "warehouse lighting",
+      "bunker",
+      "metal lamp",
+      "factory",
+      "warehouse"
+    ],
+    "styles": [],
+    "colors": [
+      "natural"
+    ],
+    "materials": [],
+    "dimensionsM": [
+      0.54968,
+      1.35535,
+      0.54968
+    ],
+    "glbStorageKey": "/models/polyhaven-hanging-industrial-lamp.glb",
+    "thumbnailStorageKey": "/thumbnails/polyhaven-hanging-industrial-lamp.webp",
+    "source": "other",
+    "sourceUrl": "https://polyhaven.com/a/hanging_industrial_lamp",
+    "licenseStatus": "verified",
+    "attribution": "Kuutti Siitonen / Poly Haven (CC0)",
+    "estimatedPrice": {
+      "currency": "USD",
+      "minor": 19900
+    },
+    "triangleCount": 9530,
+    "textureBytes": 577430,
+    "contentHash": "669b13a526d5ca710ffa57fdb8b6a37bb8343011f7a2613d7544aa4f714a6e3e",
+    "searchableDescription": "Hanging Industrial Lamp, pendant, industrial lighting, hanging lamp, warehouse lighting, bunker, metal lamp, factory, warehouse, CC0 model by Kuutti Siitonen from Poly Haven",
+    "mount": "ceiling"
+  },
+  {
+    "schemaVersion": 1,
+    "id": "00000000-0000-4000-8000-000000002132",
+    "category": "wall-art",
+    "title": "Hanging Picture Frame 01",
+    "tags": [
+      "polyhaven",
+      "poly haven",
+      "CC0",
+      "wall-art",
+      "modern",
+      "minimalist",
+      "clean",
+      "frame",
+      "simple",
+      "art"
+    ],
+    "styles": [],
+    "colors": [
+      "natural"
+    ],
+    "materials": [],
+    "dimensionsM": [
+      0.59396,
+      0.841,
+      0.01571
+    ],
+    "glbStorageKey": "/models/polyhaven-hanging-picture-frame-01.glb",
+    "thumbnailStorageKey": "/thumbnails/polyhaven-hanging-picture-frame-01.webp",
+    "source": "other",
+    "sourceUrl": "https://polyhaven.com/a/hanging_picture_frame_01",
+    "licenseStatus": "verified",
+    "attribution": "James Ray Cock / Poly Haven (CC0)",
+    "estimatedPrice": {
+      "currency": "USD",
+      "minor": 7900
+    },
+    "triangleCount": 2586,
+    "textureBytes": 110036,
+    "contentHash": "a975a9309f29f3cc8d86ce41952520294aa505d97ff3670d344f775b87f12ef3",
+    "searchableDescription": "Hanging Picture Frame 01, wall-art, modern, minimalist, clean, frame, simple, art, CC0 model by James Ray Cock from Poly Haven",
+    "mount": "wall"
+  },
+  {
+    "schemaVersion": 1,
+    "id": "00000000-0000-4000-8000-000000002133",
+    "category": "wall-art",
+    "title": "Hanging Picture Frame 03",
+    "tags": [
+      "polyhaven",
+      "poly haven",
+      "CC0",
+      "wall-art",
+      "vintage",
+      "photo",
+      "photograph",
+      "old",
+      "antique",
+      "picture",
+      "fancy",
+      "wooden"
+    ],
+    "styles": [],
+    "colors": [
+      "natural"
+    ],
+    "materials": [],
+    "dimensionsM": [
+      0.38501,
+      0.5024,
+      0.03175
+    ],
+    "glbStorageKey": "/models/polyhaven-hanging-picture-frame-03.glb",
+    "thumbnailStorageKey": "/thumbnails/polyhaven-hanging-picture-frame-03.webp",
+    "source": "other",
+    "sourceUrl": "https://polyhaven.com/a/hanging_picture_frame_03",
+    "licenseStatus": "verified",
+    "attribution": "James Ray Cock / Poly Haven (CC0)",
+    "estimatedPrice": {
+      "currency": "USD",
+      "minor": 7900
+    },
+    "triangleCount": 24348,
+    "textureBytes": 317844,
+    "contentHash": "aa9a9187ffd25a22110dac021e0237b563befbcdbfcfc53f1e8c902bfa229420",
+    "searchableDescription": "Hanging Picture Frame 03, wall-art, vintage, photo, photograph, old, antique, picture, fancy, wooden, CC0 model by James Ray Cock from Poly Haven",
+    "mount": "wall"
+  },
+  {
+    "schemaVersion": 1,
+    "id": "00000000-0000-4000-8000-000000002134",
+    "category": "coffee-table",
+    "title": "Industrial Coffee Table",
+    "tags": [
+      "polyhaven",
+      "poly haven",
+      "CC0",
+      "coffee-table",
+      "metal",
+      "industrial",
+      "steel",
+      "rustic",
+      "workshop",
+      "metal frame",
+      "garage",
+      "urban loft"
+    ],
+    "styles": [],
+    "colors": [
+      "natural"
+    ],
+    "materials": [],
+    "dimensionsM": [
+      0.77826,
+      0.63842,
+      0.75793
+    ],
+    "glbStorageKey": "/models/polyhaven-industrial-coffee-table.glb",
+    "thumbnailStorageKey": "/thumbnails/polyhaven-industrial-coffee-table.webp",
+    "source": "other",
+    "sourceUrl": "https://polyhaven.com/a/industrial_coffee_table",
+    "licenseStatus": "verified",
+    "attribution": "Ulan Cabanilla / Poly Haven (CC0)",
+    "estimatedPrice": {
+      "currency": "USD",
+      "minor": 29900
+    },
+    "triangleCount": 25000,
+    "textureBytes": 363378,
+    "contentHash": "0aa23e610ccaf24ddad6509a832f488e7721c28291e693cc5d0f1b1c1f8d08a6",
+    "searchableDescription": "Industrial Coffee Table, coffee-table, metal, industrial, steel, rustic, workshop, metal frame, garage, urban loft, CC0 model by Ulan Cabanilla from Poly Haven"
+  },
+  {
+    "schemaVersion": 1,
+    "id": "00000000-0000-4000-8000-000000002135",
+    "category": "lamp",
+    "title": "Industrial Wall Lamp",
+    "tags": [
+      "polyhaven",
+      "poly haven",
+      "CC0",
+      "lamp",
+      "industrial",
+      "factory",
+      "warehouse",
+      "wall light",
+      "metal",
+      "bunker",
+      "mine"
+    ],
+    "styles": [],
+    "colors": [
+      "natural"
+    ],
+    "materials": [],
+    "dimensionsM": [
+      0.27345,
+      0.42991,
+      0.1404
+    ],
+    "glbStorageKey": "/models/polyhaven-industrial-wall-lamp.glb",
+    "thumbnailStorageKey": "/thumbnails/polyhaven-industrial-wall-lamp.webp",
+    "source": "other",
+    "sourceUrl": "https://polyhaven.com/a/industrial_wall_lamp",
+    "licenseStatus": "verified",
+    "attribution": "Kuutti Siitonen / Poly Haven (CC0)",
+    "estimatedPrice": {
+      "currency": "USD",
+      "minor": 9900
+    },
+    "triangleCount": 4446,
+    "textureBytes": 597750,
+    "contentHash": "44b2e76cafb654363d9c110bf9aed8dbfcbb993664efc32012c4e8da034bf8dd",
+    "searchableDescription": "Industrial Wall Lamp, lamp, industrial, factory, warehouse, wall light, metal, bunker, mine, CC0 model by Kuutti Siitonen from Poly Haven"
+  },
+  {
+    "schemaVersion": 1,
+    "id": "00000000-0000-4000-8000-000000002136",
+    "category": "pendant",
+    "title": "Lantern Chandelier 01",
+    "tags": [
+      "polyhaven",
+      "poly haven",
+      "CC0",
+      "pendant",
+      "lighting",
+      "old",
+      "victorian",
+      "metal",
+      "antique",
+      "ornate",
+      "vintage",
+      "brass"
+    ],
+    "styles": [],
+    "colors": [
+      "natural"
+    ],
+    "materials": [],
+    "dimensionsM": [
+      0.5792,
+      0.87759,
+      0.5746
+    ],
+    "glbStorageKey": "/models/polyhaven-lantern-chandelier-01.glb",
+    "thumbnailStorageKey": "/thumbnails/polyhaven-lantern-chandelier-01.webp",
+    "source": "other",
+    "sourceUrl": "https://polyhaven.com/a/lantern_chandelier_01",
+    "licenseStatus": "verified",
+    "attribution": "Kirill Sannikov / Poly Haven (CC0)",
+    "estimatedPrice": {
+      "currency": "USD",
+      "minor": 19900
+    },
+    "triangleCount": 5971,
+    "textureBytes": 894622,
+    "contentHash": "bae37f6300fbb0bdefaff6a8068413af6d38a56759b597af5a77138a44191c12",
+    "searchableDescription": "Lantern Chandelier 01, pendant, lighting, old, victorian, metal, antique, ornate, vintage, brass, CC0 model by Kirill Sannikov from Poly Haven",
+    "mount": "ceiling"
+  },
+  {
+    "schemaVersion": 1,
+    "id": "00000000-0000-4000-8000-000000002137",
+    "category": "decor",
+    "title": "Mantel Clock 01",
+    "tags": [
+      "polyhaven",
+      "poly haven",
+      "CC0",
+      "decor",
+      "vintage",
+      "antique",
+      "old",
+      "clock",
+      "time",
+      "wooden",
+      "shelf",
+      "mantel"
+    ],
+    "styles": [],
+    "colors": [
+      "natural"
+    ],
+    "materials": [],
+    "dimensionsM": [
+      0.34234,
+      0.16049,
+      0.12618
+    ],
+    "glbStorageKey": "/models/polyhaven-mantel-clock-01.glb",
+    "thumbnailStorageKey": "/thumbnails/polyhaven-mantel-clock-01.webp",
+    "source": "other",
+    "sourceUrl": "https://polyhaven.com/a/mantel_clock_01",
+    "licenseStatus": "verified",
+    "attribution": "Yann Kervran, Rico Cilliers / Poly Haven (CC0)",
+    "estimatedPrice": {
+      "currency": "USD",
+      "minor": 4900
+    },
+    "triangleCount": 24999,
+    "textureBytes": 301412,
+    "contentHash": "16752b38b916526ec9518b98d319e29736939f776f489879f1c561e7c141340b",
+    "searchableDescription": "Mantel Clock 01, decor, vintage, antique, old, clock, time, wooden, shelf, mantel, CC0 model by Yann Kervran, Rico Cilliers from Poly Haven"
+  },
+  {
+    "schemaVersion": 1,
+    "id": "00000000-0000-4000-8000-000000002138",
+    "category": "armchair",
+    "title": "Mid Century Lounge Chair",
+    "tags": [
+      "polyhaven",
+      "poly haven",
+      "CC0",
+      "armchair",
+      "wooden",
+      "leather",
+      "couch",
+      "lounge",
+      "architecture",
+      "modern",
+      "interior design",
+      "home decor"
+    ],
+    "styles": [],
+    "colors": [
+      "natural"
+    ],
+    "materials": [],
+    "dimensionsM": [
+      1.00868,
+      1.1691,
+      1.19031
+    ],
+    "glbStorageKey": "/models/polyhaven-mid-century-lounge-chair.glb",
+    "thumbnailStorageKey": "/thumbnails/polyhaven-mid-century-lounge-chair.webp",
+    "source": "other",
+    "sourceUrl": "https://polyhaven.com/a/mid_century_lounge_chair",
+    "licenseStatus": "verified",
+    "attribution": "Kuutti Siitonen / Poly Haven (CC0)",
+    "estimatedPrice": {
+      "currency": "USD",
+      "minor": 39900
+    },
+    "triangleCount": 6148,
+    "textureBytes": 352258,
+    "contentHash": "cfdf3340279a13bd2585bd34292e80b70d6226af889a489991fca3c3ef11645b",
+    "searchableDescription": "Mid Century Lounge Chair, armchair, wooden, leather, couch, lounge, architecture, modern, interior design, home decor, CC0 model by Kuutti Siitonen from Poly Haven"
+  },
+  {
+    "schemaVersion": 1,
+    "id": "00000000-0000-4000-8000-000000002139",
+    "category": "coffee-table",
+    "title": "Modern Coffee Table 02",
+    "tags": [
+      "polyhaven",
+      "poly haven",
+      "CC0",
+      "coffee-table",
+      "contemporary",
+      "modern",
+      "rectangular",
+      "stone",
+      "wood",
+      "deco",
+      "clean"
+    ],
+    "styles": [],
+    "colors": [
+      "natural"
+    ],
+    "materials": [],
+    "dimensionsM": [
+      1.19907,
+      0.36923,
+      1.19966
+    ],
+    "glbStorageKey": "/models/polyhaven-modern-coffee-table-02.glb",
+    "thumbnailStorageKey": "/thumbnails/polyhaven-modern-coffee-table-02.webp",
+    "source": "other",
+    "sourceUrl": "https://polyhaven.com/a/modern_coffee_table_02",
+    "licenseStatus": "verified",
+    "attribution": "Amin / Poly Haven (CC0)",
+    "estimatedPrice": {
+      "currency": "USD",
+      "minor": 29900
+    },
+    "triangleCount": 13645,
+    "textureBytes": 357014,
+    "contentHash": "a86f5e155d06a4ffe58bdbedd38fabd7ce1dc0400700d10031c1b7165c3dc2c7",
+    "searchableDescription": "Modern Coffee Table 02, coffee-table, contemporary, modern, rectangular, stone, wood, deco, clean, CC0 model by Amin from Poly Haven"
+  },
+  {
+    "schemaVersion": 1,
+    "id": "00000000-0000-4000-8000-000000002140",
+    "category": "wall-art",
+    "title": "Ornate Mirror 01",
+    "tags": [
+      "polyhaven",
+      "poly haven",
+      "CC0",
+      "wall-art",
+      "decor",
+      "decoration",
+      "ornate",
+      "fancy",
+      "wealthy",
+      "mansion",
+      "manor",
+      "vintage"
+    ],
+    "styles": [],
+    "colors": [
+      "natural"
+    ],
+    "materials": [],
+    "dimensionsM": [
+      0.4865,
+      0.74416,
+      0.02598
+    ],
+    "glbStorageKey": "/models/polyhaven-ornate-mirror-01.glb",
+    "thumbnailStorageKey": "/thumbnails/polyhaven-ornate-mirror-01.webp",
+    "source": "other",
+    "sourceUrl": "https://polyhaven.com/a/ornate_mirror_01",
+    "licenseStatus": "verified",
+    "attribution": "James Ray Cock / Poly Haven (CC0)",
+    "estimatedPrice": {
+      "currency": "USD",
+      "minor": 7900
+    },
+    "triangleCount": 14246,
+    "textureBytes": 179214,
+    "contentHash": "9dbe5d9b4d5a25debfa728cb9c8d8d0d97c87a5f9c5e5d666b53a55abff1df60",
+    "searchableDescription": "Ornate Mirror 01, wall-art, decor, decoration, ornate, fancy, wealthy, mansion, manor, vintage, CC0 model by James Ray Cock from Poly Haven",
+    "mount": "wall"
+  },
+  {
+    "schemaVersion": 1,
+    "id": "00000000-0000-4000-8000-000000002141",
+    "category": "ottoman",
+    "title": "Ottoman 01",
+    "tags": [
+      "polyhaven",
+      "poly haven",
+      "CC0",
+      "ottoman",
+      "furniture",
+      "leather",
+      "chair",
+      "fabric",
+      "ottoman",
+      "upholstery",
+      "interior design",
+      "living room"
+    ],
+    "styles": [],
+    "colors": [
+      "natural"
+    ],
+    "materials": [],
+    "dimensionsM": [
+      0.88456,
+      0.6243,
+      0.62116
+    ],
+    "glbStorageKey": "/models/polyhaven-ottoman-01.glb",
+    "thumbnailStorageKey": "/thumbnails/polyhaven-ottoman-01.webp",
+    "source": "other",
+    "sourceUrl": "https://polyhaven.com/a/Ottoman_01",
+    "licenseStatus": "verified",
+    "attribution": "Caspian Fortune / Poly Haven (CC0)",
+    "estimatedPrice": {
+      "currency": "USD",
+      "minor": 19900
+    },
+    "triangleCount": 4240,
+    "textureBytes": 401454,
+    "contentHash": "b91a99f236db442e291241adf72afb196a478830152115469411d76c0131a855",
+    "searchableDescription": "Ottoman 01, ottoman, furniture, leather, chair, fabric, ottoman, upholstery, interior design, living room, CC0 model by Caspian Fortune from Poly Haven"
+  },
+  {
+    "schemaVersion": 1,
+    "id": "00000000-0000-4000-8000-000000002142",
+    "category": "bench",
+    "title": "Painted Wooden Bench",
+    "tags": [
+      "polyhaven",
+      "poly haven",
+      "CC0",
+      "bench",
+      "vintage",
+      "old",
+      "wooden",
+      "worn",
+      "antique",
+      "farmhouse",
+      "aged",
+      "rustic"
+    ],
+    "styles": [],
+    "colors": [
+      "natural"
+    ],
+    "materials": [],
+    "dimensionsM": [
+      1.16494,
+      0.88934,
+      0.49649
+    ],
+    "glbStorageKey": "/models/polyhaven-painted-wooden-bench.glb",
+    "thumbnailStorageKey": "/thumbnails/polyhaven-painted-wooden-bench.webp",
+    "source": "other",
+    "sourceUrl": "https://polyhaven.com/a/painted_wooden_bench",
+    "licenseStatus": "verified",
+    "attribution": "Kirill Sannikov / Poly Haven (CC0)",
+    "estimatedPrice": {
+      "currency": "USD",
+      "minor": 24900
+    },
+    "triangleCount": 630,
+    "textureBytes": 363548,
+    "contentHash": "85d9b6369fb0dafaf9ac586029c76e60686e1fc35f86d8be4e6f58b5ff139cd1",
+    "searchableDescription": "Painted Wooden Bench, bench, vintage, old, wooden, worn, antique, farmhouse, aged, rustic, CC0 model by Kirill Sannikov from Poly Haven"
+  },
+  {
+    "schemaVersion": 1,
+    "id": "00000000-0000-4000-8000-000000002143",
+    "category": "cabinet",
+    "title": "Painted Wooden Cabinet",
+    "tags": [
+      "polyhaven",
+      "poly haven",
+      "CC0",
+      "cabinet",
+      "old",
+      "worn",
+      "antique",
+      "wooden",
+      "vintage",
+      "colonial",
+      "farmhouse",
+      "storage"
+    ],
+    "styles": [],
+    "colors": [
+      "natural"
+    ],
+    "materials": [],
+    "dimensionsM": [
+      1.19467,
+      1.18184,
+      0.61663
+    ],
+    "glbStorageKey": "/models/polyhaven-painted-wooden-cabinet.glb",
+    "thumbnailStorageKey": "/thumbnails/polyhaven-painted-wooden-cabinet.webp",
+    "source": "other",
+    "sourceUrl": "https://polyhaven.com/a/painted_wooden_cabinet",
+    "licenseStatus": "verified",
+    "attribution": "Kirill Sannikov / Poly Haven (CC0)",
+    "estimatedPrice": {
+      "currency": "USD",
+      "minor": 69900
+    },
+    "triangleCount": 2227,
+    "textureBytes": 296636,
+    "contentHash": "7e5ca24b532efd8e20dd028819146f127fc1d3756456b21c8e0b74e9b6a1928a",
+    "searchableDescription": "Painted Wooden Cabinet, cabinet, old, worn, antique, wooden, vintage, colonial, farmhouse, storage, CC0 model by Kirill Sannikov from Poly Haven"
+  },
+  {
+    "schemaVersion": 1,
+    "id": "00000000-0000-4000-8000-000000002145",
+    "category": "chair",
+    "title": "Painted Wooden Chair 02",
+    "tags": [
+      "polyhaven",
+      "poly haven",
+      "CC0",
+      "chair",
+      "old",
+      "wooden",
+      "vintage",
+      "antique",
+      "farmhouse",
+      "seat",
+      "dining",
+      "chair"
+    ],
+    "styles": [],
+    "colors": [
+      "natural"
+    ],
+    "materials": [],
+    "dimensionsM": [
+      0.63939,
+      1.26377,
+      0.66207
+    ],
+    "glbStorageKey": "/models/polyhaven-painted-wooden-chair-02.glb",
+    "thumbnailStorageKey": "/thumbnails/polyhaven-painted-wooden-chair-02.webp",
+    "source": "other",
+    "sourceUrl": "https://polyhaven.com/a/painted_wooden_chair_02",
+    "licenseStatus": "verified",
+    "attribution": "Kirill Sannikov / Poly Haven (CC0)",
+    "estimatedPrice": {
+      "currency": "USD",
+      "minor": 14900
+    },
+    "triangleCount": 1246,
+    "textureBytes": 552078,
+    "contentHash": "a7c1693071b149b7993c124838e1a4a39d6d019906fb4473abf99cd0c7a0106c",
+    "searchableDescription": "Painted Wooden Chair 02, chair, old, wooden, vintage, antique, farmhouse, seat, dining, chair, CC0 model by Kirill Sannikov from Poly Haven"
+  },
+  {
+    "schemaVersion": 1,
+    "id": "00000000-0000-4000-8000-000000002146",
+    "category": "side-table",
+    "title": "Painted Wooden Nightstand",
+    "tags": [
+      "polyhaven",
+      "poly haven",
+      "CC0",
+      "side-table",
+      "old",
+      "wooden",
+      "worn",
+      "vintage",
+      "antique",
+      "aged",
+      "bedside",
+      "bedroom"
+    ],
+    "styles": [],
+    "colors": [
+      "natural"
+    ],
+    "materials": [],
+    "dimensionsM": [
+      0.50454,
+      0.61552,
+      0.50872
+    ],
+    "glbStorageKey": "/models/polyhaven-painted-wooden-nightstand.glb",
+    "thumbnailStorageKey": "/thumbnails/polyhaven-painted-wooden-nightstand.webp",
+    "source": "other",
+    "sourceUrl": "https://polyhaven.com/a/painted_wooden_nightstand",
+    "licenseStatus": "verified",
+    "attribution": "Kirill Sannikov / Poly Haven (CC0)",
+    "estimatedPrice": {
+      "currency": "USD",
+      "minor": 14900
+    },
+    "triangleCount": 470,
+    "textureBytes": 397122,
+    "contentHash": "4ec4bf233132a97372e0d83b5fb839a0e1001dc156a926f1691abbc8fd3f7ac9",
+    "searchableDescription": "Painted Wooden Nightstand, side-table, old, wooden, worn, vintage, antique, aged, bedside, bedroom, CC0 model by Kirill Sannikov from Poly Haven"
+  },
+  {
+    "schemaVersion": 1,
+    "id": "00000000-0000-4000-8000-000000002147",
+    "category": "bookshelf",
+    "title": "Painted Wooden Shelves",
+    "tags": [
+      "polyhaven",
+      "poly haven",
+      "CC0",
+      "bookshelf",
+      "old",
+      "wooden",
+      "worn",
+      "vintage",
+      "farmhouse",
+      "aged"
+    ],
+    "styles": [],
+    "colors": [
+      "natural"
+    ],
+    "materials": [],
+    "dimensionsM": [
+      0.51108,
+      1.12507,
+      0.36715
+    ],
+    "glbStorageKey": "/models/polyhaven-painted-wooden-shelves.glb",
+    "thumbnailStorageKey": "/thumbnails/polyhaven-painted-wooden-shelves.webp",
+    "source": "other",
+    "sourceUrl": "https://polyhaven.com/a/painted_wooden_shelves",
+    "licenseStatus": "verified",
+    "attribution": "Kirill Sannikov / Poly Haven (CC0)",
+    "estimatedPrice": {
+      "currency": "USD",
+      "minor": 29900
+    },
+    "triangleCount": 524,
+    "textureBytes": 417422,
+    "contentHash": "beb4ef380d9b34454e5fb4896ed9b09d11a9733f9cf652e7f041aa9eda1b6b45",
+    "searchableDescription": "Painted Wooden Shelves, bookshelf, old, wooden, worn, vintage, farmhouse, aged, CC0 model by Kirill Sannikov from Poly Haven"
+  },
+  {
+    "schemaVersion": 1,
+    "id": "00000000-0000-4000-8000-000000002148",
+    "category": "sofa",
+    "title": "Painted Wooden Sofa",
+    "tags": [
+      "polyhaven",
+      "poly haven",
+      "CC0",
+      "sofa",
+      "chair",
+      "outdoor",
+      "couch",
+      "wooden",
+      "vintage",
+      "aged"
+    ],
+    "styles": [],
+    "colors": [
+      "natural"
+    ],
+    "materials": [],
+    "dimensionsM": [
+      2.45171,
+      1.28111,
+      0.78721
+    ],
+    "glbStorageKey": "/models/polyhaven-painted-wooden-sofa.glb",
+    "thumbnailStorageKey": "/thumbnails/polyhaven-painted-wooden-sofa.webp",
+    "source": "other",
+    "sourceUrl": "https://polyhaven.com/a/painted_wooden_sofa",
+    "licenseStatus": "verified",
+    "attribution": "Kirill Sannikov / Poly Haven (CC0)",
+    "estimatedPrice": {
+      "currency": "USD",
+      "minor": 99900
+    },
+    "triangleCount": 5826,
+    "textureBytes": 323230,
+    "contentHash": "93532f2f134bf71ba229f6df66b91a80189cab2384dcf0330e7c2c4b46b427e7",
+    "searchableDescription": "Painted Wooden Sofa, sofa, chair, outdoor, couch, wooden, vintage, aged, CC0 model by Kirill Sannikov from Poly Haven"
+  },
+  {
+    "schemaVersion": 1,
+    "id": "00000000-0000-4000-8000-000000002149",
+    "category": "stool",
+    "title": "Painted Wooden Stool",
+    "tags": [
+      "polyhaven",
+      "poly haven",
+      "CC0",
+      "stool",
+      "painted",
+      "worn",
+      "old",
+      "antique",
+      "vintage",
+      "farmhouse",
+      "rustic",
+      "carpentry"
+    ],
+    "styles": [],
+    "colors": [
+      "natural"
+    ],
+    "materials": [],
+    "dimensionsM": [
+      0.38484,
+      0.57892,
+      0.40604
+    ],
+    "glbStorageKey": "/models/polyhaven-painted-wooden-stool.glb",
+    "thumbnailStorageKey": "/thumbnails/polyhaven-painted-wooden-stool.webp",
+    "source": "other",
+    "sourceUrl": "https://polyhaven.com/a/painted_wooden_stool",
+    "licenseStatus": "verified",
+    "attribution": "Kirill Sannikov / Poly Haven (CC0)",
+    "estimatedPrice": {
+      "currency": "USD",
+      "minor": 7900
+    },
+    "triangleCount": 676,
+    "textureBytes": 325104,
+    "contentHash": "f73da446194c6d728e124f84cc99eafc2a642b219b5726bff7102ceff289f09d",
+    "searchableDescription": "Painted Wooden Stool, stool, painted, worn, old, antique, vintage, farmhouse, rustic, carpentry, CC0 model by Kirill Sannikov from Poly Haven"
+  },
+  {
+    "schemaVersion": 1,
+    "id": "00000000-0000-4000-8000-000000002150",
+    "category": "table",
+    "title": "Painted Wooden Table",
+    "tags": [
+      "polyhaven",
+      "poly haven",
+      "CC0",
+      "table",
+      "old",
+      "wooden",
+      "vintage",
+      "farmhouse",
+      "aged",
+      "worn",
+      "carpentry"
+    ],
+    "styles": [],
+    "colors": [
+      "natural"
+    ],
+    "materials": [],
+    "dimensionsM": [
+      2.4056,
+      0.95859,
+      1.13684
+    ],
+    "glbStorageKey": "/models/polyhaven-painted-wooden-table.glb",
+    "thumbnailStorageKey": "/thumbnails/polyhaven-painted-wooden-table.webp",
+    "source": "other",
+    "sourceUrl": "https://polyhaven.com/a/painted_wooden_table",
+    "licenseStatus": "verified",
+    "attribution": "Kirill Sannikov / Poly Haven (CC0)",
+    "estimatedPrice": {
+      "currency": "USD",
+      "minor": 49900
+    },
+    "triangleCount": 600,
+    "textureBytes": 207600,
+    "contentHash": "92235c85d109faaa32a36d1214c9d6e79c562e46027b314234f411adbfdc8aeb",
+    "searchableDescription": "Painted Wooden Table, table, old, wooden, vintage, farmhouse, aged, worn, carpentry, CC0 model by Kirill Sannikov from Poly Haven"
+  },
+  {
+    "schemaVersion": 1,
+    "id": "00000000-0000-4000-8000-000000002151",
+    "category": "armchair",
+    "title": "Rockingchair 01",
+    "tags": [
+      "polyhaven",
+      "poly haven",
+      "CC0",
+      "armchair",
+      "chair",
+      "vintage",
+      "prop",
+      "wood",
+      "furniture",
+      "rocking chair",
+      "rocking",
+      "decorative"
+    ],
+    "styles": [],
+    "colors": [
+      "natural"
+    ],
+    "materials": [],
+    "dimensionsM": [
+      0.70814,
+      0.99493,
+      0.83351
+    ],
+    "glbStorageKey": "/models/polyhaven-rockingchair-01.glb",
+    "thumbnailStorageKey": "/thumbnails/polyhaven-rockingchair-01.webp",
+    "source": "other",
+    "sourceUrl": "https://polyhaven.com/a/Rockingchair_01",
+    "licenseStatus": "verified",
+    "attribution": "Jorge Camacho / Poly Haven (CC0)",
+    "estimatedPrice": {
+      "currency": "USD",
+      "minor": 39900
+    },
+    "triangleCount": 11866,
+    "textureBytes": 257144,
+    "contentHash": "60bb09f42ce3e1734c69ba08d1c68923aee7273af7e7679733ca04edeea6ff35",
+    "searchableDescription": "Rockingchair 01, armchair, chair, vintage, prop, wood, furniture, rocking chair, rocking, decorative, CC0 model by Jorge Camacho from Poly Haven"
+  },
+  {
+    "schemaVersion": 1,
+    "id": "00000000-0000-4000-8000-000000002152",
+    "category": "table",
+    "title": "Round Wooden Table 01",
+    "tags": [
+      "polyhaven",
+      "poly haven",
+      "CC0",
+      "table",
+      "vintage",
+      "wooden",
+      "wood",
+      "polish",
+      "circle",
+      "dark",
+      "old"
+    ],
+    "styles": [],
+    "colors": [
+      "natural"
+    ],
+    "materials": [],
+    "dimensionsM": [
+      1.39935,
+      1.00504,
+      1.39935
+    ],
+    "glbStorageKey": "/models/polyhaven-round-wooden-table-01.glb",
+    "thumbnailStorageKey": "/thumbnails/polyhaven-round-wooden-table-01.webp",
+    "source": "other",
+    "sourceUrl": "https://polyhaven.com/a/round_wooden_table_01",
+    "licenseStatus": "verified",
+    "attribution": "Ulan Cabanilla / Poly Haven (CC0)",
+    "estimatedPrice": {
+      "currency": "USD",
+      "minor": 49900
+    },
+    "triangleCount": 8640,
+    "textureBytes": 159040,
+    "contentHash": "af6f846bcef0a04e21f893cd7b7c546fa4069d58c10ad04c1efe3ca74cf6f352",
+    "searchableDescription": "Round Wooden Table 01, table, vintage, wooden, wood, polish, circle, dark, old, CC0 model by Ulan Cabanilla from Poly Haven"
+  },
+  {
+    "schemaVersion": 1,
+    "id": "00000000-0000-4000-8000-000000002153",
+    "category": "table",
+    "title": "Round Wooden Table 02",
+    "tags": [
+      "polyhaven",
+      "poly haven",
+      "CC0",
+      "table",
+      "antique",
+      "vintage",
+      "wooden",
+      "traditional",
+      "circle",
+      "lounge",
+      "dining"
+    ],
+    "styles": [],
+    "colors": [
+      "natural"
+    ],
+    "materials": [],
+    "dimensionsM": [
+      0.79618,
+      0.74603,
+      0.79618
+    ],
+    "glbStorageKey": "/models/polyhaven-round-wooden-table-02.glb",
+    "thumbnailStorageKey": "/thumbnails/polyhaven-round-wooden-table-02.webp",
+    "source": "other",
+    "sourceUrl": "https://polyhaven.com/a/round_wooden_table_02",
+    "licenseStatus": "verified",
+    "attribution": "Ulan Cabanilla / Poly Haven (CC0)",
+    "estimatedPrice": {
+      "currency": "USD",
+      "minor": 49900
+    },
+    "triangleCount": 4254,
+    "textureBytes": 275958,
+    "contentHash": "9a8fa08db5e98f509c606d4cb4aa94663e1ffe892fa762c4f83b01f202c62c62",
+    "searchableDescription": "Round Wooden Table 02, table, antique, vintage, wooden, traditional, circle, lounge, dining, CC0 model by Ulan Cabanilla from Poly Haven"
+  },
+  {
+    "schemaVersion": 1,
+    "id": "00000000-0000-4000-8000-000000002154",
+    "category": "fireplace",
+    "title": "Scandinavian Masonry Heater",
+    "tags": [
+      "polyhaven",
+      "poly haven",
+      "CC0",
+      "fireplace",
+      "heater",
+      "home heating",
+      "furnace",
+      "fireplace",
+      "wood stove",
+      "central heating"
+    ],
+    "styles": [],
+    "colors": [
+      "natural"
+    ],
+    "materials": [],
+    "dimensionsM": [
+      1.16767,
+      2.36048,
+      1.33516
+    ],
+    "glbStorageKey": "/models/polyhaven-scandinavian-masonry-heater.glb",
+    "thumbnailStorageKey": "/thumbnails/polyhaven-scandinavian-masonry-heater.webp",
+    "source": "other",
+    "sourceUrl": "https://polyhaven.com/a/scandinavian_masonry_heater",
+    "licenseStatus": "verified",
+    "attribution": "Kuutti Siitonen / Poly Haven (CC0)",
+    "estimatedPrice": {
+      "currency": "USD",
+      "minor": 249900
+    },
+    "triangleCount": 9350,
+    "textureBytes": 414884,
+    "contentHash": "948bc079c68a5ccec142aa6e16c988ba35266e4708de328a5d3ec171be34f120",
+    "searchableDescription": "Scandinavian Masonry Heater, fireplace, heater, home heating, furnace, fireplace, wood stove, central heating, CC0 model by Kuutti Siitonen from Poly Haven"
+  },
+  {
+    "schemaVersion": 1,
+    "id": "00000000-0000-4000-8000-000000002155",
+    "category": "chair",
+    "title": "School Chair 01",
+    "tags": [
+      "polyhaven",
+      "poly haven",
+      "CC0",
+      "chair",
+      "prop",
+      "furniture",
+      "metal",
+      "plastic",
+      "chair",
+      "school"
+    ],
+    "styles": [],
+    "colors": [
+      "natural"
+    ],
+    "materials": [],
+    "dimensionsM": [
+      0.56585,
+      1.00604,
+      0.67528
+    ],
+    "glbStorageKey": "/models/polyhaven-schoolchair-01.glb",
+    "thumbnailStorageKey": "/thumbnails/polyhaven-schoolchair-01.webp",
+    "source": "other",
+    "sourceUrl": "https://polyhaven.com/a/SchoolChair_01",
+    "licenseStatus": "verified",
+    "attribution": "Ethan Place / Poly Haven (CC0)",
+    "estimatedPrice": {
+      "currency": "USD",
+      "minor": 14900
+    },
+    "triangleCount": 5072,
+    "textureBytes": 230180,
+    "contentHash": "804f43c2dd6a86a967708f4ab8b3d795b825fe0b35683c1b21015cb0572ad0e0",
+    "searchableDescription": "School Chair 01, chair, prop, furniture, metal, plastic, chair, school, CC0 model by Ethan Place from Poly Haven"
+  },
+  {
+    "schemaVersion": 1,
+    "id": "00000000-0000-4000-8000-000000002156",
+    "category": "desk",
+    "title": "School Desk 01",
+    "tags": [
+      "polyhaven",
+      "poly haven",
+      "CC0",
+      "desk",
+      "table",
+      "school",
+      "desk",
+      "wood",
+      "metal",
+      "classroom",
+      "student",
+      "single-seat"
+    ],
+    "styles": [],
+    "colors": [
+      "natural"
+    ],
+    "materials": [],
+    "dimensionsM": [
+      0.71174,
+      0.88263,
+      0.546
+    ],
+    "glbStorageKey": "/models/polyhaven-schooldesk-01.glb",
+    "thumbnailStorageKey": "/thumbnails/polyhaven-schooldesk-01.webp",
+    "source": "other",
+    "sourceUrl": "https://polyhaven.com/a/SchoolDesk_01",
+    "licenseStatus": "verified",
+    "attribution": "Ethan Place / Poly Haven (CC0)",
+    "estimatedPrice": {
+      "currency": "USD",
+      "minor": 34900
+    },
+    "triangleCount": 4162,
+    "textureBytes": 134470,
+    "contentHash": "6c03f395eef665b24778e3150f5ce8cea2466377c0de2016ae99e4c3af8dae07",
+    "searchableDescription": "School Desk 01, desk, table, school, desk, wood, metal, classroom, student, single-seat, CC0 model by Ethan Place from Poly Haven"
+  },
+  {
+    "schemaVersion": 1,
+    "id": "00000000-0000-4000-8000-000000002157",
+    "category": "bookshelf",
+    "title": "Shelf 01",
+    "tags": [
+      "polyhaven",
+      "poly haven",
+      "CC0",
+      "bookshelf",
+      "wood",
+      "shelf",
+      "furniture",
+      "storage",
+      "home",
+      "organization",
+      "display",
+      "wooden"
+    ],
+    "styles": [],
+    "colors": [
+      "natural"
+    ],
+    "materials": [],
+    "dimensionsM": [
+      1.00343,
+      2.08031,
+      0.257
+    ],
+    "glbStorageKey": "/models/polyhaven-shelf-01.glb",
+    "thumbnailStorageKey": "/thumbnails/polyhaven-shelf-01.webp",
+    "source": "other",
+    "sourceUrl": "https://polyhaven.com/a/Shelf_01",
+    "licenseStatus": "verified",
+    "attribution": "Gabriel Radi\u0107 / Poly Haven (CC0)",
+    "estimatedPrice": {
+      "currency": "USD",
+      "minor": 29900
+    },
+    "triangleCount": 182,
+    "textureBytes": 435150,
+    "contentHash": "ff27c42aa944fda3de76298869005b5d170f96b66b9ad7e2f57da1550bc60a95",
+    "searchableDescription": "Shelf 01, bookshelf, wood, shelf, furniture, storage, home, organization, display, wooden, CC0 model by Gabriel Radi\u0107 from Poly Haven"
+  },
+  {
+    "schemaVersion": 1,
+    "id": "00000000-0000-4000-8000-000000002159",
+    "category": "table",
+    "title": "Small Wooden Table 01",
+    "tags": [
+      "polyhaven",
+      "poly haven",
+      "CC0",
+      "table",
+      "vintage",
+      "wood",
+      "small",
+      "table",
+      "wooden"
+    ],
+    "styles": [],
+    "colors": [
+      "natural"
+    ],
+    "materials": [],
+    "dimensionsM": [
+      0.91619,
+      0.5331,
+      0.43991
+    ],
+    "glbStorageKey": "/models/polyhaven-small-wooden-table-01.glb",
+    "thumbnailStorageKey": "/thumbnails/polyhaven-small-wooden-table-01.webp",
+    "source": "other",
+    "sourceUrl": "https://polyhaven.com/a/small_wooden_table_01",
+    "licenseStatus": "verified",
+    "attribution": "Ulan Cabanilla / Poly Haven (CC0)",
+    "estimatedPrice": {
+      "currency": "USD",
+      "minor": 49900
+    },
+    "triangleCount": 3410,
+    "textureBytes": 167698,
+    "contentHash": "1b4aca98aaa5e759dd2c7f7d531bb21a9f013bc2cf5a52e1c62c6f3d488c270d",
+    "searchableDescription": "Small Wooden Table 01, table, vintage, wood, small, table, wooden, CC0 model by Ulan Cabanilla from Poly Haven"
+  },
+  {
+    "schemaVersion": 1,
+    "id": "00000000-0000-4000-8000-000000002160",
+    "category": "sofa",
+    "title": "Sofa 03",
+    "tags": [
+      "polyhaven",
+      "poly haven",
+      "CC0",
+      "sofa",
+      "vintage",
+      "chair",
+      "couch",
+      "seat",
+      "fancy",
+      "mansion",
+      "manor",
+      "victorian"
+    ],
+    "styles": [],
+    "colors": [
+      "natural"
+    ],
+    "materials": [],
+    "dimensionsM": [
+      2.73118,
+      1.11833,
+      0.92495
+    ],
+    "glbStorageKey": "/models/polyhaven-sofa-03.glb",
+    "thumbnailStorageKey": "/thumbnails/polyhaven-sofa-03.webp",
+    "source": "other",
+    "sourceUrl": "https://polyhaven.com/a/sofa_03",
+    "licenseStatus": "verified",
+    "attribution": "Fran Calvente / Poly Haven (CC0)",
+    "estimatedPrice": {
+      "currency": "USD",
+      "minor": 99900
+    },
+    "triangleCount": 8004,
+    "textureBytes": 306962,
+    "contentHash": "fd050a2a68f35d5dfcc60a54cbf7a6e93c28fea88757bb1bb3e23baa15a03784",
+    "searchableDescription": "Sofa 03, sofa, vintage, chair, couch, seat, fancy, mansion, manor, victorian, CC0 model by Fran Calvente from Poly Haven"
+  },
+  {
+    "schemaVersion": 1,
+    "id": "00000000-0000-4000-8000-000000002161",
+    "category": "bookshelf",
+    "title": "Steel Frame Shelves 03",
+    "tags": [
+      "polyhaven",
+      "poly haven",
+      "CC0",
+      "bookshelf",
+      "storage",
+      "home decor",
+      "contemporary",
+      "minimalist",
+      "display",
+      "frame"
+    ],
+    "styles": [],
+    "colors": [
+      "natural"
+    ],
+    "materials": [],
+    "dimensionsM": [
+      2.35108,
+      2.31176,
+      0.72125
+    ],
+    "glbStorageKey": "/models/polyhaven-steel-frame-shelves-03.glb",
+    "thumbnailStorageKey": "/thumbnails/polyhaven-steel-frame-shelves-03.webp",
+    "source": "other",
+    "sourceUrl": "https://polyhaven.com/a/steel_frame_shelves_03",
+    "licenseStatus": "verified",
+    "attribution": "Ulan Cabanilla / Poly Haven (CC0)",
+    "estimatedPrice": {
+      "currency": "USD",
+      "minor": 29900
+    },
+    "triangleCount": 8396,
+    "textureBytes": 495130,
+    "contentHash": "c8e23e72be37afe0fbea7a3472cc00e6e620bc2c9f888a1cccd5d209b3d0fe57",
+    "searchableDescription": "Steel Frame Shelves 03, bookshelf, storage, home decor, contemporary, minimalist, display, frame, CC0 model by Ulan Cabanilla from Poly Haven"
+  },
+  {
+    "schemaVersion": 1,
+    "id": "00000000-0000-4000-8000-000000002162",
+    "category": "cabinet",
+    "title": "Vintage Cabinet 01",
+    "tags": [
+      "polyhaven",
+      "poly haven",
+      "CC0",
+      "cabinet",
+      "vintage",
+      "farmhouse",
+      "old",
+      "antique",
+      "fancy",
+      "wooden",
+      "varnished",
+      "cupboard"
+    ],
+    "styles": [],
+    "colors": [
+      "natural"
+    ],
+    "materials": [],
+    "dimensionsM": [
+      2.02169,
+      2.23505,
+      0.66984
+    ],
+    "glbStorageKey": "/models/polyhaven-vintage-cabinet-01.glb",
+    "thumbnailStorageKey": "/thumbnails/polyhaven-vintage-cabinet-01.webp",
+    "source": "other",
+    "sourceUrl": "https://polyhaven.com/a/vintage_cabinet_01",
+    "licenseStatus": "verified",
+    "attribution": "Rico Cilliers / Poly Haven (CC0)",
+    "estimatedPrice": {
+      "currency": "USD",
+      "minor": 69900
+    },
+    "triangleCount": 25005,
+    "textureBytes": 453196,
+    "contentHash": "c9815413544d247d7386f6284acb97489975c6a491f52b77bef5b112026d3cd1",
+    "searchableDescription": "Vintage Cabinet 01, cabinet, vintage, farmhouse, old, antique, fancy, wooden, varnished, cupboard, CC0 model by Rico Cilliers from Poly Haven"
+  },
+  {
+    "schemaVersion": 1,
+    "id": "00000000-0000-4000-8000-000000002164",
+    "category": "lamp",
+    "title": "Vintage Oil Lamp",
+    "tags": [
+      "polyhaven",
+      "poly haven",
+      "CC0",
+      "lamp",
+      "lamp",
+      "oil",
+      "antique",
+      "victorian",
+      "manor",
+      "historic"
+    ],
+    "styles": [],
+    "colors": [
+      "natural"
+    ],
+    "materials": [],
+    "dimensionsM": [
+      0.22,
+      0.80164,
+      0.22
+    ],
+    "glbStorageKey": "/models/polyhaven-vintage-oil-lamp.glb",
+    "thumbnailStorageKey": "/thumbnails/polyhaven-vintage-oil-lamp.webp",
+    "source": "other",
+    "sourceUrl": "https://polyhaven.com/a/vintage_oil_lamp",
+    "licenseStatus": "verified",
+    "attribution": "Monsta3D / Poly Haven (CC0)",
+    "estimatedPrice": {
+      "currency": "USD",
+      "minor": 9900
+    },
+    "triangleCount": 7208,
+    "textureBytes": 301894,
+    "contentHash": "c8131233250cc87316d5b46dc505349d8792466136bef87add1ea890ee7ac1a7",
+    "searchableDescription": "Vintage Oil Lamp, lamp, lamp, oil, antique, victorian, manor, historic, CC0 model by Monsta3D from Poly Haven"
+  },
+  {
+    "schemaVersion": 1,
+    "id": "00000000-0000-4000-8000-000000002166",
+    "category": "stool",
+    "title": "Wooden Stool 02",
+    "tags": [
+      "polyhaven",
+      "poly haven",
+      "CC0",
+      "stool",
+      "old",
+      "wooden",
+      "vintage",
+      "antique",
+      "wood",
+      "farmhouse",
+      "carpentry",
+      "handcrafted"
+    ],
+    "styles": [],
+    "colors": [
+      "natural"
+    ],
+    "materials": [],
+    "dimensionsM": [
+      0.26518,
+      0.18194,
+      0.18314
+    ],
+    "glbStorageKey": "/models/polyhaven-wooden-stool-02.glb",
+    "thumbnailStorageKey": "/thumbnails/polyhaven-wooden-stool-02.webp",
+    "source": "other",
+    "sourceUrl": "https://polyhaven.com/a/wooden_stool_02",
+    "licenseStatus": "verified",
+    "attribution": "Kuutti Siitonen / Poly Haven (CC0)",
+    "estimatedPrice": {
+      "currency": "USD",
+      "minor": 7900
+    },
+    "triangleCount": 11146,
+    "textureBytes": 576934,
+    "contentHash": "1ae073d31b0649f1aa2cd696b39e45ef2517f4295141591a3f6f40b93e48567a",
+    "searchableDescription": "Wooden Stool 02, stool, old, wooden, vintage, antique, wood, farmhouse, carpentry, handcrafted, CC0 model by Kuutti Siitonen from Poly Haven"
+  },
+  {
+    "schemaVersion": 1,
+    "id": "00000000-0000-4000-8000-000000002168",
+    "category": "table",
+    "title": "Wooden Table 01",
+    "tags": [
+      "polyhaven",
+      "poly haven",
+      "CC0",
+      "table",
+      "vintage",
+      "wood",
+      "prop",
+      "table",
+      "school",
+      "desk",
+      "old",
+      "worn"
+    ],
+    "styles": [],
+    "colors": [
+      "natural"
+    ],
+    "materials": [],
+    "dimensionsM": [
+      1.79965,
+      0.54884,
+      0.65715
+    ],
+    "glbStorageKey": "/models/polyhaven-woodentable-01.glb",
+    "thumbnailStorageKey": "/thumbnails/polyhaven-woodentable-01.webp",
+    "source": "other",
+    "sourceUrl": "https://polyhaven.com/a/WoodenTable_01",
+    "licenseStatus": "verified",
+    "attribution": "Ethan Place / Poly Haven (CC0)",
+    "estimatedPrice": {
+      "currency": "USD",
+      "minor": 49900
+    },
+    "triangleCount": 952,
+    "textureBytes": 303150,
+    "contentHash": "41bf6e2f3f06c1c8ee9e907774af78f72e03b185466c58e43a9b24e7d868d69f",
+    "searchableDescription": "Wooden Table 01, table, vintage, wood, prop, table, school, desk, old, worn, CC0 model by Ethan Place from Poly Haven"
+  },
+  {
+    "schemaVersion": 1,
+    "id": "00000000-0000-4000-8000-000000002169",
+    "category": "table",
+    "title": "Wooden Table 02",
+    "tags": [
+      "polyhaven",
+      "poly haven",
+      "CC0",
+      "table",
+      "vintage",
+      "wood",
+      "prop",
+      "table",
+      "furniture",
+      "old",
+      "worn",
+      "small"
+    ],
+    "styles": [],
+    "colors": [
+      "natural"
+    ],
+    "materials": [],
+    "dimensionsM": [
+      0.30068,
+      0.41766,
+      0.30068
+    ],
+    "glbStorageKey": "/models/polyhaven-woodentable-02.glb",
+    "thumbnailStorageKey": "/thumbnails/polyhaven-woodentable-02.webp",
+    "source": "other",
+    "sourceUrl": "https://polyhaven.com/a/WoodenTable_02",
+    "licenseStatus": "verified",
+    "attribution": "Fran Calvente / Poly Haven (CC0)",
+    "estimatedPrice": {
+      "currency": "USD",
+      "minor": 49900
+    },
+    "triangleCount": 1514,
+    "textureBytes": 293234,
+    "contentHash": "74a25081860146c73dab8604e5ebcefb43dbe2b170f5abf9eec0b3d6d7c12bea",
+    "searchableDescription": "Wooden Table 02, table, vintage, wood, prop, table, furniture, old, worn, small, CC0 model by Fran Calvente from Poly Haven"
   }
 ]

@@ -78,3 +78,73 @@ Imported from `origin/feature/3d-sandblox-jordan` (commit `c27fed7`) by `scripts
 | plant-small-succulent.glb | [Model page](https://polyhaven.com/a/potted_plant_04) | potted_plant_04 by James Ray Cock — Poly Haven (CC0) | CC0-1.0 |
 | rug-jute-large.glb | Generated in-repo | House project (self-authored, CC0) | CC0-1.0 |
 | pendant-modern.glb | [Model page](https://polyhaven.com/a/modern_ceiling_lamp_01) | modern_ceiling_lamp_01 by James Ray Cock — Poly Haven (CC0) | CC0-1.0 |
+
+## Poly Haven (batch import)
+
+Same processing and CC0-1.0 terms as the Poly Haven section.
+
+| File | Source | Author | License | Downloaded |
+|---|---|---|---|---|
+| polyhaven-antique-ceramic-vase-01.glb | [Model page](https://polyhaven.com/a/antique_ceramic_vase_01) | James Ray Cock | CC0-1.0 | 2026-10-18 |
+| polyhaven-armchair-01.glb | [Model page](https://polyhaven.com/a/ArmChair_01) | Kirill Sannikov | CC0-1.0 | 2026-10-18 |
+| polyhaven-bar-chair-round-01.glb | [Model page](https://polyhaven.com/a/bar_chair_round_01) | Dairon Sanchez | CC0-1.0 | 2026-10-18 |
+| polyhaven-brass-candleholders.glb | [Model page](https://polyhaven.com/a/brass_candleholders) | Tina | CC0-1.0 | 2026-10-18 |
+| polyhaven-brass-vase-01.glb | [Model page](https://polyhaven.com/a/brass_vase_01) | Rico Cilliers | CC0-1.0 | 2026-10-18 |
+| polyhaven-brass-vase-02.glb | [Model page](https://polyhaven.com/a/brass_vase_02) | Rico Cilliers | CC0-1.0 | 2026-10-18 |
+| polyhaven-chandelier-01.glb | [Model page](https://polyhaven.com/a/Chandelier_01) | Kirill Sannikov | CC0-1.0 | 2026-10-18 |
+| polyhaven-chandelier-02.glb | [Model page](https://polyhaven.com/a/Chandelier_02) | Kirill Sannikov | CC0-1.0 | 2026-10-18 |
+| polyhaven-chandelier-03.glb | [Model page](https://polyhaven.com/a/Chandelier_03) | Kirill Sannikov | CC0-1.0 | 2026-10-18 |
+| polyhaven-chinese-armchair.glb | [Model page](https://polyhaven.com/a/chinese_armchair) | Kirill Sannikov | CC0-1.0 | 2026-10-18 |
+| polyhaven-chinese-chandelier.glb | [Model page](https://polyhaven.com/a/chinese_chandelier) | Kirill Sannikov | CC0-1.0 | 2026-10-18 |
+| polyhaven-chinese-console-table.glb | [Model page](https://polyhaven.com/a/chinese_console_table) | Kirill Sannikov | CC0-1.0 | 2026-10-18 |
+| polyhaven-chinese-sofa.glb | [Model page](https://polyhaven.com/a/chinese_sofa) | Kirill Sannikov | CC0-1.0 | 2026-10-18 |
+| polyhaven-chinese-stool.glb | [Model page](https://polyhaven.com/a/chinese_stool) | Kirill Sannikov | CC0-1.0 | 2026-10-18 |
+| polyhaven-chinese-tea-table.glb | [Model page](https://polyhaven.com/a/chinese_tea_table) | Kirill Sannikov | CC0-1.0 | 2026-10-18 |
+| polyhaven-classicconsole-01.glb | [Model page](https://polyhaven.com/a/ClassicConsole_01) | Kirill Sannikov | CC0-1.0 | 2026-10-18 |
+| polyhaven-classicnightstand-01.glb | [Model page](https://polyhaven.com/a/ClassicNightstand_01) | Kirill Sannikov | CC0-1.0 | 2026-10-18 |
+| polyhaven-coffeetable-01.glb | [Model page](https://polyhaven.com/a/CoffeeTable_01) | Fernando Quinn | CC0-1.0 | 2026-10-18 |
+| polyhaven-drawer-cabinet.glb | [Model page](https://polyhaven.com/a/drawer_cabinet) | Ulan Cabanilla | CC0-1.0 | 2026-10-18 |
+| polyhaven-electric-stove.glb | [Model page](https://polyhaven.com/a/electric_stove) | Kuutti Siitonen | CC0-1.0 | 2026-10-18 |
+| polyhaven-fancy-picture-frame-02.glb | [Model page](https://polyhaven.com/a/fancy_picture_frame_02) | Rob Tuytel, Rico Cilliers | CC0-1.0 | 2026-10-18 |
+| polyhaven-folding-wooden-stool.glb | [Model page](https://polyhaven.com/a/folding_wooden_stool) | Ulan Cabanilla | CC0-1.0 | 2026-10-18 |
+| polyhaven-gallinera-chair.glb | [Model page](https://polyhaven.com/a/gallinera_chair) | Ulan Cabanilla | CC0-1.0 | 2026-10-18 |
+| polyhaven-gallinera-table.glb | [Model page](https://polyhaven.com/a/gallinera_table) | Ulan Cabanilla | CC0-1.0 | 2026-10-18 |
+| polyhaven-gothic-coffee-table.glb | [Model page](https://polyhaven.com/a/gothic_coffee_table) | Ulan Cabanilla | CC0-1.0 | 2026-10-18 |
+| polyhaven-gothicbed-01.glb | [Model page](https://polyhaven.com/a/GothicBed_01) | Kirill Sannikov | CC0-1.0 | 2026-10-18 |
+| polyhaven-gothiccabinet-01.glb | [Model page](https://polyhaven.com/a/GothicCabinet_01) | Kirill Sannikov | CC0-1.0 | 2026-10-18 |
+| polyhaven-gothiccommode-01.glb | [Model page](https://polyhaven.com/a/GothicCommode_01) | Kirill Sannikov | CC0-1.0 | 2026-10-18 |
+| polyhaven-greenchair-01.glb | [Model page](https://polyhaven.com/a/GreenChair_01) | Kirill Sannikov | CC0-1.0 | 2026-10-18 |
+| polyhaven-hanging-industrial-lamp.glb | [Model page](https://polyhaven.com/a/hanging_industrial_lamp) | Kuutti Siitonen | CC0-1.0 | 2026-10-18 |
+| polyhaven-hanging-picture-frame-01.glb | [Model page](https://polyhaven.com/a/hanging_picture_frame_01) | James Ray Cock | CC0-1.0 | 2026-10-18 |
+| polyhaven-hanging-picture-frame-03.glb | [Model page](https://polyhaven.com/a/hanging_picture_frame_03) | James Ray Cock | CC0-1.0 | 2026-10-18 |
+| polyhaven-industrial-coffee-table.glb | [Model page](https://polyhaven.com/a/industrial_coffee_table) | Ulan Cabanilla | CC0-1.0 | 2026-10-18 |
+| polyhaven-industrial-wall-lamp.glb | [Model page](https://polyhaven.com/a/industrial_wall_lamp) | Kuutti Siitonen | CC0-1.0 | 2026-10-18 |
+| polyhaven-lantern-chandelier-01.glb | [Model page](https://polyhaven.com/a/lantern_chandelier_01) | Kirill Sannikov | CC0-1.0 | 2026-10-18 |
+| polyhaven-mantel-clock-01.glb | [Model page](https://polyhaven.com/a/mantel_clock_01) | Yann Kervran, Rico Cilliers | CC0-1.0 | 2026-10-18 |
+| polyhaven-mid-century-lounge-chair.glb | [Model page](https://polyhaven.com/a/mid_century_lounge_chair) | Kuutti Siitonen | CC0-1.0 | 2026-10-18 |
+| polyhaven-modern-coffee-table-02.glb | [Model page](https://polyhaven.com/a/modern_coffee_table_02) | Amin | CC0-1.0 | 2026-10-18 |
+| polyhaven-ornate-mirror-01.glb | [Model page](https://polyhaven.com/a/ornate_mirror_01) | James Ray Cock | CC0-1.0 | 2026-10-18 |
+| polyhaven-ottoman-01.glb | [Model page](https://polyhaven.com/a/Ottoman_01) | Caspian Fortune | CC0-1.0 | 2026-10-18 |
+| polyhaven-painted-wooden-bench.glb | [Model page](https://polyhaven.com/a/painted_wooden_bench) | Kirill Sannikov | CC0-1.0 | 2026-10-18 |
+| polyhaven-painted-wooden-cabinet.glb | [Model page](https://polyhaven.com/a/painted_wooden_cabinet) | Kirill Sannikov | CC0-1.0 | 2026-10-18 |
+| polyhaven-painted-wooden-chair-02.glb | [Model page](https://polyhaven.com/a/painted_wooden_chair_02) | Kirill Sannikov | CC0-1.0 | 2026-10-18 |
+| polyhaven-painted-wooden-nightstand.glb | [Model page](https://polyhaven.com/a/painted_wooden_nightstand) | Kirill Sannikov | CC0-1.0 | 2026-10-18 |
+| polyhaven-painted-wooden-shelves.glb | [Model page](https://polyhaven.com/a/painted_wooden_shelves) | Kirill Sannikov | CC0-1.0 | 2026-10-18 |
+| polyhaven-painted-wooden-sofa.glb | [Model page](https://polyhaven.com/a/painted_wooden_sofa) | Kirill Sannikov | CC0-1.0 | 2026-10-18 |
+| polyhaven-painted-wooden-stool.glb | [Model page](https://polyhaven.com/a/painted_wooden_stool) | Kirill Sannikov | CC0-1.0 | 2026-10-18 |
+| polyhaven-painted-wooden-table.glb | [Model page](https://polyhaven.com/a/painted_wooden_table) | Kirill Sannikov | CC0-1.0 | 2026-10-18 |
+| polyhaven-rockingchair-01.glb | [Model page](https://polyhaven.com/a/Rockingchair_01) | Jorge Camacho | CC0-1.0 | 2026-10-18 |
+| polyhaven-round-wooden-table-01.glb | [Model page](https://polyhaven.com/a/round_wooden_table_01) | Ulan Cabanilla | CC0-1.0 | 2026-10-18 |
+| polyhaven-round-wooden-table-02.glb | [Model page](https://polyhaven.com/a/round_wooden_table_02) | Ulan Cabanilla | CC0-1.0 | 2026-10-18 |
+| polyhaven-scandinavian-masonry-heater.glb | [Model page](https://polyhaven.com/a/scandinavian_masonry_heater) | Kuutti Siitonen | CC0-1.0 | 2026-10-18 |
+| polyhaven-schoolchair-01.glb | [Model page](https://polyhaven.com/a/SchoolChair_01) | Ethan Place | CC0-1.0 | 2026-10-18 |
+| polyhaven-schooldesk-01.glb | [Model page](https://polyhaven.com/a/SchoolDesk_01) | Ethan Place | CC0-1.0 | 2026-10-18 |
+| polyhaven-shelf-01.glb | [Model page](https://polyhaven.com/a/Shelf_01) | Gabriel Radić | CC0-1.0 | 2026-10-18 |
+| polyhaven-small-wooden-table-01.glb | [Model page](https://polyhaven.com/a/small_wooden_table_01) | Ulan Cabanilla | CC0-1.0 | 2026-10-18 |
+| polyhaven-sofa-03.glb | [Model page](https://polyhaven.com/a/sofa_03) | Fran Calvente | CC0-1.0 | 2026-10-18 |
+| polyhaven-steel-frame-shelves-03.glb | [Model page](https://polyhaven.com/a/steel_frame_shelves_03) | Ulan Cabanilla | CC0-1.0 | 2026-10-18 |
+| polyhaven-vintage-cabinet-01.glb | [Model page](https://polyhaven.com/a/vintage_cabinet_01) | Rico Cilliers | CC0-1.0 | 2026-10-18 |
+| polyhaven-vintage-oil-lamp.glb | [Model page](https://polyhaven.com/a/vintage_oil_lamp) | Monsta3D | CC0-1.0 | 2026-10-18 |
+| polyhaven-wooden-stool-02.glb | [Model page](https://polyhaven.com/a/wooden_stool_02) | Kuutti Siitonen | CC0-1.0 | 2026-10-18 |
+| polyhaven-woodentable-01.glb | [Model page](https://polyhaven.com/a/WoodenTable_01) | Ethan Place | CC0-1.0 | 2026-10-18 |
+| polyhaven-woodentable-02.glb | [Model page](https://polyhaven.com/a/WoodenTable_02) | Fran Calvente | CC0-1.0 | 2026-10-18 |
