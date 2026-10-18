@@ -9,6 +9,7 @@ import { checks as stacking } from './stacking.mjs';
 import { checks as snapping } from './snapping.mjs';
 import { checks as outlines } from './outlines.mjs';
 import { checks as lab } from './lab.mjs';
+import { checks as perf } from './perf.mjs';
 
 async function fresh(page, url, source) {
   await page.evaluate(() => { try { localStorage.clear(); } catch { /* ignore */ } });
@@ -19,11 +20,11 @@ async function fresh(page, url, source) {
 
 export async function checks(ctx) {
   const { page, url, source, log } = ctx;
-  const modules = { ui, move, outlines, ...(source === 'demo-room' ? { stacking, snapping, lab } : {}) };
+  const modules = { ui, move, outlines, ...(source === 'demo-room' ? { stacking, snapping, lab } : {}), ...(source === 'test2' ? { perf } : {}) };
   for (const [name, run] of Object.entries(modules)) {
     log(`  — ${name}`);
     await fresh(page, url, source);
-    if (name !== 'outlines' && name !== 'lab') {
+    if (name !== 'outlines' && name !== 'lab' && name !== 'perf') {
       // Most checks act on a selected piece: select the first draggable one like the base smoke drag does.
       await page.evaluate(() => {
         const s = window.__houseDebug.store.getState();

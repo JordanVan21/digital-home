@@ -309,3 +309,42 @@ Key hints in J's panel today: "Drag to move · **Alt**+drag to lift · drag the 
 | 10 | **Final pass**: performance check (60 FPS dragging test2) and your final checklist | Everything on your lists, one last time. |
 
 After each step: typecheck, lint, all tests (J's plus the ported C tests), a commit, exact test steps for you, then wait.
+
+## 16. Build log (Step 4, built without stopping per your instruction on 2026-10-18)
+
+| Step | Commit | What you can test |
+|---|---|---|
+| 1 Library upgrade | `3edea9e` | Looks and behaves like jordan |
+| 2 Toolbar, panel, top bar, keys | `b36ea6e` | 3D move + Collisions buttons; X/Y/Z fields; Overcast; Reload saved room; no gizmo |
+| 3 Codex models + baked shapes | `c8a103f` | FurniMesh hidden (pending); shapes baked for 46 models |
+| 4 Outlines | `eee6735` | Shape-hugging outline with corner dots; "Show all outlines" |
+| 5 Collision | `1355b8f` | Picture over a cabinet; contact guides; the 3 collision checks are automated tests |
+| 6 Movement + rotation | `cbb52c2` | 3D move, scroll-wheel height, drag inside the ring or on the piece to turn, undo glides |
+| 7 Stacking + gravity | `75a119d` | Real seats and shelves, magnetic catch, off-edge holds then falls, "Letting go (tryout)" switch |
+| 8 Snapping + key hints | `43ae94b` | Wall snap only; Shift grid; Alt no snapping; hints match the keys |
+| 9 Saving + tools | `b4e8138` | Two-tab conflict, warn on close, `?geometry-lab`, `pnpm assets:verify`, `pnpm test:browser` |
+| 10 Final pass | (this commit) | 60 FPS dragging test2 (SANDBOX_AUDIT §8); checklist below |
+
+**Choices made while building** (where your answers left room; each can be changed):
+- Self-made (procedural) models keep jordan's exact surfaces. Codex's 4 cm voxel faces are only used for downloaded and scanned models, where nothing better exists.
+- Rugs never hold things, so moving a rug doesn't drag a plant along with it.
+- Codex's 12 cm magnetic catch also pulls a slightly raised piece back onto the surface. Raise it more than 12 cm, or hold Alt, to keep it up.
+- Ceiling items (pendants) still use Alt to change the drop length.
+- The tryout switch defaults to **Mix**. Pick one and I'll remove the switch.
+- Codex's Poly Haven importer isn't ported, because jordan's ingest already imports the same three models from Poly Haven.
+
+**Final checks run:** typecheck, lint, 199 unit tests (contracts 3, scene-engine 148, web 48), production build, `pnpm assets:verify` (51/51), and `pnpm test:browser` on all three scenes with no page errors.
+
+## 17. Final checklist (go through it once in the merged app)
+- [ ] **Toolbar** matches `toolbar.png`, plus **3D move** (after Move) and **Collisions on/off** (after Lock).
+- [ ] **Panel** matches `panel.png`: name + lock, model + Swap + light, finish, **X / Y / Z fields**, rotate row, size W/D/H + keep proportions, plan, duplicate / delete. No Float checkbox. Key hints at the bottom.
+- [ ] **Camera:** top, isometric and eye-level buttons; **F** frames the selection; **P** walk mode; double-click re-aims; walls cut away / fade / show.
+- [ ] **Moving:** drag freely; **M** for 3D move (pane of glass); **scroll** while dragging to raise/lower; type X/Y/Z; arrows / PageUp / PageDown nudge.
+- [ ] **Rotating:** **R**, then drag anywhere inside the ring or on the piece; blocked by collisions; Shift for 15° steps; Q / E.
+- [ ] **Outlines:** the selected piece shows an outline hugging its shape with corner dots; white on hover; red when blocked; "Show all outlines" in the room panel.
+- [ ] **Collision:** a sofa pushed into a wall and into a corner sits flush with no red. A picture can hang over a cabinet. Ctrl or **C** lets things overlap, still flagged red. A green guide shows where pieces touch.
+- [ ] **Stacking:** a vase hops onto a table; it collides with another item on the table but never with the table. It snaps onto a chair seat or shelf when raised within 12 cm ("Snapped to …").
+- [ ] **Gravity:** dragged off an edge, a piece holds its height and falls when you let go. Deleting a table drops what's on it. Try the **Letting go** switch: Mix / Always fall / Never fall.
+- [ ] **Snapping:** a sofa backed toward a wall snaps flush (green wall line). **Shift** gives the 10 cm grid. **Alt** gives no snapping. Nothing lines up with neighbours.
+- [ ] **Undo / redo:** pieces glide back.
+- [ ] **Saving:** edits save; a second tab on the same room gets a conflict instead of overwriting; closing mid-save asks first.

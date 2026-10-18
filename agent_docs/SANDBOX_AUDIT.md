@@ -113,3 +113,14 @@ Headless runs are noisy (other processes, thermals), so they're reported as runs
 | 16 hover flicker | Mitigated: hover paused during drags; BVH raycasts |
 | Stray dev servers on :5173 | Still running (couldn't be stopped from the agent); the capture script uses its own port |
 
+
+## 8. Merge round performance (2026-10-18, `feature/3d-sandbox-jordan-merge`)
+React 19 / R3F 9 / three 0.180 stack, merged features (shape outlines, real top faces, contact guides, magnetic catch). Same machine and method as §6 (Intel UHD, headless Edge D3D11, 1440×900): barrel chair swept into and along the sofa for 4 s (`apps/web/scripts/checks/perf.mjs`).
+
+| Interaction | Run 1 | Run 2 | Run 3 | p95 frame | Draw calls |
+|---|---|---|---|---|---|
+| Move tool | 59.8 | 59.8 | 59.4 FPS | 17.5–17.6 ms | 164 |
+| 3D move | 60.0 | 60.1 | 60.1 FPS | 17.3–17.6 ms | 165 |
+| Move + "Show all outlines" | 60.0 | 60.0 | 60.0 FPS | 17.4–17.6 ms | 208 |
+
+CPU microbenchmarks (`pnpm --filter @house/scene-engine bench`, Node): full `validateScene` on test2 0.42 ms; one block-and-slide drag tick 0.03 ms; one gravity `findSupport` with real top faces 0.18 ms.
