@@ -11,8 +11,6 @@ export const EDITOR_POLICY = {
    * collisions for one drag either way (result flagged).
    */
   collision: DEFAULT_COLLISION_POLICY as CollisionPolicy,
-  /** Alignment snaps while dragging (Shift disables): capture distance (m). */
-  smartSnapM: 0.05,
   /** Back-to-wall snap capture distance (m) and yaw tolerance (rad). */
   wallSnapM: 0.12,
   wallSnapYawRad: (10 * Math.PI) / 180,
@@ -43,7 +41,8 @@ export const EDITOR_POLICY = {
   pointerMissedIgnoreMs: 150,
   /** A click selects only if the pointer moved less than this (px) — orbit drags don't select. */
   clickMaxDeltaPx: 4,
-  snap: { translateM: 0.05, rotateRad: (15 * Math.PI) / 180 },
+  /** Shift while turning on the ring: 15° steps. (Shift while dragging = 10 cm grid, in sessions.ts.) */
+  snap: { rotateRad: (15 * Math.PI) / 180 },
   historyCap: 100,
   /** Fit: per-axis non-uniform scale allowed while max/min ratio ≤ 1 + this; else uniform fit-inside. */
   maxNonUniformScale: MAX_NON_UNIFORM_SCALE,

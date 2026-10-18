@@ -56,7 +56,6 @@ export type EditorState = {
   hoveredId: string | null;
   mode: TransformMode;
   dragging: boolean;
-  snapping: boolean;
   /** Collisions off (toolbar / C): nothing blocks, but violations are still computed and shown. */
   collisionsOff: boolean;
   /** Draw every piece's shape outline (room panel switch, from codex's Bounding boxes toggle). */
@@ -97,7 +96,6 @@ const initial: EditorState = {
   hoveredId: null,
   mode: 'translate',
   dragging: false,
-  snapping: false,
   collisionsOff: false,
   showAllOutlines: false,
   releaseMode: 'mix',

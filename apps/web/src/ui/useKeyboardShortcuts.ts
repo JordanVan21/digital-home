@@ -20,12 +20,12 @@ const DEG = Math.PI / 180;
  * camera-relative) · PageUp/PageDown raise/lower · F frame selection · Home frame room ·
  * P walk mode · Esc deselect / exit walk · Delete/Backspace delete · L lock · Ctrl/Cmd+D duplicate ·
  * Ctrl/Cmd+G group (Shift: ungroup) · Ctrl/Cmd+Z undo · Shift+Ctrl/Cmd+Z or Ctrl+Y redo ·
- * Ignored while typing; walk mode owns WASD/arrows.
+ * While dragging (sessions.ts): Shift = 10 cm grid · Alt = no snapping · Ctrl/Cmd = ignore collisions ·
+ * scroll wheel = raise/lower. Ignored while typing; walk mode owns WASD/arrows.
  */
 export function useKeyboardShortcuts() {
   useEffect(() => {
     const down = (e: KeyboardEvent) => {
-      if (e.key === 'Shift') useEditor.setState({ snapping: true });
       if (isTyping(e.target)) return;
       const st = useEditor.getState();
       if (st.walkMode) {
@@ -73,17 +73,9 @@ export function useKeyboardShortcuts() {
         default:
       }
     };
-    const up = (e: KeyboardEvent) => {
-      if (e.key === 'Shift') useEditor.setState({ snapping: false });
-    };
-    const blur = () => useEditor.setState({ snapping: false });
     window.addEventListener('keydown', down);
-    window.addEventListener('keyup', up);
-    window.addEventListener('blur', blur);
     return () => {
       window.removeEventListener('keydown', down);
-      window.removeEventListener('keyup', up);
-      window.removeEventListener('blur', blur);
     };
   }, []);
 }

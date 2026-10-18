@@ -243,7 +243,12 @@ function SelectedObject({ obj }: { obj: SceneObject }) {
         <button className="btn" onClick={duplicateSelected}><Icon.duplicate /> Duplicate</button>
         <button className="btn danger" disabled={obj.locked} onClick={deleteSelected}><Icon.trash /> Delete</button>
       </div>
-      <div className="hint">Drag to move · <span className="kbd">Alt</span>+drag to lift · drag the ring to turn · <span className="kbd">Ctrl</span> or <span className="kbd">C</span> ignores collisions · <span className="kbd">Shift</span> disables snaps</div>
+      {/* Must match the keys in sessions.ts / useKeyboardShortcuts.ts (MERGE_INVENTORY §10, decided key map). */}
+      <div className="hint">
+        Drag to move · <span className="kbd">Scroll</span> while dragging to raise/lower · <span className="kbd">M</span> 3D move ·
+        {' '}<span className="kbd">R</span> then drag inside the ring to turn · <span className="kbd">Shift</span> 10 cm grid ·
+        {' '}<span className="kbd">Alt</span> no snapping · <span className="kbd">Ctrl</span> (or <span className="kbd">C</span>) ignores collisions
+      </div>
     </>
   );
 }

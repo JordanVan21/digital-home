@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { bodyOf, expandCaseObject, expandCaseShell, normalizeShell, validateScene, type OpContext } from '@house/scene-engine';
-import { contactGuides, smartSnap } from '../src/scene/interaction/snaps';
+import { contactGuides, wallSnap } from '../src/scene/interaction/snaps';
 
 /** Merge check 3 (agent_docs/MERGE_INVENTORY.md §15): snapping to a wall ends flush, with no false collision. */
 const shell = normalizeShell(expandCaseShell({ polygonXZ: [[-3, -3], [-3, 3], [3, 3], [3, -3]] }));
@@ -11,7 +11,7 @@ describe('wall snap', () => {
   it('a sofa backed toward the west wall within reach snaps flush, shows a guide, and has no violations', () => {
     // Back face 8 cm from the wall (sofa depth 0.9, facing +X); the drag moves it 2 cm closer.
     const sofa = expandCaseObject({ id: id(1), category: 'sofa', pos: [-3 + 0.45 + 0.08, 0, 0], yawDeg: 90, dims: [2, 0.85, 0.9] });
-    const { delta, guides } = smartSnap(ctx, sofa, [], [-0.02, 0]);
+    const { delta, guides } = wallSnap(ctx, sofa, [-0.02, 0]);
     const x = sofa.transform.position[0] + delta[0];
     expect(Math.abs(x - 0.45 + 3)).toBeLessThan(1e-6); // back face exactly on the wall
     expect(guides.length).toBeGreaterThan(0);
@@ -30,7 +30,7 @@ describe('wall snap', () => {
 
   it('a piece facing the wall (wrong way round) does not snap', () => {
     const sofa = expandCaseObject({ id: id(1), category: 'sofa', pos: [-3 + 0.45 + 0.08, 0, 0], yawDeg: -90, dims: [2, 0.85, 0.9] });
-    const { delta } = smartSnap(ctx, sofa, [], [-0.02, 0]);
+    const { delta } = wallSnap(ctx, sofa, [-0.02, 0]);
     expect(delta).toEqual([-0.02, 0]);
   });
 });

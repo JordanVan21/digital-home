@@ -12,7 +12,7 @@ import { bodiesOf, liftBodies, movingSet, obstacleQuery, obstaclesFor, sweptBoun
 import { commit, ignoringCollisions, objectById, opContext, releaseSettles, toast, useEditor } from '../../state/store';
 import { dragFeedback } from '../dragFeedback';
 import { interaction, registry } from '../registry';
-import { contactGuides, smartSnap } from './snaps';
+import { contactGuides, wallSnap } from './snaps';
 
 export type Host = { camera: Camera; dom: HTMLElement };
 export type Mods = { alt: boolean; ctrl: boolean; shift: boolean };
@@ -344,8 +344,7 @@ export class MoveSession implements DragSession {
     const dy = targetY - py;
     let guides: { from: Vec3; to: Vec3 }[] = [];
     if (!shift && !noSnap) {
-      const near = this.statics.filter((s) => Math.abs(s.transform.position[0] - center![0]) < 3 && Math.abs(s.transform.position[2] - center![1]) < 3);
-      const snapped = smartSnap(this.ctx, { ...this.primary, transform: { ...this.primary.transform, position: [px, targetY, pz] } }, near, desired);
+      const snapped = wallSnap(this.ctx, { ...this.primary, transform: { ...this.primary.transform, position: [px, targetY, pz] } }, desired);
       desired = snapped.delta;
       guides = snapped.guides;
     }
