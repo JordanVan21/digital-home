@@ -90,7 +90,8 @@ export function InspectorPanel() {
           </span>
         </button>
         {lightSpecFor(object, assetById) && (
-          <section className="inspector-section"><label><input type="checkbox" aria-label="Allow floating after Accept" checked={object.placement?.float ?? false} disabled={object.locked || dragging} onChange={e=>editor.suggest({type:"setFloat",objectId:object.id,float:e.target.checked})}/> Allow floating after Accept</label></section>
+          {asset?.variants && <section className="inspector-section"><h3>Finish</h3><div className="finish-swatches">{asset.variants.map(v=><button key={v.id} title={v.name} aria-label={`Finish: ${v.name}`} aria-pressed={JSON.stringify(object.materialOverrides)===JSON.stringify(v.overrides)} disabled={object.locked || dragging} style={{background:v.swatch}} onClick={()=>editor.suggest({type:"changeMaterial",objectId:object.id,overrides:v.overrides})}/>)}<button className="secondary-button" disabled={object.locked || dragging} onClick={()=>editor.suggest({type:"changeMaterial",objectId:object.id})}>Original finish</button></div></section>}
+        <section className="inspector-section"><label><input type="checkbox" aria-label="Allow floating after Accept" checked={object.placement?.float ?? false} disabled={object.locked || dragging} onChange={e=>editor.suggest({type:"setFloat",objectId:object.id,float:e.target.checked})}/> Allow floating after Accept</label></section>
         <section className="inspector-section">
             <h3>Lighting</h3>
             <Button

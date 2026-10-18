@@ -1396,7 +1396,59 @@
     "triangleCount": 6432,
     "textureBytes": 12196,
     "contentHash": "79704f4f6125f62bea3dee687b4087a65f15197cda0f0e918c43860423046f6e",
-    "searchableDescription": "Modern cream sofa, sofa, sofa, seating, three-seat, boucle, warm minimal, modern, boucle, wood"
+    "searchableDescription": "Modern cream sofa, sofa, sofa, seating, three-seat, boucle, warm minimal, modern, boucle, wood",
+    "variants": [
+      {
+        "id": "cream",
+        "name": "Cream",
+        "swatch": "#e9e1d3",
+        "overrides": {
+          "fabric": {
+            "colorHex": "#e9e1d3"
+          }
+        }
+      },
+      {
+        "id": "oat",
+        "name": "Oat",
+        "swatch": "#d9ccb4",
+        "overrides": {
+          "fabric": {
+            "colorHex": "#d9ccb4"
+          }
+        }
+      },
+      {
+        "id": "sage",
+        "name": "Sage",
+        "swatch": "#b8bfa5",
+        "overrides": {
+          "fabric": {
+            "colorHex": "#b8bfa5"
+          }
+        }
+      },
+      {
+        "id": "terracotta",
+        "name": "Terracotta",
+        "swatch": "#c98e6b",
+        "overrides": {
+          "fabric": {
+            "colorHex": "#c98e6b"
+          }
+        }
+      },
+      {
+        "id": "charcoal",
+        "name": "Charcoal",
+        "swatch": "#5b5856",
+        "overrides": {
+          "fabric": {
+            "colorHex": "#5b5856"
+          }
+        }
+      }
+    ]
   },
   {
     "schemaVersion": 1,
@@ -1435,7 +1487,39 @@
     "triangleCount": 4260,
     "textureBytes": 11056,
     "contentHash": "9c130b19479b16712da944c696df8e54e13bd5eccc56e28955c9f0d9582c2a3d",
-    "searchableDescription": "Boucle barrel chair, armchair, armchair, lounge chair, boucle, warm minimal, organic, boucle"
+    "searchableDescription": "Boucle barrel chair, armchair, armchair, lounge chair, boucle, warm minimal, organic, boucle",
+    "variants": [
+      {
+        "id": "cream",
+        "name": "Cream",
+        "swatch": "#efe8dd",
+        "overrides": {
+          "boucle": {
+            "colorHex": "#efe8dd"
+          }
+        }
+      },
+      {
+        "id": "oat",
+        "name": "Oat",
+        "swatch": "#ddcfb8",
+        "overrides": {
+          "boucle": {
+            "colorHex": "#ddcfb8"
+          }
+        }
+      },
+      {
+        "id": "moss",
+        "name": "Moss",
+        "swatch": "#9da58a",
+        "overrides": {
+          "boucle": {
+            "colorHex": "#9da58a"
+          }
+        }
+      }
+    ]
   },
   {
     "schemaVersion": 1,
@@ -1754,7 +1838,59 @@
     "triangleCount": 2028,
     "textureBytes": 23630,
     "contentHash": "dd0a5eaa461c8f606676baa2f365e0bffb0e439a80ec7dbaf9669d3c01285595",
-    "searchableDescription": "Linen throw pillow, pillow, pillow, cushion, textile, warm minimal, linen"
+    "searchableDescription": "Linen throw pillow, pillow, pillow, cushion, textile, warm minimal, linen",
+    "variants": [
+      {
+        "id": "rust",
+        "name": "Rust",
+        "swatch": "#b4643a",
+        "overrides": {
+          "linen": {
+            "colorHex": "#b4643a"
+          }
+        }
+      },
+      {
+        "id": "sand",
+        "name": "Sand",
+        "swatch": "#d8c4a6",
+        "overrides": {
+          "linen": {
+            "colorHex": "#d8c4a6"
+          }
+        }
+      },
+      {
+        "id": "oat",
+        "name": "Oat",
+        "swatch": "#e2d3bc",
+        "overrides": {
+          "linen": {
+            "colorHex": "#e2d3bc"
+          }
+        }
+      },
+      {
+        "id": "cream",
+        "name": "Cream",
+        "swatch": "#efe7da",
+        "overrides": {
+          "linen": {
+            "colorHex": "#efe7da"
+          }
+        }
+      },
+      {
+        "id": "sage",
+        "name": "Sage",
+        "swatch": "#a9b39a",
+        "overrides": {
+          "linen": {
+            "colorHex": "#a9b39a"
+          }
+        }
+      }
+    ]
   },
   {
     "schemaVersion": 1,
@@ -1793,7 +1929,39 @@
     "triangleCount": 1176,
     "textureBytes": 23630,
     "contentHash": "248c672c20d041f9c1915b5ae37660802cc2091482d618f14a7c8125b4a558e8",
-    "searchableDescription": "Chunky knit throw (folded), throw, throw, blanket, textile, warm minimal, cozy, wool"
+    "searchableDescription": "Chunky knit throw (folded), throw, throw, blanket, textile, warm minimal, cozy, wool",
+    "variants": [
+      {
+        "id": "cream",
+        "name": "Cream",
+        "swatch": "#efe7da",
+        "overrides": {
+          "knit": {
+            "colorHex": "#efe7da"
+          }
+        }
+      },
+      {
+        "id": "oat",
+        "name": "Oat",
+        "swatch": "#ddcfb8",
+        "overrides": {
+          "knit": {
+            "colorHex": "#ddcfb8"
+          }
+        }
+      },
+      {
+        "id": "clay",
+        "name": "Clay",
+        "swatch": "#c9a184",
+        "overrides": {
+          "knit": {
+            "colorHex": "#c9a184"
+          }
+        }
+      }
+    ]
   },
   {
     "schemaVersion": 1,
@@ -1830,7 +1998,69 @@
     "triangleCount": 24,
     "textureBytes": 0,
     "contentHash": "b5d9884ed6d79dbb09c0c3661ee49a3513b5fad8eb0c89af12efccd6de825c13",
-    "searchableDescription": "Hardcover book, book, book, decor, minimal, paper"
+    "searchableDescription": "Hardcover book, book, book, decor, minimal, paper",
+    "variants": [
+      {
+        "id": "sand",
+        "name": "Sand",
+        "swatch": "#cdb89a",
+        "overrides": {
+          "cover": {
+            "colorHex": "#cdb89a"
+          }
+        }
+      },
+      {
+        "id": "taupe",
+        "name": "Taupe",
+        "swatch": "#8c7a6b",
+        "overrides": {
+          "cover": {
+            "colorHex": "#8c7a6b"
+          }
+        }
+      },
+      {
+        "id": "white",
+        "name": "White",
+        "swatch": "#ece7df",
+        "overrides": {
+          "cover": {
+            "colorHex": "#ece7df"
+          }
+        }
+      },
+      {
+        "id": "sage",
+        "name": "Sage",
+        "swatch": "#9fa88f",
+        "overrides": {
+          "cover": {
+            "colorHex": "#9fa88f"
+          }
+        }
+      },
+      {
+        "id": "terracotta",
+        "name": "Terracotta",
+        "swatch": "#b8704c",
+        "overrides": {
+          "cover": {
+            "colorHex": "#b8704c"
+          }
+        }
+      },
+      {
+        "id": "ink",
+        "name": "Ink",
+        "swatch": "#2f3440",
+        "overrides": {
+          "cover": {
+            "colorHex": "#2f3440"
+          }
+        }
+      }
+    ]
   },
   {
     "schemaVersion": 1,

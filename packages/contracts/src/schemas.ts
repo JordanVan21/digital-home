@@ -234,6 +234,7 @@ export const AssetSpecSchema = z.object({
   contentHash: z.string(),
   searchableDescription: z.string(),
   embeddingVersion: z.string().optional(),
+  variants: z.array(z.object({id:z.string(),name:z.string(),swatch:z.string().regex(/^#[0-9a-fA-F]{6}$/),overrides:MaterialOverridesSchema})).optional(),
   mount: z.enum(["floor", "wall", "ceiling"]).optional(),
   light: AssetLightSchema.optional(),
 });

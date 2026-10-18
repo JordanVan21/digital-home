@@ -1244,3 +1244,5 @@ kbd {
   align-items: center;
   gap: 12px;
 }
+
+.finish-swatches { display:flex; flex-wrap:wrap; gap:8px; } .finish-swatches button[title] { width:30px; height:30px; border-radius:50%; border:2px solid white; cursor:pointer; } .finish-swatches button[aria-pressed="true"] { outline:2px solid var(--accent); }
