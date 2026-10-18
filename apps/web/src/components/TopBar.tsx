@@ -17,6 +17,7 @@ import { editor } from "../state/editor";
 import { rooms } from "../state/rooms";
 import { Button } from "./Button";
 import { CloudAccount } from "./CloudAccount";
+import { cloudRoomsVersion } from "../state/cloud";
 
 export const searchInputId = "global-search";
 
@@ -71,6 +72,7 @@ function SaveStatus() {
 function RoomSwitcher({ disabled }: { disabled: boolean }) {
   const [open, setOpen] = useState(false);
   const current = useStore(editor.room, (s) => s.room);
+  useStore(cloudRoomsVersion, (s) => s.version); // re-render when scans arrive
   const container = useRef<HTMLDivElement>(null);
   useEffect(() => {
     if (!open) return;

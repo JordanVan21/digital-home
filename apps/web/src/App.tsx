@@ -17,7 +17,7 @@ import { InspectorPanel } from "./components/InspectorPanel";
 import { AssetBrowser } from "./components/AssetBrowser";
 import { Button } from "./components/Button";
 import { readLastRoom, rememberRoom } from "./state/lastRoom";
-import { cloudRoomIds, watchCloudRoom } from "./state/cloud";
+import { cloudRoomIds, watchCloudRoom, watchNewCloudRooms } from "./state/cloud";
 function Keyboard() {
   useEffect(() => {
     const cleanupHeightModifier = installHeightModifier(editor);
@@ -87,6 +87,13 @@ export default function App() {
     return editor.room.subscribe((s) => rememberRoom(s.room.roomId));
   }, []);
   useLiveCloudRoom();
+  useEffect(
+    () =>
+      watchNewCloudRooms((name) =>
+        editor.notify(`New scan ready: ${name}. Open it from the room menu.`),
+      ),
+    [],
+  );
   return (
     <main className="app-shell">
       <Keyboard />

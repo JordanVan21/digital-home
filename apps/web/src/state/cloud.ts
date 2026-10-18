@@ -1,4 +1,5 @@
 import { createClient } from "@supabase/supabase-js";
+import { createStore } from "zustand/vanilla";
 import {
   AssetSpecSchema,
   RoomShellSchema,
@@ -80,12 +81,14 @@ export async function loadCloudRooms(): Promise<string[]> {
       createScene: () => settleImportedScene(structuredClone(scene.data), shell.data),
     };
     const index = rooms.findIndex((r) => r.roomId === row.id);
-    if (index >= 0) rooms[index] = definition;
+    // Update in place: the editor compares room definitions by identity.
+    if (index >= 0) Object.assign(rooms[index], definition);
     else rooms.push(definition);
     cloudRoomIds.add(row.id);
     cloudShells.set(row.id, shell.data);
     ids.push(row.id);
   }
+  cloudRoomsVersion.setState((s) => ({ version: s.version + 1 }));
   return ids;
 }
 
@@ -143,6 +146,7 @@ export async function signOutCloud() {
     if (index >= 0) rooms.splice(index, 1);
   }
   cloudRoomIds.clear();
+  cloudRoomsVersion.setState((s) => ({ version: s.version + 1 }));
 }
 
 export async function fetchCloudScene(roomId: string): Promise<SceneSpec | null> {
@@ -177,6 +181,27 @@ export function watchCloudRoom(
       { event: "UPDATE", schema: "public", table: "rooms", filter: `id=eq.${roomId}` },
       (payload) => onRevision((payload.new as { revision: number }).revision),
     )
+    .subscribe();
+  return () => void supabase.removeChannel(channel);
+}
+
+/** Bumped whenever the scanned-room list changes, so the room switcher re-renders. */
+export const cloudRoomsVersion = createStore(() => ({ version: 0 }));
+
+/**
+ * Adds rooms the scan worker creates while the page is open (Realtime INSERT on
+ * the signed-in user's rooms) and reports each new one.
+ */
+export function watchNewCloudRooms(onNew: (name: string, roomId: string) => void): () => void {
+  const channel = supabase
+    .channel("my-new-rooms")
+    .on("postgres_changes", { event: "INSERT", schema: "public", table: "rooms" }, async () => {
+      const before = new Set(cloudRoomIds);
+      const ids = await loadCloudRooms();
+      cloudRoomsVersion.setState((s) => ({ version: s.version + 1 }));
+      for (const id of ids)
+        if (!before.has(id)) onNew(rooms.find((r) => r.roomId === id)?.name ?? "New scan", id);
+    })
     .subscribe();
   return () => void supabase.removeChannel(channel);
 }
