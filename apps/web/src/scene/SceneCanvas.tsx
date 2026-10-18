@@ -100,8 +100,21 @@ export const SceneCanvas = memo(function SceneCanvas() {
         labelLayer.current = el!;
       }}
       {...marquee.handlers}
-      onDragOver={e=>{if(e.dataTransfer.types.includes("application/house-asset")){e.preventDefault();e.dataTransfer.dropEffect="copy";}}}
-      onDrop={e=>{const asset=assetById[e.dataTransfer.getData("application/house-asset")];const point=editor.motion.dropPoint?.(e.clientX,e.clientY);if(asset && point){e.preventDefault();editor.dropAsset(asset,point);}}}
+      onDragOver={(e) => {
+        if (e.dataTransfer.types.includes("application/house-asset")) {
+          e.preventDefault();
+          e.dataTransfer.dropEffect = "copy";
+        }
+      }}
+      onDrop={(e) => {
+        const asset =
+          assetById[e.dataTransfer.getData("application/house-asset")];
+        const point = editor.motion.dropPoint?.(e.clientX, e.clientY);
+        if (asset && point) {
+          e.preventDefault();
+          editor.dropAsset(asset, point);
+        }
+      }}
       className="canvas-wrap"
     >
       <Canvas

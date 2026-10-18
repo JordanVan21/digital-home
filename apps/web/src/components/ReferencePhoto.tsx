@@ -1,2 +1,47 @@
-import { useState } from "react";import {useStore} from "zustand";import {editor} from "../state/editor";
-export function ReferencePhoto(){const room=useStore(editor.room,s=>s.room);const [open,setOpen]=useState(false),[opacity,setOpacity]=useState(.65);if(!room.referenceImage)return null;return <div className="reference-photo"><button className="secondary-button glass" aria-pressed={open} onClick={()=>setOpen(!open)}>Reference photo</button>{open&&<section className="glass"><img src="/reference/test2.png" alt="Reference for the warm living room" style={{opacity}}/><label>Photo opacity<input aria-label="Photo opacity" type="range" min="0.1" max="1" step="0.05" value={opacity} onChange={e=>setOpacity(Number(e.target.value))}/></label><button className="secondary-button" onClick={()=>editor.requestView("photo")}>Match photo</button></section>}</div>;}
+import { useState } from "react";
+import { useStore } from "zustand";
+import { editor } from "../state/editor";
+export function ReferencePhoto() {
+  const room = useStore(editor.room, (s) => s.room);
+  const [open, setOpen] = useState(false),
+    [opacity, setOpacity] = useState(0.65);
+  if (!room.referenceImage) return null;
+  return (
+    <div className="reference-photo">
+      <button
+        className="secondary-button glass"
+        aria-pressed={open}
+        onClick={() => setOpen(!open)}
+      >
+        Reference photo
+      </button>
+      {open && (
+        <section className="glass">
+          <img
+            src="/reference/test2.png"
+            alt="Reference for the warm living room"
+            style={{ opacity }}
+          />
+          <label>
+            Photo opacity
+            <input
+              aria-label="Photo opacity"
+              type="range"
+              min="0.1"
+              max="1"
+              step="0.05"
+              value={opacity}
+              onChange={(e) => setOpacity(Number(e.target.value))}
+            />
+          </label>
+          <button
+            className="secondary-button"
+            onClick={() => editor.requestView("photo")}
+          >
+            Match photo
+          </button>
+        </section>
+      )}
+    </div>
+  );
+}

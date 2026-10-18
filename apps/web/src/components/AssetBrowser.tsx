@@ -8,6 +8,15 @@ import { useWorkingObject } from "../state/useWorking";
 import { Button } from "./Button";
 import { providerLabel } from "./provider";
 export function AssetBrowser() {
+  const drag = useRef<{
+    id: string;
+    x: number;
+    y: number;
+    moved: boolean;
+  } | null>(null);
+  const dragPreview = useRef<HTMLDivElement>(null);
+  const suppressClick = useRef(false);
+  const [isDragging, setDragging] = useState(false);
   const [query, setQuery] = useState(""),
     [category, setCategory] = useState("all");
   const replacing = useStore(editor.interaction, (s) => s.replacing);
@@ -37,7 +46,11 @@ export function AssetBrowser() {
   const close = () =>
     editor.interaction.setState({ browser: false, replacing: false });
   return (
-    <div className="browser-backdrop" onClick={close}>
+    <div
+      className={`browser-backdrop ${isDragging ? "asset-dragging" : ""}`}
+      onClick={close}
+    >
+      <div ref={dragPreview} className="library-drag-preview glass" />
       <section
         className="asset-browser glass"
         role="dialog"
@@ -114,12 +127,70 @@ export function AssetBrowser() {
               key={a.id}
               label={`${replacing ? "Replace with" : "Add"} ${a.title}`}
               className="asset-card"
-              draggable={!replacing}
-              onDragStart={e=>{e.dataTransfer.setData("application/house-asset",a.id);e.dataTransfer.effectAllowed="copy";requestAnimationFrame(()=>editor.interaction.setState({browser:false}));}}
-              onClick={() => editor.chooseAsset(a)}
+              draggable={false}
+              onDragStart={(e) => e.preventDefault()}
+              onPointerDown={(e) => {
+                if (e.button !== 0 || replacing) return;
+                suppressClick.current = false;
+                drag.current = {
+                  id: a.id,
+                  x: e.clientX,
+                  y: e.clientY,
+                  moved: false,
+                };
+                e.currentTarget.setPointerCapture(e.pointerId);
+              }}
+              onPointerMove={(e) => {
+                const state = drag.current;
+                if (!state || state.id !== a.id) return;
+                if (
+                  !state.moved &&
+                  Math.hypot(e.clientX - state.x, e.clientY - state.y) > 6
+                ) {
+                  state.moved = true;
+                  setDragging(true);
+                }
+                if (state.moved && dragPreview.current) {
+                  dragPreview.current.textContent = a.title;
+                  Object.assign(dragPreview.current.style, {
+                    display: "block",
+                    left: `${e.clientX + 16}px`,
+                    top: `${e.clientY + 16}px`,
+                  });
+                }
+              }}
+              onPointerUp={(e) => {
+                const state = drag.current;
+                drag.current = null;
+                setDragging(false);
+                if (dragPreview.current)
+                  dragPreview.current.style.display = "none";
+                if (e.currentTarget.hasPointerCapture(e.pointerId))
+                  e.currentTarget.releasePointerCapture(e.pointerId);
+                if (state?.moved) {
+                  suppressClick.current = true;
+                  const point = editor.motion.dropPoint?.(e.clientX, e.clientY);
+                  if (point) editor.dropAsset(a, point);
+                }
+              }}
+              onPointerCancel={() => {
+                drag.current = null;
+                setDragging(false);
+                if (dragPreview.current)
+                  dragPreview.current.style.display = "none";
+              }}
+              onClick={() => {
+                if (!suppressClick.current) editor.chooseAsset(a);
+                suppressClick.current = false;
+              }}
             >
               <div className="asset-image">
-                <img loading="lazy" src={a.thumbnailStorageKey} alt="" />
+                <img
+                  draggable={false}
+                  loading="lazy"
+                  src={a.thumbnailStorageKey}
+                  alt=""
+                />
                 <span className="asset-arrow">
                   <ArrowUpRight size={16} />
                 </span>

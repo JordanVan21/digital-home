@@ -1261,4 +1261,74 @@ kbd {
   outline: 2px solid var(--accent);
 }
 
-.reference-photo {position:absolute;left:24px;top:260px;z-index:5;max-width:340px;} .reference-photo section{margin-top:8px;padding:12px;border-radius:18px;} .reference-photo img{width:100%;border-radius:10px;} .reference-photo label{display:flex;gap:8px;font-size:12px;margin:8px 0;}
+.reference-photo {
+  position: absolute;
+  left: 24px;
+  top: 260px;
+  z-index: 5;
+  max-width: 340px;
+}
+.reference-photo section {
+  margin-top: 8px;
+  padding: 12px;
+  border-radius: 18px;
+}
+.reference-photo img {
+  width: 100%;
+  border-radius: 10px;
+}
+.reference-photo label {
+  display: flex;
+  gap: 8px;
+  font-size: 12px;
+  margin: 8px 0;
+}
+
+.browser-backdrop.asset-dragging {
+  pointer-events: none;
+  background: none;
+}
+.asset-dragging .asset-browser {
+  opacity: 0.15;
+}
+
+.edit-log {
+  position: absolute;
+  left: 24px;
+  bottom: 24px;
+  z-index: 6;
+}
+.edit-log aside {
+  position: absolute;
+  bottom: 48px;
+  left: 0;
+  width: 420px;
+  max-width: calc(100vw - 48px);
+  max-height: 50vh;
+  overflow: auto;
+  padding: 16px;
+  border-radius: 20px;
+}
+.edit-log summary {
+  cursor: pointer;
+  padding: 10px 0;
+  font-size: 12px;
+}
+.edit-log pre {
+  font-size: 11px;
+  overflow: auto;
+  max-height: 260px;
+}
+
+.library-drag-preview {
+  display: none;
+  position: fixed;
+  pointer-events: none;
+  padding: 10px 14px;
+  border-radius: 20px;
+  z-index: 30;
+  font-size: 12px;
+}
+.asset-card {
+  touch-action: none;
+}

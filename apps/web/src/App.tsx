@@ -1,3 +1,4 @@
+import { EditLogPanel } from "./components/EditLogPanel";
 import { ReferencePhoto } from "./components/ReferencePhoto";
 import { installEditorKeyboard } from "./state/keyboard";
 import { PerfOverlay } from "./components/PerfOverlay";
@@ -94,6 +95,7 @@ export default function App() {
       <SideNav />
       <ViewControls />
       <ReferencePhoto />
+      <EditLogPanel />
       <WalkHint />
       {new URLSearchParams(window.location.search).has("perf") && (
         <PerfOverlay />

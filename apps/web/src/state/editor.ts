@@ -1,6 +1,7 @@
 import { createStore } from "zustand/vanilla";
 import {
   assetById,
+  SceneOpSchema,
   livingRoom,
   type AssetSpec,
   type RoomDefinition,
@@ -13,6 +14,7 @@ import {
 } from "@house/contracts";
 import {
   applyOp,
+  diffToOps,
   onWall,
   onCeiling,
   moveAssembly,
@@ -200,6 +202,27 @@ export function createEditor(
   }));
   const save = createStore<SaveState>(() => ({ status: "saved", error: null }));
   const draft = createStore<Draft>(emptyDraft);
+  const log = createStore<{
+    entries: { id: string; kind: string; at: string; operations: SceneOp[] }[];
+  }>(() => ({ entries: [] }));
+  const logOps = (kind: string, operations: SceneOp[]) => {
+    if (!operations.length) return;
+    log.setState((s) => ({
+      entries: [
+        ...s.entries,
+        {
+          id: crypto.randomUUID(),
+          kind,
+          at: new Date().toISOString(),
+          operations: operations.map((op) => SceneOpSchema.parse(op)),
+        },
+      ].slice(-100),
+    }));
+  };
+  const logDifference = (kind: string, before: SceneSpec, after: SceneSpec) => {
+    const result = diffToOps(before, after, sceneContext);
+    if (result.ok) logOps(kind, result.ops);
+  };
   /** The scene the user sees and edits: the draft if any, else the accepted room. */
   const working = () => draft.getState().scene ?? scene.getState().scene;
   // Transient transforms are read by the frame loop; pointer moves never notify React.
@@ -210,7 +233,9 @@ export function createEditor(
     cameraPosition: [7.2, 6.5, 8.3] as Vec3,
     cameraDirection: [0, 0, -1] as Vec3,
     cameraTarget: [0, 0.65, 0] as Vec3,
-    dropPoint: undefined as undefined | ((x:number,y:number)=>Vec3 | undefined),
+    dropPoint: undefined as
+      | undefined
+      | ((x: number, y: number) => Vec3 | undefined),
     pointerHandled: false,
     projectPoint: undefined as undefined | ((point: Vec3) => [number, number]),
   };
@@ -300,6 +325,20 @@ export function createEditor(
     };
   };
   let autosave: Autosave | undefined;
+  const startAutosave = (revision: number) => {
+    const saver = new Autosave(
+      repository!,
+      () => scene.getState().scene,
+      (s) => save.setState(s),
+      revision,
+    );
+    saver.onAcknowledged = (snapshot, revision) => {
+      const current = scene.getState().scene;
+      if (current.revision === snapshot.revision)
+        scene.setState({ scene: { ...current, revision } });
+    };
+    return saver;
+  };
   let toastTimer: ReturnType<typeof setTimeout> | undefined;
   const notify = (message: string) => {
     interaction.setState({ toast: message });
@@ -319,6 +358,7 @@ export function createEditor(
     history.setState({
       history: record(history.getState().history, before, op, after),
     });
+    logOps("Accepted", [op]);
     autosave?.schedule();
     return true;
   };
@@ -356,6 +396,7 @@ export function createEditor(
       undo: [...draft.getState().undo, previous].slice(-80),
       redo: [],
     });
+    logOps("Suggestion", [op]);
     return true;
   };
   /** Atomic UI batch: singular contract operations never depend on selection. */
@@ -375,6 +416,7 @@ export function createEditor(
       undo: [...draft.getState().undo, previous].slice(-80),
       redo: [],
     });
+    logOps("Suggestion", operations);
     return true;
   };
   const moveSelection = (id: string, transform: Transform) =>
@@ -391,6 +433,12 @@ export function createEditor(
       return false;
     }
     const after = { ...result.scene, updatedAt: new Date().toISOString() };
+    const patch = diffToOps(before, after, sceneContext);
+    if (!patch.ok) {
+      notify(patch.message);
+      return false;
+    }
+    logOps("Accepted patch", patch.ops);
     scene.setState({ scene: after });
     history.setState({
       history: recordCheckpoint(history.getState().history, before, after),
@@ -404,6 +452,7 @@ export function createEditor(
     return true;
   };
   const discard = () => {
+    logDifference("Discard", working(), scene.getState().scene);
     draft.setState(emptyDraft());
     if (
       !working().objects.some((o) => o.id === interaction.getState().selectedId)
@@ -411,7 +460,7 @@ export function createEditor(
       select(null);
   };
   /** Reverts one piece to its accepted state (or removes it if added), as a draft step. */
-  const revertPiece = (id: string) => {
+  const revertPieceInternal = (id: string) => {
     const current = draft.getState().scene;
     if (!current) return;
     if (id === current.roomId) {
@@ -470,6 +519,11 @@ export function createEditor(
       { ...current, objects, revision: current.revision + 1 },
       { undo: [...draft.getState().undo, current], redo: [] },
     );
+  };
+  const revertPiece = (id: string) => {
+    const before = working();
+    revertPieceInternal(id);
+    logDifference("Revert piece", before, working());
   };
   const changes = (): Change[] => {
     const proposed = draft.getState().scene;
@@ -673,7 +727,7 @@ export function createEditor(
       if (r.ok) draft.setState({ scene: r.scene });
     }
   };
-  const travel = (direction: "undo" | "redo") => {
+  const travelInternal = (direction: "undo" | "redo") => {
     if (interaction.getState().dragging) return;
     const d = draft.getState();
     if (d.scene || d[direction].length) {
@@ -706,6 +760,11 @@ export function createEditor(
     if (result.history) history.setState({ history: result.history });
     if (!selected()) select(null);
     autosave?.schedule();
+  };
+  const travel = (direction: "undo" | "redo") => {
+    const before = working();
+    travelInternal(direction);
+    logDifference(direction === "undo" ? "Undo" : "Redo", before, working());
   };
   const duplicate = (): boolean => {
     const original = selected();
@@ -881,11 +940,35 @@ export function createEditor(
     notify("No free space for this piece. Move or remove something first.");
   };
   const dropAsset = (asset: AssetSpec, point: Vec3): boolean => {
-    if (!scene.getState().ready || interaction.getState().dragging) return false;
-    let object: SceneObject = {id:crypto.randomUUID(),assetId:asset.id,category:asset.category,displayName:asset.title,dimensionsM:[...asset.dimensionsM],locked:false,source:"catalog",ownership:"planned_new",placement:{support:asset.mount ?? "floor"},transform:{position:point,rotation:[0,0,0,1],scale:[1,1,1]}};
-    object = asset.mount === "wall" ? onWall(sceneContext.room,object) : asset.mount === "ceiling" ? onCeiling(sceneContext.room,object) : onNearestSurface(working(),object,sceneContext.room,sceneContext.assets);
-    if(!suggest({type:"add",object})) return false;
-    select(object.id);interaction.setState({browser:false,replacing:false});return true;
+    if (!scene.getState().ready || interaction.getState().dragging)
+      return false;
+    let object: SceneObject = {
+      id: crypto.randomUUID(),
+      assetId: asset.id,
+      category: asset.category,
+      displayName: asset.title,
+      dimensionsM: [...asset.dimensionsM],
+      locked: false,
+      source: "catalog",
+      ownership: "planned_new",
+      placement: { support: asset.mount ?? "floor" },
+      transform: { position: point, rotation: [0, 0, 0, 1], scale: [1, 1, 1] },
+    };
+    object =
+      asset.mount === "wall"
+        ? onWall(sceneContext.room, object)
+        : asset.mount === "ceiling"
+          ? onCeiling(sceneContext.room, object)
+          : onNearestSurface(
+              working(),
+              object,
+              sceneContext.room,
+              sceneContext.assets,
+            );
+    if (!suggest({ type: "add", object })) return false;
+    select(object.id);
+    interaction.setState({ browser: false, replacing: false });
+    return true;
   };
   const reset = async () => {
     if (repository?.reset) {
@@ -904,25 +987,14 @@ export function createEditor(
       try {
         const restored = await repository.reset(room.getState().room.roomId);
         scene.setState({ scene: restored, ready: true });
-        autosave = new Autosave(
-          repository,
-          () => scene.getState().scene,
-          (s) => save.setState(s),
-          restored.revision,
-        );
+        autosave = startAutosave(restored.revision);
         history.setState({ history: createHistory() });
         draft.setState(emptyDraft());
         save.setState({ status: "saved", error: null });
         notify("Room reset to the original arrangement.");
       } catch (error) {
         scene.setState({ ready: wasReady });
-        if (wasReady)
-          autosave = new Autosave(
-            repository,
-            () => scene.getState().scene,
-            (s) => save.setState(s),
-            baseRevision,
-          );
+        if (wasReady) autosave = startAutosave(baseRevision);
         save.setState({
           status: "error",
           error:
@@ -1010,12 +1082,7 @@ export function createEditor(
       });
       save.setState({ status: "saved", error: null });
       autosave?.dispose();
-      autosave = new Autosave(
-        repository,
-        () => scene.getState().scene,
-        (s) => save.setState(s),
-        loaded.revision,
-      );
+      autosave = startAutosave(loaded.revision);
     } catch (e) {
       save.setState({
         status: "error",
@@ -1024,14 +1091,24 @@ export function createEditor(
       notify("Could not load the saved room. Use the room menu to reset.");
     }
   };
-  const devAction = async (action:"failure"|"external") => {
+  const devAction = async (action: "failure" | "external") => {
     if (!(repository instanceof LocalStorageSceneRepository)) return;
-    if(action === "failure"){repository.simulateSaveFailure();notify("The next save will fail once. Make and accept an edit, then Retry.");}
-    else {await repository.simulateExternalEdit(room.getState().room.roomId);notify("Saved revision changed in another session. Your next save will report a conflict.");}
+    if (action === "failure") {
+      repository.simulateSaveFailure();
+      notify(
+        "The next save will fail once. Make and accept an edit, then Retry.",
+      );
+    } else {
+      await repository.simulateExternalEdit(room.getState().room.roomId);
+      notify(
+        "Saved revision changed in another session. Your next save will report a conflict.",
+      );
+    }
   };
   return {
     room,
     devAction,
+    log,
     context,
     scene,
     interaction,

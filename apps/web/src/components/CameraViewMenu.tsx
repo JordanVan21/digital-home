@@ -15,7 +15,7 @@ export function CameraViewMenu() {
     container = useRef<HTMLDivElement>(null),
     walk = useStore(editor.interaction, (s) => s.walk),
     selected = useStore(editor.interaction, (s) => s.selectedId),
-    room = useStore(editor.room, s=>s.room),
+    room = useStore(editor.room, (s) => s.room),
     dragging = useStore(editor.interaction, (s) => s.dragging);
   useEffect(() => {
     if (!open) return;
@@ -52,7 +52,17 @@ export function CameraViewMenu() {
           role="menu"
           aria-label="Camera views"
         >
-          {room.photoCamera && <button role="menuitem" onClick={()=>{editor.requestView("photo");setOpen(false);}}>Match photo</button>}
+          {room.photoCamera && (
+            <button
+              role="menuitem"
+              onClick={() => {
+                editor.requestView("photo");
+                setOpen(false);
+              }}
+            >
+              Match photo
+            </button>
+          )}
           {views.map(([id, label]) => (
             <button
               role="menuitem"

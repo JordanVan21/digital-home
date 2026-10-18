@@ -31,7 +31,13 @@ export function Proxy({
         raycast={() => null}
       >
         <boxGeometry args={[w, h, d]} />
-        <meshStandardMaterial color="#c5bfb3" roughness={0.9} />
+        <meshStandardMaterial
+          color="#c5bfb3"
+          roughness={0.9}
+          transparent={object.renovationDecision === "remove"}
+          opacity={object.renovationDecision === "remove" ? 0.23 : 1}
+          depthWrite={object.renovationDecision !== "remove"}
+        />
       </mesh>
       {/* Loading proxies are Suspense fallbacks: an <Html> portal there gets its
           React root unmounted mid-render when the model resolves. */}
@@ -105,7 +111,11 @@ function GLB({
         const owned = source.map((m) => {
           const mat = m.clone() as MeshStandardMaterial;
           materials.push(mat);
-          if (object.renovationDecision === "remove") {mat.transparent=true;mat.opacity=.23;mat.depthWrite=false;}
+          if (object.renovationDecision === "remove") {
+            mat.transparent = true;
+            mat.opacity = 0.23;
+            mat.depthWrite = false;
+          }
 
           if (mat.transparent && /glass/i.test(m.name)) {
             mat.opacity = Math.min(mat.opacity, 0.1);
@@ -126,7 +136,7 @@ function GLB({
           return mat;
         });
         child.material = Array.isArray(child.material) ? owned : owned[0];
-        if(object.renovationDecision === "remove")child.castShadow=false;
+        if (object.renovationDecision === "remove") child.castShadow = false;
         if (source.every((m) => m.transparent && /glass/i.test(m.name)))
           child.castShadow = false;
       }
