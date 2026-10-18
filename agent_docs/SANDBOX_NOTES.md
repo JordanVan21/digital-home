@@ -190,3 +190,41 @@ corepack pnpm capture:test2 -- --gpu   # → test-output/test2-render.png
 corepack pnpm lint && corepack pnpm typecheck && corepack pnpm test
 ```
 Dev hooks: `?perf` (r3f-perf), `window.__housePerf` (frame stats), `window.__houseDebug` (store + world-to-screen projection), `?lampShadows=N`, `?frameloop=always`, `?walls=fade|full|cutaway`, `?hideUi`.
+
+## 8. Merge round: jordan + codex (2026-10-18)
+
+**Docs:** `MERGE_INVENTORY.md` (inventory, every decision, plan, build log). Branch `feature/3d-sandbox-jordan-merge`, built from jordan's sandbox, with pieces from `origin/feature/3d-sandbox-codex` brought over deliberately (no git merge).
+
+### What changed
+- **Stack:** React 19, R3F 9, drei 10, three 0.180, Vite 7, Vitest 3, TS 5.9. Every drei `<Html>` mounts into a fixed `labelLayer` (React 19 unmount race; fix from codex). `?perf` uses drei `<Stats>`.
+- **Edits stay immediate** (jordan). Codex's suggestions/Accept flow is not wired in; its draft resolver is kept aside for future AI proposals.
+- **Toolbar:** the arrow gizmo is gone. New tools: **3D move (M)**, which drags on a camera-facing "pane of glass", and **Collisions on/off (C)**. With collisions off nothing blocks, but problems are still flagged.
+- **Panel:** editable **X / Y / Z** fields (codex). Typing a position slides there through collision; a typed height is kept. The Float checkbox is gone. Overcast lighting preset and "Reload saved room" come from codex.
+- **Outlines:** the selection outline is codex's shape-hugging outline of the model's baked shape. It is sized like the rendered model and carries jordan's corner dots. A "Show all outlines" switch is in the room panel. Drawing only.
+- **Collision:** jordan's engine is the only authority. Codex's exception table is added on top: wall-mounted items and furniture never collide.
+- **Contact guides:** when a dragged piece presses against something, a line marks the touching side.
+- **Stacking + gravity:**
+  - surfaces are the real exposed top faces of baked shapes for downloaded and scanned models; self-made models keep exact surfaces;
+  - the resting rule is codex's bottom-centre rule plus no sinking into the owner's shape;
+  - anything may rest on anything except large furniture;
+  - hop up while dragging, never drop mid-drag, fall on release;
+  - 12 cm magnetic catch with a green face outline;
+  - a "Letting go (tryout)" switch: Mix (default), Always fall, or Never fall.
+- **Keys:**
+  - Scroll while dragging raises/lowers; Shift gives a 10 cm grid; Alt means no snapping; Ctrl ignores collisions.
+  - R picks the Rotate tool, and you drag anywhere inside the ring or on the piece to turn it. Q/E turn 15°.
+  - Undo/redo glide into place.
+- **Snapping:** only the back-to-wall snap is left; neighbour alignment was dropped.
+- **Saving:** the mock persistence re-reads storage under a Web Lock, so a stale second tab gets a conflict. The app saves when hidden and warns before closing with an unsaved edit.
+- **Assets:** codex's 12 FurniMesh models are in the catalog as `pending`, hidden until redistribution rights are confirmed. Its Poly Haven models were already present.
+
+### Tools
+| Command | Purpose |
+|---|---|
+| `pnpm bake:shapes` | Bakes shapes into `scene-engine/src/shapeProfiles.json` |
+| `pnpm assets:verify` | Decodes every GLB and checks hash, bounds and budgets |
+| `pnpm --filter @house/asset-ingest ingest --only a,b` | Ingests specific entries offline |
+| `?geometry-lab` | Codex's shape inspection lab |
+| `pnpm geometry:benchmark` | Codex's shape-query benchmark |
+| `pnpm --filter @house/scene-engine bench` | Merged engine microbenchmarks |
+| `pnpm smoke` / `pnpm test:browser` | Headless Edge checks; these replace codex's Playwright specs |

@@ -52,18 +52,29 @@ export class LocalScenePersistence implements ScenePersistence {
     private readonly prefix = 'house.scene.',
   ) {}
 
-  private read(roomId: string): StoredRoom | null {
+  /** `fresh` re-reads storage, so saves made by another tab are seen (two-tab safety, from codex). */
+  private read(roomId: string, fresh = false): StoredRoom | null {
     const cached = this.rooms.get(roomId);
-    if (cached) return cached;
+    if (cached && !fresh) return cached;
     try {
       const raw = this.storage.getItem(this.prefix + roomId);
-      if (!raw) return null;
+      if (!raw) return cached ?? null;
       const room = JSON.parse(raw) as StoredRoom;
       this.rooms.set(roomId, room);
       return room;
     } catch {
-      return null;
+      return cached ?? null;
     }
+  }
+
+  /**
+   * Run a read-check-write under a per-room Web Lock (from the codex sandbox), so two tabs saving at
+   * once are serialized and the revision check sees the other tab's save. Without Web Locks (tests,
+   * old browsers) it runs directly; sequential stale writes are still rejected by the fresh read.
+   */
+  private locked<T>(roomId: string, f: () => T): Promise<T> {
+    const locks = (globalThis.navigator as Navigator | undefined)?.locks;
+    return locks ? (locks.request(`${this.prefix}${roomId}`, () => f()) as Promise<T>) : Promise.resolve(f());
   }
 
   private write(roomId: string, room: StoredRoom) {
@@ -81,7 +92,7 @@ export class LocalScenePersistence implements ScenePersistence {
 
   async getScene(roomId: string) {
     await this.delay();
-    return structuredClone(this.read(roomId)?.scene ?? null);
+    return structuredClone(this.read(roomId, true)?.scene ?? null);
   }
 
   async ensureScene(scene: SceneSpec, shell: RoomShell) {
@@ -97,7 +108,11 @@ export class LocalScenePersistence implements ScenePersistence {
       this.failures--;
       throw new Error('Network error (simulated)');
     }
-    const room = this.read(req.roomId);
+    return this.locked(req.roomId, () => this.applyPatch(req));
+  }
+
+  private applyPatch(req: SaveScenePatchRequest): SaveScenePatchResult {
+    const room = this.read(req.roomId, true);
     if (!room) return { ok: false, code: 'NOT_FOUND', message: 'Room not found.' };
     const prior = room.processed[req.idempotencyKey];
     if (prior) return structuredClone(prior);

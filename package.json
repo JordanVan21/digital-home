@@ -10,7 +10,10 @@
     "lint": "eslint .",
     "capture:test2": "node apps/web/scripts/copy-decoders.mjs && node apps/web/scripts/capture-test2.mjs",
     "smoke": "node apps/web/scripts/copy-decoders.mjs && node apps/web/scripts/smoke.mjs",
-    "bake:shapes": "node apps/web/scripts/bake-shapes.mjs"
+    "bake:shapes": "node apps/web/scripts/bake-shapes.mjs",
+    "assets:verify": "node tools/asset-ingest/verify.mjs",
+    "geometry:benchmark": "node apps/web/scripts/benchmark-geometry.mjs",
+    "test:browser": "node apps/web/scripts/copy-decoders.mjs && node apps/web/scripts/smoke.mjs --gpu --checks apps/web/scripts/checks/all.mjs"
   },
   "devDependencies": {
     "@eslint/js": "9.17.0",

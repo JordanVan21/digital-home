@@ -87,6 +87,26 @@ export function App() {
     return () => autosave.current?.stop();
   }, [persistence, load]);
 
+  // From the codex sandbox: save right away when the tab is hidden, and ask before closing the tab
+  // while an edit hasn't been saved yet (the save is started too).
+  useEffect(() => {
+    const hide = () => {
+      if (document.visibilityState === 'hidden') void autosave.current?.flushNow();
+    };
+    const leave = (e: BeforeUnloadEvent) => {
+      const { save } = useEditor.getState();
+      if (!save.dirty && save.status !== 'saving') return;
+      void autosave.current?.flushNow();
+      e.preventDefault();
+    };
+    document.addEventListener('visibilitychange', hide);
+    window.addEventListener('beforeunload', leave);
+    return () => {
+      document.removeEventListener('visibilitychange', hide);
+      window.removeEventListener('beforeunload', leave);
+    };
+  }, []);
+
   const actions: DevActions = {
     retrySave: () => autosave.current?.retry(),
     failNextSave: () => { persistence.failNext(1); toast('The next save will fail (simulated).'); },
