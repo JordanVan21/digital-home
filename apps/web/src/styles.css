@@ -1632,3 +1632,107 @@ kbd {
   padding: 0 7px;
   font-size: 11.5px;
 }
+
+/* ---------- Edit log (schema-typed ops) ---------- */
+.edit-log {
+  position: absolute;
+  left: 24px;
+  bottom: 24px;
+  width: 300px;
+  border-radius: 22px;
+  z-index: 3;
+  overflow: hidden;
+}
+.edit-log.open {
+  width: min(460px, calc(100vw - 48px));
+}
+.edit-log-header {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  height: 42px;
+  padding: 0 16px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--ink-soft);
+}
+.edit-log-header .count {
+  margin-right: auto;
+  padding: 1px 7px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.6);
+  font-weight: 500;
+  font-size: 11px;
+}
+.edit-log-body {
+  max-height: 240px;
+  overflow: auto;
+  scrollbar-width: thin;
+  padding: 0 8px 10px;
+  border-top: 1px solid var(--line);
+}
+.edit-log-row {
+  width: 100%;
+  display: grid;
+  grid-template-columns: 58px 58px 1fr;
+  align-items: baseline;
+  gap: 6px;
+  padding: 5px 8px;
+  border-radius: 10px;
+  text-align: left;
+  font-size: 11px;
+}
+.edit-log-row:hover:not(:disabled) {
+  background: rgba(255, 255, 255, 0.6);
+}
+.edit-log-row:disabled {
+  opacity: 1;
+  cursor: default;
+}
+.edit-log-time {
+  color: var(--muted);
+  font-variant-numeric: tabular-nums;
+}
+.edit-log-source {
+  justify-self: start;
+  padding: 1px 7px;
+  border-radius: 999px;
+  font-size: 10px;
+  font-weight: 600;
+  background: rgba(64, 40, 18, 0.06);
+  color: var(--ink-soft);
+}
+.edit-log-source.suggest {
+  background: color-mix(in srgb, var(--select) 16%, white);
+  color: #5048b8;
+}
+.edit-log-source.accept {
+  background: #e3f4e8;
+  color: #2f7a46;
+}
+.edit-log-source.discard {
+  background: #fbe7e2;
+  color: #b2442f;
+}
+.edit-log-summary {
+  color: var(--ink);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.edit-log-json {
+  margin: 2px 8px 8px;
+  padding: 8px 10px;
+  max-height: 180px;
+  overflow: auto;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.6);
+  font: 10px/1.45 ui-monospace, SFMono-Regular, Menlo, monospace;
+  color: var(--ink-soft);
+}
+@media (max-width: 1100px) {
+  .edit-log:not(.open) {
+    width: auto;
+  }
+}

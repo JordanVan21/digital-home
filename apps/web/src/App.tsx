@@ -7,6 +7,7 @@ import { startAutosave, type Autosave } from './state/autosave';
 import { loadSource } from './state/loader';
 import { addAsset, toast, useEditor, type SceneSource } from './state/store';
 import { ASSET_DRAG_MIME, AssetBrowser } from './ui/AssetBrowser';
+import { EditLogPanel } from './ui/EditLogPanel';
 import { InspectorPanel } from './ui/InspectorPanel';
 import { SideNav } from './ui/SideNav';
 import { SuggestionsBar } from './ui/SuggestionsBar';
@@ -142,6 +143,7 @@ export function App() {
           <ViewControls />
           <InspectorPanel />
           <SuggestionsBar />
+          <EditLogPanel />
           <AssetBrowser />
         </>
       )}

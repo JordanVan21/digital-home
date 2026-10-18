@@ -12,6 +12,7 @@ import {
 } from '@house/scene-engine';
 import type { AssetCatalog } from '../catalog/AssetCatalog';
 import { EDITOR_POLICY } from '../config/editorPolicy';
+import { makeLogEntry, type OpLogEntry, type OpSource } from './opLog';
 
 export type SceneSource = 'demo-room' | 'demo-scan' | 'test2';
 export type TransformMode = 'select' | 'translate' | 'rotate';
@@ -84,6 +85,8 @@ export type EditorState = {
   history: History;
   // ---- save
   save: SaveState;
+  // ---- schema-typed edit log (newest last)
+  opLog: OpLogEntry[];
   // ---- violations (committed scene), by object id
   violations: Record<string, Violation[]>;
   // ---- ui
@@ -124,6 +127,7 @@ const initial: EditorState = {
   showColliders: false,
   history: emptyHistory(EDITOR_POLICY.historyCap),
   save: { dirty: false, status: 'idle', lastError: null, baseRevision: 0, pending: [] },
+  opLog: [],
   violations: {},
   toasts: [],
   libraryOpen: false,
@@ -172,6 +176,11 @@ export function toast(text: string, kind: Toast['kind'] = 'info', ms = 3500) {
   setTimeout(() => set((s) => ({ toasts: s.toasts.filter((t) => t.id !== id) })), ms);
 }
 
+/** Append to the edit log (every mutation path calls this with the ops it applied). */
+function log(source: OpSource, before: SceneSpec | null, ops: SceneOp[], note?: string) {
+  set((st) => ({ opLog: [...st.opLog, makeLogEntry(source, before, ops, note)].slice(-200) }));
+}
+
 export function describeOpError(e: OpError | { reason: string; message: string }): string {
   switch (e.reason) {
     case 'LOCKED': return `${e.message} Unlock it to edit.`;
@@ -211,6 +220,8 @@ export function setScene(params: {
     save: { dirty: false, status: 'idle', lastError: null, baseRevision: params.scene.revision, pending: [] },
     violations: violationIndex(params.scene, ctx),
   });
+  // StrictMode runs the load effect twice in development; log one load.
+  if (get().opLog.at(-1)?.summary !== `Loaded ${params.roomName}`) log('immediate', null, [], `Loaded ${params.roomName}`);
 }
 
 // ---------------------------------------------------------------- committing
@@ -270,6 +281,7 @@ function suggest(ops: SceneOp[], opts: { quiet?: boolean; select?: string[] }): 
   }
   const previous = s.hasDraft ? s.workingScene : null;
   setDraftScene(r.scene, { undo: [...s.draft.undo, previous].slice(-EDITOR_POLICY.historyCap), redo: [] }, opts.select);
+  log('suggest', s.workingScene, ops);
   return { ok: true };
 }
 
@@ -315,6 +327,7 @@ function commitImmediate(label: string, ops: SceneOp[], opts: { quiet?: boolean;
     violations: violationIndex(working, ctx),
     ...keepSelection(opts.select ?? s.selectedIds, working),
   });
+  log('immediate', s.workingScene, ops);
   return { ok: true };
 }
 
@@ -364,6 +377,7 @@ export function accept(): boolean {
     ...keepSelection(s.selectedIds, after),
   });
   const name = (id: string) => (proposed.objects.find((o) => o.id === id) ?? before.objects.find((o) => o.id === id))?.displayName ?? 'Item';
+  log('accept', before, r.ops, `Accept: ScenePatch of ${r.ops.length} op${r.ops.length === 1 ? '' : 's'} · ${summarize(r.report, name)}`);
   toast(summarize(r.report, name), moved.length || r.report.some((e) => e.outcome === 'reverted' || e.outcome === 'dropped') ? 'warning' : 'info', 4500);
   clearTimeout(resolvedTimer);
   if (moved.length) resolvedTimer = setTimeout(() => set((st) => ({ draft: { ...st.draft, resolved: [] } })), 1600);
@@ -382,6 +396,7 @@ export function discard() {
     violations: violationIndex(s.acceptedScene, ctx),
     ...keepSelection(s.selectedIds, s.acceptedScene),
   });
+  if (s.hasDraft) log('discard', s.workingScene, [], 'Discarded all suggestions');
 }
 
 /** Same object up to float noise in its transform. */
@@ -431,6 +446,7 @@ export function revertPiece(id: string) {
     });
   }
   setDraftScene({ ...current, objects }, { undo: [...s.draft.undo, current], redo: [] });
+  log('revert', current, [], `Reverted ${(now ?? original)?.displayName ?? 'a piece'}`);
 }
 
 const degreesBetween = (a: SceneObject, b: SceneObject) => {
@@ -484,6 +500,7 @@ function step(kind: 'undo' | 'redo') {
         ? { undo: s.draft.undo.slice(0, -1), redo: [...s.draft.redo, current] }
         : { undo: [...s.draft.undo, current], redo: s.draft.redo.slice(0, -1) },
     );
+    log(kind, s.workingScene, [], `${kind === 'undo' ? 'Undo' : 'Redo'} suggestion`);
     return;
   }
   const r = (kind === 'undo' ? undoHistory : redoHistory)(ctx, s.acceptedScene, s.history);
@@ -500,6 +517,7 @@ function step(kind: 'undo' | 'redo') {
     violations: violationIndex(r.scene, ctx),
     ...keepSelection(s.selectedIds, r.scene),
   });
+  log(kind, s.acceptedScene, r.applied, `${kind === 'undo' ? 'Undo' : 'Redo'} “${r.entry.label}” (${r.applied.length} op${r.applied.length === 1 ? '' : 's'})`);
 }
 export const undo = () => step('undo');
 export const redo = () => step('redo');

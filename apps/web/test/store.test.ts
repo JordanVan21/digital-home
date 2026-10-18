@@ -8,7 +8,7 @@ import { LocalAssetCatalog } from '../src/catalog/AssetCatalog';
 import { LocalScenePersistence, memoryStorage } from '../src/persistence/ScenePersistence';
 import { startAutosave, type Autosave } from '../src/state/autosave';
 import {
-  accept, addAsset, canTravel, changes, commit, deleteSelected, discard, revertPiece, duplicateSelected, groupSelected, nudge, objectById, redo, resizeObject, rotateSelectionBy, select, selectMany, setScene, swapAsset, toggleLock, undo, useEditor,
+  accept, addAsset, canTravel, changes, commit, deleteSelected, discard, revertPiece, setPosition, duplicateSelected, groupSelected, nudge, objectById, redo, resizeObject, rotateSelectionBy, select, selectMany, setScene, swapAsset, toggleLock, undo, useEditor,
 } from '../src/state/store';
 
 const catalog = new LocalAssetCatalog(AssetCatalogFileSchema.parse(JSON.parse(readFileSync(join(__dirname, '../public/catalog/catalog.json'), 'utf8'))).assets);
@@ -351,5 +351,29 @@ describe('suggestions (draft)', () => {
     expect(objectById(ID.desk)).toEqual(desk);
     expect(objectById(ID.lamp)).toEqual(lamp);
     expect(changes().map((c) => c.id)).toEqual([ID.chair]);
+  });
+});
+
+describe('schema-first edits (original sandbox)', () => {
+  it('the edit log records each suggestion and the accepted ScenePatch as typed ops', () => {
+    commit('m1', chairAt(0.05));
+    accept();
+    const log = useEditor.getState().opLog;
+    const [suggested, accepted] = log.slice(-2);
+    expect(suggested!.source).toBe('suggest');
+    expect(suggested!.ops).toEqual(chairAt(0.05));
+    expect(accepted!.source).toBe('accept');
+    expect(accepted!.ops).toEqual(useEditor.getState().save.pending);
+    expect(accepted!.summary).toMatch(/ScenePatch of 1 op/);
+  });
+
+  it('typing coordinates moves the piece; raising Y above its support floats it there', () => {
+    setPosition(ID.chair, 0, 0.4);
+    expect(objectById(ID.chair)!.transform.position[0]).toBeCloseTo(0.4);
+    setPosition(ID.chair, 1, 0.3);
+    const c = objectById(ID.chair)!;
+    expect(c.transform.position[1]).toBeCloseTo(0.3);
+    expect(c.placement?.float).toBe(true);
+    expect(useEditor.getState().opLog.at(-1)!.ops.map((o) => o.type)).toEqual(['setPlacement', 'move']);
   });
 });
