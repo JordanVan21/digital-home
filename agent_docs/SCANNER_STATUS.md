@@ -158,3 +158,15 @@ This update supersedes the initial read-through's build/tooling status above.
 - Replaced the confirmation dialog with a two-button alert: Keep scanning (Keep processing while building) and Discard scan.
 - Removed the bottom panel. Cancel, Finish and a short guidance line now sit above RoomPlan in a separate vertical layout; the native capture view has unobstructed bounds for its built-in coaching and miniature preview.
 - iPhone build and all 5 Swift tests pass. Visual confirmation of the correction is still required on the real phone before moving to preview/persistent storage.
+
+## Checkpoint 3 — preview, naming and durable library (2026-10-18)
+
+- User confirmed the corrected Keep scanning/Discard choices and unobstructed RoomPlan preview work. Checkpoint 2 is accepted.
+- Added a local rotatable/zoomable preview: measured capture geometry is available immediately; a parametric RoomPlan USDZ preview/backup is exported off the main actor and replaces it when available. USDZ failure does not block the JSON or saved record.
+- Completed captures persist immediately as recoverable drafts under Application Support/HouseScans/<UUID>/. Files are `scan.json` (existing version 1 wire contract), `roomplan.json` (native Codable data), optional `scan.usdz`, and `record.json` (name, date, draft/saved state, room/object counts, upload-status vocabulary and preview information).
+- Added Review scan with a date/time default name, explicit Save and confirmed Discard, plus Finish later. Added unfinished/saved scan sections, list rows with metadata/status, and reopening previews/counts and sharing the exact stored JSON. Existing prototype files are not silently imported into the app library.
+- Local metadata is separate from immutable capture JSON. Writes are atomic per file. Missing records can recover from a primary scan after interruption; a bad sibling record produces a storage notice instead of hiding healthy scans. Names never determine file paths. Discard only removes an explicitly selected draft and cancels its pending preview; late preview results cannot resurrect it.
+- Removed the prototype upload URL/token UI and cleared its legacy stored token. No account/network is required. HTTP implementation remains unused in the package; swappable offline upload preparation/retry is still checkpoint 7.
+- iPhone build passes with Xcode 27.1. All 13 Swift tests pass (8 new storage tests cover restart/recovery, immutable bytes, safe discard, duplicate identity, invalid names, corrupt siblings and preview failure/late completion).
+- Awaiting physical-phone preview, saved/draft persistence after force-close/restart, and Discard verification. Detailed taps are in `apps/ios/SETUP.md` checkpoint 3. Do not claim persistence on the actual phone until the user confirms it.
+- Remaining phone checkpoints: full version 2 JSON and sharing, multi-room capture, detail/delete/diagnostic log, and uploader placeholder/status/retry. Two real version 1 fixtures already exist; version 2 examples must be collected after that exporter is implemented.

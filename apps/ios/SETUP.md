@@ -54,9 +54,9 @@ contain the reproducible app settings and camera permission text.
 6. Click Xcode's **Run** triangle (or press **Command-R**). If iOS says the developer is untrusted,
    open **Settings > General > VPN & Device Management**, select your developer profile under
    **Developer App**, tap **Trust**, confirm, then launch House again. The profile appears only after installation.
-7. Allow camera access. Expect **Scan your room** with a **Start scan** button. Leave upload settings empty.
+7. Allow camera access. The current checkpoint opens **Your scans** with a **Scan a room** button.
 8. Stop the debugger with Xcode's square Stop button, unplug the cable, and open **House** from the
-   phone's Home Screen. Expect the same start screen without the Mac connected.
+   phone's Home Screen. Expect the same scan list without the Mac connected.
 
 For this first checkpoint, report whether House opens unplugged and whether any signing/install error
 appears. Scanning and Finish/Cancel verification are the next step. RoomPlan does not work in the Simulator.
@@ -66,9 +66,9 @@ appears. Scanning and Finish/Cancel verification are the next step. RoomPlan doe
 Install the latest source with Command-R using the same generated project (no regeneration needed),
 stop the debugger, unplug and launch House. Test these on the phone:
 
-1. Tap **Start scan**. Expect Apple's live view/coaching plus Single room, Cancel, guidance and Finish scan.
+1. Tap **Scan a room**. Expect Apple's live view/coaching plus Room scan, Cancel, guidance and Finish scan.
 2. Tap **Cancel > Keep scanning**. The scan should continue. Then **Cancel > Discard scan**; expect the start screen.
-3. Scan a small furnished room with a door/window, then **Finish scan**. Expect processing followed by counts;
+3. Scan a small furnished room with a door/window, then **Finish scan**. Expect processing followed by the review;
    even a low-quality result should offer JSON sharing. Start a new scan and repeat to verify a clean session.
 4. Start another scan and go to the Home Screen, then return. Expect an interruption message and a way to
    start a fresh scan, without an old result appearing over it. Do not expect unfinished-scan persistence yet.
@@ -85,11 +85,32 @@ swift test
 ```
 
 ## 5. Scan and export
-1. Launch, allow camera access. Tap **Start scan**.
+1. Launch, allow camera access. Tap **Scan a room**.
 2. Walk slowly along the walls, aim at doors, windows and furniture, finish where you started. Tap **Finish scan**.
-3. On the review screen note the counts (walls / doors / windows / objects). Expect >= 3 walls.
-4. Tap **Share scan file (AirDrop)** and send the JSON to the Mac. (Upload needs a server that doesn't exist yet;
-   leave the URL empty.) File name: `room-<uuid>.json`.
+3. On **Review scan**, drag/pinch the preview, check the counts, enter a name, and tap **Save scan**.
+4. Open the saved row and tap **Share scan file (AirDrop)**. The durable primary file is named `scan.json`.
+   There is no real upload action yet; current upload status is Saved.
+
+### Checkpoint 3: preview and persistence
+
+Use Command-R in the existing Xcode project; no project regeneration or team change is needed.
+Then stop the debugger, unplug and run House:
+
+1. Scan a small furnished room with a door/window and Finish. Expect a rotatable, zoomable preview,
+   counts, a default date/time name and Save/Discard. The measured-box preview appears immediately;
+   the parametric USDZ replaces it when ready. A backup failure must not prevent saving.
+2. Name it **Living room test**, tap **Save scan**, and check the list for that name/date, 1 room,
+   the detected object count and Saved status. Open it again to see its preview/counts and JSON sharing.
+3. Force-close House and reopen. Then restart the iPhone, unlock and reopen. The saved row and preview
+   should remain. Do not uninstall House: uninstalling removes local app data.
+4. Finish a second scan but force-close from Review before Save. On relaunch it should appear under
+   **Unfinished scans**; open it, then name/save it or use **Finish later** to keep it as a draft.
+5. Finish a disposable scan, tap **Discard > Discard**. It should disappear; saved neighbors must remain.
+   Also confirm Cancel and Finish still work and the capture preview stays visible.
+
+Already-AirDropped prototype files are retained as repo fixtures but are not automatically imported
+into the phone library. This checkpoint persists captures made with this app update. Version 2 format,
+house capture, persistent error log and upload placeholder are later checkpoints.
 
 ## 6. Verify on the desktop
 ```sh
@@ -123,7 +144,7 @@ in the JSON), and which object categories appeared. Then run `pnpm --filter @hou
 | Do openings (unframed) appear, and are they doorways? | JSON `openings[]` |
 
 ## 9. Scope boundaries
-Authenticated upload needs the API/Supabase and is deferred. Whole-house capture, durable saving,
-preview and the offline upload placeholder are planned phone checkpoints in `agent_docs/SCANNER_STATUS.md`.
-The scan/export instructions above describe the current prototype; the documented version 2 format is
-approved for implementation but has not been built yet. Simulator scanning is unsupported.
+Authenticated upload needs the API/Supabase and is deferred. Whole-house capture, version 2 export,
+persistent diagnostic log and the offline upload placeholder remain later phone checkpoints in
+`agent_docs/SCANNER_STATUS.md`. Preview/durable storage are implemented pending phone acceptance.
+Simulator scanning is unsupported.
