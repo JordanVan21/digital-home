@@ -372,10 +372,17 @@ async function drain<T extends { id: string }>(
   fail: (item: T, message: string) => PromiseLike<unknown>,
 ) {
   for (;;) {
-    const item = await next().catch((error) => {
-      console.error(`${label} queue: ${error instanceof Error ? error.message : error}`);
+    let missingTable = false;
+    const item = await next().catch((error: { message?: string; code?: string }) => {
+      // PGRST205 / 42P01: the queue's table is not deployed yet (migration pending).
+      missingTable = error?.code === "PGRST205" || error?.code === "42P01";
+      if (!missingTable) console.error(`${label} queue: ${error?.message ?? String(error)}`);
       return null;
     });
+    if (missingTable) {
+      console.log(`${label} queue off: its table is not deployed yet (apply the pending migration).`);
+      return;
+    }
     if (!item) {
       if (once) return;
       await new Promise((r) => setTimeout(r, label === "request" ? 1500 : 5000));
