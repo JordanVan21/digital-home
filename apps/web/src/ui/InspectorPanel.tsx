@@ -278,6 +278,7 @@ function RoomInfo() {
   const scene = useEditor((s) => s.workingScene);
   const roomName = useEditor((s) => s.roomName);
   const wallMode = useEditor((s) => s.wallMode);
+  const showAllOutlines = useEditor((s) => s.showAllOutlines);
   const flagged = useEditor((s) => Object.keys(s.violations).length);
   if (!shell || !scene) return null;
   const openings = shell.openings.reduce<Record<string, number>>((m, o) => ({ ...m, [o.kind]: (m[o.kind] ?? 0) + 1 }), {});
@@ -308,6 +309,13 @@ function RoomInfo() {
             <button key={m} className={wallMode === m ? 'on' : ''} onClick={() => useEditor.setState({ wallMode: m })}>{m === 'cutaway' ? 'Cut away' : m === 'fade' ? 'Fade' : 'Show'}</button>
           ))}
         </div>
+      </div>
+      <div className="field">
+        <label className="toggle">
+          <input type="checkbox" checked={showAllOutlines} onChange={(e) => useEditor.setState({ showAllOutlines: e.target.checked })} />
+          Show all outlines
+        </label>
+        <div className="hint">Draws every piece's shape. View only; it doesn't change what collides.</div>
       </div>
       <div className="field">
         <div className="field-label">Wall paint</div>

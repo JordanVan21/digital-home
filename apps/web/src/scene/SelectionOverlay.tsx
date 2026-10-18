@@ -1,13 +1,14 @@
 import { labelLayer } from './labelLayer';
-import { useMemo, useRef, useSyncExternalStore } from 'react';
+import { useEffect, useMemo, useRef, useSyncExternalStore } from 'react';
 import { useFrame } from '@react-three/fiber';
 import { Html } from '@react-three/drei';
 import { BoxGeometry, BufferGeometry, EdgesGeometry, Float32BufferAttribute, Quaternion, Vector3, type Group, type LineBasicMaterial, type PointsMaterial } from 'three';
 import type { SceneObject } from '@house/contracts';
-import { effectiveDimsOf } from '@house/scene-engine';
+import { effectiveDimsOf, shapeOfAsset } from '@house/scene-engine';
 import { useEditor } from '../state/store';
 import { dragFeedback } from './dragFeedback';
 import { registry } from './registry';
+import { outlineSizeOf, shapeOutlineGeometry } from './shapeOutline';
 
 const COLORS = { hover: '#f4f1ea', selected: '#8a8dff', invalid: '#ff5a52', warning: '#ffb547' };
 
@@ -16,13 +17,14 @@ const _q = new Quaternion();
 const _s = new Vector3();
 const _f = new Vector3();
 
-type Kind = 'hover' | 'selected' | 'blocker';
+type Kind = 'hover' | 'selected' | 'blocker' | 'all';
 
 /**
- * Highlight overlay: footprint outline + bounding-box wireframe + corner dots, built from the
- * object's scene-engine (tilted) dimensions — never from mesh bounds — and following its live
- * group transform each frame, so it tracks drags without store writes. Furniture materials are
- * never touched (instances share them).
+ * Highlight overlay that follows the object's live group transform each frame (tracks drags without
+ * store writes; furniture materials are never touched). The outline is the model's baked shape
+ * (codex's shape-hugging outline), sized exactly as the model is drawn; models without a baked shape
+ * (proxies, alpha-tested plants, tilted decor) get jordan's box. Corner dots and the footprint loop
+ * mark the bounds. Drawing only — collision never reads these shapes.
  */
 function ObjectOutline({ obj, kind, primary }: { obj: SceneObject; kind: Kind; primary?: boolean }) {
   const ref = useRef<Group>(null);
@@ -30,9 +32,17 @@ function ObjectOutline({ obj, kind, primary }: { obj: SceneObject; kind: Kind; p
   const footMat = useRef<LineBasicMaterial>(null);
   const dotMat = useRef<PointsMaterial>(null);
   const committed = useEditor((s) => s.violations[obj.id]);
-  const [w, h, d] = effectiveDimsOf(obj);
-  const pad = 0.015;
-  const edges = useMemo(() => new EdgesGeometry(new BoxGeometry(w + pad, h + pad, d + pad)), [w, h, d]);
+  const asset = useEditor((s) => (obj.assetId ? s.catalog?.get(obj.assetId) : undefined));
+  const tilted = !!obj.tilt && (obj.tilt.x !== 0 || obj.tilt.z !== 0);
+  const shape = tilted ? null : shapeOfAsset(asset);
+  const eff = effectiveDimsOf(obj);
+  const [w, h, d] = shape && asset ? outlineSizeOf(asset.dimensionsM, obj.dimensionsM) : eff;
+  const pad = shape ? 0 : 0.015;
+  const lines = useMemo(
+    () => (shape ? shapeOutlineGeometry(shape, [w, h, d]) : new EdgesGeometry(new BoxGeometry(w + pad, h + pad, d + pad)).translate(0, h / 2, 0)),
+    [shape, w, h, d, pad],
+  );
+  useEffect(() => () => lines.dispose(), [lines]);
   const footprint = useMemo(() => {
     const g = new BufferGeometry();
     const x = w / 2 + 0.04;
@@ -48,7 +58,7 @@ function ObjectOutline({ obj, kind, primary }: { obj: SceneObject; kind: Kind; p
     for (const yy of [0, h + pad]) for (const [a, b] of [[-x, -z], [x, -z], [x, z], [-x, z]]) pts.push(a!, yy - pad / 2, b!);
     g.setAttribute('position', new Float32BufferAttribute(pts, 3));
     return g;
-  }, [w, h, d]);
+  }, [w, h, d, pad]);
 
   useFrame(() => {
     const grp = registry.get(obj.id);
@@ -59,7 +69,7 @@ function ObjectOutline({ obj, kind, primary }: { obj: SceneObject; kind: Kind; p
     _f.set(0, 0, 1).applyQuaternion(_q);
     o.position.copy(_p);
     o.rotation.set(0, Math.atan2(_f.x, _f.z), 0);
-    let color: string = kind === 'blocker' ? COLORS.invalid : COLORS[kind];
+    let color: string = kind === 'blocker' ? COLORS.invalid : kind === 'all' ? COLORS.selected : COLORS[kind];
     if (kind === 'selected') {
       const live = dragFeedback.objectId === obj.id;
       if (live && (dragFeedback.blockers.length || dragFeedback.violations.length)) color = COLORS.invalid;
@@ -71,16 +81,19 @@ function ObjectOutline({ obj, kind, primary }: { obj: SceneObject; kind: Kind; p
     dotMat.current?.color.set(color);
   });
 
+  const quiet = kind === 'hover' || kind === 'all';
   return (
     <group ref={ref} renderOrder={10}>
-      <lineSegments geometry={edges} position={[0, h / 2, 0]}>
-        <lineBasicMaterial ref={boxMat} transparent opacity={kind === 'hover' ? 0.55 : 0.95} depthTest={false} />
+      <lineSegments geometry={lines} raycast={() => null}>
+        <lineBasicMaterial ref={boxMat} transparent opacity={kind === 'all' ? 0.4 : kind === 'hover' ? 0.6 : 0.95} depthTest={false} />
       </lineSegments>
-      <lineLoop geometry={footprint} position={[0, 0.006, 0]}>
-        <lineBasicMaterial ref={footMat} transparent opacity={kind === 'hover' ? 0.5 : 1} depthTest={false} />
-      </lineLoop>
-      {kind !== 'hover' && (
-        <points geometry={dots}>
+      {kind !== 'all' && (
+        <lineLoop geometry={footprint} position={[0, 0.006, 0]} raycast={() => null}>
+          <lineBasicMaterial ref={footMat} transparent opacity={kind === 'hover' ? 0.5 : 1} depthTest={false} />
+        </lineLoop>
+      )}
+      {!quiet && (
+        <points geometry={dots} raycast={() => null}>
           <pointsMaterial ref={dotMat} size={7} sizeAttenuation={false} depthTest={false} transparent />
         </points>
       )}
@@ -173,9 +186,11 @@ export function SelectionOverlay() {
   const selected = useMemo(() => objects?.filter((o) => selectedIds.includes(o.id)) ?? [], [objects, selectedIds]);
   const hovered = useMemo(() => (hoveredId && !selectedIds.includes(hoveredId) ? objects?.find((o) => o.id === hoveredId) : undefined), [objects, hoveredId, selectedIds]);
   const primaryId = selectedIds[selectedIds.length - 1];
+  const showAll = useEditor((s) => s.showAllOutlines);
   if (walk) return null;
   return (
     <group name="selection-overlay">
+      {showAll && objects?.filter((o) => !selectedIds.includes(o.id) && o.id !== hovered?.id).map((o) => <ObjectOutline key={`a-${o.id}`} obj={o} kind="all" />)}
       {hovered && <ObjectOutline key={`h-${hovered.id}`} obj={hovered} kind="hover" />}
       {selected.map((o) => <ObjectOutline key={`s-${o.id}`} obj={o} kind="selected" primary={o.id === primaryId} />)}
       <Blockers />

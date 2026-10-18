@@ -57,6 +57,8 @@ export type EditorState = {
   snapping: boolean;
   /** Collisions off (toolbar / C): nothing blocks, but violations are still computed and shown. */
   collisionsOff: boolean;
+  /** Draw every piece's shape outline (room panel switch, from codex's Bounding boxes toggle). */
+  showAllOutlines: boolean;
   walkMode: boolean;
   wallMode: WallMode;
   // ---- history (editor-local; never a timeline)
@@ -89,6 +91,7 @@ const initial: EditorState = {
   dragging: false,
   snapping: false,
   collisionsOff: false,
+  showAllOutlines: false,
   walkMode: false,
   wallMode: 'cutaway',
   history: emptyHistory(EDITOR_POLICY.historyCap),
