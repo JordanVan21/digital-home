@@ -1,7 +1,14 @@
 // @vitest-environment jsdom
 import { afterEach, expect, it, vi } from "vitest";
 import ReactThreeTestRenderer from "@react-three/test-renderer";
-import { BoxGeometry, Group, Mesh, MeshStandardMaterial } from "three";
+import {
+  Box3,
+  BoxGeometry,
+  Group,
+  Mesh,
+  MeshStandardMaterial,
+  Vector3,
+} from "three";
 import { createFixtureScene, fixtureId } from "@house/contracts";
 import { acceleratedRaycast } from "three-mesh-bvh";
 import { Model } from "./Model";
@@ -43,6 +50,38 @@ it.each([false, true])(
       expect(picked.raycast).toBe(acceleratedRaycast);
       expect(picked.geometry.boundsTree).toBeDefined();
       expect(mesh.geometry.boundsTree).toBeUndefined();
+    } finally {
+      await renderer.unmount();
+    }
+  },
+);
+it.each([
+  [{ x: 1, z: 0 }, [0.4, 0.1, 0.3]],
+  [{ x: 0, z: 1 }, [0.3, 0.4, 0.1]],
+  [{ x: 1, z: 1 }, [0.1, 0.4, 0.3]],
+] as const)(
+  "renders tilt %j at the tilted size, resting on y = 0",
+  async (tilt, size) => {
+    const scene = new Group();
+    scene.add(new Mesh(new BoxGeometry(), new MeshStandardMaterial()));
+    loader.scene = scene;
+    const object = {
+      ...createFixtureScene().objects.find((o) => o.id === fixtureId(100))!,
+      dimensionsM: [0.4, 0.3, 0.1] as [number, number, number],
+      tilt,
+    };
+    const renderer = await ReactThreeTestRenderer.create(
+      <Model object={object} />,
+    );
+    try {
+      const root = renderer.scene.instance;
+      root.updateMatrixWorld(true);
+      const box = new Box3().setFromObject(root);
+      const got = box.getSize(new Vector3()).toArray();
+      got.forEach((v, i) => expect(v).toBeCloseTo(size[i], 6));
+      expect(box.min.y).toBeCloseTo(0, 6);
+      expect((box.min.x + box.max.x) / 2).toBeCloseTo(0, 6);
+      expect((box.min.z + box.max.z) / 2).toBeCloseTo(0, 6);
     } finally {
       await renderer.unmount();
     }

@@ -280,3 +280,31 @@ describe("Jordan's fixtures in this engine's conventions", () => {
     }
   });
 });
+
+describe("test2's tilted decor", () => {
+  it("rests the flat book stacks on the coffee table and sideboard", () => {
+    const room = rooms[1],
+      scene = room.createScene(),
+      ctx = contextFor(room);
+    const byId = new Map(scene.objects.map((o) => [o.id, o]));
+    const onTable = (o: (typeof scene.objects)[number]) => {
+      let p = o.placement?.parentId
+        ? byId.get(o.placement.parentId)
+        : undefined;
+      while (p && p.placement?.support === "object")
+        p = byId.get(p.placement.parentId!);
+      return (
+        p &&
+        ["Travertine coffee table", "Oak sideboard"].includes(p.displayName)
+      );
+    };
+    const stacked = scene.objects.filter(
+      (o) => onTable(o) && (o.tilt || o.category === "decor"),
+    );
+    expect(stacked.length).toBeGreaterThanOrEqual(6);
+    for (const o of stacked)
+      expect(validateObject(scene, o, ctx), o.displayName).toEqual({
+        ok: true,
+      });
+  });
+});

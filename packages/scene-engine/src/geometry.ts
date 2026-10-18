@@ -1,4 +1,4 @@
-import type { RoomShell, SceneObject, Vec3 } from "@house/contracts";
+import type { RoomShell, SceneObject, Tilt, Vec3 } from "@house/contracts";
 export type Point = [number, number];
 export const EPS = 1e-7;
 const dot = (a: Point, b: Point) => a[0] * b[0] + a[1] * b[1];
@@ -31,10 +31,11 @@ export function rectangle(
   ]);
 }
 export function footprint(o: SceneObject): Point[] {
+  const [w, , d] = scaledDimensions(o);
   return rectangle(
     [o.transform.position[0], o.transform.position[2]],
-    o.dimensionsM[0] * o.transform.scale[0],
-    o.dimensionsM[2] * o.transform.scale[2],
+    w,
+    d,
     yawOf(o.transform.rotation),
   );
 }
@@ -149,6 +150,20 @@ export function doorClearances(room: RoomShell): Point[][] {
       );
     });
 }
+/**
+ * Size after decor tilt. `dimensionsM` is the model's own upright size; quarter
+ * turns about X swap height and depth, then turns about Z swap width and height.
+ */
+export function tiltedDimensions(size: Vec3, tilt?: Tilt): Vec3 {
+  let [w, h, d] = size;
+  if (tilt && tilt.x % 2 === 1) [h, d] = [d, h];
+  if (tilt && tilt.z % 2 === 1) [w, h] = [h, w];
+  return [w, h, d];
+}
+/** World size of the object's box: scaled, then tilted. */
 export function scaledDimensions(o: SceneObject): Vec3 {
-  return o.dimensionsM.map((d, i) => d * o.transform.scale[i]) as Vec3;
+  return tiltedDimensions(
+    o.dimensionsM.map((d, i) => d * o.transform.scale[i]) as Vec3,
+    o.tilt,
+  );
 }

@@ -2,13 +2,13 @@ import { forwardRef, useEffect, useMemo } from "react";
 import { BufferGeometry, Float32BufferAttribute, Group } from "three";
 import { assetById, type SceneObject } from "@house/contracts";
 
-import { colliderBlocks } from "@house/scene-engine";
+import { colliderBlocks, tiltedDimensions } from "@house/scene-engine";
 import { compoundExteriorPositions } from "./compoundOutline";
 
 /** Current collider exterior, mounted inside the furniture's live transform. */
 export const CollisionOutline = forwardRef<Group, { object: SceneObject }>(
   function CollisionOutline({ object }, ref) {
-    const [w, h, d] = object.dimensionsM;
+    const [w, h, d] = tiltedDimensions(object.dimensionsM, object.tilt);
     const boxes = colliderBlocks(object, assetById);
     const lines = useMemo(() => {
       const geometry = new BufferGeometry().setAttribute(

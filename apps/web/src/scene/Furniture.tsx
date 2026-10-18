@@ -14,7 +14,12 @@ import {
   Vector3,
 } from "three";
 import type { SceneObject, Transform } from "@house/contracts";
-import { snapToSurface, validateOp, yawOf } from "@house/scene-engine";
+import {
+  snapToSurface,
+  tiltedDimensions,
+  validateOp,
+  yawOf,
+} from "@house/scene-engine";
 import { DragSession, editor } from "../state/editor";
 import { Model } from "./Model";
 import { CollisionOutline } from "./CollisionOutline";
@@ -355,7 +360,8 @@ export const Furniture = memo(function Furniture({
       (e.target as Element).releasePointerCapture(e.pointerId);
   };
 
-  const dimensions = object.dimensionsM;
+  // Unscaled size after tilt; the group applies the transform scale.
+  const dimensions = tiltedDimensions(object.dimensionsM, object.tilt);
   const labelY = dimensions[1] + 0.2;
   return (
     <>

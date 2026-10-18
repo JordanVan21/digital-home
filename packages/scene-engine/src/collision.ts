@@ -1,6 +1,6 @@
-import type { AssetSpec, SceneObject } from "@house/contracts";
+import type { AssetSpec, SceneObject, Tilt } from "@house/contracts";
 import profiles from "./colliderProfiles.json";
-import { overlaps, rectangle, yawOf } from "./geometry";
+import { overlaps, rectangle, scaledDimensions, yawOf } from "./geometry";
 
 type Block = number[][];
 type Profile = { contentHash: string; boxes: Block[] };
@@ -13,17 +13,50 @@ const full: Block[] = [
     [1, 1, 1],
   ],
 ];
+const tilted = new WeakMap<Block[], Map<string, Block[]>>();
+/**
+ * Unit-box blocks turned with the model: +90° about X maps (x, y, z) to
+ * (x, 1 - z, y), then +90° about Z maps it to (1 - y, x, z). Cached per profile
+ * and tilt so downstream caches keyed by identity stay warm.
+ */
+function tiltBlocks(boxes: Block[], tilt: Tilt): Block[] {
+  const key = `${tilt.x % 4},${tilt.z % 4}`;
+  if (key === "0,0") return boxes;
+  let byTilt = tilted.get(boxes);
+  if (!byTilt) tilted.set(boxes, (byTilt = new Map()));
+  const cached = byTilt.get(key);
+  if (cached) return cached;
+  const turn = (b: Block[], axis: "x" | "z") =>
+    b.map(([min, max]) =>
+      axis === "x"
+        ? [
+            [min[0], 1 - max[2], min[1]],
+            [max[0], 1 - min[2], max[1]],
+          ]
+        : [
+            [1 - max[1], min[0], min[2]],
+            [1 - min[1], max[0], max[2]],
+          ],
+    );
+  let result = boxes;
+  for (let i = 0; i < tilt.x % 4; i++) result = turn(result, "x");
+  for (let i = 0; i < tilt.z % 4; i++) result = turn(result, "z");
+  byTilt.set(key, result);
+  return result;
+}
 export function colliderBlocks(
   o: SceneObject,
   assets: Readonly<Record<string, AssetSpec>>,
 ) {
   const profile = o.assetId ? baked[o.assetId] : undefined;
-  return profile && profile.contentHash === assets[o.assetId!]?.contentHash
-    ? profile.boxes
-    : full;
+  const boxes =
+    profile && profile.contentHash === assets[o.assetId!]?.contentHash
+      ? profile.boxes
+      : full;
+  return o.tilt ? tiltBlocks(boxes, o.tilt) : boxes;
 }
 function worldBlocks(o: SceneObject) {
-  const size = o.dimensionsM.map((n, i) => n * o.transform.scale[i]);
+  const size = scaledDimensions(o);
   const yaw = yawOf(o.transform.rotation),
     c = Math.cos(yaw),
     s = Math.sin(yaw);

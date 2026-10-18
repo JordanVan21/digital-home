@@ -2,7 +2,15 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { act } from "react";
 import ReactThreeTestRenderer from "@react-three/test-renderer";
-import { Group, LineBasicMaterial, LineSegments, Ray, Vector3 } from "three";
+import {
+  BoxGeometry,
+  Group,
+  LineBasicMaterial,
+  LineSegments,
+  Mesh,
+  Ray,
+  Vector3,
+} from "three";
 import { createFixtureScene, fixtureId } from "@house/contracts";
 import { createHistory, yawOf, topY } from "@house/scene-engine";
 import { editor } from "../state/editor";
@@ -625,3 +633,43 @@ it.each([false, true])(
     }
   },
 );
+describe("tilted decor", () => {
+  it("sizes the hit box and collider outline to the tilted size", async () => {
+    const base = editor.scene
+      .getState()
+      .scene.objects.find((o) => o.id === fixtureId(111))!;
+    const object = {
+      ...base,
+      dimensionsM: [0.18, 0.26, 0.03] as [number, number, number],
+      tilt: { x: 1, z: 0 },
+    };
+    editor.scene.setState({
+      scene: {
+        ...editor.scene.getState().scene,
+        objects: editor.scene
+          .getState()
+          .scene.objects.map((o) => (o.id === object.id ? object : o)),
+      },
+    });
+    editor.interaction.setState({ boundingBoxes: true });
+    renderer = await ReactThreeTestRenderer.create(
+      <Furniture object={object} />,
+    );
+    const hit = renderer.scene.findAll(
+      (n) =>
+        n.instance instanceof Mesh &&
+        n.instance.geometry instanceof BoxGeometry,
+    )[0].instance as Mesh<BoxGeometry>;
+    const { width, height, depth } = hit.geometry.parameters;
+    expect([width, height, depth]).toEqual([0.18, 0.03, 0.26]);
+    expect(hit.position.y).toBeCloseTo(0.015);
+    const outline = renderer.scene.findAll(
+      (n) => n.instance instanceof LineSegments,
+    )[0].instance as LineSegments;
+    outline.geometry.computeBoundingBox();
+    const size = outline.geometry.boundingBox!.getSize(new Vector3());
+    expect(size.x).toBeCloseTo(0.18, 6);
+    expect(size.y).toBeCloseTo(0.03, 6);
+    expect(size.z).toBeCloseTo(0.26, 6);
+  });
+});

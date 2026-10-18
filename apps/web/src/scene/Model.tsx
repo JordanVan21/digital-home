@@ -1,4 +1,5 @@
 import { Component, Suspense, useEffect, useMemo, type ReactNode } from "react";
+import { tiltedDimensions } from "@house/scene-engine";
 import { Html, useGLTF } from "@react-three/drei";
 import {
   Box3,
@@ -137,6 +138,31 @@ function GLB({
     </group>
   );
 }
+/**
+ * Decor tilt: turns the upright model about its centre in quarter turns (X
+ * first, then Z, as the engine does), re-based so it still rests on y = 0.
+ */
+function TiltFrame({
+  object,
+  children,
+}: {
+  object: SceneObject;
+  children: ReactNode;
+}) {
+  const tilt = object.tilt;
+  if (!tilt || (tilt.x % 4 === 0 && tilt.z % 4 === 0)) return <>{children}</>;
+  const height = object.dimensionsM[1];
+  const tiltedHeight = tiltedDimensions(object.dimensionsM, tilt)[1];
+  return (
+    <group
+      name="tilt-frame"
+      position={[0, tiltedHeight / 2, 0]}
+      rotation={[(tilt.x * Math.PI) / 2, 0, (tilt.z * Math.PI) / 2, "ZXY"]}
+    >
+      <group position={[0, -height / 2, 0]}>{children}</group>
+    </group>
+  );
+}
 export function Model({
   object,
   onShape,
@@ -145,12 +171,18 @@ export function Model({
   onShape?: (ready: boolean) => void;
 }) {
   if (!object.assetId || !assetById[object.assetId])
-    return <Proxy object={object} />;
+    return (
+      <TiltFrame object={object}>
+        <Proxy object={object} />
+      </TiltFrame>
+    );
   return (
-    <ModelBoundary key={object.assetId} fallback={<Proxy object={object} />}>
-      <Suspense fallback={<Proxy object={object} loading />}>
-        <GLB object={object} onShape={onShape} />
-      </Suspense>
-    </ModelBoundary>
+    <TiltFrame object={object}>
+      <ModelBoundary key={object.assetId} fallback={<Proxy object={object} />}>
+        <Suspense fallback={<Proxy object={object} loading />}>
+          <GLB object={object} onShape={onShape} />
+        </Suspense>
+      </ModelBoundary>
+    </TiltFrame>
   );
 }

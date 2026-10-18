@@ -125,6 +125,8 @@ Poly Haven imports preserve original PBR materials and meter scale, embed 1K tex
 26. Scan reproduction (`matching.ts`, ported from Jordan) maps each RoomPlan object to the best-fitting verified catalog asset, turning it 90° when width and depth fit swapped. Because models are fitted to the object's box, the error threshold is 25% (Jordan used 35%): a looser match renders visibly stretched, and a labelled placeholder reads better.
 27. Doors with `swing: "none"` (sliding) keep a 0.9 m walkway clear instead of a swing-sized zone. Otherwise test2's 2.5 m patio door would reserve 2.65 m, more than half the room.
 
+28. Decor tilt (quarter turns about the object's X, then Z) is part of the geometry, not just the look. `dimensionsM` stays the model's upright size; `scaledDimensions`, footprints and `colliderBlocks` use the tilted size, and compound collider blocks are rotated with the model (cached per profile and tilt, so collision BVHs and exposed-face lookups stay cached). The renderer turns the model about its centre and re-bases it on y = 0. There is no tilt control yet; test2's flat books use it.
+
 ## Verification and known gaps
 
 - The required build, test, typecheck, and lint commands pass. The test suite covers fixture parsing, shipped-file/license coverage, the fixture triangle budget, all operations, locks, rotated/concave bounds, SAT touching/overlap, occupancy exemptions, door clearance, inverse/history behavior, drag commit/rejection/cancel (including GPU-free tests of the actual canvas handler, live red feedback, spring-back, and no model rerenders during pointer movement), autosave debounce/serialization/retry, stale/concurrent saves, reset/recovery, and accessible locked controls.
