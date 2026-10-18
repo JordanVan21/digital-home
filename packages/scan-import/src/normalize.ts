@@ -172,9 +172,15 @@ export function normalizeRoomScan(input: unknown, options: NormalizeOptions = {}
     polygon = corners;
   } else {
     // Walls didn't form a loop: fall back to a floor outline from RoomPlan, if any.
-    const floorOutline = raw.floors.find((f) => (f.polygonCorners?.length ?? 0) >= 3)?.polygonCorners;
-    if (!floorOutline) throw new ScanRejectedError("Walls do not form a closed room. Rescan, overlapping where you started.");
-    polygon = floorOutline.map(([x, , z]): P2 => [x, z]);
+    const floor = raw.floors.find((f) => (f.polygonCorners?.length ?? 0) >= 3);
+    if (!floor?.polygonCorners) throw new ScanRejectedError("Walls do not form a closed room. Rescan, overlapping where you started.");
+    // RoomPlan floor corners are surface-local (verified on real scans): map them
+    // through the floor's column-major transform into the capture frame first.
+    const m = floor.transform;
+    polygon = floor.polygonCorners.map(([x, y, z]): P2 => [
+      m[0] * x + m[4] * y + m[8] * z + m[12],
+      m[2] * x + m[6] * y + m[10] * z + m[14],
+    ]);
     warnings.push("Wall outline was incomplete; used the scanned floor outline instead.");
   }
   if (selfIntersects(polygon)) throw new ScanRejectedError("Room outline crosses itself. Rescan the room.");

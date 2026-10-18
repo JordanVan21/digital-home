@@ -1,0 +1,19 @@
+[
+  { "name": "sofa that fits the scanned sofa envelope", "request": { "category": "sofa", "description": "", "targetDimensionsM": [2.2, 0.9, 0.95] }, "expect": { "status": "matched", "category": "sofa" } },
+  { "name": "styled sofa", "request": { "category": "sofa", "description": "comfortable sofa", "styles": ["contemporary"], "targetDimensionsM": [2.4, 1.0, 1.0] }, "expect": { "status": "matched", "category": "sofa" } },
+  { "name": "sofa far too small for the library sofa", "request": { "category": "sofa", "description": "", "targetDimensionsM": [1.0, 0.8, 0.5] }, "expect": { "status": "needs_generation" } },
+  { "name": "armchair", "request": { "category": "armchair", "description": "accent armchair", "targetDimensionsM": [0.85, 1.0, 0.95] }, "expect": { "status": "matched", "category": "armchair" } },
+  { "name": "scanned chair accepts an armchair", "request": { "category": "chair", "description": "", "targetDimensionsM": [0.8, 0.95, 0.9] }, "expect": { "status": "matched", "category": "armchair" } },
+  { "name": "round coffee table", "request": { "category": "coffee_table", "description": "round coffee table", "targetDimensionsM": [1.2, 0.45, 1.2] }, "expect": { "status": "matched", "category": "coffee_table" } },
+  { "name": "scanned table accepts a coffee table only loosely", "request": { "category": "table", "description": "", "targetDimensionsM": [1.2, 0.45, 1.2] }, "expect": { "status": "ambiguous", "category": "coffee_table" } },
+  { "name": "bookshelf", "request": { "category": "bookshelf", "description": "wooden display shelves", "materials": ["wood"], "targetDimensionsM": [1.0, 1.5, 0.35] }, "expect": { "status": "matched", "category": "bookshelf" } },
+  { "name": "scanned storage unit", "request": { "category": "storage", "description": "", "targetDimensionsM": [1.4, 1.4, 0.4] }, "expect": { "status": "ambiguous" } },
+  { "name": "credenza", "request": { "category": "credenza", "description": "wooden credenza cabinet", "targetDimensionsM": [2.2, 0.7, 0.5] }, "expect": { "status": "matched", "category": "credenza" } },
+  { "name": "plant", "request": { "category": "plant", "description": "potted plant", "targetDimensionsM": [0.6, 0.8, 0.6] }, "expect": { "status": "matched", "category": "plant" } },
+  { "name": "walnut credenza with unmatched labels is a weaker match", "request": { "category": "credenza", "description": "walnut mid-century credenza with sliding doors", "styles": ["mid-century"], "colors": ["walnut"], "materials": ["walnut"], "targetDimensionsM": [2.2, 0.7, 0.5] }, "expect": { "status": "ambiguous", "category": "credenza" } },
+  { "name": "bed has no library category", "request": { "category": "bed", "description": "queen bed", "targetDimensionsM": [1.6, 0.9, 2.1] }, "expect": { "status": "needs_generation" } },
+  { "name": "floor lamp has no library category", "request": { "category": "floor_lamp", "description": "arc floor lamp", "targetDimensionsM": [0.45, 1.6, 0.45] }, "expect": { "status": "needs_generation" } },
+  { "name": "dining table has no good library match", "request": { "category": "dining_table", "description": "dining table", "targetDimensionsM": [1.8, 0.75, 0.9] }, "expect": { "status": "needs_generation" } },
+  { "name": "unknown category never matches", "request": { "category": "hologram", "description": "", "targetDimensionsM": [0.5, 1, 0.5] }, "expect": { "status": "needs_generation" } },
+  { "name": "generation forbidden still reports needs_generation but not allowed", "request": { "category": "bed", "description": "", "targetDimensionsM": [1.6, 0.9, 2.1], "allowGeneration": false }, "expect": { "status": "needs_generation", "generationAllowed": false } }
+]

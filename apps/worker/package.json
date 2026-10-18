@@ -1,0 +1,23 @@
+{
+  "name": "@house/worker",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "start": "tsx --env-file=../../.env src/main.ts",
+    "once": "tsx --env-file=../../.env src/main.ts --once",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@house/asset-service": "workspace:*",
+    "@house/contracts": "workspace:*",
+    "@house/render-agent": "workspace:*",
+    "@house/scan-import": "workspace:*",
+    "@supabase/supabase-js": "^2.45.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "tsx": "^4.20.0",
+    "typescript": "^5.6.2"
+  }
+}
