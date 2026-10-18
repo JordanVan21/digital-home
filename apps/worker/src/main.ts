@@ -11,7 +11,10 @@
 // retrieval/builder agents; a Blender MCP endpoint on BLENDER_MCP_PORT (default 9876)
 // plus ALLOW_GENERATION=1 enables building new GLBs. Without them, matching is
 // deterministic and unmatched objects keep their measured placeholder box.
+import { spawn } from "node:child_process";
+import { existsSync } from "node:fs";
 import { mkdir } from "node:fs/promises";
+import { fileURLToPath } from "node:url";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { createClient } from "@supabase/supabase-js";
@@ -51,9 +54,29 @@ const modelName =
 const model = apiKey ? createModel({ provider, apiKey, model: modelName, reasoningEffort: "low" }) : null;
 
 const blenderPort = Number(process.env.BLENDER_MCP_PORT) || 9876;
-const blender = (await new BlenderMcpClient({ port: blenderPort, timeoutMs: 1500 }).ping())
-  ? new BlenderPool([new BlenderMcpClient({ port: blenderPort, timeoutMs: 120_000 })])
-  : null;
+const blender = await connectBlender();
+
+/** Use a running Blender MCP endpoint (GUI addon), else start headless Blender (killed on exit). */
+async function connectBlender(): Promise<BlenderPool | null> {
+  if (await new BlenderMcpClient({ port: blenderPort, timeoutMs: 1500 }).ping()) {
+    return new BlenderPool([new BlenderMcpClient({ port: blenderPort, timeoutMs: 120_000 })]);
+  }
+  const binary = process.env.BLENDER_BIN ?? "/Applications/Blender.app/Contents/MacOS/Blender";
+  if (!existsSync(binary)) return null;
+  const server = fileURLToPath(new URL("../../../packages/render-agent/blender/blender_server.py", import.meta.url));
+  const child = spawn(binary, ["-b", "--factory-startup", "-P", server, "--", "--port", String(blenderPort)], { stdio: "ignore" });
+  child.on("error", () => {});
+  for (const signal of ["exit", "SIGINT", "SIGTERM"] as const) {
+    process.on(signal, () => { child.kill(); if (signal !== "exit") process.exit(130); });
+  }
+  const probe = new BlenderMcpClient({ port: blenderPort, timeoutMs: 1500 });
+  for (let i = 0; i < 60 && child.exitCode === null; i++) {
+    if (await probe.ping()) return new BlenderPool([new BlenderMcpClient({ port: blenderPort, timeoutMs: 120_000 })]);
+    await new Promise((r) => setTimeout(r, 500));
+  }
+  child.kill();
+  return null;
+}
 
 const workDir = join(tmpdir(), "house-worker-assets");
 await mkdir(workDir, { recursive: true });
