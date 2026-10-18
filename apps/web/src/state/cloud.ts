@@ -75,7 +75,7 @@ export async function loadCloudRooms(): Promise<string[]> {
     if (!shell.success || !scene.success) continue;
     const definition: RoomDefinition = {
       roomId: row.id,
-      name: `Scan · ${row.name}`,
+      name: row.name,
       shell: shell.data,
       createScene: () => settleImportedScene(structuredClone(scene.data), shell.data),
     };
@@ -127,8 +127,59 @@ export function settleImportedScene(scene: SceneSpec, shell: RoomShell): SceneSp
   if (!result.ok) return draft;
   const placed = new Map(result.scene.objects.map((o) => [o.id, o]));
   // Anything the resolver could not place keeps its scanned position.
-  return { ...draft, objects: draft.objects.map((o) => placed.get(o.id) ?? o) };
+  return shrinkToFit(
+    { ...draft, objects: draft.objects.map((o) => placed.get(o.id) ?? o) },
+    ctx,
+  );
 }
+
+/**
+ * RoomPlan sizes are only accurate to a few centimetres: a wall-to-wall bathtub can
+ * come out a millimetre wider than its nook, and corner cabinets can overlap. Shrink
+ * each piece that is still invalid by up to 25%, nudging it if needed, until it fits.
+ */
+function shrinkToFit(scene: SceneSpec, ctx: SceneContext): SceneSpec {
+  let current = scene;
+  for (const original of scene.objects) {
+    const o = current.objects.find((p) => p.id === original.id)!;
+    if (o.locked || validateObject(current, o, ctx).ok) continue;
+    for (const factor of [0.99, 0.98, 0.96, 0.94, 0.92, 0.88, 0.84, 0.8, 0.75]) {
+      const smaller = {
+        ...o,
+        dimensionsM: o.dimensionsM.map((n) => n * factor) as typeof o.dimensionsM,
+      };
+      const trial = {
+        ...current,
+        objects: current.objects.map((p) => (p.id === o.id ? smaller : p)),
+      };
+      if (validateObject(trial, smaller, ctx).ok) {
+        current = trial;
+        break;
+      }
+      // Smaller may still need a nudge (a gap from the wall, out of a neighbour).
+      const others = { ...trial, objects: trial.objects.filter((p) => p.id !== o.id) };
+      const moved = resolveDraft(others, trial, ctx);
+      const fitted = moved.ok && moved.scene.objects.find((p) => p.id === o.id);
+      if (moved.ok && fitted && validateObject(moved.scene, fitted, ctx).ok) {
+        current = moved.scene;
+        break;
+      }
+    }
+  }
+  // One invalid piece blocks every Accept in the room, so a piece that still cannot
+  // fit (usually RoomPlan detecting one cabinet twice, or a box cut by a wall) is
+  // left out of the editable scene and named when the room opens.
+  const dropped = current.objects.filter((o) => !o.locked && !validateObject(current, o, ctx).ok);
+  if (dropped.length) {
+    droppedPieces.set(scene.roomId, dropped.map((o) => o.displayName));
+    const ids = new Set(dropped.map((o) => o.id));
+    current = { ...current, objects: current.objects.filter((o) => !ids.has(o.id)) };
+  }
+  return current;
+}
+
+/** Scanned pieces left out because they could not fit, by room id (for a notice). */
+export const droppedPieces = new Map<string, string[]>();
 
 export function settleCloudScene(scene: SceneSpec): SceneSpec {
   const shell = cloudShells.get(scene.roomId);

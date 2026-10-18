@@ -17,7 +17,12 @@ import { InspectorPanel } from "./components/InspectorPanel";
 import { AssetBrowser } from "./components/AssetBrowser";
 import { Button } from "./components/Button";
 import { readLastRoom, rememberRoom } from "./state/lastRoom";
-import { cloudRoomIds, watchCloudRoom, watchNewCloudRooms } from "./state/cloud";
+import {
+  cloudRoomIds,
+  droppedPieces,
+  watchCloudRoom,
+  watchNewCloudRooms,
+} from "./state/cloud";
 function Keyboard() {
   useEffect(() => {
     const cleanupHeightModifier = installHeightModifier(editor);
@@ -144,6 +149,15 @@ function useLiveCloudRoom() {
   const roomId = useStore(editor.room, (s) => s.room.roomId);
   useEffect(() => {
     if (!cloudRoomIds.has(roomId)) return;
+    const dropped = droppedPieces.get(roomId);
+    if (dropped?.length)
+      setTimeout(
+        () =>
+          editor.notify(
+            `Left out ${dropped.length} scanned piece${dropped.length === 1 ? "" : "s"} that overlapped walls or other pieces: ${dropped.join(", ")}.`,
+          ),
+        800,
+      );
     let waiting = false;
     const reloadWhenIdle = (revision: number) => {
       const current = editor.scene.getState().scene?.revision ?? -1;

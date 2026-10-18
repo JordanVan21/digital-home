@@ -163,7 +163,8 @@ kbd {
   align-items: center;
   gap: 12px;
   padding: 0 12px 0 22px;
-  z-index: 4;
+  /* Above the in-scene object toolbar (Html zIndexRange up to 5), so open menus cover it. */
+  z-index: 9;
 }
 .brand {
   display: flex;
@@ -224,6 +225,17 @@ kbd {
 }
 .room-switcher svg:last-child {
   color: var(--muted);
+}
+/* Keep the top bar on one line: long scan names truncate instead of wrapping. */
+.room-switcher,
+.primary-pill {
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+.room-switcher span {
+  max-width: 230px;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 .history-buttons {
   display: flex;
@@ -286,7 +298,7 @@ kbd {
 .room-list {
   left: 0;
   right: auto;
-  width: 250px;
+  width: 300px;
 }
 .room-list .room-current {
   margin-left: auto;

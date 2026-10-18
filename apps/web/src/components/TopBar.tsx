@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { useStore } from "zustand";
 import {
+  ScanLine,
   Check,
   ChevronDown,
   Ellipsis,
@@ -17,7 +18,7 @@ import { editor } from "../state/editor";
 import { rooms } from "../state/rooms";
 import { Button } from "./Button";
 import { CloudAccount } from "./CloudAccount";
-import { cloudRoomsVersion } from "../state/cloud";
+import { cloudRoomIds, cloudRoomsVersion } from "../state/cloud";
 
 export const searchInputId = "global-search";
 
@@ -98,6 +99,7 @@ function RoomSwitcher({ disabled }: { disabled: boolean }) {
         aria-label={`Switch room (current: ${current.name})`}
         aria-expanded={open}
         disabled={disabled}
+        title={current.name}
         onClick={() => setOpen(!open)}
       >
         <House size={16} />
@@ -116,7 +118,7 @@ function RoomSwitcher({ disabled }: { disabled: boolean }) {
                 void editor.switchRoom(r.roomId);
               }}
             >
-              <House size={14} />
+              {cloudRoomIds.has(r.roomId) ? <ScanLine size={14} /> : <House size={14} />}
               <span>{r.name}</span>
               {r === current && <Check size={14} className="room-current" />}
             </button>
