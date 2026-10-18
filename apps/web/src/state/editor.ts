@@ -35,6 +35,7 @@ import {
   type SaveState,
   type SceneRepository,
 } from "./repository";
+import { roomById } from "./rooms";
 export type Tool = "select" | "move" | "rotate";
 export type Interaction = {
   selectedId: string | null;
@@ -149,7 +150,7 @@ export function createEditor(
   const room = createStore<{ room: RoomDefinition }>(() => ({
     room: initialRoom,
   }));
-  const sceneContext = contextFor(initialRoom);
+  let sceneContext = contextFor(initialRoom);
   const context = () => sceneContext;
   const scene = createStore<{ scene: SceneSpec; ready: boolean }>(() => ({
     scene: initialRoom.createScene(),
@@ -606,7 +607,52 @@ export function createEditor(
     autosave?.schedule();
     notify("Room reset to the original arrangement.");
   };
-  const load = async () => {
+  /** Points the editor at another room; the caller loads its scene. */
+  const enterRoom = (next: RoomDefinition) => {
+    room.setState({ room: next });
+    sceneContext = contextFor(next);
+    scene.setState({ scene: next.createScene(), ready: !repository });
+    history.setState({ history: createHistory() });
+    draft.setState(emptyDraft());
+    interaction.setState({
+      selectedId: null,
+      hoveredId: null,
+      dragging: false,
+      browser: false,
+      replacing: false,
+    });
+  };
+  /**
+   * Opens another room. Suggestions must be accepted or discarded first, and
+   * the current room's pending save completes before leaving it.
+   */
+  const switchRoom = async (roomId: string): Promise<boolean> => {
+    const next = roomById(roomId);
+    if (!next || interaction.getState().dragging) return false;
+    if (next === room.getState().room) return true;
+    if (draft.getState().scene) {
+      notify("Accept or discard your suggestions before switching rooms.");
+      return false;
+    }
+    if (autosave) {
+      await autosave.whenIdle();
+      await autosave.flush();
+      if (autosave.isPending()) {
+        notify("This room hasn't saved yet. Retry the save, then switch.");
+        return false;
+      }
+      autosave.dispose();
+      autosave = undefined;
+    }
+    enterRoom(next);
+    await load();
+    return true;
+  };
+  const load = async (roomId?: string) => {
+    if (roomId && roomId !== room.getState().room.roomId) {
+      const next = roomById(roomId);
+      if (next) enterRoom(next);
+    }
     if (!repository) return;
     try {
       const loaded = await repository.load(room.getState().room.roomId);
@@ -660,6 +706,7 @@ export function createEditor(
     chooseAsset,
     reset,
     load,
+    switchRoom,
     retry: () => (autosave ? autosave.retry() : void load()),
     flush: () => autosave?.flush(),
     pending: () => autosave?.isPending() ?? false,

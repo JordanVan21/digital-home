@@ -114,6 +114,7 @@ export function wallFootprints(room: RoomShell): Point[][] {
     ),
   );
 }
+export const SLIDING_DOOR_WALKWAY_M = 0.9;
 export function doorClearances(room: RoomShell): Point[][] {
   return room.openings
     .filter((o) => o.kind === "door")
@@ -134,7 +135,9 @@ export function doorClearances(room: RoomShell): Point[][] {
       )
         ? 1
         : -1;
-      const depth = o.widthM + 0.15;
+      // A swinging door needs its arc clear; a sliding door only a walkway.
+      const depth =
+        o.swing === "none" ? SLIDING_DOOR_WALKWAY_M : o.widthM + 0.15;
       return rectangle(
         [
           mid[0] - ((uz * depth) / 2) * sign,

@@ -1,16 +1,17 @@
 // @vitest-environment jsdom
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import {
+  assetById,
   catalog,
   fixtureId,
   livingRoom,
-  roomById,
-  rooms,
+  SceneSpecSchema,
   type RoomDefinition,
 } from "@house/contracts";
 import { validateObject } from "@house/scene-engine";
-import { createEditor } from "./editor";
+import { contextFor, createEditor } from "./editor";
 import { LocalStorageSceneRepository } from "./repository";
+import { roomById, rooms } from "./rooms";
 
 /** The living room moved 10 m along X, under new IDs: a room the old origin is outside of. */
 const shiftedRoom: RoomDefinition = (() => {
@@ -72,6 +73,60 @@ describe("room registry", () => {
     }
     expect(roomById(fixtureId(404))).toBeUndefined();
   });
+  it("offers the living room, test2, the demo studio and the scanned studio", () => {
+    expect(rooms.map((r) => r.name)).toEqual([
+      "Living room",
+      "test2 · warm living room",
+      "Demo studio",
+      "Scanned studio",
+    ]);
+    expect(new Set(rooms.map((r) => r.roomId)).size).toBe(rooms.length);
+  });
+  it("starts every room from a valid scene whose assets and parents exist", () => {
+    for (const room of rooms) {
+      const scene = room.createScene();
+      expect(SceneSpecSchema.parse(scene)).toBeTruthy();
+      const ids = new Set(scene.objects.map((o) => o.id));
+      for (const o of scene.objects) {
+        if (o.assetId) expect(assetById[o.assetId], o.displayName).toBeTruthy();
+        const parent = o.placement?.parentId;
+        if (parent)
+          expect(
+            o.placement?.support === "wall"
+              ? room.shell.walls.some((w) => w.id === parent)
+              : ids.has(parent),
+            o.displayName,
+          ).toBe(true);
+      }
+      // A fresh copy each time: editing one scene never leaks into the next.
+      expect(room.createScene()).not.toBe(scene);
+      expect(room.createScene().objects[0]).not.toBe(scene.objects[0]);
+    }
+  });
+  it("reproduces the scan as catalog matches plus labelled placeholders", () => {
+    const scan = roomById(rooms[3].roomId)!.createScene();
+    expect(scan.objects).toHaveLength(7);
+    expect(
+      scan.objects.every((o) => o.source === "roomplan_approximation"),
+    ).toBe(true);
+    expect(
+      scan.objects
+        .filter((o) => o.assetId === null)
+        .map((o) => o.category)
+        .sort(),
+    ).toEqual(["fireplace", "storage"]);
+  });
+  it("keeps test2's 45 pieces, tilts, finishes and appearance", () => {
+    const test2 = rooms[1].createScene();
+    expect(test2.objects).toHaveLength(45);
+    expect(test2.objects.filter((o) => o.tilt)).toHaveLength(7);
+    expect(test2.objects.filter((o) => o.materialOverrides)).toHaveLength(19);
+    expect(test2.appearance).toEqual({
+      wallColor: "#efe6da",
+      floorMaterial: "honey",
+    });
+    expect(rooms[1].photoCamera?.fov).toBe(32);
+  });
 });
 
 describe("an editor bound to a room", () => {
@@ -129,5 +184,99 @@ describe("an editor bound to a room", () => {
     await expect(repo.load(fixtureId(404))).rejects.toMatchObject({
       code: "CORRUPT_DATA",
     });
+  });
+});
+
+describe("switching rooms", () => {
+  const test2 = () => rooms[1];
+  it("loads the other room with its own shell and clears history and selection", async () => {
+    const storage = memoryStorage(),
+      repo = new LocalStorageSceneRepository(storage);
+    const e = createEditor(repo);
+    await e.load();
+    const sofa = e.working().objects.find((o) => o.category === "sofa")!;
+    e.commit({ type: "setLock", objectId: sofa.id, locked: true });
+    e.select(sofa.id);
+    await e.switchRoom(test2().roomId);
+    expect(e.room.getState().room).toBe(test2());
+    expect(e.context().room).toBe(test2().shell);
+    expect(e.scene.getState().scene.roomId).toBe(test2().roomId);
+    expect(e.scene.getState().ready).toBe(true);
+    expect(e.history.getState().history.undo).toHaveLength(0);
+    expect(e.interaction.getState().selectedId).toBeNull();
+    // The previous room's pending edit was saved before leaving.
+    expect(
+      (await repo.load(livingRoom.roomId)).objects.find((o) => o.id === sofa.id)
+        ?.locked,
+    ).toBe(true);
+    await e.switchRoom(livingRoom.roomId);
+    expect(e.working().objects.find((o) => o.id === sofa.id)?.locked).toBe(
+      true,
+    );
+    e.dispose();
+  });
+  it("keeps the room while there are unaccepted suggestions", async () => {
+    const e = createEditor(new LocalStorageSceneRepository(memoryStorage()));
+    await e.load();
+    const sofa = e.working().objects.find((o) => o.category === "sofa")!;
+    e.suggest({ type: "delete", objectId: sofa.id });
+    expect(await e.switchRoom(test2().roomId)).toBe(false);
+    expect(e.room.getState().room).toBe(livingRoom);
+    expect(e.interaction.getState().toast).toMatch(/Accept or discard/);
+    e.dispose();
+  });
+});
+
+describe("Jordan's fixtures in this engine's conventions", () => {
+  const imported = () => rooms.slice(1);
+  it("puts each wall's inner face on the floor edge, centreline outside", () => {
+    for (const room of imported()) {
+      const floor = room.shell.floor.polygonXZ;
+      for (const w of room.shell.walls) {
+        const [ax, az] = w.fromXZ,
+          [bx, bz] = w.toXZ;
+        const len = Math.hypot(bx - ax, bz - az);
+        // Distance from the wall centreline to the nearest floor edge is half its thickness.
+        const nearest = Math.min(
+          ...floor.map((p, i) => {
+            const q = floor[(i + 1) % floor.length];
+            const mx = (p[0] + q[0]) / 2,
+              mz = (p[1] + q[1]) / 2;
+            return Math.abs(
+              ((bx - ax) * (az - mz) - (ax - mx) * (bz - az)) / len,
+            );
+          }),
+        );
+        expect(nearest, room.name).toBeCloseTo(w.thicknessM / 2, 6);
+      }
+    }
+  });
+  it("keeps openings at the same place along their walls", () => {
+    const test2 = rooms[1].shell;
+    const door = test2.openings.find((o) => o.kind === "door")!;
+    const wall = test2.walls.find((w) => w.id === door.wallId)!;
+    // Wall starts half a neighbour's thickness beyond the floor corner.
+    // Authored 1.05 m from the floor corner; the wall now starts 0.1 m before it.
+    expect(door.offsetM).toBeCloseTo(1.05 + 0.1, 6);
+    expect(
+      Math.hypot(wall.toXZ[0] - wall.fromXZ[0], wall.toXZ[1] - wall.fromXZ[1]),
+    ).toBeCloseTo(5.0, 6);
+  });
+  it("leaves flush furniture clear of the walls and hangs wall art on a wall", () => {
+    for (const room of imported()) {
+      const scene = room.createScene(),
+        ctx = contextFor(room);
+      for (const o of scene.objects) {
+        const r = validateObject(scene, o, ctx);
+        if (!r.ok)
+          expect(r.error.message, `${room.name}: ${o.displayName}`).not.toMatch(
+            /space from the wall|inside the room|supporting wall/,
+          );
+        if (o.placement?.support === "wall")
+          expect(room.shell.walls.map((w) => w.id)).toContain(
+            o.placement.parentId,
+          );
+      }
+    }
   });
 });

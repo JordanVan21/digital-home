@@ -1,0 +1,484 @@
+{
+  "schemaVersion": 1,
+  "name": "Demo studio (4 × 5 m)",
+  "shell": {
+    "id": "5e110000-0000-4000-8000-000000000001",
+    "sourceScanId": "5ca70000-0000-4000-8000-000000000001",
+    "coordinateVersion": 1,
+    "floor": {
+      "polygonXZ": [
+        [
+          -2,
+          -2.5
+        ],
+        [
+          -2,
+          2.5
+        ],
+        [
+          2,
+          2.5
+        ],
+        [
+          2,
+          -2.5
+        ]
+      ],
+      "elevationY": 0
+    },
+    "walls": [
+      {
+        "id": "3a110000-0000-4000-8000-000000000001",
+        "fromXZ": [
+          -2.06,
+          -2.56
+        ],
+        "toXZ": [
+          -2.06,
+          2.56
+        ],
+        "heightM": 2.6,
+        "thicknessM": 0.12
+      },
+      {
+        "id": "3a110000-0000-4000-8000-000000000002",
+        "fromXZ": [
+          -2.06,
+          2.56
+        ],
+        "toXZ": [
+          2.06,
+          2.56
+        ],
+        "heightM": 2.6,
+        "thicknessM": 0.12
+      },
+      {
+        "id": "3a110000-0000-4000-8000-000000000003",
+        "fromXZ": [
+          2.06,
+          2.56
+        ],
+        "toXZ": [
+          2.06,
+          -2.56
+        ],
+        "heightM": 2.6,
+        "thicknessM": 0.12
+      },
+      {
+        "id": "3a110000-0000-4000-8000-000000000004",
+        "fromXZ": [
+          2.06,
+          -2.56
+        ],
+        "toXZ": [
+          -2.06,
+          -2.56
+        ],
+        "heightM": 2.6,
+        "thicknessM": 0.12
+      }
+    ],
+    "openings": [
+      {
+        "id": "09e70000-0000-4000-8000-000000000001",
+        "wallId": "3a110000-0000-4000-8000-000000000002",
+        "kind": "door",
+        "offsetM": 0.36,
+        "widthM": 0.9,
+        "bottomM": 0,
+        "heightM": 2.05,
+        "swing": "left"
+      },
+      {
+        "id": "09e70000-0000-4000-8000-000000000002",
+        "wallId": "3a110000-0000-4000-8000-000000000004",
+        "kind": "window",
+        "offsetM": 1.26,
+        "widthM": 1.4,
+        "bottomM": 0.9,
+        "heightM": 1.3
+      },
+      {
+        "id": "09e70000-0000-4000-8000-000000000003",
+        "wallId": "3a110000-0000-4000-8000-000000000003",
+        "kind": "window",
+        "offsetM": 1.06,
+        "widthM": 1.2,
+        "bottomM": 0.9,
+        "heightM": 1.3
+      },
+      {
+        "id": "09e70000-0000-4000-8000-000000000004",
+        "wallId": "3a110000-0000-4000-8000-000000000001",
+        "kind": "opening",
+        "offsetM": 0.46,
+        "widthM": 1,
+        "bottomM": 0,
+        "heightM": 2.1,
+        "swing": "none"
+      }
+    ],
+    "ceilingHeightM": 2.6
+  },
+  "scene": {
+    "schemaVersion": 1,
+    "id": "5ce70000-0000-4000-8000-000000000001",
+    "roomId": "400a0000-0000-4000-8000-000000000001",
+    "shellId": "5e110000-0000-4000-8000-000000000001",
+    "revision": 0,
+    "lightingPreset": "warm-interior",
+    "updatedAt": "2026-10-17T12:00:00.000Z",
+    "objects": [
+      {
+        "id": "0b1ec700-0000-4000-8000-000000000001",
+        "assetId": "a55e7000-0000-4000-8000-000000000001",
+        "category": "sofa",
+        "transform": {
+          "position": [
+            1.641,
+            0,
+            -0.6
+          ],
+          "rotation": [
+            0,
+            -0.707106781186547,
+            0,
+            0.707106781186548
+          ],
+          "scale": [
+            1,
+            1,
+            1
+          ]
+        },
+        "dimensionsM": [
+          1.571,
+          0.797,
+          0.658
+        ],
+        "locked": false,
+        "source": "roomplan_approximation",
+        "displayName": "Sofa",
+        "ownership": "existing",
+        "placement": {
+          "support": "floor"
+        }
+      },
+      {
+        "id": "0b1ec700-0000-4000-8000-000000000002",
+        "assetId": "a55e7000-0000-4000-8000-000000000008",
+        "category": "rug",
+        "transform": {
+          "position": [
+            1,
+            0,
+            -0.6
+          ],
+          "rotation": [
+            0,
+            0.707106781186547,
+            0,
+            0.707106781186548
+          ],
+          "scale": [
+            1,
+            1,
+            1
+          ]
+        },
+        "dimensionsM": [
+          2.4,
+          0.012,
+          1.7
+        ],
+        "locked": false,
+        "source": "catalog",
+        "displayName": "Rug",
+        "placement": {
+          "support": "floor"
+        }
+      },
+      {
+        "id": "0b1ec700-0000-4000-8000-000000000003",
+        "assetId": "a55e7000-0000-4000-8000-000000000003",
+        "category": "coffee-table",
+        "transform": {
+          "position": [
+            0.75,
+            0,
+            -0.6
+          ],
+          "rotation": [
+            0,
+            0.707106781186547,
+            0,
+            0.707106781186548
+          ],
+          "scale": [
+            1,
+            1,
+            1
+          ]
+        },
+        "dimensionsM": [
+          1.202,
+          0.39,
+          0.6
+        ],
+        "locked": false,
+        "source": "roomplan_approximation",
+        "displayName": "Coffee table",
+        "ownership": "existing",
+        "placement": {
+          "support": "floor"
+        }
+      },
+      {
+        "id": "0b1ec700-0000-4000-8000-000000000004",
+        "assetId": "a55e7000-0000-4000-8000-000000000004",
+        "category": "desk",
+        "transform": {
+          "position": [
+            0,
+            0,
+            -2.117
+          ],
+          "rotation": [
+            0,
+            0,
+            0,
+            1
+          ],
+          "scale": [
+            1,
+            1,
+            1
+          ]
+        },
+        "dimensionsM": [
+          1.134,
+          0.8,
+          0.706
+        ],
+        "locked": false,
+        "source": "roomplan_approximation",
+        "displayName": "Desk",
+        "ownership": "existing",
+        "placement": {
+          "support": "floor"
+        }
+      },
+      {
+        "id": "0b1ec700-0000-4000-8000-000000000005",
+        "assetId": "a55e7000-0000-4000-8000-000000000005",
+        "category": "chair",
+        "transform": {
+          "position": [
+            0,
+            0,
+            -1.412
+          ],
+          "rotation": [
+            0,
+            1,
+            0,
+            0
+          ],
+          "scale": [
+            1,
+            1,
+            1
+          ]
+        },
+        "dimensionsM": [
+          0.434,
+          0.973,
+          0.576
+        ],
+        "locked": false,
+        "source": "roomplan_approximation",
+        "displayName": "Desk chair",
+        "ownership": "existing",
+        "placement": {
+          "support": "floor"
+        }
+      },
+      {
+        "id": "0b1ec700-0000-4000-8000-000000000006",
+        "assetId": "a55e7000-0000-4000-8000-000000000006",
+        "category": "bookshelf",
+        "transform": {
+          "position": [
+            -1.7845,
+            0,
+            0.6
+          ],
+          "rotation": [
+            0,
+            0.707106781186547,
+            0,
+            0.707106781186548
+          ],
+          "scale": [
+            1,
+            1,
+            1
+          ]
+        },
+        "dimensionsM": [
+          1.078,
+          1.556,
+          0.371
+        ],
+        "locked": false,
+        "source": "roomplan_approximation",
+        "displayName": "Bookshelf",
+        "ownership": "existing",
+        "placement": {
+          "support": "floor"
+        }
+      },
+      {
+        "id": "0b1ec700-0000-4000-8000-000000000007",
+        "assetId": "a55e7000-0000-4000-8000-000000000007",
+        "category": "lamp",
+        "transform": {
+          "position": [
+            0.35,
+            0.8,
+            -2.117
+          ],
+          "rotation": [
+            0,
+            0,
+            0,
+            1
+          ],
+          "scale": [
+            1,
+            1,
+            1
+          ]
+        },
+        "dimensionsM": [
+          0.202,
+          0.893,
+          0.614
+        ],
+        "locked": false,
+        "source": "catalog",
+        "displayName": "Desk lamp",
+        "placement": {
+          "support": "object",
+          "parentId": "0b1ec700-0000-4000-8000-000000000004"
+        }
+      },
+      {
+        "id": "0b1ec700-0000-4000-8000-000000000008",
+        "assetId": "a55e7000-0000-4000-8000-000000000016",
+        "category": "wall-art",
+        "transform": {
+          "position": [
+            1.99,
+            1.3,
+            -0.6
+          ],
+          "rotation": [
+            0,
+            -0.707106781186547,
+            0,
+            0.707106781186548
+          ],
+          "scale": [
+            1,
+            1,
+            1
+          ]
+        },
+        "dimensionsM": [
+          0.603,
+          0.464,
+          0.02
+        ],
+        "locked": false,
+        "source": "catalog",
+        "displayName": "Gilded-frame painting",
+        "placement": {
+          "support": "wall",
+          "parentId": "3a110000-0000-4000-8000-000000000003"
+        }
+      },
+      {
+        "id": "0b1ec700-0000-4000-8000-000000000009",
+        "assetId": "a55e7000-0000-4000-8000-000000000010",
+        "category": "plant",
+        "transform": {
+          "position": [
+            1.55,
+            0,
+            2.05
+          ],
+          "rotation": [
+            0,
+            0,
+            0,
+            1
+          ],
+          "scale": [
+            1,
+            1,
+            1
+          ]
+        },
+        "dimensionsM": [
+          0.701,
+          0.841,
+          0.657
+        ],
+        "locked": false,
+        "source": "catalog",
+        "displayName": "Potted plant",
+        "placement": {
+          "support": "floor"
+        }
+      },
+      {
+        "id": "0b1ec700-0000-4000-8000-000000000010",
+        "assetId": null,
+        "category": "storage",
+        "transform": {
+          "position": [
+            0.6,
+            0,
+            2.245
+          ],
+          "rotation": [
+            0,
+            1,
+            0,
+            0
+          ],
+          "scale": [
+            1,
+            1,
+            1
+          ]
+        },
+        "dimensionsM": [
+          0.9,
+          0.8,
+          0.45
+        ],
+        "locked": false,
+        "source": "roomplan_approximation",
+        "displayName": "Approximate storage",
+        "ownership": "existing",
+        "placement": {
+          "support": "floor"
+        }
+      }
+    ]
+  }
+}

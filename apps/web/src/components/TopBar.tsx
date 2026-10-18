@@ -14,6 +14,7 @@ import {
   Undo2,
 } from "lucide-react";
 import { editor } from "../state/editor";
+import { rooms } from "../state/rooms";
 import { Button } from "./Button";
 
 export const searchInputId = "global-search";
@@ -53,6 +54,63 @@ function SaveStatus() {
       )}{" "}
       {ready ? (status === "saving" ? "Saving…" : "Saved") : "Loading…"}
     </span>
+  );
+}
+
+function RoomSwitcher({ disabled }: { disabled: boolean }) {
+  const [open, setOpen] = useState(false);
+  const current = useStore(editor.room, (s) => s.room);
+  const container = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    if (!open) return;
+    const close = (e: PointerEvent | KeyboardEvent) => {
+      if (
+        e instanceof KeyboardEvent
+          ? e.key === "Escape"
+          : !container.current?.contains(e.target as Node)
+      )
+        setOpen(false);
+    };
+    window.addEventListener("pointerdown", close);
+    window.addEventListener("keydown", close);
+    return () => {
+      window.removeEventListener("pointerdown", close);
+      window.removeEventListener("keydown", close);
+    };
+  }, [open]);
+  return (
+    <div className="menu-container" ref={container}>
+      <button
+        className="room-switcher glass-inset"
+        aria-label={`Switch room (current: ${current.name})`}
+        aria-expanded={open}
+        disabled={disabled}
+        onClick={() => setOpen(!open)}
+      >
+        <House size={16} />
+        <span>{current.name}</span>
+        <ChevronDown size={15} />
+      </button>
+      {open && (
+        <div className="room-menu room-list glass" role="menu">
+          {rooms.map((r) => (
+            <button
+              key={r.roomId}
+              role="menuitemradio"
+              aria-checked={r === current}
+              onClick={() => {
+                setOpen(false);
+                void editor.switchRoom(r.roomId);
+              }}
+            >
+              <House size={14} />
+              <span>{r.name}</span>
+              {r === current && <Check size={14} className="room-current" />}
+            </button>
+          ))}
+        </div>
+      )}
+    </div>
   );
 }
 
@@ -131,12 +189,7 @@ export function TopBar() {
         <kbd>⌘ K</kbd>
       </label>
       <span className="spacer" />
-      {/* Visual only: a single fixture room for now. */}
-      <button className="room-switcher glass-inset" aria-label="Switch room">
-        <House size={16} />
-        <span>Living room</span>
-        <ChevronDown size={15} />
-      </button>
+      <RoomSwitcher disabled={locked} />
       <div className="history-buttons">
         <Button
           label="Undo (⌘/Ctrl+Z)"

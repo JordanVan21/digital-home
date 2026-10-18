@@ -72,11 +72,21 @@ export const WallSchema = z
 export const OpeningSchema = z.object({
   id: UUIDSchema,
   wallId: UUIDSchema,
-  kind: z.enum(["door", "window"]),
+  // Additive: "opening" is RoomPlan's doorless passage.
+  kind: z.enum(["door", "window", "opening"]),
   offsetM: finite.nonnegative(),
   widthM: positive,
   bottomM: finite.nonnegative(),
   heightM: positive,
+  /** Additive: door swing side when known. */
+  swing: z.enum(["left", "right", "none"]).optional(),
+  /** Additive: glazed doors and windows (rendering only). */
+  glazing: z
+    .object({
+      panels: z.number().int().min(1).max(8),
+      frameColor: z.string().optional(),
+    })
+    .optional(),
 });
 export const RoomShellSchema = z
   .object({
@@ -117,6 +127,36 @@ export const MaterialOverridesSchema = z.record(
     roughness: finite.min(0).max(1).optional(),
   }),
 );
+export const RoomPlanCategorySchema = z.enum([
+  "storage",
+  "refrigerator",
+  "stove",
+  "bed",
+  "sink",
+  "washerDryer",
+  "toilet",
+  "bathtub",
+  "oven",
+  "dishwasher",
+  "table",
+  "sofa",
+  "chair",
+  "fireplace",
+  "television",
+  "stairs",
+]);
+/** Additive: provenance of an object reproduced from a RoomPlan scan. */
+export const ScanMatchSchema = z.object({
+  roomPlanCategory: RoomPlanCategorySchema,
+  scanDimensionsM: dimensions,
+  /** Relative-error fit in [0, 1]; 1 is exact. Not a calibrated probability. */
+  score: finite.min(0).max(1),
+});
+/** Additive: quarter turns about the object's own X and Z axes (books lying flat, frames). */
+export const TiltSchema = z.object({
+  x: z.number().int().min(0).max(3),
+  z: z.number().int().min(0).max(3),
+});
 export const SceneObjectSchema = z.object({
   id: UUIDSchema,
   assetId: UUIDSchema.nullable(),
@@ -136,6 +176,14 @@ export const SceneObjectSchema = z.object({
       parentId: UUIDSchema.optional(),
     })
     .optional(),
+  tilt: TiltSchema.optional(),
+  scanMatch: ScanMatchSchema.optional(),
+});
+/** Additive: per-scene paint and floor finish. Never shell geometry. */
+export const SceneAppearanceSchema = z.object({
+  wallColor: z.string().optional(),
+  trimColor: z.string().optional(),
+  floorMaterial: z.string().optional(),
 });
 export const SceneSpecSchema = z
   .object({
@@ -146,6 +194,7 @@ export const SceneSpecSchema = z
     revision: z.number().int().nonnegative(),
     objects: z.array(SceneObjectSchema),
     lightingPreset: z.string(),
+    appearance: SceneAppearanceSchema.optional(),
     updatedAt: z.string().datetime(),
   })
   .refine(
@@ -205,6 +254,32 @@ export const SceneOpSchema = z.discriminatedUnion("type", [
     locked: z.boolean(),
   }),
 ]);
+/** A loadable room: its shell and starting scene, plus fixture-only extras. */
+export const RoomFixtureSchema = z.object({
+  schemaVersion: z.literal(1),
+  name: z.string(),
+  shell: RoomShellSchema,
+  scene: SceneSpecSchema,
+  /** Camera matching a reference photo. */
+  photoCamera: z
+    .object({ position: Vec3Schema, target: Vec3Schema, fov: positive })
+    .optional(),
+  /** Path of the reference image this scene reproduces. */
+  referenceImage: z.string().optional(),
+});
+export const ScanObjectSchema = z.object({
+  scanObjectId: UUIDSchema,
+  category: RoomPlanCategorySchema,
+  dimensionsM: dimensions,
+  transform: TransformSchema,
+});
+export const ScanFixtureSchema = z.object({
+  schemaVersion: z.literal(1),
+  name: z.string(),
+  roomId: UUIDSchema,
+  shell: RoomShellSchema,
+  scanObjects: z.array(ScanObjectSchema),
+});
 export type Vec3 = z.infer<typeof Vec3Schema>;
 export type Quat = z.infer<typeof QuatSchema>;
 export type Transform = z.infer<typeof TransformSchema>;
@@ -217,3 +292,10 @@ export type SceneObject = z.infer<typeof SceneObjectSchema>;
 export type SceneSpec = z.infer<typeof SceneSpecSchema>;
 export type AssetSpec = z.infer<typeof AssetSpecSchema>;
 export type SceneOp = z.infer<typeof SceneOpSchema>;
+export type Tilt = z.infer<typeof TiltSchema>;
+export type ScanMatch = z.infer<typeof ScanMatchSchema>;
+export type RoomPlanCategory = z.infer<typeof RoomPlanCategorySchema>;
+export type SceneAppearance = z.infer<typeof SceneAppearanceSchema>;
+export type RoomFixture = z.infer<typeof RoomFixtureSchema>;
+export type ScanObject = z.infer<typeof ScanObjectSchema>;
+export type ScanFixture = z.infer<typeof ScanFixtureSchema>;

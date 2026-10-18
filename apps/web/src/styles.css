@@ -270,6 +270,15 @@ kbd {
 .room-menu button:hover {
   background: rgba(255, 255, 255, 0.7);
 }
+.room-list {
+  left: 0;
+  right: auto;
+  width: 250px;
+}
+.room-list .room-current {
+  margin-left: auto;
+  color: var(--accent);
+}
 .room-menu p {
   padding: 8px 10px 4px;
   font-size: 11px;

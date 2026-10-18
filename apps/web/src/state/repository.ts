@@ -1,9 +1,9 @@
 import {
   SceneSpecSchema,
-  roomById,
   type RoomDefinition,
   type SceneSpec,
 } from "@house/contracts";
+import { roomById } from "./rooms";
 export interface SceneRepository {
   load(roomId: string): Promise<SceneSpec>;
   save(scene: SceneSpec, baseRevision: number): Promise<{ revision: number }>;

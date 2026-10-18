@@ -8,3 +8,4 @@ export * from "./support";
 export * from "./collision";
 
 export * from "./assembly";
+export * from "./matching";

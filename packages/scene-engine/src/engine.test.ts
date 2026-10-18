@@ -17,7 +17,7 @@ import {
   validateOp,
   type SceneContext,
 } from "./operations";
-import { insidePolygon, overlaps, rectangle } from "./geometry";
+import { doorClearances, insidePolygon, overlaps, rectangle } from "./geometry";
 import { createHistory, record, traverseHistory } from "./history";
 const ctx: SceneContext = {
   room: roomShell,
@@ -203,6 +203,32 @@ describe("operation validation and purity", () => {
         { type: "delete", objectId: parent.id },
       ),
     ).toBe("INVALID_SUPPORT");
+  });
+  it("keeps a swing-sized zone for swinging doors and a walkway for sliding ones", () => {
+    const door = roomShell.openings.find((o) => o.kind === "door")!;
+    const depth = (shell: typeof roomShell) => {
+      const zone = doorClearances(shell)[0];
+      const [a, b, c] = zone;
+      return Math.min(
+        Math.hypot(b[0] - a[0], b[1] - a[1]),
+        Math.hypot(c[0] - b[0], c[1] - b[1]),
+      );
+    };
+    const swinging = depth(roomShell);
+    expect(swinging).toBeCloseTo(door.widthM + 0.1, 6);
+    const sliding = {
+      ...roomShell,
+      openings: roomShell.openings.map((o) =>
+        o.id === door.id ? { ...o, widthM: 2.5, swing: "none" as const } : o,
+      ),
+    };
+    // A 2.5 m sliding door keeps 0.9 m clear in front, not a 2.65 m swing arc.
+    const zone = doorClearances(sliding)[0];
+    const sides = [0, 1].map((i) =>
+      Math.hypot(zone[i + 1][0] - zone[i][0], zone[i + 1][1] - zone[i][1]),
+    );
+    expect(Math.max(...sides)).toBeCloseTo(2.6, 6);
+    expect(Math.min(...sides)).toBeCloseTo(0.9, 6);
   });
   it("rejects door clearance, interior wall intersections and invalid transforms", () => {
     expect(code(empty(), { type: "add", object: box(500, 1.8, 1.6) })).toBe(

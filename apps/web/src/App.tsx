@@ -12,6 +12,7 @@ import { useLighting } from "./theme";
 import { InspectorPanel } from "./components/InspectorPanel";
 import { AssetBrowser } from "./components/AssetBrowser";
 import { Button } from "./components/Button";
+import { readLastRoom, rememberRoom } from "./state/lastRoom";
 function Keyboard() {
   useEffect(() => {
     const cleanupHeightModifier = installHeightModifier(editor);
@@ -118,7 +119,8 @@ export default function App() {
   const ready = useStore(editor.scene, (s) => s.ready),
     error = useStore(editor.save, (s) => s.error);
   useEffect(() => {
-    void editor.load();
+    void editor.load(readLastRoom());
+    return editor.room.subscribe((s) => rememberRoom(s.room.roomId));
   }, []);
   return (
     <main className="app-shell">
