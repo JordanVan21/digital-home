@@ -31,7 +31,44 @@ export type NormalizeOptions = {
    * the sandbox's centered fixture rooms, ground and shadows.
    */
   origin?: "minCorner" | "center";
+  /**
+   * "centered" (default): wall segments run along the scanned wall plane.
+   * "inner": the scanned plane is the wall's room-facing surface; the segment moves
+   * outward by half its thickness and extends to close the corners (how the
+   * sandbox's fixture rooms are drawn), so pieces scanned flush to a wall stay
+   * outside the drawn wall.
+   */
+  wallFaces?: "centered" | "inner";
+  /**
+   * Rotate the capture about Y so its longest wall runs along X (RoomPlan's frame
+   * has an arbitrary heading). Default false keeps the capture heading.
+   */
+  alignToWalls?: boolean;
 };
+
+/** Pre-multiply a column-major 4x4 by a rotation about Y that maps heading `phi` onto +X. */
+function rotateY(m: number[], phi: number): number[] {
+  const c = Math.cos(phi), s = Math.sin(phi);
+  const out = [...m];
+  for (let col = 0; col < 4; col++) {
+    const x = m[col * 4], z = m[col * 4 + 2];
+    out[col * 4] = c * x + s * z;
+    out[col * 4 + 2] = -s * x + c * z;
+  }
+  return out;
+}
+
+function alignedToWalls(raw: RawRoomScan): RawRoomScan {
+  const longest = [...raw.walls].sort((a, b) => b.dimensions[0] - a.dimensions[0])[0];
+  if (!longest) return raw;
+  const phi = Math.atan2(longest.transform[2], longest.transform[0]);
+  const turn = <T extends { transform: number[] }>(e: T): T => ({ ...e, transform: rotateY(e.transform, phi) });
+  return {
+    ...raw,
+    walls: raw.walls.map(turn), doors: raw.doors.map(turn), windows: raw.windows.map(turn),
+    openings: raw.openings.map(turn), floors: raw.floors.map(turn), objects: raw.objects.map(turn),
+  };
+}
 
 /** RoomPlan object categories -> scene categories shared with the asset catalog. */
 export const CATEGORY_MAP: Record<string, string> = {
@@ -162,7 +199,7 @@ export function normalizeRoomScan(input: unknown, options: NormalizeOptions = {}
   if (!parsed.success) {
     throw new ScanRejectedError(`Scan file is corrupt or unsupported: ${parsed.error.issues[0]?.message ?? "invalid"}`);
   }
-  const raw = parsed.data;
+  const raw = options.alignToWalls ? alignedToWalls(parsed.data) : parsed.data;
   const newId = options.newId ?? (() => crypto.randomUUID());
   const warnings: string[] = [];
   const stableId = (id: string) => (isUuid(id) ? id.toLowerCase() : newId());
@@ -228,6 +265,19 @@ export function normalizeRoomScan(input: unknown, options: NormalizeOptions = {}
         thicknessM: seg.raw.dimensions[2] > 0.02 ? round(seg.raw.dimensions[2]) : DEFAULT_THICKNESS_M,
       });
       wallSources.push(seg.raw);
+    }
+  }
+  if (options.wallFaces === "inner") {
+    for (const wall of walls) {
+      const [ax, az] = wall.fromXZ, [bx, bz] = wall.toXZ;
+      const len = Math.hypot(bx - ax, bz - az);
+      const u: P2 = [(bx - ax) / len, (bz - az) / len];
+      let n: P2 = [u[1], -u[0]];
+      const mid: P2 = [(ax + bx) / 2 + n[0] * 0.05, (az + bz) / 2 + n[1] * 0.05];
+      if (pointInPolygon(mid, localPolygon)) n = [-n[0], -n[1]];
+      const h = wall.thicknessM / 2;
+      wall.fromXZ = [round(ax - u[0] * h + n[0] * h), round(az - u[1] * h + n[1] * h)];
+      wall.toXZ = [round(bx + u[0] * h + n[0] * h), round(bz + u[1] * h + n[1] * h)];
     }
   }
   const ceilingHeightM = round(median(walls.map((w) => w.heightM)));

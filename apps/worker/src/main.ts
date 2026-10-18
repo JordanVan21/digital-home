@@ -185,7 +185,7 @@ async function processScan(scan: ScanRow) {
   // Reprocessing reuses the existing house/room ids, so the sandbox URL stays valid.
   const existing = await db.from("rooms").select("id,revision").eq("scan_id", scan.id).eq("source_room_index", 0).maybeSingle();
   if (existing.error) throw existing.error;
-  const { shell, scene, warnings, scanToWorld } = normalizeRoomScan(raw, { origin: "center" });
+  const { shell, scene, warnings, scanToWorld } = normalizeRoomScan(raw, { origin: "center", wallFaces: "inner", alignToWalls: true });
   if (existing.data) scene.roomId = existing.data.id;
   const envelopes = new Map(scene.objects.map((o) => [o.id, o.dimensionsM]));
 
