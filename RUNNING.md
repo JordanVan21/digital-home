@@ -63,7 +63,20 @@ Needs a **LiDAR iPhone** (12 Pro or newer Pro) on iOS 17+, a cable, and Xcode.
 
 More detail: `apps/ios/SETUP.md`.
 
-## 5. Add furniture models to the library
+## 5. Design my space (aesthetic planner)
+
+Run the planner API next to the sandbox (it reads the same `.env`):
+
+```sh
+pnpm --filter @house/planner-server dev
+```
+
+Then click **Design my space** in the sandbox top bar (or open
+`/?planner-lab`). Pick a room and a style, then **Run design experiment**.
+**Catalog demo** works offline with real models but scripted choices; **Live AI**
+needs you signed in and the worker running. Your saved room is never changed.
+
+## 6. Add furniture models to the library
 
 New models added to `packages/contracts/src/catalog.json` (files under
 `apps/web/public/`) must be uploaded to Supabase before scans can use them:
@@ -77,7 +90,7 @@ files from that branch; no checkout needed). Run it in your own Terminal. It is
 safe to rerun: existing models are overwritten, not duplicated. If the
 connection is shaky it retries, and lists anything it had to skip.
 
-## 6. Checks before pushing
+## 7. Checks before pushing
 
 ```sh
 pnpm test                # sandbox unit tests
@@ -91,8 +104,8 @@ cd apps/ios && swift test
 ## Good to know
 
 - Supabase project: `synyznfvklhsosnaivno`. Database changes live in
-  `supabase/migrations/`. `20261018140000_asset_requests.sql` is intentionally
-  **not** applied yet.
+  `supabase/migrations/`; both migrations (including `asset_requests`, the
+  planner → worker furniture queue) are applied on the hosted project.
 - Only the public anon key is in the code. The service-role and AI keys live
   only in `.env`.
 - Deeper docs: `agent_docs/` (architecture, data contracts, Supabase plan) and

@@ -18,6 +18,9 @@
     "noUnusedLocals": true,
     "noUnusedParameters": true,
     "paths": {
+      "@house/aesthetic-planner": [
+        "./packages/aesthetic-planner/src/index.ts"
+      ],
       "@house/contracts": [
         "./packages/contracts/src/index.ts"
       ],

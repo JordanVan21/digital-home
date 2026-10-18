@@ -9,6 +9,7 @@
     "preview": "vite preview --host 127.0.0.1"
   },
   "dependencies": {
+    "@house/aesthetic-planner": "workspace:*",
     "@fontsource/dm-sans": "5.2.8",
     "@fontsource/manrope": "5.2.8",
     "@house/contracts": "workspace:*",

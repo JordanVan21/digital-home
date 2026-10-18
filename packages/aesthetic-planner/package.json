@@ -1,0 +1,12 @@
+{
+  "name": "@house/aesthetic-planner",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "exports": "./src/index.ts",
+  "dependencies": {
+    "@house/contracts": "workspace:*",
+    "@house/scene-engine": "workspace:*",
+    "zod": "^3.25.76"
+  }
+}

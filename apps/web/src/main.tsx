@@ -10,6 +10,7 @@ import "@fontsource/manrope/latin-600.css";
 import "@fontsource/manrope/latin-700.css";
 import "./styles.css";
 const GeometryLab = lazy(() => import("./geometry-lab/GeometryLab"));
+const PlannerLab = lazy(() => import("./planner/PlannerLab"));
 const ThumbnailStudio = lazy(
   () => import("./thumbnail-studio/ThumbnailStudio"),
 );
@@ -24,7 +25,11 @@ await Promise.race([
   new Promise((resolve) => setTimeout(resolve, 4000)),
 ]);
 createRoot(document.getElementById("root")!).render(
-  thumbnail ? (
+  params.has("planner-lab") ? (
+    <Suspense fallback={<p>Loading design experiment…</p>}>
+      <PlannerLab />
+    </Suspense>
+  ) : thumbnail ? (
     <Suspense fallback={null}>
       <ThumbnailStudio assetId={thumbnail} />
     </Suspense>
