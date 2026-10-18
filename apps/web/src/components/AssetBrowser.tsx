@@ -1,3 +1,4 @@
+import { rankByDimensionFit } from "@house/scene-engine";
 import { useEffect, useRef, useState } from "react";
 import { useStore } from "zustand";
 import { Search, X, ArrowUpRight } from "lucide-react";
@@ -19,7 +20,8 @@ export function AssetBrowser() {
     return () => previous?.focus();
   }, []);
   const categories = ["all", ...new Set(catalog.map((a) => a.category))];
-  const shown = catalog.filter(
+  const candidates = replacing && object ? rankByDimensionFit(catalog, [object.category], object.dimensionsM).map(r=>r.asset) : catalog;
+  const shown = candidates.filter(
     (a) =>
       (!replacing || a.category === object?.category) &&
       (category === "all" || category === a.category) &&
@@ -134,7 +136,7 @@ export function AssetBrowser() {
         )}
         <p className="browser-note">
           {replacing
-            ? "Keeps the position and rotation of your piece."
+            ? "Best dimension fits first. Keeps the position and rotation of your piece."
             : "New pieces find a free spot near the center of your room."}{" "}
           All placements are checked.
         </p>

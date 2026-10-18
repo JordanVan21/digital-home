@@ -164,3 +164,7 @@ Implemented on the isolated base branch. User approved focused checks during imp
 ## Step 21: add independent Keep Replace Remove planning flags
 
 Implemented on the isolated base branch. User approved focused checks during implementation and one complete verification run at the end (2026-10-18). Final review and screenshots are pending.
+
+## Step 22: rank replacement models by dimension fit
+
+Implemented on the isolated base branch. User approved focused checks during implementation and one complete verification run at the end (2026-10-18). Final review and screenshots are pending.
