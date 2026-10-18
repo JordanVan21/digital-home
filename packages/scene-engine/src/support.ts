@@ -39,6 +39,7 @@ export function canSupport(
   );
 }
 export function supportCycle(scene: SceneSpec, o: SceneObject): boolean {
+  if (o.placement?.float) return false;
   const seen = new Set([o.id]);
   let parentId =
     o.placement?.support === "object" ? o.placement.parentId : undefined;
@@ -243,6 +244,7 @@ export function withContactSupport(
   room: RoomShell,
   assets: Readonly<Record<string, AssetSpec>> = assetById,
 ): SceneObject {
+  if (o.placement?.float) return o;
   if (o.placement?.support === "wall")
     return { ...o, placement: onWall(room, o).placement };
   if (o.placement?.support === "ceiling") return o;
@@ -260,6 +262,7 @@ export function onNearestSurface(
   room: RoomShell,
   assets: Readonly<Record<string, AssetSpec>> = assetById,
 ): SceneObject {
+  if (o.placement?.float) return o;
   if (o.placement?.support === "wall") return onWall(room, o, true);
   if (o.placement?.support === "ceiling") return onCeiling(room, o);
   return rankedFaces(scene, o, room, assets)[0].object;

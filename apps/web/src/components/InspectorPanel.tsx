@@ -90,7 +90,8 @@ export function InspectorPanel() {
           </span>
         </button>
         {lightSpecFor(object, assetById) && (
-          <section className="inspector-section">
+          <section className="inspector-section"><label><input type="checkbox" aria-label="Allow floating after Accept" checked={object.placement?.float ?? false} disabled={object.locked || dragging} onChange={e=>editor.suggest({type:"setFloat",objectId:object.id,float:e.target.checked})}/> Allow floating after Accept</label></section>
+        <section className="inspector-section">
             <h3>Lighting</h3>
             <Button
               label={

@@ -71,7 +71,7 @@ Codex's interaction stays: controls, the suggest/Accept flow, nearest-surface pl
 - [x] **16 Groups:** Ctrl/Cmd+G group, Shift+Ctrl/Cmd+G ungroup; click selects the group, Alt picks a member.
 - [x] **17 Wall and ceiling items:** art slides along walls and around corners; pendants hang from the ceiling (support `ceiling`).
 - [x] **18 Resize** with keep-proportions; children stay seated.
-- [ ] **19 Float flag:** stays in the air after Accept (the explicit exception to nearest-surface placement).
+- [x] **19 Float flag:** stays in the air after Accept (the explicit exception to nearest-surface placement).
 - [ ] **20 Finishes:** asset `variants` swatches applied as `materialOverrides` (Jordan's catalog has `variants` and `light` metadata that the step 2 import dropped; re-import it with the schema extension).
 - [ ] **21 Keep / Replace / Remove planning picker** (independent of the lock) with a ghost for Remove.
 - [ ] **22 Replace model** ranked by dimension fit (`rankByDimensionFit` already exists in `scene-engine/src/matching.ts`).

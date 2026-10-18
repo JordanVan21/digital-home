@@ -11,6 +11,7 @@ export function supportedDescendants(
       if (
         o.id === rootId ||
         ids.has(o.id) ||
+        o.placement?.float ||
         o.placement?.support !== "object" ||
         o.placement.parentId !== id
       )

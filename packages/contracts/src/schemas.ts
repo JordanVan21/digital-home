@@ -174,6 +174,7 @@ export const SceneObjectSchema = z.object({
     .object({
       support: z.enum(["floor", "wall", "object", "ceiling"]),
       parentId: UUIDSchema.optional(),
+      float: z.boolean().optional(),
     })
     .optional(),
   tilt: TiltSchema.optional(),
@@ -237,6 +238,7 @@ export const AssetSpecSchema = z.object({
   light: AssetLightSchema.optional(),
 });
 export const SceneOpSchema = z.discriminatedUnion("type", [
+  z.object({type:z.literal("setFloat"),objectId:UUIDSchema,float:z.boolean().optional()}),
   z.object({
     type: z.literal("resize"),
     objectId: UUIDSchema,

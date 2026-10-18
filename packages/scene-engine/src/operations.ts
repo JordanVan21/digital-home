@@ -87,7 +87,7 @@ export function validateObject(
   if (supportCycle(scene, o))
     return fail("INVALID_SUPPORT", "Support cannot form a cycle.");
   if (
-    support === "object" &&
+    !o.placement?.float && support === "object" &&
     (!o.placement?.parentId ||
       !scene.objects.some(
         (p) => p.id === o.placement?.parentId && p.id !== o.id,
@@ -100,18 +100,18 @@ export function validateObject(
   )
     return fail("INVALID_SUPPORT", "Choose a supporting wall.");
   if (options.allowConflicts) return { ok: true };
-  if (support === "floor" && !hasFloorSupport(o, ctx.room, ctx.assets))
+  if (!o.placement?.float && support === "floor" && !hasFloorSupport(o, ctx.room, ctx.assets))
     return fail(
       "INVALID_SUPPORT",
       "Accept will settle this piece onto the nearest floor or furniture surface.",
     );
-  if (support === "wall" && !hasWallSupport(ctx.room, o))
+  if (!o.placement?.float && support === "wall" && !hasWallSupport(ctx.room, o))
     return fail(
       "INVALID_SUPPORT",
       "Mount the rear face on a solid part of the wall.",
     );
   if (
-    support === "ceiling" &&
+    !o.placement?.float && support === "ceiling" &&
     Math.abs(
       onCeiling(ctx.room, o).transform.position[1] - o.transform.position[1],
     ) > 0.0001
@@ -120,7 +120,7 @@ export function validateObject(
       "INVALID_SUPPORT",
       "Accept will mount this piece on the ceiling.",
     );
-  if (support === "object") {
+  if (!o.placement?.float && support === "object") {
     const parent = scene.objects.find((p) => p.id === o.placement?.parentId)!;
     if (!canSupport(parent, o, ctx.assets))
       return fail("INVALID_SUPPORT", "Place the centre over its contact area.");
@@ -210,8 +210,9 @@ export function validateOp(
       (obj.assetId && ctx.assets[obj.assetId]?.light)
       ? { ok: true }
       : fail("INVALID_TRANSFORM", "Choose a light to switch.");
+  if (op.type === "setFloat") return {ok:true};
   if (op.type === "delete" || op.type === "replacePhysicalItem") {
-    if (scene.objects.some((o) => o.placement?.parentId === id))
+    if (scene.objects.some((o) => o.placement?.parentId === id && !o.placement?.float))
       return fail("INVALID_SUPPORT", "Move supported objects first.");
   }
   if (op.type === "delete") return { ok: true };
@@ -341,6 +342,11 @@ export function applyOp(
     objects = scene.objects.map((o) => {
       if (o.id !== op.objectId) return o;
       switch (op.type) {
+        case "setFloat": {
+          const next = {...o,placement:{...o.placement,support:o.placement?.support ?? "floor"}};
+          if(op.float===undefined) delete next.placement.float; else next.placement.float=op.float;
+          return next;
+        }
         case "setGroup": {
           const next = { ...o };
           if (op.groupId === undefined) delete next.groupId;
@@ -390,6 +396,8 @@ export function invertOp(before: SceneSpec, op: SceneOp): Inverse {
   const obj = before.objects.find((o) => o.id === id);
   if (!obj) throw new Error("Cannot invert an unknown object");
   switch (op.type) {
+    case "setFloat":
+      return {type:"checkpoint",scene:structuredClone(before)};
     case "resize":
       return { type: "checkpoint", scene: structuredClone(before) };
     case "setGroup":
