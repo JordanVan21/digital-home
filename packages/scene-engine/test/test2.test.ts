@@ -51,3 +51,25 @@ describe('test2-room fixture', () => {
     expect(Math.max(...fixture.scene.objects.map((o) => depth(o.id)))).toBeGreaterThanOrEqual(3);
   });
 });
+
+describe('test2-room suggestions', () => {
+  it('resolves a large piece dropped onto another, with its decor, quickly', async () => {
+    const { applyOps, resolveDraft, validateScene: vs } = await import('../src');
+    const objs = fixture.scene.objects;
+    // The heaviest case: the largest unlocked floor piece that carries decor, dropped onto another's center.
+    const carriers = objs.filter((o) => !o.placement?.parentId && objs.some((c) => c.placement?.parentId === o.id));
+    const mover = carriers.sort((a, b) => b.dimensionsM[0] * b.dimensionsM[2] - a.dimensionsM[0] * a.dimensionsM[2])[0]!;
+    const target = objs.find((o) => !o.placement?.parentId && o.id !== mover.id && o.category === 'sofa') ?? objs.find((o) => o.id !== mover.id && !o.placement?.parentId)!;
+    const draft = applyOps({ ...ctx, geometry: 'report' }, fixture.scene, [{
+      type: 'move', objectId: mover.id, transform: { ...mover.transform, position: [target.transform.position[0], mover.transform.position[1], target.transform.position[2]] },
+    }]);
+    if (!draft.ok) throw new Error(draft.error.message);
+    const t0 = performance.now();
+    const r = resolveDraft(ctx, fixture.scene, draft.scene);
+    const ms = performance.now() - t0;
+    if (!r.ok) throw new Error(r.unresolved[0]!.message);
+    expect(['moved', 'reverted']).toContain(r.report.find((e) => e.objectId === mover.id)!.outcome);
+    expect(vs(ctx, r.scene).violations).toEqual([]);
+    expect(ms).toBeLessThan(1500);
+  });
+});
