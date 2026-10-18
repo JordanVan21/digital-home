@@ -240,7 +240,9 @@ async function processScan(scan: ScanRow) {
         const entry = reportEntry(object.id, object.category, outcome, (Date.now() - t0) / 1000);
         const better = outcome.asset && outcome.assetId !== first.assetId && outcome.source !== "best_effort";
         await swapIn(scene.roomId, object.id, first.assetId, better ? outcome.asset : null, envelopes.get(object.id)!, entry);
-        console.log(`    ${object.category}: (${entry.method}) ${entry.title ?? "placeholder"} in ${entry.seconds}s`);
+        console.log(better
+          ? `    ${object.category}: (${entry.method}) ${entry.title} in ${entry.seconds}s`
+          : `    ${object.category}: kept ${first.asset?.title ?? "placeholder"} (no better model, ${entry.seconds}s)`);
       }
     });
     await Promise.all(workers);
@@ -271,7 +273,16 @@ async function swapIn(
     const { scene, original_scene, revision, render_report } = current.data as {
       scene: SceneSpec; original_scene: SceneSpec; revision: number; render_report: { objects: ObjectReport[] };
     };
-    const report = { ...render_report, objects: render_report.objects.map((o) => (o.objectId === objectId ? entry : o)) };
+    // No better model: the object keeps its pass-1 model, so keep that report entry too
+    // and just note what the improvement attempt did.
+    const report = {
+      ...render_report,
+      objects: render_report.objects.map((o) =>
+        o.objectId !== objectId ? o
+        : asset ? entry
+        : { ...o, notes: [...o.notes, `Improvement (${entry.source}, ${entry.seconds}s) kept this model: ${entry.notes.at(-1) ?? "no better model"}`] },
+      ),
+    };
     let nextScene = scene;
     let nextOriginal = original_scene;
     if (asset) {
