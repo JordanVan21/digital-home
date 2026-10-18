@@ -56,27 +56,37 @@ const model = apiKey ? createModel({ provider, apiKey, model: modelName, reasoni
 const blenderPort = Number(process.env.BLENDER_MCP_PORT) || 9876;
 const blender = await connectBlender();
 
-/** Use a running Blender MCP endpoint (GUI addon), else start headless Blender (killed on exit). */
+/**
+ * Use a running Blender MCP endpoint (GUI addon, one job at a time), else start
+ * BLENDER_INSTANCES headless Blenders on consecutive ports so several objects can
+ * be built at once. Started processes are killed on exit.
+ */
 async function connectBlender(): Promise<BlenderPool | null> {
-  if (await new BlenderMcpClient({ port: blenderPort, timeoutMs: 1500 }).ping()) {
-    return new BlenderPool([new BlenderMcpClient({ port: blenderPort, timeoutMs: 120_000 })]);
-  }
+  const client = (port: number, timeoutMs: number) => new BlenderMcpClient({ port, timeoutMs });
+  if (await client(blenderPort, 1500).ping()) return new BlenderPool([client(blenderPort, 120_000)]);
   const binary = process.env.BLENDER_BIN ?? "/Applications/Blender.app/Contents/MacOS/Blender";
   if (!existsSync(binary)) return null;
+  const count = Math.max(1, Number(process.env.BLENDER_INSTANCES) || 3);
   const server = fileURLToPath(new URL("../../../packages/render-agent/blender/blender_server.py", import.meta.url));
-  const child = spawn(binary, ["-b", "--factory-startup", "-P", server, "--", "--port", String(blenderPort)], { stdio: "ignore" });
-  child.on("error", () => {});
+  const children = Array.from({ length: count }, (_, i) => {
+    const child = spawn(binary, ["-b", "--factory-startup", "-P", server, "--", "--port", String(blenderPort + i)], { stdio: "ignore" });
+    child.on("error", () => {});
+    return child;
+  });
   for (const signal of ["exit", "SIGINT", "SIGTERM"] as const) {
-    process.on(signal, () => { child.kill(); if (signal !== "exit") process.exit(130); });
+    process.on(signal, () => { for (const c of children) c.kill(); if (signal !== "exit") process.exit(130); });
   }
-  const probe = new BlenderMcpClient({ port: blenderPort, timeoutMs: 1500 });
-  for (let i = 0; i < 60 && child.exitCode === null; i++) {
-    if (await probe.ping()) return new BlenderPool([new BlenderMcpClient({ port: blenderPort, timeoutMs: 120_000 })]);
-    await new Promise((r) => setTimeout(r, 500));
+  const ready: number[] = [];
+  for (let i = 0; i < 60 && ready.length < count; i++) {
+    for (let k = 0; k < count; k++) {
+      if (!ready.includes(k) && children[k].exitCode === null && (await client(blenderPort + k, 1500).ping())) ready.push(k);
+    }
+    if (ready.length < count) await new Promise((r) => setTimeout(r, 500));
   }
-  child.kill();
-  return null;
+  if (!ready.length) { for (const c of children) c.kill(); return null; }
+  return new BlenderPool(ready.map((k) => client(blenderPort + k, 120_000)));
 }
+const blenderCount = blender ? Math.max(1, Number(process.env.BLENDER_INSTANCES) || 3) : 1;
 
 const workDir = join(tmpdir(), "house-worker-assets");
 await mkdir(workDir, { recursive: true });
@@ -88,12 +98,12 @@ const shared = {
 // Pass 1: deterministic library matching only (seconds). Never blocks on a model or Blender.
 const fast = new RenderService({ ...shared, model: null, blender: null, ambiguousWithoutModel: "accept_best" });
 // Pass 2: agents + Blender for objects pass 1 could not match confidently.
-const full = new RenderService({ ...shared, model, blender, concurrency: 2 });
+const full = new RenderService({ ...shared, model, blender, concurrency: blenderCount });
 const scanTimeLimitMs = (Number(process.env.SCAN_TIME_LIMIT_S) || 900) * 1000;
 
 console.log(
   `worker: model=${model ? `${provider}/${modelName}` : "none"} blender=${blender ? `port ${blenderPort}` : "none"} ` +
-    `generation=${allowGeneration && blender ? "on" : "off"} scanLimit=${scanTimeLimitMs / 1000}s`,
+    `x${blenderCount} generation=${allowGeneration && blender ? "on" : "off"} scanLimit=${scanTimeLimitMs / 1000}s`,
 );
 // --retry-failed requeues failed scans; --reprocess also redoes finished ones
 // (e.g. after the asset library changed). Room/house ids are kept.
@@ -175,7 +185,7 @@ async function processScan(scan: ScanRow) {
   // Reprocessing reuses the existing house/room ids, so the sandbox URL stays valid.
   const existing = await db.from("rooms").select("id,revision").eq("scan_id", scan.id).eq("source_room_index", 0).maybeSingle();
   if (existing.error) throw existing.error;
-  const { shell, scene, warnings, scanToWorld } = normalizeRoomScan(raw);
+  const { shell, scene, warnings, scanToWorld } = normalizeRoomScan(raw, { origin: "center" });
   if (existing.data) scene.roomId = existing.data.id;
   const envelopes = new Map(scene.objects.map((o) => [o.id, o.dimensionsM]));
 
@@ -232,7 +242,7 @@ async function processScan(scan: ScanRow) {
     console.log(`  improving ${pending.length} object(s) with ${blender && allowGeneration ? "agent + Blender" : "agent"}…`);
     const signal = AbortSignal.timeout(scanTimeLimitMs);
     let next = 0;
-    const workers = Array.from({ length: 2 }, async () => {
+    const workers = Array.from({ length: blenderCount }, async () => {
       while (next < pending.length && !signal.aborted) {
         const { object, first } = pending[next++];
         const t0 = Date.now();

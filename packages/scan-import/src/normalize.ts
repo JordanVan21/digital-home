@@ -25,6 +25,12 @@ export type NormalizeOptions = {
   resolveAsset?: (category: string, envelope: [number, number, number]) => AssetFit | null;
   now?: () => Date;
   newId?: () => UUID;
+  /**
+   * Where the room's local origin goes: "minCorner" (default) puts the floor's min
+   * XZ corner at 0; "center" puts the floor's bounding-box center at 0, matching
+   * the sandbox's centered fixture rooms, ground and shadows.
+   */
+  origin?: "minCorner" | "center";
 };
 
 /** RoomPlan object categories -> scene categories shared with the asset catalog. */
@@ -191,8 +197,10 @@ export function normalizeRoomScan(input: unknown, options: NormalizeOptions = {}
   // --- Frame: RoomPlan world is already meters / Y-up / right-handed, so the
   // only change is translating the floor's min corner and base height to 0.
   const floorY = median(ordered.map((s) => s.baseY));
-  const originX = Math.min(...polygon.map((p) => p[0]));
-  const originZ = Math.min(...polygon.map((p) => p[1]));
+  const xs = polygon.map((p) => p[0]), zs = polygon.map((p) => p[1]);
+  const centered = options.origin === "center";
+  const originX = centered ? (Math.min(...xs) + Math.max(...xs)) / 2 : Math.min(...xs);
+  const originZ = centered ? (Math.min(...zs) + Math.max(...zs)) / 2 : Math.min(...zs);
   const toLocal = (p: P2): P2 => [round(p[0] - originX), round(p[1] - originZ)];
   const localPolygon = polygon.map(toLocal);
 
