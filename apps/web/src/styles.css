@@ -1237,3 +1237,10 @@ kbd {
   z-index: 4;
   font-size: 12px;
 }
+
+.selection-summary:has(button) {
+  pointer-events: auto;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}

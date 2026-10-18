@@ -196,7 +196,8 @@ export function validateOp(
       return fail("INVALID_SUPPORT", "Move supported objects first.");
   }
   if (op.type === "delete") return { ok: true };
-  if (op.type === "changeMaterial") return { ok: true };
+  if (op.type === "changeMaterial" || op.type === "setGroup")
+    return { ok: true };
   if (op.type === "replacePhysicalItem") {
     if (scene.objects.some((o) => o.id === op.newObject.id))
       return fail("DUPLICATE_ID", "A replacement needs a new identity.");
@@ -289,6 +290,12 @@ export function applyOp(
     objects = scene.objects.map((o) => {
       if (o.id !== op.objectId) return o;
       switch (op.type) {
+        case "setGroup": {
+          const next = { ...o };
+          if (op.groupId === undefined) delete next.groupId;
+          else next.groupId = op.groupId;
+          return next;
+        }
         case "setLight": {
           const next = { ...o };
           if (op.lightOn === undefined) delete next.lightOn;
@@ -332,6 +339,8 @@ export function invertOp(before: SceneSpec, op: SceneOp): Inverse {
   const obj = before.objects.find((o) => o.id === id);
   if (!obj) throw new Error("Cannot invert an unknown object");
   switch (op.type) {
+    case "setGroup":
+      return { type: "setGroup", objectId: id, groupId: obj.groupId };
     case "setLight":
       return { type: "setLight", objectId: id, lightOn: obj.lightOn };
     case "delete":

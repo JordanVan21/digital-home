@@ -97,10 +97,35 @@ export function useMarquee() {
   };
 }
 export function SelectionSummary() {
-  const count = useStore(editor.interaction, (s) => s.selectedIds.length);
-  return count > 1 ? (
-    <div className="selection-summary glass" role="status">
-      {count} objects selected · Shift-click to add or remove
+  const ids = useStore(editor.interaction, (s) => s.selectedIds);
+  const draft = useStore(editor.draft, (s) => s.scene),
+    accepted = useStore(editor.scene, (s) => s.scene);
+  const objects = (draft ?? accepted).objects.filter((o) => ids.includes(o.id));
+  const grouped = objects.some((o) => o.groupId);
+  const blocked = objects.some((o) => o.locked);
+  return ids.length > 1 || grouped ? (
+    <div className="selection-summary glass">
+      <span role="status">
+        {ids.length} {ids.length === 1 ? "object" : "objects"} selected
+      </span>
+      {ids.length > 1 && (
+        <button
+          className="secondary-button"
+          disabled={blocked}
+          onClick={() => editor.groupSelection()}
+        >
+          Group selection
+        </button>
+      )}
+      {grouped && (
+        <button
+          className="secondary-button"
+          disabled={blocked}
+          onClick={() => editor.groupSelection(true)}
+        >
+          Ungroup selection
+        </button>
+      )}
     </div>
   ) : null;
 }

@@ -242,7 +242,24 @@ export const Furniture = memo(function Furniture({
     if (e.button !== 0 || !editor.scene.getState().ready) return;
     e.stopPropagation();
     editor.motion.pointerHandled = true;
-    const selection = editor.interaction.getState().selectedIds;
+    if (e.altKey) editor.selectMany([object.id], { individual: true });
+    let selection = editor.interaction.getState().selectedIds;
+    if (
+      !e.altKey &&
+      !e.shiftKey &&
+      latest.current.groupId &&
+      editor
+        .working()
+        .objects.some(
+          (o) =>
+            o.groupId === latest.current.groupId && !selection.includes(o.id),
+        )
+    ) {
+      editor.select(object.id);
+      selection = editor.interaction.getState().selectedIds;
+    }
+    if (selection.includes(object.id))
+      editor.interaction.setState({ selectedId: object.id });
     drag.current.shiftSelection = e.shiftKey ? [...selection] : null;
     if (e.shiftKey && (latest.current.locked || tool === "rotate")) {
       editor.toggleSelection(object.id);
@@ -332,11 +349,9 @@ export const Furniture = memo(function Furniture({
     state.session.release();
     if (!state.moved && state.shiftSelection) {
       const ids = state.shiftSelection;
-      editor.selectMany(
-        ids.includes(object.id)
-          ? ids.filter((id) => id !== object.id)
-          : [...ids, object.id],
-      );
+      editor.selectMany(ids);
+      if (ids.includes(object.id)) editor.toggleSelection(object.id);
+      else editor.selectMany([...ids, object.id]);
     }
     state.shiftSelection = null;
     if ((e.target as Element).hasPointerCapture?.(e.pointerId))

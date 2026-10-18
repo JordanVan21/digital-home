@@ -541,19 +541,66 @@ export function createEditor(
     }));
     return true;
   };
-  const selectMany = (ids: string[]) => {
+  const selectMany = (
+    ids: string[],
+    options: { individual?: boolean } = {},
+  ) => {
+    const primary = ids.at(-1);
+    if (!options.individual) {
+      const groups = new Set(
+        working()
+          .objects.filter((o) => ids.includes(o.id) && o.groupId)
+          .map((o) => o.groupId),
+      );
+      ids = [
+        ...ids,
+        ...working()
+          .objects.filter((o) => o.groupId && groups.has(o.groupId))
+          .map((o) => o.id),
+      ];
+    }
     const available = new Set(working().objects.map((o) => o.id));
     const selectedIds = [...new Set(ids)].filter((id) => available.has(id));
     interaction.setState({
       selectedIds,
-      selectedId: selectedIds.at(-1) ?? null,
+      selectedId:
+        primary && selectedIds.includes(primary)
+          ? primary
+          : (selectedIds.at(-1) ?? null),
     });
   };
   const select = (id: string | null) => selectMany(id ? [id] : []);
   const toggleSelection = (id: string) => {
     const ids = interaction.getState().selectedIds;
+    const group = working().objects.find((o) => o.id === id)?.groupId;
+    const members = group
+      ? working()
+          .objects.filter((o) => o.groupId === group)
+          .map((o) => o.id)
+      : [id];
     selectMany(
-      ids.includes(id) ? ids.filter((key) => key !== id) : [...ids, id],
+      ids.includes(id)
+        ? ids.filter((key) => !members.includes(key))
+        : [...ids, ...members],
+    );
+  };
+  const groupSelection = (ungroup = false) => {
+    if (interaction.getState().dragging) return false;
+    const ids = interaction.getState().selectedIds;
+    const groups = new Set(
+      working()
+        .objects.filter((o) => ids.includes(o.id) && o.groupId)
+        .map((o) => o.groupId),
+    );
+    const members = ungroup
+      ? working()
+          .objects.filter((o) => o.groupId && groups.has(o.groupId))
+          .map((o) => o.id)
+      : ids;
+    if ((!ungroup && members.length < 2) || !members.length) return false;
+    const groupId = ungroup ? undefined : crypto.randomUUID();
+    return suggestMany(
+      members.map((objectId) => ({ type: "setGroup", objectId, groupId })),
     );
   };
   const nudge = (forward: number, right: number, factor = 1) => {
@@ -670,6 +717,7 @@ export function createEditor(
     copy.ownership = "planned_new";
     delete copy.replacesObjectId;
     delete copy.scanMatch;
+    delete copy.groupId;
     delete copy.renovationDecision;
     const base = original.displayName.replace(/ copy(?: \d+)?$/, "");
     let name = `${base} copy`,
@@ -950,6 +998,7 @@ export function createEditor(
     select,
     selectMany,
     toggleSelection,
+    groupSelection,
     suggestMany,
     moveSelection,
     selectionMoves,

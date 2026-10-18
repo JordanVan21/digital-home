@@ -177,6 +177,7 @@ export const SceneObjectSchema = z.object({
     })
     .optional(),
   tilt: TiltSchema.optional(),
+  groupId: UUIDSchema.optional(),
   lightOn: z.boolean().optional(),
   scanMatch: ScanMatchSchema.optional(),
 });
@@ -235,6 +236,11 @@ export const AssetSpecSchema = z.object({
   light: AssetLightSchema.optional(),
 });
 export const SceneOpSchema = z.discriminatedUnion("type", [
+  z.object({
+    type: z.literal("setGroup"),
+    objectId: UUIDSchema,
+    groupId: UUIDSchema.optional(),
+  }),
   z.object({
     type: z.literal("setLight"),
     objectId: UUIDSchema,

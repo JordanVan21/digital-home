@@ -45,6 +45,11 @@ export function installEditorKeyboard(editor: Editor) {
       editor.duplicate();
       return;
     }
+    if ((e.metaKey || e.ctrlKey) && key === "g" && !e.altKey) {
+      e.preventDefault();
+      editor.groupSelection(e.shiftKey);
+      return;
+    }
     if (e.metaKey || e.ctrlKey || e.altKey) return;
     const arrows: Record<string, [number, number]> = {
       arrowup: [1, 0],

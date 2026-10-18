@@ -140,3 +140,7 @@ Editable exact XYZ metre fields through suggestions, disabled during drags/locks
 ## Step 15 completed
 
 Shift-click/Shift-marquee selection, primary inspector/rotation, atomic multi-piece translation with transient preview and one undo step, selected supports carry children once, locks protect whole moves, F frames selection. Shift-drag keeps existing grid snapping; toggle selection happens on click release. All checks: 221 unit tests, 18 GPU browser tests, format/typecheck/lint/build. Review: `docs/review/STEP_15.md`. Next: persistent groups.
+
+## Step 16 completed
+
+Typed groupId/setGroup with inverse, atomic Group/Ungroup suggestions, Ctrl/Cmd+G / Shift modifier, saved group selection, Alt-member pick. Copies detach group identity. Browser caught normal clicks retaining a prior Alt-member selection; fixed and covered. All checks: 223 unit tests, 19 GPU browser tests, format/typecheck/lint/build. Review: `docs/review/STEP_16.md`. Next: wall/ceiling items.
