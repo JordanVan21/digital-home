@@ -4,7 +4,7 @@ import {
   bearing, bodyAt, candidateSurfaces, ceilingPose, classOf, findSupport, fitsSurface, groupTransformOps, isLarge,
   makeTransform, moveWithSupport, normalizeAngle, pointInPolygon, prepareShell, quatFromYaw, resolveRotation,
   resolveTranslation, rootsOf, selectionPivot, subtreeIds, transformAbout, validateObject, wallPose, YawDial,
-  indexObjects, yawFromQuat, type Blocker, type SupportHit, type WorldSurface,
+  indexObjects, yawFromQuat, type Blocker, type Body, type SupportHit, type WorldSurface,
 } from '@house/scene-engine';
 import { EDITOR_POLICY } from '../../config/editorPolicy';
 import { applyObjectTransform } from '../../lib/convert';
@@ -12,7 +12,7 @@ import { bodiesOf, liftBodies, movingSet, obstacleQuery, obstaclesFor, sweptBoun
 import { commit, ignoringCollisions, objectById, opContext, toast, useEditor } from '../../state/store';
 import { dragFeedback } from '../dragFeedback';
 import { interaction, registry } from '../registry';
-import { smartSnap } from './snaps';
+import { contactGuides, smartSnap } from './snaps';
 
 export type Host = { camera: Camera; dom: HTMLElement };
 export type Mods = { alt: boolean; ctrl: boolean; shift: boolean };
@@ -278,6 +278,7 @@ export class MoveSession implements DragSession {
     }
     let offset = desired;
     let blockers: Blocker[] = [];
+    let touching: Body[] = [];
     if (!ctrl && EDITOR_POLICY.collision === 'block-and-slide') {
       const lifted = liftBodies(this.movingBodies, this.small ? dy : 0);
       if (Math.abs(dy - this.prevDy) > 1e-6) this.prev = [0, 0];
@@ -287,15 +288,18 @@ export class MoveSession implements DragSession {
         min: [Math.min(a.min[0], b.min[0]), a.min[1], Math.min(a.min[2], b.min[2])] as Vec3,
         max: [Math.max(a.max[0], b.max[0]), a.max[1], Math.max(a.max[2], b.max[2])] as Vec3,
       };
-      const res = timed(() => resolveTranslation(lifted, this.obstacles(bounds, hit?.ownerId), this.prev, desired));
+      const obs = this.obstacles(bounds, hit?.ownerId);
+      const res = timed(() => resolveTranslation(lifted, obs, this.prev, desired));
       offset = res.offset;
       blockers = res.blockers;
+      touching = obs.filter((o) => blockers.some((b) => b.otherId === o.id));
     }
     this.prev = offset;
     this.prevDy = dy;
     this.last = { offset, dy: this.small ? dy : 0, hit: this.small ? hit : null };
     this.preview(offset, this.last.dy);
     const cand: SceneObject = { ...this.primary, transform: { ...this.primary.transform, position: [px + offset[0], py + this.last.dy, pz + offset[1]] } };
+    if (touching.length && this.roots.length === 1) guides = [...guides, ...contactGuides(cand, touching)];
     this.feedbackFor(cand, blockers, ctrl, guides);
   }
 

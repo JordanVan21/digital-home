@@ -1,6 +1,6 @@
 import type { CollisionKind, RoomShell, SceneObject, Vec2, Vec3 } from '@house/contracts';
-import { worldBoxes, type AssetLookup } from './body';
-import { DEFAULT_RULE_CONFIG, type RuleConfig } from './config';
+import { assetOf, worldBoxes, type AssetLookup } from './body';
+import { DEFAULT_RULE_CONFIG, placementClassOf, type RuleConfig } from './config';
 import { add2, len2, scale2, sub2 } from './math';
 import { obbAabbXZ, obbMtvXZ, obbPenetration3D, translateObb, type OBB } from './obb';
 import { wallFrames } from './shell';
@@ -19,7 +19,20 @@ export type Body = {
   max: Vec3;
   /** True for walls (immutable shell). */
   wall?: boolean;
+  /** True for wall-mounted items (art, wall TVs, shelves on the wall). */
+  wallMounted?: boolean;
 };
+
+/**
+ * Collision exceptions (from the codex sandbox's `occupancyRules`), as one explicit table on top of
+ * the profile matrix below. Wall-mounted items and furniture never collide (a picture may hang over a
+ * cabinet); wall items still collide with each other. Rugs never collide (profile `flat`).
+ */
+export const COLLISION_EXCEPTIONS = {
+  wallMountedVsFurniture: true,
+} as const;
+
+const isWallMounted = (obj: SceneObject, assets?: AssetLookup) => placementClassOf(obj, assetOf(obj, assets)) === 'wall';
 
 function boundsOf(boxes: OBB[]): { min: Vec3; max: Vec3 } {
   const min: Vec3 = [Infinity, Infinity, Infinity];
@@ -43,7 +56,7 @@ export function bodyOf(obj: SceneObject, assets?: AssetLookup): Body {
   let b = cache.get(obj);
   if (!b) {
     const { kind, boxes } = worldBoxes(obj, assets);
-    b = { id: obj.id, label: obj.displayName || obj.category.replace(/_/g, ' '), kind, boxes, ...boundsOf(boxes) };
+    b = { id: obj.id, label: obj.displayName || obj.category.replace(/_/g, ' '), kind, boxes, ...boundsOf(boxes), ...(isWallMounted(obj, assets) ? { wallMounted: true } : {}) };
     cache.set(obj, b);
   }
   return b;
@@ -52,7 +65,7 @@ export function bodyOf(obj: SceneObject, assets?: AssetLookup): Body {
 /** Bodies for a moved/rotated copy of an object (not cached). */
 export function bodyAt(obj: SceneObject, assets?: AssetLookup): Body {
   const { kind, boxes } = worldBoxes(obj, assets);
-  return { id: obj.id, label: obj.displayName || obj.category, kind, boxes, ...boundsOf(boxes) };
+  return { id: obj.id, label: obj.displayName || obj.category, kind, boxes, ...boundsOf(boxes), ...(isWallMounted(obj, assets) ? { wallMounted: true } : {}) };
 }
 
 const wallCache = new WeakMap<RoomShell, Body[]>();
@@ -99,6 +112,7 @@ export type PairContact = {
  */
 export function bodyContact(a: Body, b: Body, cfg: RuleConfig = DEFAULT_RULE_CONFIG): PairContact | null {
   if (a.kind === 'flat' || b.kind === 'flat' || a.kind === 'none' || b.kind === 'none') return null;
+  if (COLLISION_EXCEPTIONS.wallMountedVsFurniture && !a.wall && !b.wall && !!a.wallMounted !== !!b.wallMounted) return null;
   if (!aabbOverlap(a, b)) return null;
   const allowance = a.kind === 'soft' && b.kind === 'soft' ? cfg.softOverlapM : cfg.contactToleranceM;
   let depth = 0;
