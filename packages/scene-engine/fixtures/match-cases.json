@@ -1,0 +1,37 @@
+{
+  "description": "matchScanObject fixtures. Assets expand with expandCaseAsset (licenseStatus defaults to 'verified'). dimensionsM are [w, h, d].",
+  "catalog": [
+    { "id": "sofa-small", "category": "sofa", "dimensionsM": [1.6, 0.8, 0.85] },
+    { "id": "sofa-large", "category": "sofa", "dimensionsM": [2.1, 0.85, 0.95] },
+    { "id": "sofa-restricted", "category": "sofa", "dimensionsM": [1.96, 0.82, 0.93], "licenseStatus": "restricted" },
+    { "id": "sofa-pending", "category": "sofa", "dimensionsM": [1.96, 0.82, 0.93], "licenseStatus": "pending" },
+    { "id": "armchair", "category": "armchair", "dimensionsM": [0.8, 0.8, 0.6] },
+    { "id": "chair-side", "category": "chair", "dimensionsM": [0.45, 0.9, 0.5] },
+    { "id": "coffee", "category": "coffee_table", "dimensionsM": [1.0, 0.42, 0.55] },
+    { "id": "desk", "category": "desk", "dimensionsM": [1.2, 0.75, 0.6] },
+    { "id": "shelf", "category": "shelf", "dimensionsM": [0.8, 1.8, 0.35] },
+    { "id": "twin-b", "category": "side_table", "dimensionsM": [0.5, 0.55, 0.5] },
+    { "id": "twin-a", "category": "side_table", "dimensionsM": [0.5, 0.55, 0.5] }
+  ],
+  "cases": [
+    { "name": "sofa picks the closest size", "scan": { "category": "sofa", "dimensionsM": [2.0, 0.84, 0.92] },
+      "expect": { "assetId": "sofa-large", "yawAdjustDeg": 0, "dimensionsM": [2.0, 0.84, 0.92] } },
+    { "name": "restricted and pending assets are never matched even with an exact fit", "scan": { "category": "sofa", "dimensionsM": [1.96, 0.82, 0.93] },
+      "expect": { "assetId": "sofa-large", "yawAdjustDeg": 0 } },
+    { "name": "low table becomes a coffee table", "scan": { "category": "table", "dimensionsM": [0.98, 0.43, 0.57] },
+      "expect": { "assetId": "coffee", "yawAdjustDeg": 0 } },
+    { "name": "desk-height table becomes a desk", "scan": { "category": "table", "dimensionsM": [1.18, 0.76, 0.62] },
+      "expect": { "assetId": "desk", "yawAdjustDeg": 0 } },
+    { "name": "w/d swapped scan matches via a 90° yaw adjustment", "scan": { "category": "chair", "dimensionsM": [0.6, 0.8, 0.8] },
+      "expect": { "assetId": "armchair", "yawAdjustDeg": 90, "dimensionsM": [0.8, 0.8, 0.6] } },
+    { "name": "storage with no good fit becomes a placeholder", "scan": { "category": "storage", "dimensionsM": [0.9, 0.8, 0.45] },
+      "expect": { "assetId": null, "category": "storage" } },
+    { "name": "category with no catalog entries becomes a placeholder", "scan": { "category": "fireplace", "dimensionsM": [1.2, 1.1, 0.4] },
+      "expect": { "assetId": null, "category": "fireplace", "score": 0 } },
+    { "name": "identical fits break ties by asset id", "scan": { "category": "table", "dimensionsM": [0.5, 0.55, 0.5] },
+      "expect": { "assetId": "twin-a" } },
+    { "name": "a stricter threshold turns a loose fit into a placeholder", "scan": { "category": "sofa", "dimensionsM": [1.8, 0.8, 0.9] },
+      "options": { "maxError": 0.05 },
+      "expect": { "assetId": null, "category": "sofa" } }
+  ]
+}

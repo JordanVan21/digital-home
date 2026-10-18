@@ -1,0 +1,1505 @@
+{
+  "description": "Catalog seed. Each entry becomes an AssetSpec in apps/web/public/catalog/catalog.json. Asset ids are fixed so fixtures can reference them. Prices are rough catalog estimates (USD cents), not retail quotes; omit to mean 'unknown'.",
+  "assets": [
+    {
+      "id": "a55e7000-0000-4000-8000-000000000001",
+      "slug": "sofa-fabric-classic",
+      "polyhaven": "Sofa_01",
+      "category": "sofa",
+      "title": "Classic fabric sofa",
+      "tags": [
+        "sofa",
+        "seating",
+        "fabric",
+        "three-seat"
+      ],
+      "styles": [
+        "classic",
+        "traditional"
+      ],
+      "colors": [
+        "greige",
+        "dark wood"
+      ],
+      "materials": [
+        "fabric",
+        "wood"
+      ],
+      "priceMinor": 89900
+    },
+    {
+      "id": "a55e7000-0000-4000-8000-000000000011",
+      "slug": "sofa-leather-chesterfield",
+      "polyhaven": "sofa_02",
+      "category": "sofa",
+      "title": "Tufted leather sofa",
+      "tags": [
+        "sofa",
+        "seating",
+        "leather",
+        "tufted"
+      ],
+      "styles": [
+        "vintage",
+        "chesterfield"
+      ],
+      "colors": [
+        "black"
+      ],
+      "materials": [
+        "leather",
+        "wood"
+      ],
+      "priceMinor": 129900
+    },
+    {
+      "id": "a55e7000-0000-4000-8000-000000000002",
+      "slug": "armchair-modern-wood",
+      "polyhaven": "modern_arm_chair_01",
+      "category": "armchair",
+      "title": "Wood-frame lounge armchair",
+      "tags": [
+        "armchair",
+        "seating",
+        "lounge"
+      ],
+      "styles": [
+        "mid-century",
+        "modern"
+      ],
+      "colors": [
+        "walnut",
+        "black"
+      ],
+      "materials": [
+        "wood",
+        "leather"
+      ],
+      "priceMinor": 44900
+    },
+    {
+      "id": "a55e7000-0000-4000-8000-000000000003",
+      "slug": "coffee-table-modern",
+      "polyhaven": "modern_coffee_table_01",
+      "category": "coffee_table",
+      "title": "Concrete-top coffee table",
+      "tags": [
+        "coffee table",
+        "table",
+        "low"
+      ],
+      "styles": [
+        "modern",
+        "industrial"
+      ],
+      "colors": [
+        "grey",
+        "oak"
+      ],
+      "materials": [
+        "concrete",
+        "wood"
+      ],
+      "priceMinor": 24900,
+      "frontAxis": "+X"
+    },
+    {
+      "id": "a55e7000-0000-4000-8000-000000000013",
+      "slug": "coffee-table-round",
+      "polyhaven": "coffee_table_round_01",
+      "category": "coffee_table",
+      "title": "Round marble coffee table",
+      "tags": [
+        "coffee table",
+        "table",
+        "round",
+        "low"
+      ],
+      "styles": [
+        "modern",
+        "glam"
+      ],
+      "colors": [
+        "white",
+        "black"
+      ],
+      "materials": [
+        "marble",
+        "metal"
+      ]
+    },
+    {
+      "id": "a55e7000-0000-4000-8000-000000000004",
+      "slug": "desk-wooden",
+      "polyhaven": "wooden_table_02",
+      "category": "desk",
+      "title": "Solid wood desk",
+      "tags": [
+        "desk",
+        "table",
+        "work"
+      ],
+      "styles": [
+        "rustic",
+        "minimal"
+      ],
+      "colors": [
+        "cherry"
+      ],
+      "materials": [
+        "wood"
+      ],
+      "priceMinor": 32900
+    },
+    {
+      "id": "a55e7000-0000-4000-8000-000000000005",
+      "slug": "chair-dining-upholstered",
+      "polyhaven": "dining_chair_02",
+      "category": "chair",
+      "title": "Upholstered dining chair",
+      "tags": [
+        "chair",
+        "seating",
+        "dining",
+        "desk chair"
+      ],
+      "styles": [
+        "classic"
+      ],
+      "colors": [
+        "brown"
+      ],
+      "materials": [
+        "leather",
+        "wood"
+      ],
+      "priceMinor": 12900,
+      "simplify": 0.5
+    },
+    {
+      "id": "a55e7000-0000-4000-8000-000000000015",
+      "slug": "chair-painted-wood",
+      "polyhaven": "painted_wooden_chair_01",
+      "category": "chair",
+      "title": "White painted wood chair",
+      "tags": [
+        "chair",
+        "seating",
+        "dining"
+      ],
+      "styles": [
+        "farmhouse",
+        "scandinavian"
+      ],
+      "colors": [
+        "white"
+      ],
+      "materials": [
+        "wood"
+      ],
+      "priceMinor": 7900
+    },
+    {
+      "id": "a55e7000-0000-4000-8000-000000000006",
+      "slug": "shelf-cube-oak",
+      "polyhaven": "wooden_display_shelves_01",
+      "category": "shelf",
+      "title": "Oak cube bookshelf",
+      "tags": [
+        "shelf",
+        "bookshelf",
+        "storage"
+      ],
+      "styles": [
+        "scandinavian",
+        "minimal"
+      ],
+      "colors": [
+        "oak"
+      ],
+      "materials": [
+        "wood"
+      ],
+      "priceMinor": 17900,
+      "frontAxis": "+X"
+    },
+    {
+      "id": "a55e7000-0000-4000-8000-000000000012",
+      "slug": "sideboard-slatted",
+      "polyhaven": "modern_wooden_cabinet",
+      "category": "cabinet",
+      "title": "Slatted walnut sideboard",
+      "tags": [
+        "sideboard",
+        "cabinet",
+        "storage",
+        "media console"
+      ],
+      "styles": [
+        "mid-century",
+        "modern"
+      ],
+      "colors": [
+        "walnut",
+        "brass"
+      ],
+      "materials": [
+        "wood",
+        "metal"
+      ],
+      "priceMinor": 59900,
+      "simplify": 0.5
+    },
+    {
+      "id": "a55e7000-0000-4000-8000-000000000014",
+      "slug": "side-table-oak",
+      "polyhaven": "side_table_01",
+      "category": "side_table",
+      "title": "Two-tier side table",
+      "tags": [
+        "side table",
+        "end table",
+        "table"
+      ],
+      "styles": [
+        "minimal"
+      ],
+      "colors": [
+        "oak"
+      ],
+      "materials": [
+        "wood"
+      ],
+      "priceMinor": 8900
+    },
+    {
+      "id": "a55e7000-0000-4000-8000-000000000007",
+      "slug": "lamp-desk-arm",
+      "polyhaven": "desk_lamp_arm_01",
+      "category": "lamp",
+      "title": "Orange arm desk lamp",
+      "tags": [
+        "lamp",
+        "desk lamp",
+        "lighting"
+      ],
+      "styles": [
+        "retro",
+        "industrial"
+      ],
+      "colors": [
+        "orange",
+        "grey"
+      ],
+      "materials": [
+        "metal"
+      ],
+      "priceMinor": 4900,
+      "light": {
+        "kind": "point",
+        "color": "#ffe4c0",
+        "intensity": 1.5,
+        "distanceM": 3,
+        "position": [
+          0,
+          0.75,
+          0.3
+        ]
+      },
+      "simplify": 0.5
+    },
+    {
+      "id": "a55e7000-0000-4000-8000-000000000010",
+      "slug": "plant-potted-philodendron",
+      "polyhaven": "potted_plant_02",
+      "category": "plant",
+      "title": "Potted philodendron",
+      "tags": [
+        "plant",
+        "greenery",
+        "terracotta"
+      ],
+      "styles": [
+        "organic"
+      ],
+      "colors": [
+        "green",
+        "terracotta"
+      ],
+      "materials": [
+        "ceramic",
+        "plant"
+      ],
+      "priceMinor": 6900,
+      "simplify": 0.5
+    },
+    {
+      "id": "a55e7000-0000-4000-8000-000000000009",
+      "slug": "art-framed-landscape",
+      "polyhaven": "hanging_picture_frame_02",
+      "category": "wall_art",
+      "title": "Framed landscape print",
+      "tags": [
+        "wall art",
+        "print",
+        "frame"
+      ],
+      "styles": [
+        "classic"
+      ],
+      "colors": [
+        "white",
+        "green"
+      ],
+      "materials": [
+        "wood",
+        "paper"
+      ],
+      "priceMinor": 7900
+    },
+    {
+      "id": "a55e7000-0000-4000-8000-000000000016",
+      "slug": "art-gilded-painting",
+      "polyhaven": "fancy_picture_frame_01",
+      "category": "wall_art",
+      "title": "Gilded-frame painting",
+      "tags": [
+        "wall art",
+        "painting",
+        "frame"
+      ],
+      "styles": [
+        "traditional",
+        "vintage"
+      ],
+      "colors": [
+        "gold",
+        "green"
+      ],
+      "materials": [
+        "wood",
+        "canvas"
+      ]
+    },
+    {
+      "id": "a55e7000-0000-4000-8000-000000000017",
+      "slug": "vase-ceramic-white",
+      "polyhaven": "ceramic_vase_01",
+      "category": "decor",
+      "title": "White ceramic vase",
+      "tags": [
+        "vase",
+        "decor",
+        "ceramic"
+      ],
+      "styles": [
+        "minimal"
+      ],
+      "colors": [
+        "white"
+      ],
+      "materials": [
+        "ceramic"
+      ],
+      "priceMinor": 2900,
+      "simplify": 0.4
+    },
+    {
+      "id": "a55e7000-0000-4000-8000-000000000008",
+      "slug": "rug-jute-bordered",
+      "generator": "rug",
+      "category": "rug",
+      "title": "Bordered jute rug",
+      "size": [
+        2.4,
+        0.012,
+        1.7
+      ],
+      "palette": {
+        "field": "#b48a5e",
+        "border": "#7b5a3a",
+        "stripe": "#d8c3a0"
+      },
+      "tags": [
+        "rug",
+        "jute",
+        "textile"
+      ],
+      "styles": [
+        "organic",
+        "warm minimal"
+      ],
+      "colors": [
+        "tan",
+        "brown"
+      ],
+      "materials": [
+        "jute"
+      ],
+      "priceMinor": 19900
+    },
+    {
+      "id": "a55e7000-0000-4000-8000-000000000018",
+      "slug": "rug-cream-runner",
+      "generator": "rug",
+      "category": "rug",
+      "title": "Cream wool rug",
+      "size": [
+        2,
+        0.012,
+        1.4
+      ],
+      "palette": {
+        "field": "#e7dccb",
+        "border": "#c9b79c",
+        "stripe": "#f3ece1"
+      },
+      "tags": [
+        "rug",
+        "wool",
+        "textile"
+      ],
+      "styles": [
+        "scandinavian",
+        "warm minimal"
+      ],
+      "colors": [
+        "cream"
+      ],
+      "materials": [
+        "wool"
+      ]
+    },
+    {
+      "id": "a55e7000-0000-4000-8000-000000000019",
+      "slug": "sofa-modern-cream",
+      "procedural": "sofa",
+      "params": {
+        "w": 2.3,
+        "h": 0.8,
+        "d": 0.95
+      },
+      "category": "sofa",
+      "title": "Modern cream sofa",
+      "tags": [
+        "sofa",
+        "seating",
+        "three-seat",
+        "boucle"
+      ],
+      "styles": [
+        "warm minimal",
+        "modern"
+      ],
+      "colors": [
+        "cream"
+      ],
+      "materials": [
+        "boucle",
+        "wood"
+      ],
+      "priceMinor": 149900,
+      "variants": [
+        {
+          "id": "cream",
+          "name": "Cream",
+          "swatch": "#e9e1d3",
+          "overrides": {
+            "fabric": {
+              "colorHex": "#e9e1d3"
+            }
+          }
+        },
+        {
+          "id": "oat",
+          "name": "Oat",
+          "swatch": "#d9ccb4",
+          "overrides": {
+            "fabric": {
+              "colorHex": "#d9ccb4"
+            }
+          }
+        },
+        {
+          "id": "sage",
+          "name": "Sage",
+          "swatch": "#b8bfa5",
+          "overrides": {
+            "fabric": {
+              "colorHex": "#b8bfa5"
+            }
+          }
+        },
+        {
+          "id": "terracotta",
+          "name": "Terracotta",
+          "swatch": "#c98e6b",
+          "overrides": {
+            "fabric": {
+              "colorHex": "#c98e6b"
+            }
+          }
+        },
+        {
+          "id": "charcoal",
+          "name": "Charcoal",
+          "swatch": "#5b5856",
+          "overrides": {
+            "fabric": {
+              "colorHex": "#5b5856"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "a55e7000-0000-4000-8000-000000000020",
+      "slug": "armchair-barrel-boucle",
+      "procedural": "barrelChair",
+      "params": {
+        "w": 0.85,
+        "h": 0.75,
+        "d": 0.8
+      },
+      "category": "armchair",
+      "title": "Boucle barrel chair",
+      "tags": [
+        "armchair",
+        "lounge chair",
+        "boucle"
+      ],
+      "styles": [
+        "warm minimal",
+        "organic"
+      ],
+      "colors": [
+        "cream"
+      ],
+      "materials": [
+        "boucle"
+      ],
+      "priceMinor": 69900,
+      "variants": [
+        {
+          "id": "cream",
+          "name": "Cream",
+          "swatch": "#efe8dd",
+          "overrides": {
+            "boucle": {
+              "colorHex": "#efe8dd"
+            }
+          }
+        },
+        {
+          "id": "oat",
+          "name": "Oat",
+          "swatch": "#ddcfb8",
+          "overrides": {
+            "boucle": {
+              "colorHex": "#ddcfb8"
+            }
+          }
+        },
+        {
+          "id": "moss",
+          "name": "Moss",
+          "swatch": "#9da58a",
+          "overrides": {
+            "boucle": {
+              "colorHex": "#9da58a"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "a55e7000-0000-4000-8000-000000000021",
+      "slug": "coffee-table-travertine",
+      "procedural": "roundTable",
+      "params": {
+        "w": 0.9,
+        "h": 0.38
+      },
+      "category": "coffee_table",
+      "title": "Round travertine coffee table",
+      "tags": [
+        "coffee table",
+        "round",
+        "stone"
+      ],
+      "styles": [
+        "warm minimal",
+        "organic"
+      ],
+      "colors": [
+        "travertine"
+      ],
+      "materials": [
+        "travertine"
+      ],
+      "priceMinor": 89900,
+      "collision": {
+        "kind": "table",
+        "boxes": [
+          {
+            "min": [
+              -0.5,
+              0.842,
+              -0.5
+            ],
+            "max": [
+              0.5,
+              1,
+              0.5
+            ]
+          },
+          {
+            "min": [
+              0.15600000000000003,
+              0,
+              0.15600000000000003
+            ],
+            "max": [
+              0.3,
+              0.842,
+              0.3
+            ]
+          },
+          {
+            "min": [
+              0.15600000000000003,
+              0,
+              -0.3
+            ],
+            "max": [
+              0.3,
+              0.842,
+              -0.15600000000000003
+            ]
+          },
+          {
+            "min": [
+              -0.3,
+              0,
+              0.15600000000000003
+            ],
+            "max": [
+              -0.15600000000000003,
+              0.842,
+              0.3
+            ]
+          },
+          {
+            "min": [
+              -0.3,
+              0,
+              -0.3
+            ],
+            "max": [
+              -0.15600000000000003,
+              0.842,
+              -0.15600000000000003
+            ]
+          }
+        ]
+      },
+      "supports": [
+        {
+          "id": "top",
+          "y": 1,
+          "polygon": [
+            [
+              0.47,
+              0
+            ],
+            [
+              0.3323401871576773,
+              0.33234018715767727
+            ],
+            [
+              2.87791997799628e-17,
+              0.47
+            ],
+            [
+              -0.33234018715767727,
+              0.3323401871576773
+            ],
+            [
+              -0.47,
+              5.75583995599256e-17
+            ],
+            [
+              -0.3323401871576774,
+              -0.33234018715767727
+            ],
+            [
+              -8.63375993398884e-17,
+              -0.47
+            ],
+            [
+              0.3323401871576772,
+              -0.3323401871576774
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "id": "a55e7000-0000-4000-8000-000000000022",
+      "slug": "floor-lamp-arc",
+      "procedural": "arcLamp",
+      "params": {
+        "w": 0.4,
+        "h": 1.9,
+        "d": 1.1
+      },
+      "category": "floor_lamp",
+      "title": "Arc floor lamp",
+      "tags": [
+        "floor lamp",
+        "arc lamp",
+        "lighting"
+      ],
+      "styles": [
+        "modern"
+      ],
+      "colors": [
+        "black",
+        "white"
+      ],
+      "materials": [
+        "metal",
+        "glass"
+      ],
+      "priceMinor": 22900,
+      "collision": {
+        "kind": "solid",
+        "boxes": [
+          {
+            "min": [
+              -0.45,
+              0,
+              -0.5
+            ],
+            "max": [
+              0.45,
+              0.02,
+              -0.17
+            ]
+          },
+          {
+            "min": [
+              -0.05,
+              0,
+              -0.4
+            ],
+            "max": [
+              0.05,
+              0.95,
+              -0.28
+            ]
+          },
+          {
+            "min": [
+              -0.05,
+              0.88,
+              -0.4
+            ],
+            "max": [
+              0.05,
+              1,
+              0.35
+            ]
+          },
+          {
+            "min": [
+              -0.5,
+              0.78,
+              0.13
+            ],
+            "max": [
+              0.5,
+              0.9,
+              0.5
+            ]
+          }
+        ]
+      },
+      "light": {
+        "kind": "point",
+        "color": "#ffd9a8",
+        "intensity": 3,
+        "distanceM": 4.5,
+        "position": [
+          0,
+          0.76,
+          0.318
+        ],
+        "emissiveMaterials": [
+          "shade",
+          "bulb"
+        ]
+      }
+    },
+    {
+      "id": "a55e7000-0000-4000-8000-000000000023",
+      "slug": "sideboard-oak",
+      "procedural": "sideboard",
+      "params": {
+        "w": 2.1,
+        "h": 0.75,
+        "d": 0.48
+      },
+      "category": "cabinet",
+      "title": "Honey oak sideboard",
+      "tags": [
+        "sideboard",
+        "credenza",
+        "storage"
+      ],
+      "styles": [
+        "warm minimal",
+        "scandinavian"
+      ],
+      "colors": [
+        "oak"
+      ],
+      "materials": [
+        "wood"
+      ],
+      "priceMinor": 79900
+    },
+    {
+      "id": "a55e7000-0000-4000-8000-000000000024",
+      "slug": "shelf-open-oak",
+      "procedural": "openShelf",
+      "params": {
+        "w": 1,
+        "h": 1.9,
+        "d": 0.35
+      },
+      "category": "shelf",
+      "title": "Open oak and steel bookshelf",
+      "tags": [
+        "bookshelf",
+        "shelving",
+        "open"
+      ],
+      "styles": [
+        "warm minimal",
+        "industrial"
+      ],
+      "colors": [
+        "oak",
+        "black"
+      ],
+      "materials": [
+        "wood",
+        "steel"
+      ],
+      "priceMinor": 34900,
+      "collision": {
+        "kind": "open",
+        "slabM": 0.03,
+        "boards": [
+          0.0263,
+          0.2474,
+          0.4684,
+          0.6895,
+          0.9105
+        ]
+      }
+    },
+    {
+      "id": "a55e7000-0000-4000-8000-000000000025",
+      "slug": "lantern-tall",
+      "procedural": "lanternTall",
+      "params": {
+        "w": 0.22,
+        "h": 0.55
+      },
+      "category": "lamp",
+      "title": "Tall glass lantern",
+      "tags": [
+        "lantern",
+        "candle",
+        "lighting"
+      ],
+      "styles": [
+        "organic"
+      ],
+      "colors": [
+        "clear",
+        "oak"
+      ],
+      "materials": [
+        "glass",
+        "wood"
+      ],
+      "priceMinor": 5900,
+      "light": {
+        "kind": "point",
+        "color": "#ffb866",
+        "intensity": 1.2,
+        "distanceM": 2.5,
+        "position": [
+          0,
+          0.4,
+          0
+        ],
+        "emissiveMaterials": [
+          "candle",
+          "flame"
+        ]
+      }
+    },
+    {
+      "id": "a55e7000-0000-4000-8000-000000000026",
+      "slug": "lantern-orb",
+      "procedural": "lanternOrb",
+      "params": {
+        "w": 0.2,
+        "h": 0.24
+      },
+      "category": "lamp",
+      "title": "Frosted orb lantern",
+      "tags": [
+        "lantern",
+        "lamp",
+        "lighting"
+      ],
+      "styles": [
+        "organic"
+      ],
+      "colors": [
+        "frosted"
+      ],
+      "materials": [
+        "glass"
+      ],
+      "priceMinor": 4900,
+      "light": {
+        "kind": "point",
+        "color": "#ffc985",
+        "intensity": 1,
+        "distanceM": 2.5,
+        "position": [
+          0,
+          0.55,
+          0
+        ],
+        "emissiveMaterials": [
+          "frosted"
+        ]
+      }
+    },
+    {
+      "id": "a55e7000-0000-4000-8000-000000000027",
+      "slug": "pillow-square",
+      "procedural": "pillow",
+      "params": {
+        "w": 0.45,
+        "h": 0.45,
+        "d": 0.15
+      },
+      "category": "pillow",
+      "title": "Linen throw pillow",
+      "tags": [
+        "pillow",
+        "cushion",
+        "textile"
+      ],
+      "styles": [
+        "warm minimal"
+      ],
+      "colors": [
+        "rust"
+      ],
+      "materials": [
+        "linen"
+      ],
+      "priceMinor": 3900,
+      "variants": [
+        {
+          "id": "rust",
+          "name": "Rust",
+          "swatch": "#b4643a",
+          "overrides": {
+            "linen": {
+              "colorHex": "#b4643a"
+            }
+          }
+        },
+        {
+          "id": "sand",
+          "name": "Sand",
+          "swatch": "#d8c4a6",
+          "overrides": {
+            "linen": {
+              "colorHex": "#d8c4a6"
+            }
+          }
+        },
+        {
+          "id": "oat",
+          "name": "Oat",
+          "swatch": "#e2d3bc",
+          "overrides": {
+            "linen": {
+              "colorHex": "#e2d3bc"
+            }
+          }
+        },
+        {
+          "id": "cream",
+          "name": "Cream",
+          "swatch": "#efe7da",
+          "overrides": {
+            "linen": {
+              "colorHex": "#efe7da"
+            }
+          }
+        },
+        {
+          "id": "sage",
+          "name": "Sage",
+          "swatch": "#a9b39a",
+          "overrides": {
+            "linen": {
+              "colorHex": "#a9b39a"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "a55e7000-0000-4000-8000-000000000028",
+      "slug": "throw-knit",
+      "procedural": "throwBlanket",
+      "params": {
+        "w": 0.6,
+        "h": 0.06,
+        "d": 0.45
+      },
+      "category": "throw",
+      "title": "Chunky knit throw (folded)",
+      "tags": [
+        "throw",
+        "blanket",
+        "textile"
+      ],
+      "styles": [
+        "warm minimal",
+        "cozy"
+      ],
+      "colors": [
+        "cream"
+      ],
+      "materials": [
+        "wool"
+      ],
+      "priceMinor": 8900,
+      "variants": [
+        {
+          "id": "cream",
+          "name": "Cream",
+          "swatch": "#efe7da",
+          "overrides": {
+            "knit": {
+              "colorHex": "#efe7da"
+            }
+          }
+        },
+        {
+          "id": "oat",
+          "name": "Oat",
+          "swatch": "#ddcfb8",
+          "overrides": {
+            "knit": {
+              "colorHex": "#ddcfb8"
+            }
+          }
+        },
+        {
+          "id": "clay",
+          "name": "Clay",
+          "swatch": "#c9a184",
+          "overrides": {
+            "knit": {
+              "colorHex": "#c9a184"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "a55e7000-0000-4000-8000-000000000029",
+      "slug": "book-hardcover",
+      "procedural": "book",
+      "params": {
+        "w": 0.16,
+        "h": 0.24,
+        "d": 0.03
+      },
+      "category": "book",
+      "title": "Hardcover book",
+      "tags": [
+        "book",
+        "decor"
+      ],
+      "styles": [
+        "minimal"
+      ],
+      "colors": [
+        "sand"
+      ],
+      "materials": [
+        "paper"
+      ],
+      "priceMinor": 2500,
+      "variants": [
+        {
+          "id": "sand",
+          "name": "Sand",
+          "swatch": "#cdb89a",
+          "overrides": {
+            "cover": {
+              "colorHex": "#cdb89a"
+            }
+          }
+        },
+        {
+          "id": "taupe",
+          "name": "Taupe",
+          "swatch": "#8c7a6b",
+          "overrides": {
+            "cover": {
+              "colorHex": "#8c7a6b"
+            }
+          }
+        },
+        {
+          "id": "white",
+          "name": "White",
+          "swatch": "#ece7df",
+          "overrides": {
+            "cover": {
+              "colorHex": "#ece7df"
+            }
+          }
+        },
+        {
+          "id": "sage",
+          "name": "Sage",
+          "swatch": "#9fa88f",
+          "overrides": {
+            "cover": {
+              "colorHex": "#9fa88f"
+            }
+          }
+        },
+        {
+          "id": "terracotta",
+          "name": "Terracotta",
+          "swatch": "#b8704c",
+          "overrides": {
+            "cover": {
+              "colorHex": "#b8704c"
+            }
+          }
+        },
+        {
+          "id": "ink",
+          "name": "Ink",
+          "swatch": "#2f3440",
+          "overrides": {
+            "cover": {
+              "colorHex": "#2f3440"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "a55e7000-0000-4000-8000-000000000030",
+      "slug": "bowl-stoneware",
+      "procedural": "bowl",
+      "params": {
+        "w": 0.14,
+        "h": 0.05
+      },
+      "category": "bowl",
+      "title": "Stoneware dish",
+      "tags": [
+        "bowl",
+        "dish",
+        "decor"
+      ],
+      "styles": [
+        "organic"
+      ],
+      "colors": [
+        "grey"
+      ],
+      "materials": [
+        "stoneware"
+      ],
+      "priceMinor": 2900
+    },
+    {
+      "id": "a55e7000-0000-4000-8000-000000000031",
+      "slug": "tray-walnut",
+      "procedural": "tray",
+      "params": {
+        "w": 0.3,
+        "h": 0.03,
+        "d": 0.18
+      },
+      "category": "tray",
+      "title": "Walnut tray",
+      "tags": [
+        "tray",
+        "decor"
+      ],
+      "styles": [
+        "minimal"
+      ],
+      "colors": [
+        "walnut"
+      ],
+      "materials": [
+        "wood"
+      ],
+      "priceMinor": 3500
+    },
+    {
+      "id": "a55e7000-0000-4000-8000-000000000032",
+      "slug": "art-abstract-circles",
+      "procedural": "artPrint",
+      "params": {
+        "w": 0.6,
+        "h": 0.78,
+        "d": 0.035
+      },
+      "category": "wall_art",
+      "title": "Abstract circles print",
+      "tags": [
+        "wall art",
+        "print",
+        "abstract"
+      ],
+      "styles": [
+        "warm minimal"
+      ],
+      "colors": [
+        "beige",
+        "terracotta"
+      ],
+      "materials": [
+        "paper",
+        "wood"
+      ],
+      "priceMinor": 12900
+    },
+    {
+      "id": "a55e7000-0000-4000-8000-000000000033",
+      "slug": "vase-clay-round",
+      "polyhaven": "ceramic_vase_02",
+      "category": "vase",
+      "title": "Round clay vase",
+      "tags": [
+        "vase",
+        "ceramic"
+      ],
+      "styles": [
+        "organic"
+      ],
+      "colors": [
+        "clay"
+      ],
+      "materials": [
+        "ceramic"
+      ],
+      "priceMinor": 3900,
+      "simplify": 0.4
+    },
+    {
+      "id": "a55e7000-0000-4000-8000-000000000034",
+      "slug": "vase-bottle-tall",
+      "polyhaven": "ceramic_vase_03",
+      "category": "vase",
+      "title": "Tall bottle vase",
+      "tags": [
+        "vase",
+        "ceramic"
+      ],
+      "styles": [
+        "organic"
+      ],
+      "colors": [
+        "terracotta"
+      ],
+      "materials": [
+        "ceramic"
+      ],
+      "priceMinor": 3400,
+      "simplify": 0.4
+    },
+    {
+      "id": "a55e7000-0000-4000-8000-000000000035",
+      "slug": "vase-bud-sand",
+      "polyhaven": "ceramic_vase_04",
+      "category": "vase",
+      "title": "Sand bud vase",
+      "tags": [
+        "vase",
+        "ceramic"
+      ],
+      "styles": [
+        "organic"
+      ],
+      "colors": [
+        "sand"
+      ],
+      "materials": [
+        "ceramic"
+      ],
+      "priceMinor": 2900,
+      "simplify": 0.4
+    },
+    {
+      "id": "a55e7000-0000-4000-8000-000000000036",
+      "slug": "plant-olive-tree",
+      "polyhaven": "potted_plant_01",
+      "category": "plant",
+      "title": "Potted olive tree",
+      "tags": [
+        "plant",
+        "tree",
+        "greenery"
+      ],
+      "styles": [
+        "organic"
+      ],
+      "colors": [
+        "green",
+        "terracotta"
+      ],
+      "materials": [
+        "plant",
+        "ceramic"
+      ],
+      "priceMinor": 14900,
+      "simplify": 0.45
+    },
+    {
+      "id": "a55e7000-0000-4000-8000-000000000037",
+      "slug": "plant-small-succulent",
+      "polyhaven": "potted_plant_04",
+      "category": "small_plant",
+      "title": "Small potted succulent",
+      "tags": [
+        "plant",
+        "succulent",
+        "greenery"
+      ],
+      "styles": [
+        "organic"
+      ],
+      "colors": [
+        "green"
+      ],
+      "materials": [
+        "plant",
+        "ceramic"
+      ],
+      "priceMinor": 1900,
+      "simplify": 0.35
+    },
+    {
+      "id": "a55e7000-0000-4000-8000-000000000038",
+      "slug": "rug-jute-large",
+      "generator": "rug",
+      "category": "rug",
+      "title": "Large chunky jute rug",
+      "size": [
+        3.2,
+        0.015,
+        2.3
+      ],
+      "palette": {
+        "field": "#a9814f",
+        "border": "#6e5032",
+        "stripe": "#c09a6a"
+      },
+      "tags": [
+        "rug",
+        "jute",
+        "textile"
+      ],
+      "styles": [
+        "organic",
+        "warm minimal"
+      ],
+      "colors": [
+        "tan"
+      ],
+      "materials": [
+        "jute"
+      ],
+      "priceMinor": 39900,
+      "weave": true
+    },
+    {
+      "id": "a55e7000-0000-4000-8000-000000000039",
+      "slug": "pendant-modern",
+      "polyhaven": "modern_ceiling_lamp_01",
+      "category": "pendant",
+      "title": "Modern pendant lamp",
+      "tags": [
+        "pendant",
+        "ceiling lamp",
+        "lighting"
+      ],
+      "styles": [
+        "modern"
+      ],
+      "colors": [
+        "black"
+      ],
+      "materials": [
+        "metal"
+      ],
+      "priceMinor": 18900,
+      "light": {
+        "kind": "point",
+        "color": "#ffe2bf",
+        "intensity": 4,
+        "distanceM": 5,
+        "position": [
+          0,
+          0.15,
+          0
+        ]
+      }
+    }
+  ],
+  "textures": [
+    {
+      "polyhaven": "laminate_floor_02",
+      "out": "floor-oak"
+    }
+  ],
+  "hdrs": [
+    {
+      "polyhaven": "lebombo",
+      "resolution": "1k",
+      "out": "warm-interior.hdr"
+    },
+    {
+      "polyhaven": "altanka",
+      "resolution": "1k",
+      "out": "golden-garden.hdr"
+    }
+  ]
+}
