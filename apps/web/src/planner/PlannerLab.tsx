@@ -1,6 +1,14 @@
 import { useEffect, useRef, useState } from "react";
 import { useStore } from "zustand";
-import { ArrowLeft, Check, Loader2, RefreshCw, Sparkles } from "lucide-react";
+import {
+  ArrowLeft,
+  Check,
+  ExternalLink,
+  Loader2,
+  RefreshCw,
+  Save,
+  Sparkles,
+} from "lucide-react";
 import { assetById, type SceneSpec } from "@house/contracts";
 import {
   DesignBriefSchema,
@@ -11,8 +19,14 @@ import {
 } from "@house/aesthetic-planner";
 import { editor } from "../state/editor";
 import { rooms } from "../state/rooms";
-import { readLastRoom } from "../state/lastRoom";
-import { cloudRoomIds, cloudRoomsVersion, supabase } from "../state/cloud";
+import { readLastRoom, rememberRoom } from "../state/lastRoom";
+import {
+  cloudRoomIds,
+  cloudRoomsVersion,
+  designParents,
+  saveCloudDesign,
+  supabase,
+} from "../state/cloud";
 import { CloudAccount } from "../components/CloudAccount";
 import type { ModelStatuses } from "./modelStatus";
 import { PlannerViewport, type CaptureApi } from "./PlannerViewport";
@@ -204,6 +218,10 @@ export default function PlannerLab() {
   const [authRevision, setAuthRevision] = useState(0);
   const [modelStatus, setModelStatus] = useState<ModelStatuses>({});
   const [views, setViews] = useState<RoomView[]>([]);
+  const [saved, setSaved] = useState<{ id: string; name: string } | null>(null);
+  const [saving, setSaving] = useState(false);
+  const [saveError, setSaveError] = useState("");
+  const runStyle = useRef(stylePresets[0].name);
   const capture = useRef<CaptureApi>(null);
   const generation = useRef(0);
   useEffect(() => {
@@ -214,6 +232,7 @@ export default function PlannerLab() {
     setBase(null);
     setViews([]);
     setStage("idle");
+    setSaved(null);
   }, [room.roomId]);
   // The style cards and notes write the brief; Advanced can still edit it by hand.
   useEffect(() => {
@@ -279,6 +298,9 @@ export default function PlannerLab() {
     setViews([]);
     setBefore(false);
     setResult(null);
+    setSaved(null);
+    setSaveError("");
+    runStyle.current = preset.name;
     setStage("plan");
     const runId = ++generation.current;
     try {
@@ -350,6 +372,40 @@ export default function PlannerLab() {
     const own = order.indexOf(key);
     return own < at ? "done" : own === at ? "active" : "todo";
   };
+  const originalId = designParents.get(room.roomId) ?? room.roomId;
+  const designs = rooms.filter(
+    (r) => designParents.get(r.roomId) === originalId,
+  );
+  const canSave = cloudRoomIds.has(originalId);
+  const openInSandbox = (id: string) => {
+    rememberRoom(id);
+    window.location.assign("/");
+  };
+  async function saveDesign() {
+    if (!result) return;
+    setSaving(true);
+    setSaveError("");
+    const time = new Date().toLocaleTimeString([], {
+      hour: "numeric",
+      minute: "2-digit",
+    });
+    const name = `${runStyle.current} · ${time}`;
+    try {
+      const id = await saveCloudDesign({
+        roomId: room.roomId,
+        name,
+        brief: JSON.parse(briefText),
+        scene: result.candidate.scene,
+      });
+      setSaved({ id, name });
+    } catch (e) {
+      setSaveError(
+        e instanceof Error ? e.message : "The design could not be saved.",
+      );
+    } finally {
+      setSaving(false);
+    }
+  }
   const items = result?.candidate.items ?? [];
   const changes = items.filter((i) => i.action !== "keep");
   const newCost = items
@@ -520,6 +576,23 @@ export default function PlannerLab() {
           </p>
         )}
 
+        {designs.length > 0 && (
+          <section className="planner-saved" aria-label="Saved designs">
+            <p className="planner-eyebrow">Saved designs of this room</p>
+            {designs.map((d) => (
+              <button
+                key={d.roomId}
+                className="saved-design"
+                onClick={() => openInSandbox(d.roomId)}
+              >
+                <Sparkles size={14} />
+                <span>{d.name}</span>
+                <ExternalLink size={13} />
+              </button>
+            ))}
+          </section>
+        )}
+
         <details className="planner-advanced">
           <summary>Advanced</summary>
           <p>
@@ -599,6 +672,50 @@ export default function PlannerLab() {
               <strong>{result.history.at(-1)?.score ?? "–"}/15</strong>
               <span>style review</span>
             </div>
+          </div>
+
+          <div className="report-save">
+            {saved ? (
+              <>
+                <p>
+                  <Check size={14} /> Saved as <strong>{saved.name}</strong>.
+                  Your original room is unchanged.
+                </p>
+                <button
+                  className="primary-pill"
+                  onClick={() => openInSandbox(saved.id)}
+                >
+                  <ExternalLink size={15} />
+                  <span>Open in sandbox</span>
+                </button>
+              </>
+            ) : (
+              <button
+                className="primary-pill"
+                disabled={busy || saving || !canSave}
+                title={
+                  canSave
+                    ? "Save this proposal as a separate design of the room"
+                    : "Sign in and use a scanned room to save designs"
+                }
+                onClick={() => void saveDesign()}
+              >
+                {saving ? (
+                  <Loader2 size={15} className="spin" />
+                ) : (
+                  <Save size={15} />
+                )}
+                <span>{saving ? "Saving…" : "Save as new design"}</span>
+              </button>
+            )}
+            {!canSave && !saved && (
+              <small>Sign in and use a scanned room to save designs.</small>
+            )}
+            {saveError && (
+              <p className="planner-error" role="alert">
+                {saveError}
+              </p>
+            )}
           </div>
 
           <ul className="change-list">

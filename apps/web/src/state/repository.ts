@@ -17,6 +17,8 @@ import { roomById } from "./rooms";
 import {
   cloudRoomIds,
   fetchCloudScene,
+  designParents,
+  pushCloudDesign,
   pushCloudScene,
   settleCloudScene,
 } from "./cloud";
@@ -389,6 +391,13 @@ export class CloudSceneRepository extends LocalStorageSceneRepository {
     return result;
   }
   private push(roomId: string) {
+    if (designParents.has(roomId)) {
+      void super
+        .load(roomId)
+        .then(pushCloudDesign)
+        .catch(() => {});
+      return;
+    }
     if (!cloudRoomIds.has(roomId)) return;
     void super
       .load(roomId)

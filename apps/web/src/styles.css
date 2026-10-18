@@ -1462,3 +1462,14 @@ kbd {
 .room-menu .cloud-signin p.cloud-error {
   color: #c0392b;
 }
+
+/* Saved planner designs sit indented under the scanned room they came from. */
+.room-list button.room-design {
+  padding-left: 26px;
+  font-size: 12.5px;
+  color: var(--ink-soft);
+}
+.topbar .glass-button {
+  white-space: nowrap;
+  flex-shrink: 0;
+}

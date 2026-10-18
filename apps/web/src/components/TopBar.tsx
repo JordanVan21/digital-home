@@ -12,13 +12,14 @@ import {
   RefreshCw,
   RotateCcw,
   Search,
+  Sparkles,
   Undo2,
 } from "lucide-react";
 import { editor } from "../state/editor";
 import { rooms } from "../state/rooms";
 import { Button } from "./Button";
 import { CloudAccount } from "./CloudAccount";
-import { cloudRoomIds, cloudRoomsVersion } from "../state/cloud";
+import { cloudRoomIds, cloudRoomsVersion, designParents } from "../state/cloud";
 
 export const searchInputId = "global-search";
 
@@ -108,25 +109,35 @@ function RoomSwitcher({ disabled }: { disabled: boolean }) {
       </button>
       {open && (
         <div className="room-menu room-list glass" role="menu">
-          {rooms.map((r) => (
-            <button
-              key={r.roomId}
-              role="menuitemradio"
-              aria-checked={r === current}
-              onClick={() => {
-                setOpen(false);
-                void editor.switchRoom(r.roomId);
-              }}
-            >
-              {cloudRoomIds.has(r.roomId) ? (
-                <ScanLine size={14} />
-              ) : (
-                <House size={14} />
-              )}
-              <span>{r.name}</span>
-              {r === current && <Check size={14} className="room-current" />}
-            </button>
-          ))}
+          {/* Saved designs are listed under the scanned room they came from. */}
+          {rooms
+            .filter((r) => !designParents.has(r.roomId))
+            .flatMap((r) => [
+              r,
+              ...rooms.filter((d) => designParents.get(d.roomId) === r.roomId),
+            ])
+            .map((r) => (
+              <button
+                key={r.roomId}
+                role="menuitemradio"
+                aria-checked={r === current}
+                className={designParents.has(r.roomId) ? "room-design" : ""}
+                onClick={() => {
+                  setOpen(false);
+                  void editor.switchRoom(r.roomId);
+                }}
+              >
+                {designParents.has(r.roomId) ? (
+                  <Sparkles size={14} />
+                ) : cloudRoomIds.has(r.roomId) ? (
+                  <ScanLine size={14} />
+                ) : (
+                  <House size={14} />
+                )}
+                <span>{r.name}</span>
+                {r === current && <Check size={14} className="room-current" />}
+              </button>
+            ))}
         </div>
       )}
     </div>
