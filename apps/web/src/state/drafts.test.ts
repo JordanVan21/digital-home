@@ -66,7 +66,7 @@ describe("suggestions phase", () => {
   });
   it("accepts a batch as one history entry and saves once", async () => {
     const repo = new LocalStorageSceneRepository(memoryStorage()),
-      spy = vi.spyOn(repo, "save"),
+      spy = vi.spyOn(repo, "saveScenePatch"),
       e = createEditor(repo);
     await e.load();
     expect(e.suggest(move(smallId, 0.4, 1.75))).toBe(true);

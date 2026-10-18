@@ -87,7 +87,8 @@ export function validateObject(
   if (supportCycle(scene, o))
     return fail("INVALID_SUPPORT", "Support cannot form a cycle.");
   if (
-    !o.placement?.float && support === "object" &&
+    !o.placement?.float &&
+    support === "object" &&
     (!o.placement?.parentId ||
       !scene.objects.some(
         (p) => p.id === o.placement?.parentId && p.id !== o.id,
@@ -100,7 +101,11 @@ export function validateObject(
   )
     return fail("INVALID_SUPPORT", "Choose a supporting wall.");
   if (options.allowConflicts) return { ok: true };
-  if (!o.placement?.float && support === "floor" && !hasFloorSupport(o, ctx.room, ctx.assets))
+  if (
+    !o.placement?.float &&
+    support === "floor" &&
+    !hasFloorSupport(o, ctx.room, ctx.assets)
+  )
     return fail(
       "INVALID_SUPPORT",
       "Accept will settle this piece onto the nearest floor or furniture surface.",
@@ -111,7 +116,8 @@ export function validateObject(
       "Mount the rear face on a solid part of the wall.",
     );
   if (
-    !o.placement?.float && support === "ceiling" &&
+    !o.placement?.float &&
+    support === "ceiling" &&
     Math.abs(
       onCeiling(ctx.room, o).transform.position[1] - o.transform.position[1],
     ) > 0.0001
@@ -210,9 +216,20 @@ export function validateOp(
       (obj.assetId && ctx.assets[obj.assetId]?.light)
       ? { ok: true }
       : fail("INVALID_TRANSFORM", "Choose a light to switch.");
-  if (op.type === "setFloat") return {ok:true};
+  if (op.type === "setPlacement")
+    return validateObject(
+      scene,
+      { ...obj, placement: op.placement },
+      ctx,
+      options,
+    );
+  if (op.type === "setFloat") return { ok: true };
   if (op.type === "delete" || op.type === "replacePhysicalItem") {
-    if (scene.objects.some((o) => o.placement?.parentId === id && !o.placement?.float))
+    if (
+      scene.objects.some(
+        (o) => o.placement?.parentId === id && !o.placement?.float,
+      )
+    )
       return fail("INVALID_SUPPORT", "Move supported objects first.");
   }
   if (op.type === "delete") return { ok: true };
@@ -342,10 +359,28 @@ export function applyOp(
     objects = scene.objects.map((o) => {
       if (o.id !== op.objectId) return o;
       switch (op.type) {
-        case "setPlan": {const next={...o}; if(op.decision===undefined)delete next.renovationDecision;else next.renovationDecision=op.decision;return next;}
+        case "setPlacement": {
+          const next = { ...o };
+          if (op.placement === undefined) delete next.placement;
+          else next.placement = structuredClone(op.placement);
+          return next;
+        }
+        case "setPlan": {
+          const next = { ...o };
+          if (op.decision === undefined) delete next.renovationDecision;
+          else next.renovationDecision = op.decision;
+          return next;
+        }
         case "setFloat": {
-          const next = {...o,placement:{...o.placement,support:o.placement?.support ?? "floor"}};
-          if(op.float===undefined) delete next.placement.float; else next.placement.float=op.float;
+          const next = {
+            ...o,
+            placement: {
+              ...o.placement,
+              support: o.placement?.support ?? "floor",
+            },
+          };
+          if (op.float === undefined) delete next.placement.float;
+          else next.placement.float = op.float;
           return next;
         }
         case "setGroup": {
@@ -397,10 +432,20 @@ export function invertOp(before: SceneSpec, op: SceneOp): Inverse {
   const obj = before.objects.find((o) => o.id === id);
   if (!obj) throw new Error("Cannot invert an unknown object");
   switch (op.type) {
+    case "setPlacement":
+      return {
+        type: "setPlacement",
+        objectId: id,
+        placement: structuredClone(obj.placement),
+      };
     case "setPlan":
-      return {type:"setPlan",objectId:id,decision:obj.renovationDecision};
+      return {
+        type: "setPlan",
+        objectId: id,
+        decision: obj.renovationDecision,
+      };
     case "setFloat":
-      return {type:"checkpoint",scene:structuredClone(before)};
+      return { type: "checkpoint", scene: structuredClone(before) };
     case "resize":
       return { type: "checkpoint", scene: structuredClone(before) };
     case "setGroup":

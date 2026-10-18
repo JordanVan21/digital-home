@@ -15,3 +15,6 @@ export * from "./rotation";
 export * from "./mounting";
 
 export * from "./resize";
+
+export { topContactFaces } from "./contactFaces";
+export * from "./patch";

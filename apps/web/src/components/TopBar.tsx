@@ -25,6 +25,16 @@ function SaveStatus() {
   const ready = useStore(editor.scene, (s) => s.ready);
   const pending = useStore(editor.draft, (s) => s.scene !== null);
   useStore(editor.draft, (s) => s.scene);
+  if (status === "conflict")
+    return (
+      <button
+        className="save-error"
+        onClick={() => window.location.reload()}
+        title={error ?? "Reload saved room"}
+      >
+        Room changed elsewhere · Reload
+      </button>
+    );
   if (status === "error")
     return (
       <button
@@ -139,7 +149,26 @@ function RoomMenu() {
           <button onClick={() => window.location.reload()}>
             <RotateCcw size={14} /> Reload saved room
           </button>
-          {import.meta.env.DEV && <><button onClick={()=>{void editor.devAction("failure");setOpen(false);}}>Simulate save failure</button><button onClick={()=>{void editor.devAction("external");setOpen(false);}}>Simulate another session edit</button></>}
+          {import.meta.env.DEV && (
+            <>
+              <button
+                onClick={() => {
+                  void editor.devAction("failure");
+                  setOpen(false);
+                }}
+              >
+                Simulate save failure
+              </button>
+              <button
+                onClick={() => {
+                  void editor.devAction("external");
+                  setOpen(false);
+                }}
+              >
+                Simulate another session edit
+              </button>
+            </>
+          )}
           <p>Changes are saved on this device.</p>
         </div>
       )}

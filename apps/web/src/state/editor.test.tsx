@@ -153,7 +153,7 @@ describe("serialized debounced autosave", () => {
   it("saves once after a burst and restores it through the repository", async () => {
     const storage = memoryStorage(),
       repo = new LocalStorageSceneRepository(storage),
-      spy = vi.spyOn(repo, "save"),
+      spy = vi.spyOn(repo, "saveScenePatch"),
       e = createEditor(repo);
     await e.load();
     for (let i = 0; i < 4; i++) {
@@ -170,7 +170,7 @@ describe("serialized debounced autosave", () => {
     expect(e.save.getState().status).toBe("saved");
     const restored = await repo.load(createFixtureScene().roomId);
     expect(restored.objects.at(-1)?.transform.position[0]).toBeCloseTo(0.32);
-    expect(restored.revision).toBe(4);
+    expect(restored.revision).toBe(1);
     e.dispose();
   });
   it("never overlaps saves, then saves the latest pending scene against the acknowledged revision", async () => {

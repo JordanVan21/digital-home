@@ -234,13 +234,35 @@ export const AssetSpecSchema = z.object({
   contentHash: z.string(),
   searchableDescription: z.string(),
   embeddingVersion: z.string().optional(),
-  variants: z.array(z.object({id:z.string(),name:z.string(),swatch:z.string().regex(/^#[0-9a-fA-F]{6}$/),overrides:MaterialOverridesSchema})).optional(),
+  variants: z
+    .array(
+      z.object({
+        id: z.string(),
+        name: z.string(),
+        swatch: z.string().regex(/^#[0-9a-fA-F]{6}$/),
+        overrides: MaterialOverridesSchema,
+      }),
+    )
+    .optional(),
   mount: z.enum(["floor", "wall", "ceiling"]).optional(),
   light: AssetLightSchema.optional(),
 });
 export const SceneOpSchema = z.discriminatedUnion("type", [
-  z.object({type:z.literal("setPlan"),objectId:UUIDSchema,decision:z.enum(["keep","replace","remove"]).optional()}),
-  z.object({type:z.literal("setFloat"),objectId:UUIDSchema,float:z.boolean().optional()}),
+  z.object({
+    type: z.literal("setPlacement"),
+    objectId: UUIDSchema,
+    placement: SceneObjectSchema.shape.placement,
+  }),
+  z.object({
+    type: z.literal("setPlan"),
+    objectId: UUIDSchema,
+    decision: z.enum(["keep", "replace", "remove"]).optional(),
+  }),
+  z.object({
+    type: z.literal("setFloat"),
+    objectId: UUIDSchema,
+    float: z.boolean().optional(),
+  }),
   z.object({
     type: z.literal("resize"),
     objectId: UUIDSchema,
@@ -279,7 +301,7 @@ export const SceneOpSchema = z.discriminatedUnion("type", [
   z.object({
     type: z.literal("replaceAsset"),
     objectId: UUIDSchema,
-    assetId: UUIDSchema,
+    assetId: UUIDSchema.nullable(),
     dimensionsM: dimensions,
   }),
   z.object({

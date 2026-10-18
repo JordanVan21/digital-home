@@ -37,7 +37,11 @@ test("snaps to a chair seat, carries the item with its chair, and preserves the 
     item.dimensionsM = [0.08, 0.1, 0.08];
     item.transform.position = [0.8, 0, 0];
     scene.objects = [chair, item];
-    editor.scene.setState({ scene, ready: true });
+    localStorage.setItem(
+      `house.scene.v1.${scene.roomId}`,
+      JSON.stringify(scene),
+    );
+    await editor.load();
     editor.select(item.id);
     if (
       !editor.suggest({

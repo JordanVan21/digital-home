@@ -1,5 +1,15 @@
 import {
+  applyOp,
+  diffToOps,
+  stableStringify,
+  validateObject,
+  type SceneContext,
+} from "@house/scene-engine";
+import {
   SceneSpecSchema,
+  SceneOpSchema,
+  assetById,
+  type SceneOp,
   type RoomDefinition,
   type SceneSpec,
 } from "@house/contracts";
@@ -7,6 +17,13 @@ import { roomById } from "./rooms";
 export interface SceneRepository {
   load(roomId: string): Promise<SceneSpec>;
   save(scene: SceneSpec, baseRevision: number): Promise<{ revision: number }>;
+  saveScenePatch?(
+    roomId: string,
+    baseRevision: number,
+    idempotencyKey: string,
+    operations: SceneOp[],
+  ): Promise<{ revision: number }>;
+  patchContext?(roomId: string): SceneContext;
   /** Explicit recovery for unreadable local data, only triggered by Reset room. */
   reset?(roomId: string): Promise<SceneSpec>;
 }
@@ -22,8 +39,15 @@ export class RepositoryError extends Error {
 type StoragePort = Pick<Storage, "getItem" | "setItem">;
 export class LocalStorageSceneRepository implements SceneRepository {
   private failNext = false;
-  simulateSaveFailure(){this.failNext=true;}
-  simulateExternalEdit(roomId:string){return this.exclusive(roomId,()=>{const current=this.read(roomId);this.write({...current,revision:current.revision+1});});}
+  simulateSaveFailure() {
+    this.failNext = true;
+  }
+  simulateExternalEdit(roomId: string) {
+    return this.exclusive(roomId, () => {
+      const current = this.read(roomId);
+      this.write({ ...current, revision: current.revision + 1 });
+    });
+  }
   // Resolve browser storage lazily: disabled storage must produce an editor error, not an import-time crash.
   constructor(
     private providedStorage?: StoragePort,
@@ -73,11 +97,15 @@ export class LocalStorageSceneRepository implements SceneRepository {
   async load(roomId: string): Promise<SceneSpec> {
     return this.read(roomId);
   }
-  private write(scene: SceneSpec) {
+  private write(scene: SceneSpec, receipts?: unknown[]) {
     try {
       this.storage.setItem(
         this.key(scene.roomId),
-        JSON.stringify({ ...scene, updatedAt: new Date().toISOString() }),
+        JSON.stringify({
+          ...scene,
+          updatedAt: new Date().toISOString(),
+          ...(receipts ? { _housePatches: receipts } : {}),
+        }),
       );
     } catch {
       throw new RepositoryError(
@@ -98,7 +126,13 @@ export class LocalStorageSceneRepository implements SceneRepository {
   }
   save(scene: SceneSpec, baseRevision: number): Promise<{ revision: number }> {
     return this.exclusive(scene.roomId, () => {
-      if(this.failNext){this.failNext=false;throw new RepositoryError("STORAGE_UNAVAILABLE","Simulated save failure. Retry to save your changes.");}
+      if (this.failNext) {
+        this.failNext = false;
+        throw new RepositoryError(
+          "STORAGE_UNAVAILABLE",
+          "Simulated save failure. Retry to save your changes.",
+        );
+      }
       SceneSpecSchema.parse(scene);
       const existing = this.read(scene.roomId);
       if (existing.revision !== baseRevision || scene.revision < baseRevision)
@@ -108,6 +142,65 @@ export class LocalStorageSceneRepository implements SceneRepository {
         );
       this.write(scene);
       return { revision: scene.revision };
+    });
+  }
+  patchContext(roomId: string): SceneContext {
+    return { room: this.room(roomId).shell, assets: assetById, roomId };
+  }
+  saveScenePatch(
+    roomId: string,
+    baseRevision: number,
+    idempotencyKey: string,
+    operations: SceneOp[],
+  ): Promise<{ revision: number }> {
+    return this.exclusive(roomId, () => {
+      if (this.failNext) {
+        this.failNext = false;
+        throw new RepositoryError(
+          "STORAGE_UNAVAILABLE",
+          "Simulated save failure. Retry to save your changes.",
+        );
+      }
+      const parsed = operations.map((op) => SceneOpSchema.parse(op));
+      const payload = stableStringify({ baseRevision, operations: parsed });
+      const raw = this.storage.getItem(this.key(roomId));
+      const receipts: { key: string; payload: string; revision: number }[] = raw
+        ? (JSON.parse(raw)._housePatches ?? [])
+        : [];
+      const previous = receipts.find((r) => r.key === idempotencyKey);
+      if (previous) {
+        if (previous.payload !== payload)
+          throw new RepositoryError(
+            "CONFLICT",
+            "This retry key belongs to a different patch.",
+          );
+        return { revision: previous.revision };
+      }
+      const before = this.read(roomId);
+      if (before.revision !== baseRevision)
+        throw new RepositoryError(
+          "CONFLICT",
+          "This room changed in another session. Reload the saved room before editing again.",
+        );
+      let next = before;
+      const ctx = this.patchContext(roomId);
+      for (const op of parsed) {
+        const result = applyOp(next, op, ctx, { allowConflicts: true });
+        if (!result.ok)
+          throw new RepositoryError("CORRUPT_DATA", result.error.message);
+        next = result.scene;
+      }
+      for (const object of next.objects) {
+        const validation = validateObject(next, object, ctx);
+        if (!validation.ok)
+          throw new RepositoryError("CORRUPT_DATA", validation.error.message);
+      }
+      const revision = baseRevision + 1;
+      this.write(
+        { ...next, revision },
+        [...receipts, { key: idempotencyKey, payload, revision }].slice(-80),
+      );
+      return { revision };
     });
   }
   reset(roomId: string): Promise<SceneSpec> {
@@ -129,17 +222,22 @@ export class LocalStorageSceneRepository implements SceneRepository {
   }
 }
 export type SaveState = {
-  status: "saved" | "saving" | "error";
+  status: "saved" | "saving" | "error" | "conflict";
   error: string | null;
 };
 /** One debounced queue, one in-flight save, and one acknowledged storage revision. */
 export class Autosave {
+  onAcknowledged?: (snapshot: SceneSpec, revision: number) => void;
   private timer: ReturnType<typeof setTimeout> | undefined;
   private pending = false;
   private inFlight = false;
   private disposed = false;
   private baseRevision: number;
   private lastEdit = 0;
+  private acknowledgedScene: SceneSpec;
+  private attempt:
+    | { snapshot: SceneSpec; key: string; ops: SceneOp[] }
+    | undefined;
   private idleWaiters: (() => void)[] = [];
   constructor(
     private repository: SceneRepository,
@@ -149,6 +247,7 @@ export class Autosave {
     private delay = 500,
   ) {
     this.baseRevision = revision;
+    this.acknowledgedScene = structuredClone(this.read());
   }
   schedule = () => {
     this.pending = true;
@@ -167,11 +266,41 @@ export class Autosave {
     clearTimeout(this.timer);
     this.pending = false;
     this.inFlight = true;
-    const snapshot = this.read();
+    const snapshot = this.attempt?.snapshot ?? this.read();
     try {
-      const result = await this.repository.save(snapshot, this.baseRevision);
+      let result: { revision: number };
+      if (this.repository.saveScenePatch) {
+        if (!this.attempt) {
+          const room = roomById(snapshot.roomId);
+          const ctx =
+            this.repository.patchContext?.(snapshot.roomId) ??
+            (room
+              ? { room: room.shell, assets: assetById, roomId: snapshot.roomId }
+              : undefined);
+          if (!ctx) throw new Error("Unknown room for patch saving.");
+          const patch = diffToOps(this.acknowledgedScene, snapshot, ctx);
+          if (!patch.ok) throw new Error(patch.message);
+          this.attempt = {
+            snapshot: structuredClone(snapshot),
+            key: crypto.randomUUID(),
+            ops: patch.ops,
+          };
+        }
+        result = await this.repository.saveScenePatch(
+          snapshot.roomId,
+          this.baseRevision,
+          this.attempt.key,
+          this.attempt.ops,
+        );
+      } else result = await this.repository.save(snapshot, this.baseRevision);
+      this.acknowledgedScene = {
+        ...structuredClone(snapshot),
+        revision: result.revision,
+      };
+      this.attempt = undefined;
       this.baseRevision = result.revision;
       if (this.read().revision !== snapshot.revision) this.pending = true;
+      if (!this.disposed) this.onAcknowledged?.(snapshot, result.revision);
       if (!this.disposed)
         this.status({ status: this.pending ? "saving" : "saved", error: null });
     } catch (error) {
@@ -179,7 +308,10 @@ export class Autosave {
       clearTimeout(this.timer);
       if (!this.disposed)
         this.status({
-          status: "error",
+          status:
+            error instanceof RepositoryError && error.code === "CONFLICT"
+              ? "conflict"
+              : "error",
           error:
             error instanceof Error
               ? error.message
