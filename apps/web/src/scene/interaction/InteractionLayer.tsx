@@ -1,16 +1,17 @@
 import { useEffect, useMemo, useRef, useSyncExternalStore } from 'react';
 import { useFrame, useThree } from '@react-three/fiber';
 import { Html } from '@react-three/drei';
-import { BufferGeometry, Float32BufferAttribute, Vector3, type Mesh, type Object3D, type Raycaster } from 'three';
+import { BufferGeometry, Float32BufferAttribute, Quaternion, Vector3, type Group, type Mesh, type Object3D, type Raycaster } from 'three';
 import type { Vec3 } from '@house/contracts';
 import { classOf, effectiveDimsOf, obbOf, rootsOf, selectionPivot } from '@house/scene-engine';
 import { EDITOR_POLICY } from '../../config/editorPolicy';
-import { focusCamera, objectById, opContext, select, selectMany, useEditor } from '../../state/store';
+import { focusCamera, objectById, opContext, select, selectMany, toast, useEditor } from '../../state/store';
 import { dragFeedback } from '../dragFeedback';
 import { interaction, registry } from '../registry';
-import { gizmo } from '../TransformControlsWrapper';
 import { boxSelect } from './boxSelect';
 import { hitPlaneY, modsOf, MoveSession, RotateSession, setRay, type DragSession, type Host } from './sessions';
+
+export const SELECT_COLOR = '#9187ff';
 
 type Controls = { enabled: boolean } | null;
 
@@ -27,9 +28,10 @@ function objectAt(r: Raycaster, root: Object3D | undefined): string | null {
 
 /**
  * Pointer routing for the canvas. A capture-phase listener runs before the camera controls see the
- * event, so a press on furniture, the rotation ring or the gizmo turns orbiting off for that drag:
- * - press + drag on an unlocked object → move it (Alt = lift; Ctrl/Cmd = ignore collisions);
- * - press + drag on the ring → turn it; Shift+drag on empty space → box select;
+ * event, so a press on furniture or the swivel ring turns orbiting off for that drag:
+ * - press + drag on an unlocked object → move it (Space / height tool = up/down; Alt = no snapping;
+ *   Shift = 10 cm grid). In the rotate tool, dragging the selection or inside its ring swivels it;
+ * - Shift+drag on empty space → box select;
  * - click (< 4 px) → select (Shift adds, Alt picks one member of a group); empty click deselects;
  * - double-click → focus the camera on the object / floor point. Locked objects just orbit.
  */
@@ -50,13 +52,18 @@ export function InteractionLayer() {
     // R3F hover raycasting is paused while dragging (the drag does its own targeted raycasts).
     const setHover = (on: boolean) => setEvents({ enabled: on });
     let press: {
-      id: string | null; x: number; y: number; down: PointerEvent; box: boolean; draggable: boolean; session: DragSession | null;
+      id: string | null; x: number; y: number; down: PointerEvent; box: boolean; draggable: boolean; locked: boolean; session: DragSession | null;
     } | null = null;
 
     const onMove = (e: PointerEvent) => {
       if (!press) return;
       if (!press.session && !(press.box && boxSelect.get())) {
         if (Math.hypot(e.clientX - press.x, e.clientY - press.y) < EDITOR_POLICY.clickMaxDeltaPx) return;
+        if (press.id && press.locked) {
+          toast(`${objectById(press.id)?.displayName ?? 'It'} is locked. Unlock it to move it.`, 'info', 2000);
+          press.locked = false;
+          return;
+        }
         if (press.id && press.draggable) {
           const st = useEditor.getState();
           const inSel = st.selectedIds.includes(press.id);
@@ -108,24 +115,24 @@ export function InteractionLayer() {
 
     const onDown = (e: PointerEvent) => {
       if (e.button !== 0 || useEditor.getState().walkMode || press) return;
-      if ((gizmo.current as unknown as { axis: string | null } | null)?.axis) {
-        setControls(false); // TransformControls takes this drag
-        return;
-      }
       const r = setRay(host, e);
-      if (ring.current?.visible && r.intersectObject(ring.current, false).length) {
-        const s = new RotateSession(host, e, modsOf(e));
+      const st = useEditor.getState();
+      const id = objectAt(r, scene.getObjectByName('scene-objects'));
+      const target = id ? objectById(id) : undefined;
+      const onRing = !!ring.current?.visible && r.intersectObject(ring.current, false).length > 0;
+      if (st.mode === 'rotate' && (onRing || (target && !target.locked))) {
+        if (!onRing && id && !st.selectedIds.includes(id)) select(id);
+        const s = new RotateSession(host, e);
         if (!s.ok) return;
         setControls(false);
         setHover(false);
-        press = { id: null, x: e.clientX, y: e.clientY, down: e, box: false, draggable: false, session: s };
+        press = { id: null, x: e.clientX, y: e.clientY, down: e, box: false, draggable: false, locked: false, session: s };
       } else {
-        const id = objectAt(r, scene.getObjectByName('scene-objects'));
-        const obj = id ? objectById(id) : undefined;
+        const obj = target;
         const draggable = !!obj && !obj.locked;
         const box = !id && e.shiftKey;
         if (draggable || box) setControls(false);
-        press = { id, x: e.clientX, y: e.clientY, down: e, box, draggable, session: null };
+        press = { id, x: e.clientX, y: e.clientY, down: e, box, draggable, locked: !!obj?.locked, session: null };
       }
       window.addEventListener('pointermove', onMove);
       window.addEventListener('pointerup', onUp);
@@ -159,6 +166,7 @@ export function InteractionLayer() {
   return (
     <>
       <RotationRing meshRef={ring} />
+      <HeightGuide />
       <Guides />
     </>
   );
@@ -179,12 +187,17 @@ function objectsInRect(r: { x0: number; y0: number; x1: number; y1: number }, ho
   }).map((o) => o.id);
 }
 
-/** Floor dial around the selection: drag anywhere on it to turn (works from any camera angle). */
+/**
+ * Swivel ring (rotate tool): a thin ring around the selection with a handle at the primary piece's
+ * front (+Z). Its disk is the hit area; dragging inside it (or on the selection) swivels freely.
+ * It follows the piece live while it's dragged or turned.
+ */
 function RotationRing({ meshRef }: { meshRef: React.RefObject<Mesh> }) {
   const sel = useEditor((s) => s.selectedIds);
   const objects = useEditor((s) => s.workingScene?.objects);
   const mode = useEditor((s) => s.mode);
   const walk = useEditor((s) => s.walkMode);
+  const dragging = useEditor((s) => s.dragging);
   const roots = useMemo(() => {
     const ctx = opContext();
     if (!objects || !ctx) return [];
@@ -198,38 +211,87 @@ function RotationRing({ meshRef }: { meshRef: React.RefObject<Mesh> }) {
       const b = obbOf(r);
       radius = Math.max(radius, Math.hypot(b.center[0] - pivot[0]!, b.center[1] - pivot[1]!) + Math.hypot(b.halfW, b.halfD));
     }
-    const inner = radius + 0.12;
-    const outer = inner + (mode === 'rotate' ? 0.1 : 0.06);
-    const g = new BufferGeometry();
-    const pos: number[] = [];
-    const N = 96;
-    for (let i = 0; i < N; i++) {
-      const a0 = (i / N) * Math.PI * 2;
-      const a1 = ((i + 1) / N) * Math.PI * 2;
-      const p = (r: number, a: number) => [Math.sin(a) * r, 0, Math.cos(a) * r];
-      pos.push(...p(inner, a0), ...p(outer, a0), ...p(outer, a1), ...p(inner, a0), ...p(outer, a1), ...p(inner, a1));
-    }
-    g.setAttribute('position', new Float32BufferAttribute(pos, 3));
-    return { g, pivot: pivot as [number, number], y: Math.min(...roots.map((r) => r.transform.position[1])) + 0.008, outer };
-  }, [roots, objects, mode]);
-  const tmp = useMemo(() => new Vector3(), []);
+    return { pivot: pivot as [number, number], y: Math.min(...roots.map((r) => r.transform.position[1])) + 0.02, radius: radius + 0.15 };
+  }, [roots, objects]);
+  const group = useRef<Group>(null);
+  const tmp = useMemo(() => ({ p: new Vector3(), q: new Quaternion(), f: new Vector3() }), []);
 
   useFrame(() => {
-    const m = meshRef.current;
-    if (!m || !geom) return;
-    // A single object's ring follows it live (during moves and lifts).
-    const g = roots.length === 1 ? registry.get(roots[0]!.id) : undefined;
-    if (g) {
-      g.getWorldPosition(tmp);
-      m.position.set(tmp.x, tmp.y + 0.008, tmp.z);
+    const g = group.current;
+    const primary = roots[roots.length - 1];
+    if (!g || !geom || !primary) return;
+    const live = registry.get(primary.id);
+    if (!live) return;
+    // A single piece's ring follows it; the handle stays at the primary piece's front.
+    live.getWorldQuaternion(tmp.q);
+    tmp.f.set(0, 0, 1).applyQuaternion(tmp.q);
+    g.rotation.set(0, Math.atan2(tmp.f.x, tmp.f.z), 0);
+    if (roots.length === 1) {
+      live.getWorldPosition(tmp.p);
+      g.position.set(tmp.p.x, tmp.p.y + 0.02, tmp.p.z);
     }
   });
 
-  if (!geom || walk) return null;
+  if (!geom || walk || mode !== 'rotate') return null;
+  const active = dragging;
   return (
-    <mesh ref={meshRef} geometry={geom.g} position={[geom.pivot[0], geom.y, geom.pivot[1]]} renderOrder={20}>
-      <meshBasicMaterial color="#8a8dff" transparent opacity={mode === 'rotate' ? 0.75 : 0.45} depthTest={false} side={2} />
-    </mesh>
+    <group ref={group} position={[geom.pivot[0], geom.y, geom.pivot[1]]}>
+      <mesh rotation={[-Math.PI / 2, 0, 0]} raycast={() => null} renderOrder={20}>
+        <torusGeometry args={[geom.radius, 0.008, 6, 128]} />
+        <meshBasicMaterial color={SELECT_COLOR} transparent opacity={active ? 0.95 : 0.7} depthTest={false} />
+      </mesh>
+      {/* Full-disk hit area. */}
+      <mesh ref={meshRef} rotation={[-Math.PI / 2, 0, 0]} renderOrder={19}>
+        <circleGeometry args={[geom.radius, 64]} />
+        <meshBasicMaterial color={SELECT_COLOR} transparent opacity={active ? 0.06 : 0.03} depthTest={false} depthWrite={false} />
+      </mesh>
+      <mesh position={[0, 0, geom.radius]} renderOrder={21} raycast={() => null}>
+        <sphereGeometry args={[0.045, 16, 12]} />
+        <meshBasicMaterial color="#ffffff" depthTest={false} />
+      </mesh>
+      <mesh position={[0, 0, geom.radius]} renderOrder={22} raycast={() => null}>
+        <sphereGeometry args={[0.03, 16, 12]} />
+        <meshBasicMaterial color={SELECT_COLOR} depthTest={false} />
+      </mesh>
+    </group>
+  );
+}
+
+/** Up/down arrows beside the selected piece while the height tool or Space is active. */
+function HeightGuide() {
+  const id = useEditor((s) => s.selectedId);
+  const plane = useEditor((s) => s.movePlane);
+  const space = useEditor((s) => s.heightModifier);
+  const mode = useEditor((s) => s.mode);
+  const walk = useEditor((s) => s.walkMode);
+  const obj = useEditor((s) => (id ? s.workingScene?.objects.find((o) => o.id === id) : undefined));
+  const ref = useRef<Group>(null);
+  const tmp = useMemo(() => ({ q: new Quaternion(), f: new Vector3() }), []);
+  useFrame(() => {
+    const g = ref.current;
+    const live = id ? registry.get(id) : undefined;
+    if (!g || !live) return;
+    live.getWorldPosition(g.position);
+    live.getWorldQuaternion(tmp.q);
+    tmp.f.set(0, 0, 1).applyQuaternion(tmp.q);
+    g.rotation.set(0, Math.atan2(tmp.f.x, tmp.f.z), 0);
+  });
+  if (!obj || obj.locked || walk || mode !== 'translate' || (plane !== 'height' && !space)) return null;
+  const [w, h] = effectiveDimsOf(obj);
+  const x = w / 2 + 0.12;
+  return (
+    <group ref={ref}>
+      <mesh position={[x, h / 2, 0]} raycast={() => null} renderOrder={20}>
+        <cylinderGeometry args={[0.008, 0.008, h + 0.5, 8]} />
+        <meshBasicMaterial color={SELECT_COLOR} depthTest={false} />
+      </mesh>
+      {[1, -1].map((dir) => (
+        <mesh key={dir} position={[x, h / 2 + dir * (h / 2 + 0.3), 0]} rotation={[dir < 0 ? Math.PI : 0, 0, 0]} raycast={() => null} renderOrder={20}>
+          <coneGeometry args={[0.045, 0.12, 12]} />
+          <meshBasicMaterial color={SELECT_COLOR} depthTest={false} />
+        </mesh>
+      ))}
+    </group>
   );
 }
 

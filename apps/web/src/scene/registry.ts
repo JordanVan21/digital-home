@@ -20,5 +20,11 @@ export const registry = {
   },
 };
 
-/** Timestamp of the last gizmo release — Canvas onPointerMissed ignores clicks right after it. */
+/** Timestamp of the last drag release — a click right after it doesn't deselect. */
 export const interaction = { lastDragEndAt: 0 };
+
+/**
+ * Ids whose groups a gesture is driving imperatively. Everything else eases toward its stored
+ * transform each frame, so undo, discard and resolver moves glide instead of jumping.
+ */
+export const driven = new Set<string>();

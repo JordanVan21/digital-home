@@ -71,8 +71,11 @@ export type EditorState = {
   selectedId: string | null;
   hoveredId: string | null;
   mode: TransformMode;
+  /** Move tool plane: across the floor, or up/down (the height tool). */
+  movePlane: 'floor' | 'height';
+  /** Space held: drags move up/down. */
+  heightModifier: boolean;
   dragging: boolean;
-  snapping: boolean;
   walkMode: boolean;
   wallMode: WallMode;
   // ---- history (editor-local; never a timeline)
@@ -107,8 +110,9 @@ const initial: EditorState = {
   selectedId: null,
   hoveredId: null,
   mode: 'translate',
+  movePlane: 'floor',
+  heightModifier: false,
   dragging: false,
-  snapping: false,
   walkMode: false,
   wallMode: 'cutaway',
   history: emptyHistory(EDITOR_POLICY.historyCap),
@@ -531,7 +535,7 @@ export const selectMany = (ids: string[], additive = false) => {
 export const hover = (id: string | null) => {
   if (get().hoveredId !== id) set({ hoveredId: id });
 };
-export const setMode = (mode: TransformMode) => set({ mode });
+export const setMode = (mode: TransformMode, movePlane: 'floor' | 'height' = 'floor') => set({ mode, movePlane });
 
 let camNonce = 0;
 export const requestCamera = (preset: CameraPreset) => set({ cameraRequest: { type: 'preset', preset, nonce: ++camNonce } });

@@ -1,22 +1,25 @@
 import { Matrix4, Object3D, Plane, Quaternion, Raycaster, Vector2, Vector3, type Camera } from 'three';
 import type { SceneObject, SceneOp, Vec2, Vec3 } from '@house/contracts';
 import {
-  bearing, bodyAt, candidateSurfaces, ceilingPose, classOf, findSupport, fitsSurface, groupTransformOps, isLarge,
-  makeTransform, moveWithSupport, normalizeAngle, pointInPolygon, prepareShell, quatFromYaw, resolveRotation,
-  resolveTranslation, rootsOf, selectionPivot, subtreeIds, transformAbout, validateObject, wallPose, YawDial,
-  indexObjects, yawFromQuat, type Blocker, type SupportHit, type WorldSurface,
+  bearing, bodyAt, candidateSurfaces, ceilingPose, classOf, CONFLICT_RULES, findSupport, fitsSurface, groupTransformOps,
+  indexObjects, isLarge, makeTransform, moveWithSupport, normalizeAngle, pointInPolygon, prepareShell, quatFromYaw, rootsOf,
+  selectionPivot, subtreeIds, transformAbout, validateObject, wallPose, YawDial, yawFromQuat,
+  type SupportHit, type Violation, type WorldSurface,
 } from '@house/scene-engine';
 import { EDITOR_POLICY } from '../../config/editorPolicy';
-import { applyObjectTransform } from '../../lib/convert';
-import { bodiesOf, liftBodies, movingSet, obstacleQuery, obstaclesFor, sweptBounds } from '../../state/physics';
-import { commit, objectById, opContext, toast, useEditor } from '../../state/store';
+import { movingSet, obstaclesFor, sweptBounds } from '../../state/physics';
+import { commit, objectById, opContext, useEditor } from '../../state/store';
 import { dragFeedback } from '../dragFeedback';
-import { interaction, registry } from '../registry';
+import { driven, interaction, registry } from '../registry';
 import { smartSnap } from './snaps';
 
 export type Host = { camera: Camera; dom: HTMLElement };
-export type Mods = { alt: boolean; ctrl: boolean; shift: boolean };
-export const modsOf = (e: { altKey: boolean; ctrlKey: boolean; metaKey: boolean; shiftKey: boolean }): Mods => ({ alt: e.altKey, ctrl: e.ctrlKey || e.metaKey, shift: e.shiftKey });
+/** alt: move freely (no snapping) · shift: 10 cm grid / 15° steps · height: up/down (Space or the height tool). */
+export type Mods = { alt: boolean; shift: boolean; height: boolean };
+export const modsOf = (e: { altKey: boolean; shiftKey: boolean }): Mods => {
+  const s = useEditor.getState();
+  return { alt: e.altKey, shift: e.shiftKey, height: s.movePlane === 'height' || s.heightModifier };
+};
 
 const ray = new Raycaster();
 const _v = new Vector3();
@@ -59,32 +62,41 @@ export function setWorldPose(group: Object3D, pos: Vec3, yaw: number) {
   group.updateMatrixWorld();
 }
 
+/** Hand the groups back to the scene: they glide to their stored (or suggested) transforms. */
 function restore(ids: Iterable<string>) {
-  for (const id of ids) {
-    const g = registry.get(id);
-    const o = objectById(id);
-    if (!g || !o) continue;
-    applyObjectTransform(g, o, objectById(o.placement?.parentId));
-  }
+  for (const id of ids) driven.delete(id);
 }
 
-function finish(label: string, ops: SceneOp[], roots: string[], extra?: () => void) {
+/** Release: the gesture becomes one suggestion (conflicts allowed; Accept resolves them). */
+function finish(label: string, ops: SceneOp[], roots: string[]) {
   interaction.lastDragEndAt = performance.now();
   dragFeedback.clear();
+  if (ops.length) commit(label, ops);
+  restore(roots);
   useEditor.setState({ dragging: false });
-  if (!ops.length) return restore(roots);
-  const r = commit(label, ops, { quiet: true });
-  if (!r.ok) {
-    restore(roots);
-    toast(r.error.reason === 'GEOMETRY' ? `Snapped back — ${r.error.message}` : r.error.message, 'warning');
-  } else extra?.();
+}
+
+const conflictKey = (id: string, v: Violation) => `${id}:${v.rule}:${v.otherId ?? ''}`;
+
+/** Conflicts objects already have in the accepted room (they never show as new conflicts). */
+function priorConflicts(ctx: ReturnType<typeof opContext>, ids: Iterable<string>): Set<string> {
+  const accepted = useEditor.getState().acceptedScene;
+  const out = new Set<string>();
+  if (!ctx || !accepted) return out;
+  const index = indexObjects(accepted.objects);
+  for (const id of ids) {
+    const o = index.get(id);
+    if (!o) continue;
+    for (const v of validateObject(ctx, index, o)) if (CONFLICT_RULES.has(v.rule)) out.add(conflictKey(id, v));
+  }
+  return out;
 }
 
 const timed = <T>(f: () => T): T => {
   const t0 = performance.now();
   const out = f();
   const ms = performance.now() - t0;
-  if (import.meta.env?.DEV && ms > EDITOR_POLICY.dragBudgetMs) console.warn(`[drag] collision/validation took ${ms.toFixed(1)} ms (> ${EDITOR_POLICY.dragBudgetMs} ms budget)`);
+  if (import.meta.env?.DEV && ms > EDITOR_POLICY.dragBudgetMs) console.warn(`[drag] validation took ${ms.toFixed(1)} ms (> ${EDITOR_POLICY.dragBudgetMs} ms budget)`);
   return out;
 };
 
@@ -94,16 +106,19 @@ export interface DragSession {
   cancel(): void;
 }
 
-// ---------------------------------------------------------------- move / lift / wall / ceiling
+// ---------------------------------------------------------------- move / height / wall / ceiling
 
 type Kind = 'move' | 'lift' | 'wall' | 'ceiling' | 'ceilingLift';
 
 /**
- * Direct manipulation of one or more objects (the primary interaction):
- * - move: horizontally across whatever they rest on; small items hop onto the support surface under
- *   the cursor (vase onto a table, off the edge to the floor); block-and-slide against obstacles.
- * - lift (Alt): vertically with a guide + height readout; settles on release (gravity) unless Float.
- * - wall: slide along walls (crossing corners) and up/down. ceiling: across the ceiling; Alt = drop.
+ * Direct manipulation of one or more objects (the primary interaction). Never blocked: the
+ * pieces go where the pointer puts them, new conflicts show red live, and release records one
+ * suggestion that Accept resolves.
+ * - move: horizontally across whatever they rest on; small items hop onto the surface under the
+ *   cursor (vase onto a table, off the edge to the floor); alignment and back-to-wall snaps.
+ * - lift (Space / height tool): vertically with a height readout; settles on release unless Float.
+ * - wall: slide along walls (crossing corners) and up/down. ceiling: across the ceiling.
+ * Alt moves freely (no snapping); Shift snaps the centre to a 10 cm grid.
  */
 export class MoveSession implements DragSession {
   private readonly ctx = opContext()!;
@@ -114,19 +129,16 @@ export class MoveSession implements DragSession {
   private readonly kind: Kind;
   private readonly small: boolean;
   private readonly surfaces: WorldSurface[] = [];
-  private readonly movingBodies;
   private readonly statics: SceneObject[];
-  private readonly obstacles: ReturnType<typeof obstacleQuery>;
+  private readonly prior: Set<string>;
   private grab: Vec2 = [0, 0];
   private grabDy = 0;
-  private prev: Vec2 = [0, 0];
-  private prevDy = 0;
   private last: { offset: Vec2; dy: number; hit: SupportHit | null; yaw?: number; pos?: Vec3 } = { offset: [0, 0], dy: 0, hit: null };
   private pending: PointerEvent | null = null;
   private raf = 0;
   readonly ok: boolean;
 
-  constructor(private readonly host: Host, down: PointerEvent, ids: string[], primaryId: string, private readonly mods: Mods) {
+  constructor(private readonly host: Host, down: PointerEvent, ids: string[], primaryId: string, mods: Mods) {
     const roots = rootsOf(this.scene, ids).filter((o) => !o.locked);
     const primaryRoot = roots.find((r) => subtreeIds(this.scene.objects, r.id).has(primaryId)) ?? roots[0];
     this.ok = !!primaryRoot && roots.length === rootsOf(this.scene, ids).length;
@@ -135,12 +147,11 @@ export class MoveSession implements DragSession {
     const mounted = cls === 'wall' || cls === 'ceiling';
     this.roots = mounted ? [this.primary] : roots.filter((r) => { const c = classOf(this.ctx, r); return c !== 'wall' && c !== 'ceiling'; });
     this.rootIds = this.roots.map((r) => r.id);
-    this.kind = cls === 'wall' ? 'wall' : cls === 'ceiling' ? (mods.alt ? 'ceilingLift' : 'ceiling') : mods.alt ? 'lift' : 'move';
+    this.kind = cls === 'wall' ? 'wall' : cls === 'ceiling' ? (mods.height ? 'ceilingLift' : 'ceiling') : mods.height ? 'lift' : 'move';
     this.small = this.roots.length === 1 && !isLarge(this.primary?.category ?? '') && !mounted;
     const moving = movingSet(this.scene, this.rootIds);
-    this.movingBodies = bodiesOf(this.ctx, this.scene, moving);
     this.statics = this.scene.objects.filter((o) => !moving.has(o.id));
-    this.obstacles = obstacleQuery(this.ctx, this.scene, this.rootIds);
+    this.prior = priorConflicts(this.ctx, moving);
     if (!this.ok) return;
     if (this.small) this.surfaces = candidateSurfaces(this.scene.objects, this.primary, { assets: this.ctx.assets });
 
@@ -154,6 +165,7 @@ export class MoveSession implements DragSession {
       const h = hitPlaneY(r, py);
       if (h) this.grab = [px - h.x, pz - h.z];
     }
+    this.rootIds.forEach((id) => driven.add(id));
     useEditor.setState({ dragging: true });
   }
 
@@ -172,24 +184,20 @@ export class MoveSession implements DragSession {
     if (!this.raf) this.raf = requestAnimationFrame(() => { this.raf = 0; if (this.pending) this.tick(this.pending); });
   }
 
-  private startOf(o: SceneObject): Vec3 {
-    return o.transform.position;
-  }
-
-  private preview(offset: Vec2, dy: number, yawFor?: (o: SceneObject) => number) {
+  private preview(offset: Vec2, dy: number) {
     for (const r of this.roots) {
       const g = registry.get(r.id);
       if (!g) continue;
-      const [x, y, z] = this.startOf(r);
-      const yaw = yawFor ? yawFor(r) : yawFromQuat(r.transform.rotation);
-      setWorldPose(g, [x + offset[0], y + (r.id === this.primary.id ? dy : 0), z + offset[1]], yaw);
+      const [x, y, z] = r.transform.position;
+      setWorldPose(g, [x + offset[0], y + (r.id === this.primary.id ? dy : 0), z + offset[1]], yawFromQuat(r.transform.rotation));
     }
   }
 
   private tick(e: PointerEvent) {
     const r = setRay(this.host, e);
     const shift = e.shiftKey;
-    const ctrl = e.ctrlKey || e.metaKey || this.mods.ctrl;
+    const free = e.altKey;
+    const grid = EDITOR_POLICY.gridSnapM;
     const floorY = this.ctx.shell.floor.elevationY;
     const [px, py, pz] = this.primary.transform.position;
 
@@ -201,7 +209,7 @@ export class MoveSession implements DragSession {
       this.last = { offset: [0, 0], dy: 0, hit: null, pos: pose.position, yaw: pose.yaw };
       const g = registry.get(this.primary.id);
       if (g) setWorldPose(g, pose.position, pose.yaw);
-      this.feedbackFor({ ...this.primary, transform: makeTransform(pose.position, pose.yaw) }, [], ctrl);
+      this.feedbackFor({ ...this.primary, transform: makeTransform(pose.position, pose.yaw) });
       return;
     }
     if (this.kind === 'ceiling' || this.kind === 'ceilingLift') {
@@ -225,10 +233,11 @@ export class MoveSession implements DragSession {
     if (this.kind === 'lift') {
       const h = this.liftPlaneHit(r);
       if (!h) return;
-      const baseY = Math.max(floorY, h.y - this.grabDy);
+      let baseY = Math.max(floorY, h.y - this.grabDy);
+      if (shift) baseY = floorY + Math.round((baseY - floorY) / grid) * grid;
       this.last = { offset: [0, 0], dy: baseY - py, hit: null };
       this.preview([0, 0], baseY - py);
-      dragFeedback.set({ objectId: this.primary.id, height: this.readout([px, baseY, pz]), blockers: [], guides: [] });
+      dragFeedback.set({ objectId: this.primary.id, height: this.readout([px, baseY, pz]), violations: [], guides: [] });
       return;
     }
 
@@ -236,7 +245,7 @@ export class MoveSession implements DragSession {
     let center: Vec2 | null = null;
     let targetY = py;
     let hit: SupportHit | null = null;
-    if (this.small) {
+    if (this.small && !free) {
       let bestT = Infinity;
       const o = r.ray.origin;
       const d = r.ray.direction;
@@ -267,50 +276,33 @@ export class MoveSession implements DragSession {
       if (!h) return;
       center = [h.x + this.grab[0], h.z + this.grab[1]];
     }
-    let desired: Vec2 = [center[0] - px, center[1] - pz];
+    let offset: Vec2 = [center[0] - px, center[1] - pz];
     const dy = targetY - py;
     let guides: { from: Vec3; to: Vec3 }[] = [];
-    if (!shift) {
+    if (shift) {
+      offset = [Math.round((px + offset[0]) / grid) * grid - px, Math.round((pz + offset[1]) / grid) * grid - pz];
+    } else if (!free) {
       const near = this.statics.filter((s) => Math.abs(s.transform.position[0] - center![0]) < 3 && Math.abs(s.transform.position[2] - center![1]) < 3);
-      const snapped = smartSnap(this.ctx, { ...this.primary, transform: { ...this.primary.transform, position: [px, targetY, pz] } }, near, desired);
-      desired = snapped.delta;
+      const snapped = smartSnap(this.ctx, { ...this.primary, transform: { ...this.primary.transform, position: [px, targetY, pz] } }, near, offset);
+      offset = snapped.delta;
       guides = snapped.guides;
     }
-    let offset = desired;
-    let blockers: Blocker[] = [];
-    if (!ctrl && EDITOR_POLICY.collision === 'block-and-slide') {
-      const lifted = liftBodies(this.movingBodies, this.small ? dy : 0);
-      if (Math.abs(dy - this.prevDy) > 1e-6) this.prev = [0, 0];
-      const a = sweptBounds(lifted, desired[0], desired[1]);
-      const b = sweptBounds(lifted, this.prev[0], this.prev[1]);
-      const bounds = {
-        min: [Math.min(a.min[0], b.min[0]), a.min[1], Math.min(a.min[2], b.min[2])] as Vec3,
-        max: [Math.max(a.max[0], b.max[0]), a.max[1], Math.max(a.max[2], b.max[2])] as Vec3,
-      };
-      const res = timed(() => resolveTranslation(lifted, this.obstacles(bounds, hit?.ownerId), this.prev, desired));
-      offset = res.offset;
-      blockers = res.blockers;
-    }
-    this.prev = offset;
-    this.prevDy = dy;
     this.last = { offset, dy: this.small ? dy : 0, hit: this.small ? hit : null };
     this.preview(offset, this.last.dy);
     const cand: SceneObject = { ...this.primary, transform: { ...this.primary.transform, position: [px + offset[0], py + this.last.dy, pz + offset[1]] } };
-    this.feedbackFor(cand, blockers, ctrl, guides);
+    this.feedbackFor(cand, guides);
   }
 
-  private feedbackFor(cand: SceneObject, blockers: Blocker[], ctrl: boolean, guides: { from: Vec3; to: Vec3 }[] = []) {
-    let violations = dragFeedback.violations;
-    if (ctrl || this.kind === 'wall') {
-      violations = timed(() => {
-        const index = indexObjects(this.scene.objects);
-        index.set(cand.id, cand);
-        const near = obstaclesFor(this.ctx, this.scene, this.rootIds, { bounds: sweptBounds([bodyAt(cand, this.ctx.assets)], 0, 0) })
-          .filter((b) => !b.wall).map((b) => index.get(b.id)!).filter(Boolean);
-        return validateObject(this.ctx, index, cand, near).filter((v) => v.rule === 'overlap' || v.severity === 'error');
-      });
-    } else violations = [];
-    dragFeedback.set({ objectId: this.primary.id, blockers, violations, guides, height: null, note: ctrl ? 'Collisions off (Ctrl)' : null });
+  /** Live red feedback: conflicts the dragged piece would newly introduce (never blocks). */
+  private feedbackFor(cand: SceneObject, guides: { from: Vec3; to: Vec3 }[] = []) {
+    const violations = timed(() => {
+      const index = indexObjects(this.scene.objects);
+      index.set(cand.id, cand);
+      const near = obstaclesFor(this.ctx, this.scene, this.rootIds, { bounds: sweptBounds([bodyAt(cand, this.ctx.assets)], 0, 0) })
+        .filter((b) => !b.wall).map((b) => index.get(b.id)!).filter(Boolean);
+      return validateObject(this.ctx, index, cand, near).filter((v) => CONFLICT_RULES.has(v.rule) && !this.prior.has(conflictKey(cand.id, v)));
+    });
+    dragFeedback.set({ objectId: this.primary.id, blockers: [], violations, guides, height: null, note: null });
   }
 
   private readout(pos: Vec3) {
@@ -359,10 +351,7 @@ export class MoveSession implements DragSession {
       ops = groupTransformOps(this.ctx, this.scene, this.rootIds, offset, 0, [0, 0]);
     }
     const moved = Math.hypot(offset[0], offset[1]) > 1e-6 || Math.abs(dy) > 1e-6 || this.kind === 'wall';
-    const ignored = (this.mods.ctrl || dragFeedback.note) && dragFeedback.violations.length > 0;
-    finish(this.kind === 'lift' ? 'Lift' : 'Move', moved ? ops : [], this.rootIds, () => {
-      if (ignored) toast('Placed with collisions ignored — it’s flagged.', 'warning');
-    });
+    finish(this.kind === 'lift' ? 'Lift' : 'Move', moved ? ops : [], this.rootIds);
   }
 
   cancel() {
@@ -374,12 +363,12 @@ export class MoveSession implements DragSession {
   }
 }
 
-// ---------------------------------------------------------------- rotate (floor ring dial)
+// ---------------------------------------------------------------- rotate (swivel ring)
 
 /**
- * Turn-the-dial rotation: the pointer's bearing around the pivot drives yaw continuously (no
- * clamping or jumps across ±180°, any number of turns). Shift snaps to 15°. Collisions push the
- * object clear when possible, otherwise the last valid angle is kept.
+ * Free swivel: the pointer's bearing around the pivot drives yaw continuously (no clamping or
+ * jumps across ±180°, any number of turns). Shift snaps to 15°. Never blocked: new conflicts show
+ * red live and resolve on Accept.
  */
 export class RotateSession implements DragSession {
   private readonly ctx = opContext()!;
@@ -389,13 +378,13 @@ export class RotateSession implements DragSession {
   private readonly pivot: Vec2;
   private readonly planeY: number;
   private readonly dial: YawDial;
-  private readonly all: SceneObject[];
-  private last = { dYaw: 0, offset: [0, 0] as Vec2 };
+  private readonly prior: Set<string>;
+  private last = { dYaw: 0 };
   private pending: PointerEvent | null = null;
   private raf = 0;
   readonly ok: boolean;
 
-  constructor(private readonly host: Host, down: PointerEvent, private readonly mods: Mods) {
+  constructor(private readonly host: Host, down: PointerEvent) {
     const ids = useEditor.getState().selectedIds;
     this.roots = rootsOf(this.scene, ids).filter((o) => !o.locked && classOf(this.ctx, o) !== 'wall');
     this.rootIds = this.roots.map((r) => r.id);
@@ -403,10 +392,12 @@ export class RotateSession implements DragSession {
     const p0 = this.roots[0]?.transform.position ?? [0, 0, 0];
     this.pivot = this.roots.length === 1 ? [p0[0], p0[2]] : selectionPivot(this.scene, this.rootIds);
     this.planeY = Math.min(...this.roots.map((r) => r.transform.position[1]));
-    this.all = [...movingSet(this.scene, this.rootIds)].map((id) => objectById(id)!).filter(Boolean);
     const h = hitPlaneY(setRay(host, down), this.planeY) ?? new Vector3(this.pivot[0] + 1, 0, this.pivot[1]);
     this.dial = new YawDial(0, bearing(this.pivot, [h.x, h.z]));
-    if (this.ok) useEditor.setState({ dragging: true });
+    this.prior = priorConflicts(this.ctx, movingSet(this.scene, this.rootIds));
+    if (!this.ok) return;
+    this.rootIds.forEach((id) => driven.add(id));
+    useEditor.setState({ dragging: true });
   }
 
   move(e: PointerEvent) {
@@ -419,47 +410,40 @@ export class RotateSession implements DragSession {
     if (!h) return;
     this.dial.update(bearing(this.pivot, [h.x, h.z]));
     const dYaw = this.dial.yaw(e.shiftKey ? EDITOR_POLICY.snap.rotateRad : undefined);
-    const ctrl = e.ctrlKey || e.metaKey || this.mods.ctrl;
-    let offset: Vec2 = [0, 0];
-    let blockers: Blocker[] = [];
-    if (!ctrl && EDITOR_POLICY.collision === 'block-and-slide') {
-      const rotated = this.all.map((o) => bodyAt({ ...o, transform: transformAbout(o, [0, 0], dYaw, this.pivot) }, this.ctx.assets));
-      const res = timed(() => resolveRotation(rotated, obstaclesFor(this.ctx, this.scene, this.rootIds, { bounds: sweptBounds(rotated, 0, 0) })));
-      if (!res) {
-        dragFeedback.set({ objectId: this.roots[0]!.id, note: `Blocked at ${Math.round((this.last.dYaw * 180) / Math.PI)}°` });
-        return;
-      }
-      offset = res.offset;
-      blockers = res.blockers;
-    }
-    this.last = { dYaw, offset };
+    this.last = { dYaw };
+    const rotated: SceneObject[] = [];
     for (const r of this.roots) {
+      const t = transformAbout(r, [0, 0], dYaw, this.pivot);
+      rotated.push({ ...r, transform: t });
       const g = registry.get(r.id);
-      if (!g) continue;
-      const t = transformAbout(r, offset, dYaw, this.pivot);
-      setWorldPose(g, t.position, yawFromQuat(t.rotation));
+      if (g) setWorldPose(g, t.position, yawFromQuat(t.rotation));
     }
+    const violations: Violation[] = timed(() => {
+      const index = indexObjects(this.scene.objects);
+      rotated.forEach((o) => index.set(o.id, o));
+      const near = obstaclesFor(this.ctx, this.scene, this.rootIds, { bounds: sweptBounds(rotated.map((o) => bodyAt(o, this.ctx.assets)), 0, 0) })
+        .filter((b) => !b.wall).map((b) => index.get(b.id)!).filter(Boolean);
+      return rotated.flatMap((o) => validateObject(this.ctx, index, o, near)
+        .filter((v) => CONFLICT_RULES.has(v.rule) && !this.prior.has(conflictKey(o.id, v))));
+    });
     const yaw0 = yawFromQuat(this.roots[0]!.transform.rotation);
-    const shown = Math.round((normalizeAngle(yaw0 + dYaw) * 180) / Math.PI);
-    dragFeedback.set({ objectId: this.roots[0]!.id, blockers, note: `${shown}°${e.shiftKey ? ' (15° steps)' : ''}${ctrl ? ' · collisions off' : ''}` });
+    const shown = Math.round((((normalizeAngle(yaw0 + dYaw) * 180) / Math.PI) % 360 + 360) % 360);
+    dragFeedback.set({ objectId: this.roots[0]!.id, blockers: [], violations, note: `${shown}°${e.shiftKey ? ' · 15° steps' : ''}` });
   }
 
   up() {
     cancelAnimationFrame(this.raf);
     if (this.pending) this.tick(this.pending);
-    const { dYaw, offset } = this.last;
-    const ops = Math.abs(dYaw) > 1e-9 || Math.hypot(offset[0], offset[1]) > 1e-9
-      ? groupTransformOps(this.ctx, this.scene, this.rootIds, offset, dYaw, this.pivot, { settle: false })
-      : [];
+    const { dYaw } = this.last;
+    const ops = Math.abs(dYaw) > 1e-9 ? groupTransformOps(this.ctx, this.scene, this.rootIds, [0, 0], dYaw, this.pivot, { settle: false }) : [];
     finish('Rotate', ops, this.rootIds);
   }
 
   cancel() {
     cancelAnimationFrame(this.raf);
     restore(this.rootIds);
+    interaction.lastDragEndAt = performance.now();
     dragFeedback.clear();
     useEditor.setState({ dragging: false });
   }
 }
-
-export { restore as restoreGroups };

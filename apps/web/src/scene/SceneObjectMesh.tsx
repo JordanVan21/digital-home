@@ -1,15 +1,16 @@
 import { Component, memo, Suspense, useEffect, useLayoutEffect, useMemo, useRef, type ReactNode } from 'react';
+import { useFrame } from '@react-three/fiber';
 import { Bvh, Clone, Edges, Html, useGLTF } from '@react-three/drei';
-import type { Group, Mesh, Object3D } from 'three';
+import { Quaternion, Vector3, type Group, type Mesh, type Object3D } from 'three';
 import type { AssetSpec, SceneObject, Vec3 } from '@house/contracts';
 import { castsShadow, effectiveDimsOf } from '@house/scene-engine';
 import { EDITOR_POLICY } from '../config/editorPolicy';
-import { applyObjectTransform } from '../lib/convert';
+import { applyObjectTransform, relativeTransform } from '../lib/convert';
 import { hover, useEditor } from '../state/store';
 import { categoryColor, humanCategory } from './categoryColors';
 import { fitToBox } from './fit';
 import { makeGhost, makeVariant, prepareModel } from './prepareModel';
-import { registry } from './registry';
+import { driven, registry } from './registry';
 
 const DRACO = EDITOR_POLICY.dracoDecoderPath;
 
@@ -137,6 +138,9 @@ function TiltFrame({ obj, children }: { obj: SceneObject; children: ReactNode })
 }
 
 // ---------------------------------------------------------------- instance node
+/** Ease rate (1/s) for undo, discard, resolver and settle motion. */
+const GLIDE_RATE = 20;
+
 type Tree = Map<string, SceneObject[]>;
 type NodeProps = { obj: SceneObject; parent?: SceneObject; tree: Tree; shadowLamps: Set<string> };
 const NO_KIDS: SceneObject[] = [];
@@ -162,9 +166,28 @@ export const SceneObjectNode = memo(function SceneObjectNode({ obj, parent, tree
   const url = obj.assetId ? catalog?.resolveUrl(obj.assetId) ?? null : null;
   const shadow = castsShadow(obj.category, asset);
 
+  // Mount at the stored transform; afterwards ease toward it (see Glide).
+  const target = useRef<{ p: Vector3; q: Quaternion } | null>(null);
   useLayoutEffect(() => {
-    if (ref.current) applyObjectTransform(ref.current, obj, parent);
+    const t = parent ? relativeTransform(obj.transform, parent.transform) : obj.transform;
+    const next = { p: new Vector3(...t.position), q: new Quaternion(...t.rotation) };
+    if (!target.current && ref.current) applyObjectTransform(ref.current, obj, parent);
+    target.current = next;
   }, [obj, parent]);
+  useFrame((state, delta) => {
+    const g = ref.current;
+    const t = target.current;
+    if (!g || !t || driven.has(obj.id)) return;
+    const k = 1 - Math.exp(-Math.min(delta, 0.1) * GLIDE_RATE);
+    const far = g.position.distanceToSquared(t.p) > 1e-8 || g.quaternion.angleTo(t.q) > 1e-4;
+    if (!far) {
+      if (!g.position.equals(t.p) || !g.quaternion.equals(t.q)) { g.position.copy(t.p); g.quaternion.copy(t.q); }
+      return;
+    }
+    g.position.lerp(t.p, k);
+    g.quaternion.slerp(t.q, k);
+    state.invalidate();
+  });
 
   useEffect(() => {
     registry.set(obj.id, ref.current);

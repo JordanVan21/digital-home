@@ -16,17 +16,23 @@ function isTyping(target: EventTarget | null): boolean {
 const DEG = Math.PI / 180;
 
 /**
- * V select · G/T move · R rotate · Q/E turn 15° (Shift 90°) · arrows nudge 1 cm (Shift 10 cm,
- * camera-relative) · PageUp/PageDown raise/lower · F frame selection · Home frame room ·
- * P walk mode · Return accept suggestions · Esc deselect, then discard suggestions / exit walk · Delete/Backspace delete · L lock · Ctrl/Cmd+D duplicate ·
- * Ctrl/Cmd+G group (Shift: ungroup) · Ctrl/Cmd+Z undo · Shift+Ctrl/Cmd+Z or Ctrl+Y redo ·
- * hold Shift for 15° / 5 cm gizmo snaps. Ignored while typing; walk mode owns WASD/arrows.
+ * V select · G/T move · Y move up/down · R rotate · hold Space to move up/down · Q/E turn 15°
+ * (Shift 90°) · arrows nudge 1 cm (Shift 10 cm, camera-relative) · PageUp/PageDown raise/lower ·
+ * F frame selection · Home frame room · P walk mode · Return accept suggestions · Esc deselect,
+ * then discard suggestions / exit walk · Delete/Backspace delete · L lock · Ctrl/Cmd+D duplicate ·
+ * Ctrl/Cmd+G group (Shift: ungroup) · Ctrl/Cmd+Z undo · Shift+Ctrl/Cmd+Z or Ctrl+Y redo.
+ * While dragging: Alt moves freely (no snapping), Shift snaps to a 10 cm grid / 15° steps.
+ * Ignored while typing; walk mode owns WASD/arrows.
  */
 export function useKeyboardShortcuts() {
   useEffect(() => {
     const down = (e: KeyboardEvent) => {
-      if (e.key === 'Shift') useEditor.setState({ snapping: true });
       if (isTyping(e.target)) return;
+      if (e.key === ' ') {
+        e.preventDefault();
+        if (!useEditor.getState().heightModifier) useEditor.setState({ heightModifier: true });
+        return;
+      }
       const st = useEditor.getState();
       if (st.walkMode) {
         if (e.key.toLowerCase() === 'p') useEditor.setState({ walkMode: false });
@@ -56,6 +62,7 @@ export function useKeyboardShortcuts() {
         case 'v': setMode('select'); break;
         case 'g':
         case 't': setMode('translate'); break;
+        case 'y': setMode('translate', 'height'); break;
         case 'r': setMode('rotate'); break;
         case 'q': rotateSelectionBy((e.shiftKey ? 90 : 15) * DEG); break;
         case 'e': rotateSelectionBy(-(e.shiftKey ? 90 : 15) * DEG); break;
@@ -76,9 +83,9 @@ export function useKeyboardShortcuts() {
       }
     };
     const up = (e: KeyboardEvent) => {
-      if (e.key === 'Shift') useEditor.setState({ snapping: false });
+      if (e.key === ' ') useEditor.setState({ heightModifier: false });
     };
-    const blur = () => useEditor.setState({ snapping: false });
+    const blur = () => useEditor.setState({ heightModifier: false });
     const unload = (e: BeforeUnloadEvent) => {
       if (useEditor.getState().hasDraft) e.preventDefault();
     };

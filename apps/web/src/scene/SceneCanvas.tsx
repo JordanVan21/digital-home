@@ -9,7 +9,6 @@ import { Lighting } from './Lighting';
 import { RoomShellMesh } from './RoomShellMesh';
 import { SceneObjects } from './SceneObjectMesh';
 import { SelectionOverlay } from './SelectionOverlay';
-import { TransformControlsWrapper } from './TransformControlsWrapper';
 import { PerfProbe } from './PerfProbe';
 import { IdleFrameloop } from './IdleFrameloop';
 
@@ -37,7 +36,6 @@ export function SceneCanvas() {
           </Suspense>
           <SceneObjects />
           <SelectionOverlay />
-          <TransformControlsWrapper />
           <CameraRig shell={shell} />
           <InteractionLayer />
         </>

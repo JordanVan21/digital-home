@@ -1,21 +1,18 @@
 /**
- * Editor policy — the one place drag-end, autosave, snapping and asset-budget behavior is tuned.
+ * Editor policy — the one place drag, autosave, snapping and asset-budget behavior is tuned.
  */
-import { DEFAULT_COLLISION_POLICY, type CollisionPolicy } from '@house/scene-engine';
-
 export const EDITOR_POLICY = {
   /**
-   * Collision policy while dragging / nudging / rotating: 'block-and-slide' (default) resolves
-   * penetrations with minimum translation vectors so things slide along obstacles;
-   * 'allow-with-warning' lets them overlap and flags the result. Holding Ctrl/Cmd ignores
-   * collisions for one drag either way (result flagged).
+   * Edits are suggestions: drags, nudges and turns are never blocked. New conflicts show red live
+   * and the draft's Accept resolves them (scene-engine resolveDraft).
    */
-  collision: DEFAULT_COLLISION_POLICY as CollisionPolicy,
-  /** Alignment snaps while dragging (Shift disables): capture distance (m). */
+  /** Alignment snaps while dragging (Alt or Shift disables): capture distance (m). */
   smartSnapM: 0.05,
   /** Back-to-wall snap capture distance (m) and yaw tolerance (rad). */
   wallSnapM: 0.12,
   wallSnapYawRad: (10 * Math.PI) / 180,
+  /** Shift-drag grid for positions and heights (m). */
+  gridSnapM: 0.1,
   /** Nudge step (arrow keys / PageUp-Down), and with Shift. */
   nudgeM: 0.01,
   nudgeBigM: 0.1,
@@ -32,14 +29,8 @@ export const EDITOR_POLICY = {
     const q = typeof location !== 'undefined' ? new URLSearchParams(location.search).get('lampShadows') : null;
     return q !== null && Number.isFinite(Number(q)) ? Number(q) : 0;
   })(),
-  /**
-   * Drag-end policy. Error-severity violations (footprint outside the room, locked, …) snap the
-   * object back with a toast; warning-severity violations (overlap, clearances, support) commit
-   * and stay flagged.
-   */
-  dragEnd: { onError: 'snap-back', onWarning: 'commit-flagged' } as const,
   autosaveDebounceMs: 500,
-  /** Ignore Canvas onPointerMissed this long after a gizmo drag ends (release would deselect). */
+  /** Ignore empty-space clicks this long after a drag ends (release would deselect). */
   pointerMissedIgnoreMs: 150,
   /** A click selects only if the pointer moved less than this (px) — orbit drags don't select. */
   clickMaxDeltaPx: 4,

@@ -8,14 +8,14 @@ import { useEditor } from '../state/store';
 import { dragFeedback } from './dragFeedback';
 import { registry } from './registry';
 
-const COLORS = { hover: '#f4f1ea', selected: '#8a8dff', invalid: '#ff5a52', warning: '#ffb547' };
+const COLORS = { hover: '#ffffff', selected: '#9187ff', invalid: '#e36856', warning: '#e0a43a', resolved: '#6fcf97' };
 
 const _p = new Vector3();
 const _q = new Quaternion();
 const _s = new Vector3();
 const _f = new Vector3();
 
-type Kind = 'hover' | 'selected' | 'blocker';
+type Kind = 'hover' | 'selected' | 'blocker' | 'conflict' | 'resolved';
 
 /**
  * Highlight overlay: footprint outline + bounding-box wireframe + corner dots, built from the
@@ -29,6 +29,8 @@ function ObjectOutline({ obj, kind, primary }: { obj: SceneObject; kind: Kind; p
   const footMat = useRef<LineBasicMaterial>(null);
   const dotMat = useRef<PointsMaterial>(null);
   const committed = useEditor((s) => s.violations[obj.id]);
+  const conflict = useEditor((s) => !!s.draft.conflicts[obj.id]);
+  const resolved = useEditor((s) => s.draft.resolved.includes(obj.id));
   const [w, h, d] = effectiveDimsOf(obj);
   const pad = 0.015;
   const edges = useMemo(() => new EdgesGeometry(new BoxGeometry(w + pad, h + pad, d + pad)), [w, h, d]);
@@ -58,10 +60,12 @@ function ObjectOutline({ obj, kind, primary }: { obj: SceneObject; kind: Kind; p
     _f.set(0, 0, 1).applyQuaternion(_q);
     o.position.copy(_p);
     o.rotation.set(0, Math.atan2(_f.x, _f.z), 0);
-    let color: string = kind === 'blocker' ? COLORS.invalid : COLORS[kind];
+    let color: string = kind === 'blocker' || kind === 'conflict' ? COLORS.invalid : COLORS[kind];
     if (kind === 'selected') {
       const live = dragFeedback.objectId === obj.id;
-      if (live && (dragFeedback.blockers.length || dragFeedback.violations.length)) color = COLORS.invalid;
+      if (live && dragFeedback.violations.length) color = COLORS.invalid;
+      else if (!live && conflict) color = COLORS.invalid;
+      else if (!live && resolved) color = COLORS.resolved;
       else if (!live && committed?.some((v) => v.severity === 'error')) color = COLORS.invalid;
       else if (!live && committed?.length) color = COLORS.warning;
     }
@@ -73,12 +77,12 @@ function ObjectOutline({ obj, kind, primary }: { obj: SceneObject; kind: Kind; p
   return (
     <group ref={ref} renderOrder={10}>
       <lineSegments geometry={edges} position={[0, h / 2, 0]}>
-        <lineBasicMaterial ref={boxMat} transparent opacity={kind === 'hover' ? 0.55 : 0.95} depthTest={false} />
+        <lineBasicMaterial ref={boxMat} transparent opacity={kind === 'hover' ? 0.55 : kind === 'conflict' ? 0.8 : 0.95} depthTest={false} />
       </lineSegments>
       <lineLoop geometry={footprint} position={[0, 0.006, 0]}>
         <lineBasicMaterial ref={footMat} transparent opacity={kind === 'hover' ? 0.5 : 1} depthTest={false} />
       </lineLoop>
-      {kind !== 'hover' && (
+      {(kind === 'selected' || kind === 'blocker') && (
         <points geometry={dots}>
           <pointsMaterial ref={dotMat} size={7} sizeAttenuation={false} depthTest={false} transparent />
         </points>
@@ -92,10 +96,7 @@ function ObjectOutline({ obj, kind, primary }: { obj: SceneObject; kind: Kind; p
 function DragLabel({ id, height }: { id: string; height: number }) {
   const sig = useSyncExternalStore(dragFeedback.subscribe.bind(dragFeedback), () => dragFeedback.signature);
   if (!sig || dragFeedback.objectId !== id) return null;
-  const msgs = [...new Set([
-    ...dragFeedback.blockers.map((b) => (b.wall ? 'hits the wall' : `hits ${b.label}`)),
-    ...dragFeedback.violations.map((v) => v.detail),
-  ])].slice(0, 2);
+  const msgs = [...new Set(dragFeedback.violations.map((v) => v.detail))].slice(0, 2);
   if (!msgs.length) return null;
   const isError = dragFeedback.violations.some((v) => v.severity === 'error');
   return (
@@ -107,26 +108,36 @@ function DragLabel({ id, height }: { id: string; height: number }) {
 
 function BlockerLabel({ id, height }: { id: string; height: number }) {
   useSyncExternalStore(dragFeedback.subscribe.bind(dragFeedback), () => dragFeedback.signature);
-  const b = dragFeedback.blockers.find((x) => x.otherId === id);
-  const mover = b ? useEditor.getState().workingScene?.objects.find((o) => o.id === b.movingId) : undefined;
-  if (!b) return null;
+  const v = dragFeedback.violations.find((x) => x.otherId === id);
+  const mover = v ? useEditor.getState().workingScene?.objects.find((o) => o.id === v.objectId) : undefined;
+  if (!v) return null;
   return (
     <Html position={[0, height + 0.12, 0]} center zIndexRange={[19, 0]} style={{ pointerEvents: 'none' }}>
-      <div className="violation-label error">{mover ? `${mover.displayName} hits this` : 'blocked'}</div>
+      <div className="violation-label error">{mover ? `${mover.displayName} hits this` : 'in the way'}</div>
     </Html>
   );
 }
 
-/** Lock / warning badges for every object that is locked or flagged. */
+/** Lock / new / warning badges for pieces that are locked, newly suggested or flagged. */
 function Badges() {
   const objects = useEditor((s) => s.workingScene?.objects);
+  const accepted = useEditor((s) => s.acceptedScene);
   const violations = useEditor((s) => s.violations);
+  const conflicts = useEditor((s) => s.draft.conflicts);
   const selected = useEditor((s) => s.selectedIds);
-  const flagged = useMemo(() => objects?.filter((o) => o.locked || (violations[o.id]?.length && !selected.includes(o.id))) ?? [], [objects, violations, selected]);
-  return <>{flagged.map((o) => <BadgeFor key={o.id} obj={o} flagged={!!violations[o.id]?.length} />)}</>;
+  const added = useMemo(() => {
+    const ids = new Set(accepted?.objects.map((o) => o.id));
+    return new Set(objects?.filter((o) => !ids.has(o.id)).map((o) => o.id));
+  }, [objects, accepted]);
+  const flaggedOf = (id: string) => !conflicts[id] && !!violations[id]?.length;
+  const shown = useMemo(
+    () => objects?.filter((o) => !selected.includes(o.id) && (o.locked || added.has(o.id) || flaggedOf(o.id))) ?? [],
+    [objects, violations, conflicts, selected, added], // eslint-disable-line react-hooks/exhaustive-deps
+  );
+  return <>{shown.map((o) => <BadgeFor key={o.id} obj={o} flagged={flaggedOf(o.id)} isNew={added.has(o.id)} />)}</>;
 }
 
-function BadgeFor({ obj, flagged }: { obj: SceneObject; flagged: boolean }) {
+function BadgeFor({ obj, flagged, isNew }: { obj: SceneObject; flagged: boolean; isNew: boolean }) {
   const ref = useRef<Group>(null);
   useFrame(() => {
     const grp = registry.get(obj.id);
@@ -137,7 +148,8 @@ function BadgeFor({ obj, flagged }: { obj: SceneObject; flagged: boolean }) {
     <group ref={ref}>
       <Html position={[0, effectiveDimsOf(obj)[1] + 0.08, 0]} center zIndexRange={[15, 0]} style={{ pointerEvents: 'none' }}>
         <div className="badges">
-          {obj.locked && <span className="badge lock" title="Locked"><LockGlyph /></span>}
+          {obj.locked && <span className="badge lock" title="Locked"><LockGlyph /> Locked</span>}
+          {isNew && <span className="badge new">New</span>}
           {flagged && <span className="badge warn" title="Has placement warnings">!</span>}
         </div>
       </Html>
@@ -157,11 +169,22 @@ export function LockGlyph({ open = false }: { open?: boolean }) {
 function Blockers() {
   useSyncExternalStore(dragFeedback.subscribe.bind(dragFeedback), () => dragFeedback.signature);
   const objects = useEditor.getState().workingScene?.objects;
-  const ids = new Set([
-    ...dragFeedback.blockers.filter((b) => !b.wall).map((b) => b.otherId),
-    ...dragFeedback.violations.filter((v) => v.otherId).map((v) => v.otherId!),
-  ]);
+  const ids = new Set(dragFeedback.violations.filter((v) => v.otherId).map((v) => v.otherId!));
   return <>{objects?.filter((o) => ids.has(o.id)).map((o) => <ObjectOutline key={`b-${o.id}`} obj={o} kind="blocker" />)}</>;
+}
+
+/** Conflicting suggestions stay outlined red; pieces Accept moved to fit pulse green briefly. */
+function DraftOutlines({ exclude }: { exclude: readonly string[] }) {
+  const objects = useEditor((s) => s.workingScene?.objects);
+  const conflicts = useEditor((s) => s.draft.conflicts);
+  const resolved = useEditor((s) => s.draft.resolved);
+  const dragging = useEditor((s) => s.dragging);
+  const list = useMemo(
+    () => objects?.filter((o) => !exclude.includes(o.id) && (conflicts[o.id] || resolved.includes(o.id))) ?? [],
+    [objects, conflicts, resolved, exclude],
+  );
+  if (dragging) return null;
+  return <>{list.map((o) => <ObjectOutline key={`d-${o.id}`} obj={o} kind={conflicts[o.id] ? 'conflict' : 'resolved'} />)}</>;
 }
 
 export function SelectionOverlay() {
@@ -178,6 +201,7 @@ export function SelectionOverlay() {
       {hovered && <ObjectOutline key={`h-${hovered.id}`} obj={hovered} kind="hover" />}
       {selected.map((o) => <ObjectOutline key={`s-${o.id}`} obj={o} kind="selected" primary={o.id === primaryId} />)}
       <Blockers />
+      <DraftOutlines exclude={selectedIds} />
       <Badges />
     </group>
   );
