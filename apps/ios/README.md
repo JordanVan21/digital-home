@@ -9,5 +9,7 @@ normalization lives in `packages/scan-import` (CONTRACTS.md §1: convert exactly
 - `Fixtures/sample-scan.json` — synthetic scan; use desktop **Import scan** to try the pipeline without a phone.
 - `project.yml` — XcodeGen spec. `xcodegen generate`, set a signing team, run on a LiDAR iPhone (no Simulator support).
 
-Status: the Foundation-only sources compile and the JSON they emit parses against the zod schema; the
-RoomPlan adapter and SwiftUI app were written against Apple's docs but have never been built in Xcode.
+Build checkpoint (2026-10-18): the SwiftUI app and RoomPlan adapter compile for a generic physical
+iPhone target with Xcode 26.2 (signing disabled), and both existing Swift package tests pass.
+Signing, installation and scanning on a real LiDAR iPhone still require device verification.
+See `SETUP.md` for the exact installation steps and `agent_docs/SCANNER_STATUS.md` for the staged plan.

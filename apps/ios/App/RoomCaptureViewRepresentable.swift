@@ -29,6 +29,7 @@ struct RoomCaptureViewRepresentable: UIViewRepresentable {
     }
 
     /// RoomCaptureViewDelegate refines NSCoding, hence the (unused) coder plumbing.
+    @objc(HouseRoomCaptureCoordinator)
     final class Coordinator: NSObject, RoomCaptureViewDelegate, NSCoding {
         let onResult: (CapturedRoom) -> Void
         let onError: (Error) -> Void

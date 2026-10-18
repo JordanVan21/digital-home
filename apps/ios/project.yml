@@ -22,8 +22,11 @@ targets:
         NSCameraUsageDescription: House uses the camera and LiDAR to measure and capture your room.
         UIRequiredDeviceCapabilities: [arkit]
         UILaunchScreen: {}
+        UISupportedInterfaceOrientations: [UIInterfaceOrientationPortrait]
         # Dev upload to a LAN machine over http; remove once the API is served over https.
         NSAppTransportSecurity:
           NSAllowsLocalNetworking: true
     settings:
       SWIFT_VERSION: "5.9"
+      TARGETED_DEVICE_FAMILY: "1"
+      CODE_SIGN_STYLE: Automatic

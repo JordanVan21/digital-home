@@ -1,8 +1,9 @@
 # Phone half: build, run, and verify on a LiDAR iPhone
 
-For whoever has a Mac with Xcode. Target device: **iPhone 14 Pro Max** (has LiDAR; supports RoomPlan).
-Written without access to Xcode, so the Swift in `App/` and `CapturedRoomExport.swift` has only been
-syntax-checked, never built. Expect to fix small compile errors. Everything else is tested.
+Target: a **LiDAR iPhone (iPhone 12 Pro or newer Pro model), on iOS 17 or later**.
+The app and RoomPlan adapter have been built for a generic physical iPhone with Xcode 26.2,
+without signing. Both existing Swift package tests pass. Real-device installation and capture
+are the next verification checkpoint; a successful unsigned build does not prove either.
 
 ## 0. What you're building
 Scan with RoomPlan -> export `RawRoomScan` JSON -> get the file to the desktop sandbox.
@@ -12,15 +13,16 @@ Do **not** convert coordinates, rename categories, or compute geometry in Swift.
 
 ## 1. Prerequisites
 - Mac with a recent Xcode (iOS 17 SDK or newer), a free Apple ID is enough for signing to your own device.
-- iPhone 14 Pro Max on **iOS 17 or later** (deployment target is 17.0; Settings > General > Software Update).
+- LiDAR iPhone on **iOS 17 or later** (deployment target is 17.0; Settings > General > Software Update).
 - Cable, and Developer Mode on the phone (Settings > Privacy & Security > Developer Mode, then reboot).
 - Node + pnpm for the desktop side: `pnpm install` at the repo root.
 
 ## 2. Get the code
 ```sh
-git fetch && git checkout feature/room-scanner
-cd apps/ios
+cd /Users/jeffreyg/Projects/digital-home/.worktrees/room-scanner/apps/ios
 ```
+
+This is the existing scanner branch's separate worktree. Do not switch the main checkout.
 
 ## 3. Create the Xcode project
 Option A (preferred, spec is already written):
@@ -34,19 +36,38 @@ Option B (manual): new iOS App project "HouseScanner" (SwiftUI, iOS 17). Delete 
 `RoomScanKit`. Add to Info: `NSCameraUsageDescription`, `UIRequiredDeviceCapabilities` = `arkit`, and
 `NSAppTransportSecurity > NSAllowsLocalNetworking = YES`.
 
-In the target's **Signing & Capabilities**, pick your team and make the bundle id unique.
+The generated project is intentionally gitignored. Team selection stays in your local Xcode project;
+regenerating it may require selecting the team again. The committed `project.yml` and `App/Info.plist`
+contain the reproducible app settings and camera permission text.
 
 ## 4. Build and run
-Select the physical iPhone (RoomPlan does not work in the Simulator; the app will show the
-"not available" screen there) and Run. Trust the developer certificate on the phone if prompted
-(Settings > General > VPN & Device Management).
+1. Connect the unlocked iPhone by cable. If asked, tap **Trust** on the phone and enter its passcode.
+2. In Xcode, choose **Xcode > Settings > Accounts**, click **+ > Apple Account** if needed, and sign in.
+3. Click the blue **HouseScanner** project in the left navigator, select **HouseScanner** under
+   **TARGETS**, and open **Signing & Capabilities**. Leave **Automatically manage signing** checked.
+   Set **Team** to your personal team. If the bundle ID is unavailable, change it from
+   `dev.house.HouseScanner` to a unique value such as `com.jeffreyg.housescanner`.
+4. In Xcode's top toolbar, select the **HouseScanner** scheme and your actual iPhone as the destination.
+   If missing, open **Window > Devices and Simulators**, select the phone and finish pairing/preparation.
+5. On the phone, open **Settings > Privacy & Security > Developer Mode**, turn it on, restart, and
+   confirm **Turn On** after restart. If the setting is missing, complete Xcode pairing first.
+6. Click Xcode's **Run** triangle (or press **Command-R**). If iOS says the developer is untrusted,
+   open **Settings > General > VPN & Device Management**, select your developer profile under
+   **Developer App**, tap **Trust**, confirm, then launch House again. The profile appears only after installation.
+7. Allow camera access. Expect **Scan your room** with a **Start scan** button. Leave upload settings empty.
+8. Stop the debugger with Xcode's square Stop button, unplug the cable, and open **House** from the
+   phone's Home Screen. Expect the same start screen without the Mac connected.
 
-Likely first-build fixes (not yet compiled anywhere):
-- `RoomScanKit` types need `import RoomScanKit` in each `App/` file; they have it, but check access levels.
-- `CapturedRoomExport.swift` uses `room.floors` and `Surface.polygonCorners` (iOS 17 APIs). If a property name
-  differs in your SDK, adjust it there only.
-- `RoomCaptureViewRepresentable.Coordinator` must conform to `RoomCaptureViewDelegate` and `NSCoding`; keep that.
-- Swift 6 strict-concurrency warnings can be ignored; project is set to Swift 5 mode.
+For this first checkpoint, report whether House opens unplugged and whether any signing/install error
+appears. Scanning and Finish/Cancel verification are the next step. RoomPlan does not work in the Simulator.
+
+To repeat the unsigned build and existing tests from `apps/ios`:
+
+```sh
+xcodegen generate
+xcodebuild -project HouseScanner.xcodeproj -scheme HouseScanner -destination 'generic/platform=iOS' -derivedDataPath /private/tmp/house-scanner-build CODE_SIGNING_ALLOWED=NO build
+swift test
+```
 
 ## 5. Scan and export
 1. Launch, allow camera access. Tap **Start scan**.
@@ -86,5 +107,8 @@ in the JSON), and which object categories appeared. Then run `pnpm --filter @hou
 | Is thickness always 0 for surfaces (assumed, default 0.12 m used)? | normalize.ts |
 | Do openings (unframed) appear, and are they doorways? | JSON `openings[]` |
 
-## 9. Out of scope for this pass
-Authenticated upload (needs the API/Supabase), multi-room merge, scan editing on the phone, Simulator support.
+## 9. Scope boundaries
+Authenticated upload needs the API/Supabase and is deferred. Whole-house capture, durable saving,
+preview and the offline upload placeholder are planned phone checkpoints in `agent_docs/SCANNER_STATUS.md`.
+The scan/export instructions above describe the current prototype; the documented version 2 format is
+approved for implementation but has not been built yet. Simulator scanning is unsupported.
